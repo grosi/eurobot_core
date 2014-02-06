@@ -25,7 +25,6 @@
 
 /* application */
 #include "app_config.h"
-#include "CANGatekeeper.h"
 #include "default_task.h"
 
 
@@ -43,6 +42,7 @@
 
 /* Private function prototypes -----------------------------------------------*/
 static void vDefaultTask(void*);
+char* itoa(int, char*, int);
 
 
 /* Private functions ---------------------------------------------------------*/
@@ -62,7 +62,7 @@ void initDefaultTask(void){
     initServo_1();
     initServo_2();
     initServo_3();
-
+    initServo_4();
 
     /* create the task */
     xTaskCreate( vDefaultTask, ( signed char * ) DEFAULT_TASK_NAME, DEFAULT_STACK_SIZE, NULL, DEFAULT_TASK_PRIORITY, NULL );
@@ -77,9 +77,8 @@ void initDefaultTask(void){
  ******************************************************************************/
 static void vDefaultTask(void* pvParameters ) {
 
+    /* local variables */
     portTickType xLastFlashTime;
-    uint8_t test;
-    int8_t points[2][2] = {{20,20},{20,20}};
     uint16_t servo = 1000;
     uint8_t up = 1;
 
@@ -91,45 +90,10 @@ static void vDefaultTask(void* pvParameters ) {
     vTaskDelayUntil( &xLastFlashTime, 10 );
 
 
-
+    /* endless loop */
     for(;;)
     {
 
-//        /* set the green led */
-//        setDiscoveryLedGreen();
-//
-//        /* wait */
-//        vTaskDelayUntil( &xLastFlashTime, 50 / portTICK_RATE_MS);
-//
-//        /* reset the green led */
-//        resetDiscoveryLedGreen();
-//
-//        /* set the orange led */
-//        setDiscoveryLedOrange();
-//
-//        /* wait */
-//        vTaskDelayUntil( &xLastFlashTime, 50 / portTICK_RATE_MS);
-//
-//        /* reset the orange led */
-//        resetDiscoveryLedOrange();
-//
-//        /* set the red led */
-//        setDiscoveryLedRed();
-//
-//        /* wait */
-//        vTaskDelayUntil( &xLastFlashTime, 50 / portTICK_RATE_MS);
-//
-//        /* reset the red led */
-//        resetDiscoveryLedRed();
-//
-//        /* set the blue led */
-//        setDiscoveryLedBlue();
-//
-//        /* wait */
-//        vTaskDelayUntil( &xLastFlashTime, 50 / portTICK_RATE_MS);
-//
-//        /* reset the blue led */
-//        resetDiscoveryLedBlue();
 
         setServo_1(servo);
         setServo_2(servo);
@@ -147,20 +111,39 @@ static void vDefaultTask(void* pvParameters ) {
             servo -= 2;
            if(servo == 1000)
                up = 1;
-        }
-//        if(xQueueReceive(qTest,&test,portMAX_DELAY) == pdTRUE)
-//        {
-//            toggleLed3();
-//
-//            txGotoXY(12,30,130,20,points);
-//        }
-        //setServo1(105);
+        };
         vTaskDelayUntil( &xLastFlashTime, 25 / portTICK_RATE_MS);
-//        sendStringUSART("Hallo Welt\n");
-//        txStopDrive();
-        //sendStringVCP("Hallo Welt");
-
     }
+}
+
+/**
+ * \fn      itoa
+ * \brief   C++ version 0.4 char* style "itoa"
+ *
+ * \note    Written by Lukás Chmela; http://www.jb.man.ac.uk/~slowe/cpp/itoa.html
+ */
+char* itoa(int value, char* result, int base) {
+    // check that the base if valid
+    if (base < 2 || base > 36) { *result = '\0'; return result; }
+
+    char* ptr = result, *ptr1 = result, tmp_char;
+    int tmp_value;
+
+    do {
+        tmp_value = value;
+        value /= base;
+        *ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz" [35 + (tmp_value - value * base)];
+    } while ( value );
+
+    // Apply negative sign
+    if (tmp_value < 0) *ptr++ = '-';
+    *ptr-- = '\0';
+    while(ptr1 < ptr) {
+        tmp_char = *ptr;
+        *ptr--= *ptr1;
+        *ptr1++ = tmp_char;
+    }
+    return result;
 }
 
 /**
