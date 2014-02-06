@@ -6,7 +6,7 @@
  * \version 1.0
  *  create this file
  *
- * \brief   simple roboboard access
+ * \brief   simple roboboard button access
  *
  * \defgroup button Button
  * \brief   roboboard button library

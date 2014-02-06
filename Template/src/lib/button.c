@@ -6,7 +6,7 @@
  * \version 1.0
  *  create this file
  *
- * \brief   simple roboboard access
+ * \brief   simple roboboard button access
  *
  * \defgroup button Button
  * \brief   roboboard button library
@@ -62,6 +62,7 @@ void initButton_S1()
  * \fn      getButton_S1
  * \brief   get the current pin value
  * \note    the pin is not debounced
+ * \return  current button value
  */
 inline uint8_t getButton_S1()
 {
@@ -97,6 +98,7 @@ void initButton_S2()
  * \fn      getButton_S2
  * \brief   get the current pin value
  * \note    the pin is not debounced
+ * \return  current button value
  */
 inline uint8_t getButton_S2()
 {
@@ -132,6 +134,7 @@ void initButton_S3()
  * \fn      getButton_S3
  * \brief   get the current pin value
  * \note    the pin is not debounced
+ * \return  current button value
  */
 inline uint8_t getButton_S3()
 {
@@ -167,6 +170,7 @@ void initButton_S4()
  * \fn      getButton_S4
  * \brief   get the current pin value
  * \note    the pin is not debounced
+ * \return  current button value
  */
 inline uint8_t getButton_S4()
 {
