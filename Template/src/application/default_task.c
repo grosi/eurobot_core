@@ -39,13 +39,11 @@
 
 
 /* Private variables ---------------------------------------------------------*/
-static xQueueHandle qTest;
 
 
 /* Private function prototypes -----------------------------------------------*/
 static void vDefaultTask(void*);
-static void CANRxTest(uint16_t, CAN_data_t*);
-static void CANRxTest2(uint16_t, CAN_data_t*);
+
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -66,19 +64,8 @@ void initDefaultTask(void){
     initServo_3();
 
 
-    /* create the queues */
-    qTest = xQueueCreate(10,sizeof(CAN_data_t)); /* RX-Message Queue */
-
     /* create the task */
     xTaskCreate( vDefaultTask, ( signed char * ) DEFAULT_TASK_NAME, DEFAULT_STACK_SIZE, NULL, DEFAULT_TASK_PRIORITY, NULL );
-
-    /* set the CAN listener */
-    setFunctionCANListener(CANRxTest,EMERGENCY_STOP);
-    //setFunctionCANListener(CANRxTest,GOTO_XY);
-    //setFunctionCANListener(CANRxTest,GOTO_STATE_RESPONSE);
-    //setFunctionCANListener(CANRxTest,LASER_POSITION_RESPONSE);
-    //setFunctionCANListener(CANRxTest2,GOTO_STATE_REQUEST);
-    setQueueCANListener(qTest,LASER_POSITION_REQUEST);
 }
 
 /*******************************************************************************
@@ -175,42 +162,6 @@ static void vDefaultTask(void* pvParameters ) {
 
     }
 }
-
-
-/**
- * \fn CANRxTest
- * \brief set LED 1
- *
- * \param[in] id    CAN ID
- * \param[in] len   Data-length (byte)
- * \param[in] data  pointer to the first data segement
- */
-static void CANRxTest(uint16_t id, CAN_data_t* data)
-{
-    uint16_t time;
-    setLed4();
-
-    time = data->goto_x;
-    time = data->goto_angle;
-
-
-
-}
-
-
-/**
- * \fn CANRxTest2
- * \brief reset LED 1
- *
- * \param[in] id    CAN ID
- * \param[in] len   Data-length (byte)
- * \param[in] data  pointer to the first data segement
- */
-static void CANRxTest2(uint16_t id, CAN_data_t* data)
-{
-    resetLed4();
-}
-
 
 /**
  * @}

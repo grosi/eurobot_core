@@ -37,7 +37,7 @@
 #include "queue.h"
 #include "task.h"
 #include "semphr.h"
-#include <memPoolService.h>
+#include "memPoolService.h"
 
 /* application */
 #include "app_config.h"
