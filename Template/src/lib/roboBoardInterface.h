@@ -71,43 +71,16 @@ void setDCMotor1(uint16_t DutyCycleA, uint16_t DutyCycleB);
 void setDCMotor2(uint16_t DutyCycleA, uint16_t DutyCycleB);
 
 /* switch on the LED */
-void setLed1(void);
-void setLed2(void);
-void setLed3(void);
-void setLed4(void);
-void setLed5(void);
-void setLed6(void);
 void setColorSensorLed(void);
-void setDiscoveryLedGreen(void);
-void setDiscoveryLedOrange(void);
-void setDiscoveryLedRed(void);
-void setDiscoveryLedBlue(void);
+
 
 /* switch off the LED */
-void resetLed1(void);
-void resetLed2(void);
-void resetLed3(void);
-void resetLed4(void);
-void resetLed5(void);
-void resetLed6(void);
 void resetColorSensorLed(void);
-void resetDiscoveryLedGreen(void);
-void resetDiscoveryLedOrange(void);
-void resetDiscoveryLedRed(void);
-void resetDiscoveryLedBlue(void);
+
 
 /* toggle te LED */
-void toggleLed1(void);
-void toggleLed2(void);
-void toggleLed3(void);
-void toggleLed4(void);
-void toggleLed5(void);
-void toggleLed6(void);
 void toggleColorSensorLed(void);
-void toggleDiscoveryLedGreen(void);
-void toggleDiscoveryLedOrange(void);
-void toggleDiscoveryLedRed(void);
-void toggleDiscoveryLedBlue(void);
+
 
 /* get the button state */
 uint8_t getButton1(void);
