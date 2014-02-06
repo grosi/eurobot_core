@@ -8,6 +8,8 @@
  *
  * \brief   a simple usart library
  *
+ * \todo    USARTx_IRQHandler have to implemented
+ *
  * \defgroup usart USART
  * \brief   USART library
  * \ingroup firmware
@@ -96,8 +98,8 @@
     #define USART_PIN_RX_SOURCE     GPIO_PinSource7
 #endif
 #if USART_PIN_RX_NUMBER == 9
-    #define USART_PIN_RX            GPIO_Pin_7
-    #define USART_PIN_RX_SOURCE     GPIO_PinSource7
+    #define USART_PIN_RX            GPIO_Pin_9
+    #define USART_PIN_RX_SOURCE     GPIO_PinSource9
 #endif
 #if USART_PIN_RX_NUMBER == 10
     #define USART_PIN_RX            GPIO_Pin_10
@@ -176,7 +178,7 @@ void initUSART(void)
 #if USART_INTERFACE_NUMBER == 1 || USART_INTERFACE_NUMBER == 6
     RCC_APB2PeriphClockCmd(USART_PIN_RCC, ENABLE);
 #elif USART_INTERFACE_NUMBER == 2 || USART_INTERFACE_NUMBER == 3 || USART_INTERFACE_NUMBER == 4 || USART_INTERFACE_NUMBER == 5
-    RCC_APB1PeriphClockCmd(USART_PIN_RCC)
+    RCC_APB1PeriphClockCmd(USART_PIN_RCC, ENABLE);
 #endif
     /* Connect PXx to USARTx_Tx*/
     GPIO_PinAFConfig(USART_PORT, USART_PIN_TX_SOURCE, USART_PIN_AF);
@@ -227,8 +229,6 @@ void sendStringUSART(char* string)
 /**
  * \fn      USARTx_IRQHandler
  * \brief   USART interrupt handler
- *
- * \todo    Implementieren
  */
 #if USART_INTERFACE_NUMBER == 1
 void USART1_IRQHandler(void)
