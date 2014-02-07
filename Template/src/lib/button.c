@@ -108,7 +108,7 @@ inline void initButton_S2()
  */
 inline uint8_t getButton_S2()
 {
-    return GPIO_ReadInputDataBit(BUTTON_S2_PORT, BUTTON_S2_PIN);
+    return !GPIO_ReadInputDataBit(BUTTON_S2_PORT, BUTTON_S2_PIN);
 }
 
 
@@ -159,7 +159,7 @@ inline void initButton_S3()
  */
 inline uint8_t getButton_S3()
 {
-    return GPIO_ReadInputDataBit(BUTTON_S3_PORT, BUTTON_S3_PIN);
+    return !GPIO_ReadInputDataBit(BUTTON_S3_PORT, BUTTON_S3_PIN);
 }
 
 
@@ -209,7 +209,7 @@ inline void initButton_S4()
  */
 inline uint8_t getButton_S4()
 {
-    return GPIO_ReadInputDataBit(BUTTON_S4_PORT, BUTTON_S4_PIN);
+    return !GPIO_ReadInputDataBit(BUTTON_S4_PORT, BUTTON_S4_PIN);
 }
 
 
@@ -244,23 +244,10 @@ inline uint8_t getButtonNegEdge_S4(uint8_t* button_state)
  * \fn      initBoardButton_Blue
  * \brief   button blue initialisation
  */
-void initBoardButton_Blue()
+inline void initBoardButton_Blue()
 {
-    /* variable for button init */
-    GPIO_InitTypeDef button_gpio;
-
-    /* initialize gpio */
-    button_gpio.GPIO_Pin = BOARD_BUTTON_BLUE_PIN;
-    button_gpio.GPIO_Mode = BOARD_BUTTON_BLUE_PIN_MODE;
-    button_gpio.GPIO_OType = BOARD_BUTTON_BLUE_PIN_TYPE;
-    button_gpio.GPIO_PuPd = BOARD_BUTTON_BLUE_PIN_PUPD;
-    button_gpio.GPIO_Speed = BOARD_BUTTON_BLUE_PIN_SPEED;
-
-    /* enable clock */
-    RCC_AHB1PeriphClockCmd(BOARD_BUTTON_BLUE_PORT_CLK, ENABLE);
-
-    /* enables port and pin */
-    GPIO_Init(BOARD_BUTTON_BLUE_PORT,&button_gpio);
+    initButton(BOARD_BUTTON_BLUE_PIN, BOARD_BUTTON_BLUE_PIN_MODE, BOARD_BUTTON_BLUE_PIN_TYPE, BOARD_BUTTON_BLUE_PIN_PUPD, BOARD_BUTTON_BLUE_PIN_SPEED,
+            BOARD_BUTTON_BLUE_PORT, BOARD_BUTTON_BLUE_PORT_CLK);
 }
 
 
@@ -286,7 +273,7 @@ inline uint8_t getBoardButton_Blue()
  */
 inline uint8_t getBoardButtonPosEdge_Blue(uint8_t* button_state)
 {
-    return getButtonPosEdge(BOARD_BUTTON_BLUE_PORT, BOARD_BUTTON_BLUE_PIN, & button_state);
+    return getButtonPosEdge(BOARD_BUTTON_BLUE_PORT, BOARD_BUTTON_BLUE_PIN, &button_state);
 }
 
 
@@ -300,7 +287,7 @@ inline uint8_t getBoardButtonPosEdge_Blue(uint8_t* button_state)
  */
 inline uint8_t getBoardButtonNegEdge_Blue(uint8_t* button_state)
 {
-    return getButtonNegEdge(BOARD_BUTTON_BLUE_PORT, BOARD_BUTTON_BLUE_PIN, & button_state);
+    return getButtonNegEdge(BOARD_BUTTON_BLUE_PORT, BOARD_BUTTON_BLUE_PIN, &button_state);
 }
 
 
