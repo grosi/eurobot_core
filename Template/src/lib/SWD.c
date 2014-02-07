@@ -16,7 +16,6 @@
  * @{
  */
 /* Includes ------------------------------------------------------------------*/
-//#include <memPoolService.h>         /* Memory pool manager service */
 #include <stm32f4xx.h>
 
 
