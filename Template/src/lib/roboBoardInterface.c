@@ -44,7 +44,6 @@ static bool isDCMotor1Initialize 			= 	FALSE;
 static bool isDCMotor2Initialize 			= 	FALSE;
 
 
-static bool isColorSensorLedInitialize			=		FALSE;
 
 
 static bool isBlueButtonDiscoveryBoardInitialize 		= 	FALSE;
@@ -185,17 +184,6 @@ RGBInitStruct ColorSensor = {
 	
 
 
-/* initialisation-struct for enable the LED's on the ColorSensorBoard */
-static PinInitStruct ColorSensorLed = {
-	GPIOB,
-	{
-		GPIO_Pin_13,
-		GPIO_Mode_OUT,
-		GPIO_Speed_2MHz,
-		GPIO_OType_PP,
-		GPIO_PuPd_UP
-	}
-};
 
 
 /* initialisation-struct for the blue button of the discoveryboard */
@@ -525,106 +513,10 @@ void setDCMotor2(uint16_t DutyCycleA, uint16_t DutyCycleB){
 
 
 
-/**
-	*************************************************************************************
-  * @brief  switch on the LED on the ColorSensorBoard
-  * @param  None
-  * @retval None
-	**************************************************************************************
-  */
-void setColorSensorLed(void){
-	
-	/* if the initialisation isn't done before */
-	if(!isColorSensorLedInitialize){
-		
-		/* set the Flag */
-		isColorSensorLedInitialize = TRUE;
-		
-		/* initialize */
-		initPin(&ColorSensorLed);
-	}
-	
-	/* switch on the LED */
-	setPin(&ColorSensorLed);
-}
 
 
 
 
-/**
-	*************************************************************************************
-  * @brief  switch off the LED's on the ColorSensorBoard 
-  * @param  None
-  * @retval None
-	**************************************************************************************
-  */
-void resetColorSensorLed(void){
-	
-	/* if the initialisation isn't done before */
-	if(!isColorSensorLedInitialize){
-		
-		/* set the Flag */
-		isColorSensorLedInitialize = TRUE;
-		
-		/* initialize */
-		initPin(&ColorSensorLed);
-	}
-	
-	/* switch off the LED */
-	resetPin(&ColorSensorLed);
-}
-
-
-
-/**
-	*************************************************************************************
-  * @brief  change the state of the LED's on the ColorSensorBoard, OFF-> ON .... ON -> OFF
-  * @param  None
-  * @retval None
-	**************************************************************************************
-  */
-void toggleColorSensorLed(void){
-	
-	/* if the initialisation isn't done before */
-	if(!isColorSensorLedInitialize){
-		
-		/* set the Flag */
-		isColorSensorLedInitialize = TRUE;
-		
-		/* initialize */
-		initPin(&ColorSensorLed);
-	}
-	
-	/* change state of the LED */
-	togglePin(&ColorSensorLed);
-}
-
-
-
-
-
-/**
-	*************************************************************************************
-  * @brief  get the state of the button
-  * @param  None
-  * @retval Pinstate 1(high) or 0(low)
-	**************************************************************************************
-  */
-uint8_t getBlueButtonDiscoveryBoard(void){
-	
-	/* if the initialisation isn't done before */
-	if(!isBlueButtonDiscoveryBoardInitialize){
-			
-			/* set the Flag */
-		isBlueButtonDiscoveryBoardInitialize = TRUE;
-		
-		/* initialize */
-		initPin(&BlueButtonDiscoveryBoard);
-	}
-	
-	/* return the state */
-	return getPin(&BlueButtonDiscoveryBoard);
-}
 
 
 

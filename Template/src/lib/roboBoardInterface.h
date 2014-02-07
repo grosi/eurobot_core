@@ -70,17 +70,6 @@ ColorSensorValues getColorSensor(void);
 void setDCMotor1(uint16_t DutyCycleA, uint16_t DutyCycleB);
 void setDCMotor2(uint16_t DutyCycleA, uint16_t DutyCycleB);
 
-/* switch on the LED */
-void setColorSensorLed(void);
-
-
-/* switch off the LED */
-void resetColorSensorLed(void);
-
-
-/* toggle te LED */
-void toggleColorSensorLed(void);
-
 
 /* get the button state */
 uint8_t getButton1(void);
