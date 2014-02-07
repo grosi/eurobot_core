@@ -2,20 +2,20 @@
   ******************************************************************************
   * @file    i2c.c 
   * @author  Schüpbach Simon
-	*					 base frame: http://eliaselectronics.com/stm32f4-tutorials/stm32f4-i2c-master-tutorial/
-	* @date    22.05.2013
-	*
-	* @version 1.0	
-	*	create this file
-	*
+*					 base frame: http://eliaselectronics.com/stm32f4-tutorials/stm32f4-i2c-master-tutorial/
+* @date    22.05.2013
+*
+* @version 1.0
+*	create this file
+*
   * @brief   this file include functions for the i2c handling
+  * \todo   rewrite the init function -> direct STM-lib access
   ******************************************************************************
   */
 
 /* Includes ------------------------------------------------------------------*/
-#include "gpio.h"
+#include "stm32f4xx.h"
 #include "i2c.h"
-//#include "include.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -32,45 +32,45 @@
 	**************************************************************************************
   */
 void initI2C(void){
-	GPIO_InitTypeDef GPIO_InitStruct;
-	I2C_InitTypeDef I2C_InitStruct;
-	
-	/* value for the AF function */
-	uint16_t AF_Function;
-
-	/* enable I2C and set AF function */
-	if(I2C == I2C1){
-		RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C1, ENABLE);
-		AF_Function = GPIO_AF_I2C1;
-	}else {
-		RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C2, ENABLE);
-		AF_Function = GPIO_AF_I2C2;
-	}
-
-	/* initilaizes I2C_SCL*/
-	GPIO_InitStruct.GPIO_Pin = I2C_SCL_PIN; 			/* set SCL pin*/
-	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF;			/* set pins to alternate function */
-	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;/* set GPIO speed */
-	GPIO_InitStruct.GPIO_OType = GPIO_OType_OD;		/* set output to open drain --> the line has to be only pulled low, not driven high */
-	GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_NOPULL;	/* enable pull up resistors */
-	enableAFPort(I2C_SCL_PORT, GPIO_InitStruct, AF_Function); /* enable SCL Pin*/
-
-	/* initilaizes I2C_SDA*/
-	GPIO_InitStruct.GPIO_Pin = I2C_SDA_PIN; 			/* set SDA pin*/
-	enableAFPort(I2C_SDA_PORT, GPIO_InitStruct, AF_Function); /* enable SDA Pin*/
-
-
-	/* configure I2C1 */
-	I2C_InitStruct.I2C_ClockSpeed = CLOCK_SPEED; 		/* set speed */
-	I2C_InitStruct.I2C_Mode = I2C_Mode_I2C;					/* set I2C mode */
-	I2C_InitStruct.I2C_DutyCycle = I2C_DutyCycle_2;	/* set 50% duty cycle --> standard */
-	I2C_InitStruct.I2C_OwnAddress1 = OWN_ADRESS;		/* own address */
-	I2C_InitStruct.I2C_Ack = I2C_Ack_Enable;				/* enable acknowledge when reading */
-	I2C_InitStruct.I2C_AcknowledgedAddress = I2C_AcknowledgedAddress_7bit; /* set address length to 7 bit addresses */
-	I2C_Init(I2C, &I2C_InitStruct);				/* init I2C1 */
-
-	/* enable I2C */
-	I2C_Cmd(I2C, ENABLE);
+//	GPIO_InitTypeDef GPIO_InitStruct;
+//	I2C_InitTypeDef I2C_InitStruct;
+//
+//	/* value for the AF function */
+//	uint16_t AF_Function;
+//
+//	/* enable I2C and set AF function */
+//	if(I2C == I2C1){
+//		RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C1, ENABLE);
+//		AF_Function = GPIO_AF_I2C1;
+//	}else {
+//		RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C2, ENABLE);
+//		AF_Function = GPIO_AF_I2C2;
+//	}
+//
+//	/* initilaizes I2C_SCL*/
+//	GPIO_InitStruct.GPIO_Pin = I2C_SCL_PIN; 			/* set SCL pin*/
+//	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF;			/* set pins to alternate function */
+//	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;/* set GPIO speed */
+//	GPIO_InitStruct.GPIO_OType = GPIO_OType_OD;		/* set output to open drain --> the line has to be only pulled low, not driven high */
+//	GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_NOPULL;	/* enable pull up resistors */
+//	enableAFPort(I2C_SCL_PORT, GPIO_InitStruct, AF_Function); /* enable SCL Pin*/
+//
+//	/* initilaizes I2C_SDA*/
+//	GPIO_InitStruct.GPIO_Pin = I2C_SDA_PIN; 			/* set SDA pin*/
+//	enableAFPort(I2C_SDA_PORT, GPIO_InitStruct, AF_Function); /* enable SDA Pin*/
+//
+//
+//	/* configure I2C1 */
+//	I2C_InitStruct.I2C_ClockSpeed = CLOCK_SPEED; 		/* set speed */
+//	I2C_InitStruct.I2C_Mode = I2C_Mode_I2C;					/* set I2C mode */
+//	I2C_InitStruct.I2C_DutyCycle = I2C_DutyCycle_2;	/* set 50% duty cycle --> standard */
+//	I2C_InitStruct.I2C_OwnAddress1 = OWN_ADRESS;		/* own address */
+//	I2C_InitStruct.I2C_Ack = I2C_Ack_Enable;				/* enable acknowledge when reading */
+//	I2C_InitStruct.I2C_AcknowledgedAddress = I2C_AcknowledgedAddress_7bit; /* set address length to 7 bit addresses */
+//	I2C_Init(I2C, &I2C_InitStruct);				/* init I2C1 */
+//
+//	/* enable I2C */
+//	I2C_Cmd(I2C, ENABLE);
 }
 
 /**

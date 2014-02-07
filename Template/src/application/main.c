@@ -37,7 +37,7 @@
 #include "queue.h"
 #include "task.h"
 #include "semphr.h"
-#include <memPoolService.h>
+#include "memPoolService.h"
 
 /* application */
 #include "app_config.h"
@@ -66,7 +66,7 @@
 int main(void) {
 
     /* Configure the NVIC Preemption Priority Bits for STM-Lib V3.1+ */
-    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4); //TODO
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 
     /* module initialisation */
     initTimerTask();

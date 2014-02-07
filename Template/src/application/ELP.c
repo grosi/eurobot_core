@@ -19,7 +19,6 @@
 #include <memPoolService.h>         /*!< Memory pool manager service */
 
 /* HW-library */
-#include "..\lib\roboBoardInterface.h" /** \todo remove if LED are not used */
 #include "..\lib\SWD.h" /** \todo remove if LED are not used */
 
 /* application */

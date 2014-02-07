@@ -19,13 +19,13 @@
 #include <memPoolService.h>         /* Memory pool manager service */
 
 /* HW-library */
-#include "..\lib\roboBoardInterface.h"
 #include "../lib/usart.h"
 #include "../lib/servo.h"
+#include "../lib/button.h"
+#include "../lib/led.h"
 
 /* application */
 #include "app_config.h"
-#include "CANGatekeeper.h"
 #include "default_task.h"
 
 
@@ -33,19 +33,30 @@
 
 
 /* Private define ------------------------------------------------------------*/
-
+#define NUMBER_OF_SERVOS 3
+#define SERVO_STEP_SIZE 10
+#define SERVO_MIN 800
+#define SERVO_MAX 2000
+#define SERVO_RIGHT_1 2000
+#define SERVO_LEFT_1 800
+#define SERVO_RIGHT_2 2000
+#define SERVO_LEFT_2 800
+#define SERVO_RIGHT_3 2000
+#define SERVO_LEFT_3 800
+#define SERVO_RIGHT_4 2000
+#define SERVO_LEFT_4 800
 
 /* Private macro -------------------------------------------------------------*/
 
 
 /* Private variables ---------------------------------------------------------*/
-static xQueueHandle qTest;
+typedef void (*servo_t)(uint16_t);
 
 
 /* Private function prototypes -----------------------------------------------*/
 static void vDefaultTask(void*);
-static void CANRxTest(uint16_t, CAN_data_t*);
-static void CANRxTest2(uint16_t, CAN_data_t*);
+char* itoa(int, char*, int);
+
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -61,24 +72,28 @@ void initDefaultTask(void){
 
     /* module initialisation */
     initUSART();
+
+    /* servos */
     initServo_1();
     initServo_2();
     initServo_3();
+    initServo_4();
 
+    /* buttons */
+    initButton_S1();
+    initButton_S2();
+    initButton_S3();
+    initButton_S3();
+    initButton_S4();
+    initBoardButton_Blue();
 
-    /* create the queues */
-    qTest = xQueueCreate(10,sizeof(CAN_data_t)); /* RX-Message Queue */
+    /* leds */
+    initBoardLED_blue();
+    initBoardLED_green();
+    initBoardLED_red();
 
     /* create the task */
     xTaskCreate( vDefaultTask, ( signed char * ) DEFAULT_TASK_NAME, DEFAULT_STACK_SIZE, NULL, DEFAULT_TASK_PRIORITY, NULL );
-
-    /* set the CAN listener */
-    setFunctionCANListener(CANRxTest,EMERGENCY_STOP);
-    //setFunctionCANListener(CANRxTest,GOTO_XY);
-    //setFunctionCANListener(CANRxTest,GOTO_STATE_RESPONSE);
-    //setFunctionCANListener(CANRxTest,LASER_POSITION_RESPONSE);
-    //setFunctionCANListener(CANRxTest2,GOTO_STATE_REQUEST);
-    setQueueCANListener(qTest,LASER_POSITION_REQUEST);
 }
 
 /*******************************************************************************
@@ -90,11 +105,26 @@ void initDefaultTask(void){
  ******************************************************************************/
 static void vDefaultTask(void* pvParameters ) {
 
+    /* local variables */
     portTickType xLastFlashTime;
-    uint8_t test;
-    int8_t points[2][2] = {{20,20},{20,20}};
-    uint16_t servo = 1000;
-    uint8_t up = 1;
+    uint8_t button_s1_state, button_s1_edge;
+    uint8_t button_s2_state, button_s2_edge;
+    uint8_t button_blue_state, button_blue_edge;
+    char servo_messages[4][2][16] = {{{"SERVO 1 LEFT:  "},{"SERVO 1 RIGHT: "}},
+                                  {{"SERVO 2 LEFT:  "},{"SERVO 2 RIGHT: "}},
+                                  {{"SERVO 3 LEFT:  "},{"SERVO 3 RIGHT: "}},
+                                  {{"SERVO 4 LEFT:  "},{"SERVO 4 RIGHT: "}}};
+    uint16_t servo_pos[4][2] = {{SERVO_LEFT_1,SERVO_RIGHT_1},
+                               {SERVO_LEFT_2,SERVO_RIGHT_2},
+                               {SERVO_LEFT_3,SERVO_RIGHT_3},
+                               {SERVO_LEFT_4,SERVO_RIGHT_4}};
+    servo_t setServo[4] = {setServo_1,
+                           setServo_2,
+                           setServo_3,
+                           setServo_4};
+    uint8_t servo = 0;
+    uint8_t block = 0; /* 0=left; 1=right */
+    char buffer[5];
 
     /* We need to initialise xLastFlashTime prior to the first call to
     vTaskDelayUntil(). */
@@ -103,114 +133,140 @@ static void vDefaultTask(void* pvParameters ) {
     /* wait */
     vTaskDelayUntil( &xLastFlashTime, 10 );
 
+    /* servos to NULL-positions */
+    setServo_1(SERVO_LEFT_1);
+    setServo_2(SERVO_LEFT_2);
+    setServo_3(SERVO_LEFT_3);
+    setServo_4(SERVO_LEFT_4);
 
-
+    /* endless loop */
     for(;;)
     {
-
-//        /* set the green led */
-//        setDiscoveryLedGreen();
-//
-//        /* wait */
-//        vTaskDelayUntil( &xLastFlashTime, 50 / portTICK_RATE_MS);
-//
-//        /* reset the green led */
-//        resetDiscoveryLedGreen();
-//
-//        /* set the orange led */
-//        setDiscoveryLedOrange();
-//
-//        /* wait */
-//        vTaskDelayUntil( &xLastFlashTime, 50 / portTICK_RATE_MS);
-//
-//        /* reset the orange led */
-//        resetDiscoveryLedOrange();
-//
-//        /* set the red led */
-//        setDiscoveryLedRed();
-//
-//        /* wait */
-//        vTaskDelayUntil( &xLastFlashTime, 50 / portTICK_RATE_MS);
-//
-//        /* reset the red led */
-//        resetDiscoveryLedRed();
-//
-//        /* set the blue led */
-//        setDiscoveryLedBlue();
-//
-//        /* wait */
-//        vTaskDelayUntil( &xLastFlashTime, 50 / portTICK_RATE_MS);
-//
-//        /* reset the blue led */
-//        resetDiscoveryLedBlue();
-
-        setServo_1(servo);
-        setServo_2(servo);
-        setServo_3(servo);
-
-        if(up == 1 && servo < 2000)
-        {
-
-            servo += 2;
-            if(servo == 2000)
-            up = 0;
-        }
-        if(up == 0 && servo > 0)
-        {
-            servo -= 2;
-           if(servo == 1000)
-               up = 1;
-        }
-//        if(xQueueReceive(qTest,&test,portMAX_DELAY) == pdTRUE)
-//        {
-//            toggleLed3();
-//
-//            txGotoXY(12,30,130,20,points);
-//        }
-        //setServo1(105);
+        /* system delay of 25ms */
         vTaskDelayUntil( &xLastFlashTime, 25 / portTICK_RATE_MS);
-//        sendStringUSART("Hallo Welt\n");
-//        txStopDrive();
-        //sendStringVCP("Hallo Welt");
+
+        /* read in the buttons */
+        button_s1_edge = getButtonPosEdge_S1(&button_s1_state);
+        button_s2_edge = getButtonPosEdge_S2(&button_s2_state);
+        button_blue_edge = getBoardButtonPosEdge_Blue(&button_blue_state);
+
+        /* change servo */
+        if(button_s1_edge)
+        {
+            servo++;
+            if(servo >= NUMBER_OF_SERVOS)
+            {
+                servo = 0;
+            }
+        }
+
+        /* change block (left/right) */
+        if(button_s2_edge)
+        {
+            if(block)
+            {
+                block = 0;
+            }
+            else
+            {
+                block = 1;
+            }
+        }
+
+        /* turn left */
+        if(getButton_S3())
+        {
+            /* left block */
+            if(!block)
+            {
+                if(servo_pos[servo][block] > SERVO_MIN)
+                {
+                    servo_pos[servo][block]--;
+                }
+            }
+            /* right block */
+            else
+            {
+                if(servo_pos[servo][block] > servo_pos[servo][0])
+                {
+                    servo_pos[servo][block]--;
+                }
+            }
+        }
+
+        /* turn right */
+        if(getButton_S4())
+        {
+            /* left block */
+            if(!block)
+            {
+                if(servo_pos[servo][block] < servo_pos[servo][1])
+                {
+                    servo_pos[servo][block]++;
+                }
+            }
+            /* right block */
+            else
+            {
+                if(servo_pos[servo][block] < SERVO_MAX)
+                {
+                    servo_pos[servo][block]++;
+                }
+            }
+        }
+
+        /* print current setting */
+        if(button_blue_edge)
+        {
+            /* left */
+            sendStringUSART(&servo_messages[servo][0][0]);
+            itoa(servo_pos[servo][0],buffer,10);
+            sendStringUSART(buffer);
+            sendCharacterUSART('\n');
+            /* right */
+            sendStringUSART(&servo_messages[servo][1][0]);
+            itoa(servo_pos[servo][1],buffer,10);
+            sendStringUSART(buffer);
+            sendCharacterUSART('\n');
+            sendCharacterUSART('\n');
+        }
+
+        /* set servo */
+        setServo[servo](servo_pos[servo][block]);
 
     }
 }
 
 
 /**
- * \fn CANRxTest
- * \brief set LED 1
+ * \fn      itoa
+ * \brief   C++ version 0.4 char* style "itoa"
  *
- * \param[in] id    CAN ID
- * \param[in] len   Data-length (byte)
- * \param[in] data  pointer to the first data segement
+ * \note    Written by Lukás Chmela; http://www.jb.man.ac.uk/~slowe/cpp/itoa.html
  */
-static void CANRxTest(uint16_t id, CAN_data_t* data)
-{
-    uint16_t time;
-    setLed4();
+char* itoa(int value, char* result, int base) {
+    // check that the base if valid
+    if (base < 2 || base > 36) { *result = '\0'; return result; }
 
-    time = data->goto_x;
-    time = data->goto_angle;
+    char* ptr = result, *ptr1 = result, tmp_char;
+    int tmp_value;
 
+    do {
+        tmp_value = value;
+        value /= base;
+        *ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz" [35 + (tmp_value - value * base)];
+    } while ( value );
 
-
+    // Apply negative sign
+    if (tmp_value < 0) *ptr++ = '-';
+    *ptr-- = '\0';
+    while(ptr1 < ptr) {
+        tmp_char = *ptr;
+        *ptr--= *ptr1;
+        *ptr1++ = tmp_char;
+    }
+    return result;
 }
-
-
-/**
- * \fn CANRxTest2
- * \brief reset LED 1
- *
- * \param[in] id    CAN ID
- * \param[in] len   Data-length (byte)
- * \param[in] data  pointer to the first data segement
- */
-static void CANRxTest2(uint16_t id, CAN_data_t* data)
-{
-    resetLed4();
-}
-
 
 /**
  * @}
