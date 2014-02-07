@@ -66,7 +66,7 @@
 int main(void) {
 
     /* Configure the NVIC Preemption Priority Bits for STM-Lib V3.1+ */
-    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4); //TODO
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 
     /* module initialisation */
     initTimerTask();
