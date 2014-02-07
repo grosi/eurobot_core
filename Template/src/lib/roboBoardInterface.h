@@ -71,13 +71,6 @@ void setDCMotor1(uint16_t DutyCycleA, uint16_t DutyCycleB);
 void setDCMotor2(uint16_t DutyCycleA, uint16_t DutyCycleB);
 
 
-/* get the button state */
-uint8_t getButton1(void);
-uint8_t getButton2(void);
-uint8_t getButton3(void);
-uint8_t getButton4(void);
-uint8_t getBlueButtonDiscoveryBoard(void);
-
 
 
 #endif
