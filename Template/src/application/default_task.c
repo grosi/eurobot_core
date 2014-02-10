@@ -33,18 +33,18 @@
 
 
 /* Private define ------------------------------------------------------------*/
-#define NUMBER_OF_SERVOS 3
+#define NUMBER_OF_SERVOS 2
 #define SERVO_STEP_SIZE 10
-#define SERVO_MIN 800
+#define SERVO_MIN 1000
 #define SERVO_MAX 2000
 #define SERVO_RIGHT_1 2000
-#define SERVO_LEFT_1 800
+#define SERVO_LEFT_1 1000
 #define SERVO_RIGHT_2 2000
-#define SERVO_LEFT_2 800
+#define SERVO_LEFT_2 1000
 #define SERVO_RIGHT_3 2000
-#define SERVO_LEFT_3 800
+#define SERVO_LEFT_3 1000
 #define SERVO_RIGHT_4 2000
-#define SERVO_LEFT_4 800
+#define SERVO_LEFT_4 1000
 
 /* Private macro -------------------------------------------------------------*/
 
