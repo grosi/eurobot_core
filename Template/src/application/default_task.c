@@ -105,7 +105,7 @@ void initDefaultTask(void){
  ******************************************************************************/
 static void vDefaultTask(void* pvParameters ) {
 
-    /* local variables */
+    /* local variables  */
     portTickType xLastFlashTime;
     uint8_t button_s1_state, button_s1_edge;
     uint8_t button_s2_state, button_s2_edge;
