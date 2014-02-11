@@ -41,7 +41,6 @@ typedef void (*led_t)(uint8_t);
 
 /* Private function prototypes -----------------------------------------------*/
 static void vDefaultTask(void*);
-char* itoa(int, char*, int);
 
 
 /* Private functions ---------------------------------------------------------*/
