@@ -31,9 +31,11 @@ typedef enum{
 
 
 /* pin/port and interface configurations */
-#define I2C_INTERFACE       I2C1 /* use I2C1 */
-#define I2C_PORT_CLK        RCC_APB1Periph_I2C1
-#define I2C_AF              GPIO_AF_I2C1
+#define I2C_INTERFACE               I2C1 /* use I2C1 */
+#define I2C_PORT_CLK                RCC_APB1Periph_I2C1
+#define I2C_AF                      GPIO_AF_I2C1
+#define I2C_ERROR_INTERRUPT_CHANNEL I2C1_ER_IRQn
+#define I2C_ERROR_INTERRUPT         I2C1_ER_IRQHandler
 
 #define I2C_SCL_PIN         GPIO_Pin_6      /* PB.6 */
 #define I2C_SCL_SOURCE      GPIO_PinSource6

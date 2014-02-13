@@ -38,6 +38,7 @@ uint8_t i2c_timeout_flag = 0;
 void initI2C(void){
     GPIO_InitTypeDef GPIO_InitStruct;
     I2C_InitTypeDef I2C_InitStruct;
+    NVIC_InitTypeDef NVIC_InitStructure;
 
     /* enable I2C */
     RCC_APB1PeriphClockCmd(I2C_PORT_CLK, ENABLE);
@@ -48,7 +49,6 @@ void initI2C(void){
     GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;/* set GPIO speed */
     GPIO_InitStruct.GPIO_OType = GPIO_OType_OD;     /* set output to open drain --> the line has to be only pulled low, not driven high */
     GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_NOPULL;   /* enable pull up resistors */
-
     GPIO_Init(I2C_SCL_PORT,&GPIO_InitStruct); /* enable SCL Pin*/
     GPIO_PinAFConfig(I2C_SCL_PORT, I2C_SCL_SOURCE, I2C_AF);
 
@@ -58,7 +58,16 @@ void initI2C(void){
     GPIO_PinAFConfig(I2C_SDA_PORT, I2C_SDA_SOURCE, I2C_AF);
 
 
-    /* configure I2C1 */
+    /* initializes I2C error interrupt */
+    NVIC_InitStructure.NVIC_IRQChannel = I2C_ERROR_INTERRUPT_CHANNEL;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&NVIC_InitStructure);
+
+
+    /* configure I2C Interface */
+    I2C_DeInit(I2C_INTERFACE);
     I2C_InitStruct.I2C_ClockSpeed = CLOCK_SPEED;        /* set speed */
     I2C_InitStruct.I2C_Mode = I2C_Mode_I2C;                 /* set I2C mode */
     I2C_InitStruct.I2C_DutyCycle = I2C_DutyCycle_2; /* set 50% duty cycle --> standard */
@@ -310,13 +319,19 @@ void writeI2C(SlaveI2C SlaveAddr, uint8_t WriteAddr, uint8_t* pBuffer,uint16_t N
 
         /* send the last byte */
         writeEndByteI2C(*pBuffer, timeout);
-        if(i2c_timeout_flag) return;
+        if(i2c_timeout_flag) {
+            initI2C();
+            return;
+        }
 
     }else{
 
         /* send stop condition */
         I2C_GenerateSTOP(I2C_INTERFACE, ENABLE);
-        if(i2c_timeout_flag) return;
+        if(i2c_timeout_flag) {
+            initI2C();
+            return;
+        }
     }
 }
 
@@ -341,7 +356,10 @@ void readI2C(SlaveI2C SlaveAddr, uint8_t* pBuffer, uint16_t NumByteToRead, uint3
   {
     /* read byte */
     *pBuffer = readByteI2C(timeout);
-    if(i2c_timeout_flag) return;
+    if(i2c_timeout_flag) {
+        initI2C();
+        return;
+    }
 
         /* decrement byte to read */
     NumByteToRead--;
@@ -352,7 +370,22 @@ void readI2C(SlaveI2C SlaveAddr, uint8_t* pBuffer, uint16_t NumByteToRead, uint3
 
     /* read last byte */
     *pBuffer = readEndByteI2C(timeout);
-    if(i2c_timeout_flag) return;
+    if(i2c_timeout_flag) {
+        initI2C();
+        return;
+    }
 }
 
 
+/**
+ * \fn  i2c_handleErrorInterrupt
+ * \brief   I2C-interrupt-handler
+ */
+void I2C_ERROR_INTERRUPT(void)
+{
+    I2C_GenerateSTOP(I2C_INTERFACE, ENABLE);
+
+    I2C_ClearFlag(I2C_INTERFACE, I2C_FLAG_AF);
+    I2C_ClearFlag(I2C_INTERFACE, I2C_FLAG_ARLO);
+    I2C_ClearFlag(I2C_INTERFACE, I2C_FLAG_BERR);
+}
