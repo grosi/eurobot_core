@@ -25,8 +25,8 @@
 /* Private function prototypes -----------------------------------------------*/
 
 /* Global variables --------------------------------------------------------- */
-/* while-timeout flag, TRUE if timeout occured, FALSE if no timeout occured */
-bool i2c_timeout_flag = FALSE;
+/* while-timeout flag, 1 if timeout occured, 0 if no timeout occured */
+uint8_t i2c_timeout_flag = 0;
 
 /**
     *************************************************************************************
@@ -65,10 +65,10 @@ void initI2C(void){
     I2C_InitStruct.I2C_OwnAddress1 = OWN_ADRESS;        /* own address */
     I2C_InitStruct.I2C_Ack = I2C_Ack_Enable;                /* enable acknowledge when reading */
     I2C_InitStruct.I2C_AcknowledgedAddress = I2C_AcknowledgedAddress_7bit; /* set address length to 7 bit addresses */
-    I2C_Init(I2C, &I2C_InitStruct);             /* init I2C1 */
+    I2C_Init(I2C_INTERFACE, &I2C_InitStruct);             /* init I2C1 */
 
     /* enable I2C */
-    I2C_Cmd(I2C, ENABLE);
+    I2C_Cmd(I2C_INTERFACE, ENABLE);
 }
 
 
@@ -85,33 +85,33 @@ void initI2C(void){
 static void startByteI2C(uint8_t Address, uint8_t Direction, uint32_t timeout){
 
     /* timeout variable */
-    i2c_timeout_flag = FALSE;
+    i2c_timeout_flag = 0;
     uint32_t i = 0;
 
     /* wait until I2C1 is not busy anymore */
-    while(I2C_GetFlagStatus(I2C, I2C_FLAG_BUSY)){
+    while(I2C_GetFlagStatus(I2C_INTERFACE, I2C_FLAG_BUSY)){
         i++;
         if(i>=timeout){
-            i2c_timeout_flag = TRUE;
-            I2C_ClearFlag(I2C, I2C_FLAG_BUSY);
+            i2c_timeout_flag = 1;
+            I2C_ClearFlag(I2C_INTERFACE, I2C_FLAG_BUSY);
             return;
         }
     }
 
     /* Send I2C1 START condition */
-    I2C_GenerateSTART(I2C, ENABLE);
+    I2C_GenerateSTART(I2C_INTERFACE, ENABLE);
 
     /* wait for I2C1 EV5 --> Slave has acknowledged start condition */
-    while(!I2C_CheckEvent(I2C, I2C_EVENT_MASTER_MODE_SELECT)){ //TODO: Why does slave ack when nothing connected??
+    while(!I2C_CheckEvent(I2C_INTERFACE, I2C_EVENT_MASTER_MODE_SELECT)){ //TODO: Why does slave ack when nothing connected??
         i++;
         if(i>=timeout){
-            i2c_timeout_flag = TRUE;
+            i2c_timeout_flag = 1;
             return;
         }
     }
 
     /* Send slave Address for write */
-    I2C_Send7bitAddress(I2C, Address, Direction);
+    I2C_Send7bitAddress(I2C_INTERFACE, Address, Direction);
 
     /* wait for I2C1 EV6, check if
      * either Slave has acknowledged Master transmitter or
@@ -119,20 +119,20 @@ static void startByteI2C(uint8_t Address, uint8_t Direction, uint32_t timeout){
      * direction
      */
     if(Direction == I2C_Direction_Transmitter){
-        while(!I2C_CheckEvent(I2C, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED)){
+        while(!I2C_CheckEvent(I2C_INTERFACE, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED)){
             i++;
             if(i>=timeout){
-                i2c_timeout_flag = TRUE;
+                i2c_timeout_flag = 1;
                 return;
             }
         }
     }
     else if(Direction == I2C_Direction_Receiver){
 
-        while(!I2C_CheckEvent(I2C, I2C_EVENT_MASTER_RECEIVER_MODE_SELECTED)){
+        while(!I2C_CheckEvent(I2C_INTERFACE, I2C_EVENT_MASTER_RECEIVER_MODE_SELECTED)){
             i++;
             if(i>=timeout){
-                i2c_timeout_flag = TRUE;
+                i2c_timeout_flag = 1;
                 return;
             }
         }
@@ -151,17 +151,17 @@ static void startByteI2C(uint8_t Address, uint8_t Direction, uint32_t timeout){
 static void writeByteI2C(uint8_t Data, uint32_t timeout){
 
     /* timeout variable*/
-    i2c_timeout_flag = FALSE;
+    i2c_timeout_flag = 0;
     uint32_t i = 0;
 
     /* write byte*/
-    I2C_SendData(I2C, Data);
+    I2C_SendData(I2C_INTERFACE, Data);
 
     /* wait while the byte has been transmitted */
-    while(!I2C_CheckEvent(I2C, I2C_EVENT_MASTER_BYTE_TRANSMITTED)){
+    while(!I2C_CheckEvent(I2C_INTERFACE, I2C_EVENT_MASTER_BYTE_TRANSMITTED)){
         i++;
         if(i>=timeout){
-            i2c_timeout_flag = TRUE;
+            i2c_timeout_flag = 1;
             return;
         }
     }
@@ -179,23 +179,23 @@ static void writeByteI2C(uint8_t Data, uint32_t timeout){
 static void writeEndByteI2C(uint8_t Data, uint32_t timeout){
 
     /* timeout variable*/
-    i2c_timeout_flag = FALSE;
+    i2c_timeout_flag = 0;
     uint32_t i = 0;
 
     /* write byte*/
-    I2C_SendData(I2C, Data);
+    I2C_SendData(I2C_INTERFACE, Data);
 
     /* waitwhile the byte has been transmitted */
-    while(!I2C_CheckEvent(I2C, I2C_EVENT_MASTER_BYTE_TRANSMITTED)){
+    while(!I2C_CheckEvent(I2C_INTERFACE, I2C_EVENT_MASTER_BYTE_TRANSMITTED)){
         i++;
         if(i>=timeout){
-            i2c_timeout_flag = TRUE;
+            i2c_timeout_flag = 1;
             return;
         }
     }
 
     /* send stop condition */
-    I2C_GenerateSTOP(I2C, ENABLE);
+    I2C_GenerateSTOP(I2C_INTERFACE, ENABLE);
 }
 
 /**
@@ -209,23 +209,23 @@ static void writeEndByteI2C(uint8_t Data, uint32_t timeout){
 static uint8_t readByteI2C(uint32_t timeout){
 
     /* timeout variable*/
-    i2c_timeout_flag = FALSE;
+    i2c_timeout_flag = 0;
     uint32_t i = 0;
 
     /* enable acknowledge of recieved data */
-    I2C_AcknowledgeConfig(I2C, ENABLE);
+    I2C_AcknowledgeConfig(I2C_INTERFACE, ENABLE);
 
     /* wait until one byte has been received */
-    while( !I2C_CheckEvent(I2C, I2C_EVENT_MASTER_BYTE_RECEIVED) ){
+    while( !I2C_CheckEvent(I2C_INTERFACE, I2C_EVENT_MASTER_BYTE_RECEIVED) ){
         i++;
         if(i>=timeout){
-            i2c_timeout_flag = TRUE;
+            i2c_timeout_flag = 1;
             return 0xFF;
         }
     }
 
     /* read data from I2C data register and return data byte */
-    return I2C_ReceiveData(I2C);
+    return I2C_ReceiveData(I2C_INTERFACE);
 }
 
 
@@ -240,30 +240,30 @@ static uint8_t readByteI2C(uint32_t timeout){
 static uint8_t readEndByteI2C(uint32_t timeout){
 
     /* timeout variable*/
-    i2c_timeout_flag = FALSE;
+    i2c_timeout_flag = 0;
     uint32_t i = 0;
 
     /* buffer for the received byte */
     uint8_t ReceivedByte;
 
     /* disabe acknowledge of received data */
-    I2C_AcknowledgeConfig(I2C, DISABLE);
+    I2C_AcknowledgeConfig(I2C_INTERFACE, DISABLE);
 
     /* wait until one byte has been received */
-    while( !I2C_CheckEvent(I2C, I2C_EVENT_MASTER_BYTE_RECEIVED) ){
+    while( !I2C_CheckEvent(I2C_INTERFACE, I2C_EVENT_MASTER_BYTE_RECEIVED) ){
         i++;
         if(i>=timeout){
-            i2c_timeout_flag = TRUE;
+            i2c_timeout_flag = 1;
             return 0xFF;
         }
     }
 
 
     /* read data from I2C data register and return data byte */
-    ReceivedByte = I2C_ReceiveData(I2C);
+    ReceivedByte = I2C_ReceiveData(I2C_INTERFACE);
 
     /* send stop condition */
-    I2C_GenerateSTOP(I2C, ENABLE);
+    I2C_GenerateSTOP(I2C_INTERFACE, ENABLE);
 
     /* return value */
     return ReceivedByte;
@@ -315,7 +315,7 @@ void writeI2C(SlaveI2C SlaveAddr, uint8_t WriteAddr, uint8_t* pBuffer,uint16_t N
     }else{
 
         /* send stop condition */
-        I2C_GenerateSTOP(I2C, ENABLE);
+        I2C_GenerateSTOP(I2C_INTERFACE, ENABLE);
         if(i2c_timeout_flag) return;
     }
 }

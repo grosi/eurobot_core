@@ -30,9 +30,10 @@ typedef enum{
 }SlaveI2C;
 
 
+/* pin/port and interface configurations */
+#define I2C_INTERFACE       I2C1 /* use I2C1 */
 #define I2C_PORT_CLK        RCC_APB1Periph_I2C1
 #define I2C_AF              GPIO_AF_I2C1
-//I2C1                    /* use I2C1 */
 
 #define I2C_SCL_PIN         GPIO_Pin_6      /* PB.6 */
 #define I2C_SCL_SOURCE      GPIO_PinSource6
@@ -57,7 +58,7 @@ extern void writeI2C(SlaveI2C SlaveAddr, uint8_t WriteAddr, uint8_t* pBuffer, ui
 /* read data with I2C */
 extern void readI2C(SlaveI2C SlaveAddr, uint8_t* pBuffer, uint16_t NumByteToRead, uint32_t timeout );
 
-/* while-timeout flag, TRUE if timeout occured, FALSE if no timeout occured */
-extern bool i2c_timeout_flag;
+/* while-timeout flag, 1 if timeout occured, 0 if no timeout occured */
+extern uint8_t i2c_timeout_flag;
 
 #endif
