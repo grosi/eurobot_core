@@ -22,7 +22,7 @@
 //#define DEBUGGING
 
 /* typedefs */
-typedef enum { FALSE = 0, TRUE } boolean;
+typedef enum { FALSE = 0, TRUE } bool;
 
 
 #endif
