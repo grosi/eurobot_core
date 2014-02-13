@@ -12,7 +12,7 @@
  *
  * \defgroup rangefinder Rangefinder
  * \brief   Rangefinder task
- * \ingroup app_task
+ * \ingroup hw_task
  *
  * @{
  */
@@ -39,11 +39,11 @@
 /* exported macro -------------------------------------------------------------*/
 
 /* exported variables ---------------------------------------------------------*/
-/* Alarm flags (pleas read only!), TRUE if object detected, FALSE if no object detected */
-extern bool RangefinderIR_FwAlarm_flag;     /* Infrared forward alarm */
-extern bool RangefinderIR_BwAlarm_flag;     /* Infrared backward alarm */
-extern bool RangefinderUS_FwAlarm_flag;     /* Ultrasonic forward alarm */
-extern bool RangefinderUS_BwAlarm_flag;     /* Ultrasonic backward alarm */
+/* Alarm flags (pleas read only!), 1 if object detected, 0 if no object detected */
+extern volatile uint8_t RangefinderIR_FwAlarm_flag;     /* Infrared forward alarm */
+extern volatile uint8_t RangefinderIR_BwAlarm_flag;     /* Infrared backward alarm */
+extern volatile uint8_t RangefinderUS_FwAlarm_flag;     /* Ultrasonic forward alarm */
+extern volatile uint8_t RangefinderUS_BwAlarm_flag;     /* Ultrasonic backward alarm */
 
 /* exported function prototypes -----------------------------------------------*/
 extern void initRangefinderTasks(void);

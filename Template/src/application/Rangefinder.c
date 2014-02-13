@@ -12,7 +12,7 @@
  *
  * \defgroup rangefinder Rangefinder
  * \brief   Rangefinder task
- * \ingroup app_task
+ * \ingroup hw_task
  *
  * @{
  */
@@ -22,8 +22,8 @@
 #include <memPoolService.h>         /* Memory pool manager service */
 
 /* HW-library */
-//#include "../lib/gpio.h"
 #include "../lib/i2c.h"
+#include "../lib/ir_sensor.h"
 
 /* application */
 #include "app_config.h"
@@ -57,45 +57,22 @@
 #define SRF08_ANN_CM    0x54            /* Measure in centimeters (ANN mode) */
 #define SRF08_ANN_US    0x55            /* Measure in micro-seconds (ANN mode) */
 
-/* GPIOs */
-#define IR_FRNT_CTR     I2C_IO1         /* Definition which sensor on which GPIO */
-#define IR_FRNT_LFT     I2C_IO2         /* Definition which sensor on which GPIO */
-#define IR_FRNT_RGT     I2C_IO3         /* Definition which sensor on which GPIO */
-#define IR_BACK_CTR     I2C_IO4         /* Definition which sensor on which GPIO */
 
 /* Private variables ---------------------------------------------------------*/
 /* Common */
 xSemaphoreHandle xSemaphoreI2C = NULL; //TODO: Define extern (main etc)
 
 /* Globale variables ---------------------------------------------------------*/
-/* Alarm flags, TRUE if object detected, FALSE if no object detected */
-bool RangefinderIR_FwAlarm_flag = FALSE; /* Infrared forward alarm */
-bool RangefinderIR_BwAlarm_flag = FALSE; /* Infrared backward alarm */
-bool RangefinderUS_FwAlarm_flag = FALSE; /* Ultrasonic forward alarm */
-bool RangefinderUS_BwAlarm_flag = FALSE; /* Ultrasonic backward alarm */
+/* Alarm flags, 1 if object detected, 0 if no object detected */
+volatile uint8_t RangefinderIR_FwAlarm_flag = 0; /* Infrared forward alarm */
+volatile uint8_t RangefinderIR_BwAlarm_flag = 0; /* Infrared backward alarm */
+volatile uint8_t RangefinderUS_FwAlarm_flag = 0; /* Ultrasonic forward alarm */
+volatile uint8_t RangefinderUS_BwAlarm_flag = 0; /* Ultrasonic backward alarm */
 
 /* Sensor values */
 uint16_t distance_fw;                   /* Variable for the distance detected by the fowrward SRF08 (lower- /higher byte joined) */
 uint16_t distance_bw;                   /* Variable for the distance detected by the backward SRF08 (lower- /higher byte joined) */
 
-/* Initialisation-structs for GPIOs */
-/* Pull-up, because HIGH = nothing detected, LOW = detected */
-static PinInitStruct I2C_IO1 = {
-        GPIOB,
-        {GPIO_Pin_11, GPIO_Mode_IN, GPIO_Speed_2MHz, GPIO_OType_PP, GPIO_PuPd_UP},
-};
-static PinInitStruct I2C_IO2 = {
-        GPIOE,
-        {GPIO_Pin_15, GPIO_Mode_IN, GPIO_Speed_2MHz, GPIO_OType_PP, GPIO_PuPd_UP},
-};
-static PinInitStruct I2C_IO3 = {
-        GPIOB,
-        {GPIO_Pin_12, GPIO_Mode_IN, GPIO_Speed_2MHz, GPIO_OType_PP, GPIO_PuPd_UP},
-};
-static PinInitStruct I2C_IO4 = {
-        GPIOB,
-        {GPIO_Pin_5, GPIO_Mode_IN, GPIO_Speed_2MHz, GPIO_OType_PP, GPIO_PuPd_UP},
-};
 
 /* Private function prototypes -----------------------------------------------*/
 static void vRangefinderTaskIR(void*);
@@ -263,6 +240,13 @@ uint16_t readSRF08Meas(uint8_t slave_address) {
  ******************************************************************************/
 void initRangefinderTasks(void) {
 
+    /* sensors initialisations */
+    /* IR: init GPIOs */
+    initIRSensors();
+
+    /* US: I2C */
+    initI2C();
+
     /* Create semaphore for I2C */ //TODO: Move to extern (main etc)
     xSemaphoreI2C = xSemaphoreCreateMutex();
 
@@ -286,38 +270,32 @@ static void vRangefinderTaskIR(void* pvParameters ) {
     /* We need to initialise xLastFlashTime prior to the first call to vTaskDelayUntil() */
     xLastFlashTime = xTaskGetTickCount();
 
-    /* Init GPIOs for IR sensors */
-    initPin(&IR_FRNT_LFT);
-    initPin(&IR_FRNT_CTR);
-    initPin(&IR_FRNT_RGT);
-    initPin(&IR_BACK_CTR);
-
     for(EVER) {
 
         /* Check front */
         /* Get IR sensor values, AND because TRUE if object detected, FALSE if no object detected */
-        if(getPin(&IR_FRNT_LFT) && getPin(&IR_FRNT_CTR) && getPin(&IR_FRNT_RGT)) {
+        if(getIRSensor_Left() && getIRSensor_Front() && getIRSensor_Right()) {
 
             /* Nothing detected, all ok */
-            RangefinderIR_FwAlarm_flag = FALSE;
+            RangefinderIR_FwAlarm_flag = 0;
         }
         else {
 
             /* Object detected, set alarm */
-            RangefinderIR_FwAlarm_flag = TRUE;
+            RangefinderIR_FwAlarm_flag = 1;
         }
 
         /* Check rear */
         /* Get IR sensor values */
-        if(getPin(&IR_BACK_CTR)) {
+        if(getIRSensor_Back()) {
 
             /* Nothing detected, all ok */
-            RangefinderIR_BwAlarm_flag = FALSE;
+            RangefinderIR_BwAlarm_flag = 0;
         }
         else {
 
             /* Object detected, set alarm */
-            RangefinderIR_BwAlarm_flag = TRUE;
+            RangefinderIR_BwAlarm_flag = 1;
         }
 
         /* Delay until defined time passed */
@@ -339,9 +317,6 @@ static void vRangefinderTaskUS(void* pvParameters ) {
 
     /* We need to initialise xLastFlashTime prior to the first call to vTaskDelayUntil() */
     xLastFlashTime = xTaskGetTickCount();
-
-    /* Initialisie I2C for ultrasonic sensor SRF08 */
-    initI2C();
 
     /* Set the range */
     setSRF08Range(SRF08_ADDR_FW, RANGEFINDER_RANGE * 10); /* In mm */
@@ -373,12 +348,12 @@ static void vRangefinderTaskUS(void* pvParameters ) {
         else if(distance_fw != 0 && distance_fw < RANGEFINDER_THRESHOLD_FW) {
 
             /* Object detected, set alarm */
-            RangefinderUS_FwAlarm_flag = TRUE;
+            RangefinderUS_FwAlarm_flag = 1;
         }
         else {
 
             /* Nothing detected, all ok */
-            RangefinderUS_FwAlarm_flag = FALSE;
+            RangefinderUS_FwAlarm_flag = 0;
         }
 
         /* Check rear */
@@ -390,12 +365,12 @@ static void vRangefinderTaskUS(void* pvParameters ) {
         else if(distance_bw != 0 && distance_bw < RANGEFINDER_THRESHOLD_BW) {
 
             /* Object detected, set alarm */
-            RangefinderUS_BwAlarm_flag = TRUE;
+            RangefinderUS_BwAlarm_flag = 1;
         }
         else {
 
             /* Nothing detected, all ok */
-            RangefinderUS_BwAlarm_flag = FALSE;
+            RangefinderUS_BwAlarm_flag = 0;
         }
 
         /* Delay until defined time passed */
