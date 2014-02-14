@@ -102,6 +102,17 @@
 #define ELP_ID_TX_MASK_D4               0x0F
 #define ELP_ID_RX_MASK_D4               0x3C
 
+/* GIP-protocol */
+#define GIP_COLOR_OFFSET_D0             7
+#define GIP_COLOR_TX_MASK_D0            0x01
+#define GIP_COLOR_RX_MASK_D0            0x80
+#define GIP_ENEMY_OFFSET_D0             6
+#define GIP_ENEMY_TX_MASK_D0            0x01
+#define GIP_ENEMY_RX_MASK_D0            0x40
+#define GIP_CONFEDERATE_OFFSET_D0       5
+#define GIP_CONFEDERATE_TX_MASK_D0      0x01
+#define GIP_CONFEDERATE_RX_MASK_D0      0x20
+
 
 /* Private macro -------------------------------------------------------------*/
 
@@ -119,6 +130,7 @@ static inline CAN_data_t rxEmergencyStop(CanRxMsg*);
 static inline CAN_data_t rxGotoXY(CanRxMsg*);
 static inline CAN_data_t rxGotoStateResponse(CanRxMsg*);
 static inline CAN_data_t rxPositionResponse(CanRxMsg*);
+static inline CAN_data_t rxStartConfigurationSet(CanRxMsg*);
 static void vCANRx(void*);
 static void vCANTx(void*);
 static inline void catchCANRx(CanRxMsg);
@@ -229,9 +241,16 @@ void createCANMessage(uint16_t id, uint8_t dlc, uint8_t data[8])
         tx_message.Data[dlc-1] = data[dlc-1];
         dlc--;
     }
-    /* send the message to the queue */
-    xQueueSendToBack(qCANTx, &tx_message,0);
 
+    /* send the message to the queue depenced to the ID priority*/
+    if(tx_message.StdId <= ID_HIGH_LEVEL_PRIORITY)
+    {
+        xQueueSendToFront(qCANTx, &tx_message,0);
+    }
+    else
+    {
+        xQueueSendToBack(qCANTx, &tx_message,0);
+    }
 }
 
 
@@ -560,9 +579,22 @@ inline void txConfederatePositionRequest()
  */
 inline void txConfederatePositionResponse(uint16_t x, uint16_t y, uint16_t angle, uint8_t id)
 {
-    txPositionResponse(CONFEDERATE_POISTION_RESPONSE,x,y,angle,id);
+    txPositionResponse(CONFEDERATE_POSITION_RESPONSE,x,y,angle,id);
 }
 
+
+inline void txStartConfigurationSet(uint8_t color, uint8_t enemy, uint8_t confederate)
+{
+    uint8_t data = ((color & GIP_COLOR_TX_MASK_D0) << GIP_COLOR_OFFSET_D0) | ((enemy & GIP_ENEMY_TX_MASK_D0) << GIP_ENEMY_OFFSET_D0) | ((confederate & GIP_CONFEDERATE_TX_MASK_D0) << GIP_CONFEDERATE_OFFSET_D0);
+
+    createCANMessage(START_CONFIGURATION_SET,1,&data);
+}
+
+
+inline void txStartConfigurationConfirm()
+{
+    createCANMessage(START_CONFIGURATION_CONFIRM,0,0);
+}
 
 /**
  * \fn      txPositionResponse
@@ -695,6 +727,22 @@ static inline CAN_data_t rxPositionResponse(CanRxMsg* rx_message)
 
 
 /**
+ *
+ */
+static inline CAN_data_t rxStartConfigurationSet(CanRxMsg* rx_message)
+{
+    /* data buffer */
+    CAN_data_t message_data;
+
+    message_data.gip_color = (rx_message->Data[0] & GIP_COLOR_RX_MASK_D0) >> GIP_COLOR_OFFSET_D0;
+    message_data.gip_enemy = (rx_message->Data[0] & GIP_ENEMY_RX_MASK_D0) >> GIP_ENEMY_OFFSET_D0;
+    message_data.gip_confederate = (rx_message->Data[0] & GIP_CONFEDERATE_RX_MASK_D0) >> GIP_CONFEDERATE_OFFSET_D0;
+
+    return message_data;
+}
+
+
+/**
  * \fn          vCANRx
  * \brief       Receive task for CAN-messages
  *
@@ -739,8 +787,11 @@ static void vCANRx(void* pvParameters )
                         case KALMAN_POSITION_RESPONSE:
                         case ENEMEY_1_POSITION_RESPONSE:
                         case ENEMEY_2_POSITION_RESPONSE:
-                        case CONFEDERATE_POISTION_RESPONSE:
+                        case CONFEDERATE_POSITION_RESPONSE:
                             message_data = rxPositionResponse(&rx_message);
+
+                        case START_CONFIGURATION_CONFIRM:
+                            message_data = rxStartConfigurationSet(&rx_message);
                     }
 
                     /* send the message-data to the registered queue */

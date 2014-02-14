@@ -1,6 +1,6 @@
 /**
  * \file    CANGatekeeper.h
- * \author  Grossenbacher Simon
+ * \author  gross10
  * \date    2013-11-16
  *
  * \version 1.0
@@ -42,6 +42,13 @@ typedef union
         uint16_t elp_y; /*!< y-position */
         uint16_t elp_angle; /*!< angle in degree */
         uint8_t elp_id; /*!< id of the information source */
+    };
+    /* GIP data-set */
+    struct
+    {
+        uint8_t gip_color; /*!< teamcolor (0=yellow; 1=red) */
+        uint8_t gip_enemy; /*!< enemey quantity (0=1 enemey; 1=2 enemies) */
+        uint8_t gip_confederate; /*!< confederate quantity (0=0 confederate; 1=1 condeferate) */
     };
     /* State Response data-set */
     uint32_t state_time; /*!< time until the roboter stops */
@@ -97,7 +104,15 @@ typedef struct
 #define ENEMEY_2_POSITION_REQUEST       0x240
 #define ENEMEY_2_POSITION_RESPONSE      0x280
 #define CONFEDERATE_POSITION_REQUEST    0x2C0
-#define CONFEDERATE_POISTION_RESPONSE   0x300
+#define CONFEDERATE_POSITION_RESPONSE   0x300
+#define START_CONFIGURATION_SET         0x380
+#define START_CONFIGURATION_CONFIRM     0x400
+
+
+/**
+ * \brief   ID high-priority level
+ */
+#define ID_HIGH_LEVEL_PRIORITY          0x004
 
 
 /**
@@ -107,6 +122,16 @@ typedef struct
 #define ELP_CONFEDERATE 0x1
 #define ELP_ENEMEY_1 0x2
 #define ELP_ENEMEY_2 0x3
+
+/**
+ * \brief   Possible GIP-parameters
+ */
+#define GIP_TEAMCOLOR_YELLOW        0
+#define GIP_TEAMCOLOR_RED           1
+#define GIP_ENEMY_QUANTITY_1        0
+#define GIP_ENEMY_QUANTITY_2        1
+#define GIP_CONFEDERATE_QUANTITY_0  0
+#define GIP_CONFEDERATE_QUANTITY_1  1
 
 
 /* exported macro ------------------------------------------------------------*/
@@ -138,6 +163,8 @@ extern inline void txEnemey2PositionRequest();
 extern inline void txEnemey2PositionResponse(uint16_t, uint16_t, uint16_t, uint8_t);
 extern inline void txConfederatePositionRequest();
 extern inline void txConfederatePositionResponse(uint16_t, uint16_t, uint16_t, uint8_t);
+extern inline void txStartConfigurationSet(uint8_t, uint8_t, uint8_t);
+extern inline void txStartConfigurationConfirm();
 
 #endif /* CANGATEKEEPER_H_ */
 /**
