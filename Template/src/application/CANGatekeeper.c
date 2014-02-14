@@ -19,16 +19,13 @@
  * @{
  */
 /* Includes ------------------------------------------------------------------*/
-/* RTOS */
-#include <memPoolService.h> /* FreeRTOS: Memory pool manager service */
+/* application */
+#include "app_config.h" /* global application-settings */
+#include "CANGatekeeper.h"
 
 /* HW-library */
 #include "stm32f4xx_can.h" /* for CAN rx/tx data types */
 #include "../lib/can.h" /* CAN library */
-
-/* application */
-#include "app_config.h" /* global application-settings */
-#include "CANGatekeeper.h"
 
 
 /* Private typedef -----------------------------------------------------------*/

@@ -16,15 +16,12 @@
  */
 
 /* Includes ------------------------------------------------------------------*/
-/* RTOS */
-#include <memPoolService.h>         /* Memory pool manager service */
-
-/* HW-library */
-//#include "..\lib\roboBoardInterface.h" /*!< \todo remove if not used */
-
 /* application */
 #include "app_config.h"
 #include "Rangefinder.h"
+
+/* HW-library */
+//#include "..\lib\roboBoardInterface.h" /*!< \todo remove if not used */
 
 /* Private typedef -----------------------------------------------------------*/
 

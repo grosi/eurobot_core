@@ -17,6 +17,15 @@
 #ifndef __APP_CONFIG_H
 #define __APP_CONFIG_H
 
+/* Includes ------------------------------------------------------------------*/
+/* RTOS (are necessary, because they could only include one time*/
+#include "FreeRTOS.h"
+#include "queue.h"
+#include "task.h"
+#include "semphr.h"
+#include "timers.h"
+#include "memPoolService.h"
+
 
 /* define this only in debug mode, if a error is occured the programm is capture in a loop */
 //#define DEBUGGING

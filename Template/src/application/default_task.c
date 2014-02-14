@@ -15,15 +15,12 @@
  * @{
  */
 /* Includes ------------------------------------------------------------------*/
-/* RTOS */
-#include <memPoolService.h>         /* Memory pool manager service */
-
-/* HW-library */
-#include "../lib/led.h"
-
 /* application */
 #include "app_config.h"
 #include "default_task.h"
+
+/* HW-library */
+#include "../lib/led.h"
 
 
 /* Private typedef -----------------------------------------------------------*/

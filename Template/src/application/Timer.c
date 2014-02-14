@@ -1,8 +1,10 @@
 /**
  * \file    Timer.h
- * \author  meert1
- * \date    2013-11-29
+ * \author  meert1, gross10
+ * \date    2014-02-14
  *
+ * \version 1.1
+ *  task replaced with a sw-timer
  * \version 1.0
  *  create this file
  *
@@ -16,9 +18,6 @@
  */
 
 /* Includes ------------------------------------------------------------------*/
-/* RTOS */
-#include <memPoolService.h>         /* Memory pool manager service */
-
 /* application */
 #include "app_config.h"
 #include "CANGatekeeper.h"
@@ -35,13 +34,12 @@
 
 
 /* Private variables ---------------------------------------------------------*/
-static uint8_t elapsedTime = 0;
-
-boolean timerEnabled = FALSE;
+static xTimerHandle xGameTimer;
+static volatile uint8_t elapsedTime = 0;
 
 
 /* Private function prototypes -----------------------------------------------*/
-static void vTimerTask(void*);
+void vGameTimerCallback(xTimerHandle);
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -53,56 +51,39 @@ static void vTimerTask(void*);
  * \param[in]   None
  * \return      None
  */
-void initTimerTask(void){
-
-    /* create the task */
-    xTaskCreate( vTimerTask, ( signed char * ) TIMER_TASK_NAME, TIMER_STACK_SIZE, NULL, TIMER_TASK_PRIORITY, NULL );
-
+void initTimerTask(void)
+{
+    /* create sw-timer */
+    xGameTimer = xTimerCreate(( signed char * )TIMER_NAME,
+                            TIMER_PERIODE / portTICK_RATE_MS,
+                            pdTRUE,
+                            NULL,
+                            vGameTimerCallback);
 }
 
+
 /**
- * \fn          vTimerTask
+ * \fn          vGameTimerCallback
  * \brief       Watch the 90 sec of the game and stop the robot if the time is up
  *
  * \param[in]   None
  * \return      None
  */
-static void vTimerTask(void* pvParameters ) {
-
-    portTickType xLastFlashTime;
-
-    /* We need to initialise xLastFlashTime prior to the first call to
-    vTaskDelayUntil(). */
-    xLastFlashTime = xTaskGetTickCount();
-
-    /* wait */
-    vTaskDelayUntil( &xLastFlashTime, 10 / portTICK_RATE_MS);
-
-    for(;;)
+void vGameTimerCallback(xTimerHandle pxTimer)
+{
+    /* Check if the time is up */
+    if(elapsedTime == TIMER_STOP_TIME - 1)
     {
-        /* Wait until the timer is started */
-        while(timerEnabled)
-        {
-            /* wait */
-            vTaskDelayUntil( &xLastFlashTime, 1000 / portTICK_RATE_MS);
+        /* Stop drive and shut down the actors */
+        xTimerStop(xGameTimer,0);
+        txStopDrive();
 
-            /* Check if the time is up */
-            if(elapsedTime == TIMER_STOP_TIME - 1)
-            {
-                /* Stop drive and shut down the actors */
-                txStopDrive();
-                /** \todo Stop the strategy task */
-            }
-            else
-            {
-                /* Increase the second timer */
-                elapsedTime++;
-            }
-        }
-
-        /* If the Timer isn't started yet wait 10 ms */
-        vTaskDelayUntil( &xLastFlashTime, 10 / portTICK_RATE_MS);
-
+        /** \todo Stop the strategy task */
+    }
+    else
+    {
+        /* Increase the second timer */
+        elapsedTime++;
     }
 }
 
@@ -117,7 +98,7 @@ static void vTimerTask(void* pvParameters ) {
 void startTimer(void)
 {
     /* Start the timer */
-    timerEnabled = TRUE;
+    xTimerStart(xGameTimer,0);
 }
 
 

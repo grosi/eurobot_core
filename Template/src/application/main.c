@@ -32,14 +32,7 @@
  */
 
 /* Includes ------------------------------------------------------------------*/
-/* RTOS */
-#include "FreeRTOS.h"
-#include "queue.h"
-#include "task.h"
-#include "semphr.h"
-#include "memPoolService.h"
-
-/* application */
+/* application modules*/
 #include "app_config.h"
 #include "default_task.h"
 #include "CANGatekeeper.h"
@@ -76,6 +69,7 @@ int main(void) {
     initDefaultTask();
     initCANGatekeeper(); /* have to the last initialisation modul! */
 
+    startTimer();
     vTaskStartScheduler();
 
     /* endless loop */

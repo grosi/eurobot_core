@@ -15,17 +15,14 @@
  * @{
  */
 /* Includes ------------------------------------------------------------------*/
-/* RTOS */
-#include <memPoolService.h>         /*!< Memory pool manager service */
-
-/* HW-library */
-#include "..\lib\SWD.h" /** \todo remove if LED are not used */
-
 /* application */
 #include "app_config.h"
 #include "CANGatekeeper.h"
 #include "ELP.h"
 
+
+/* HW-library */
+#include "..\lib\SWD.h" /** \todo remove if LED are not used */
 /* Private typedef -----------------------------------------------------------*/
 
 
