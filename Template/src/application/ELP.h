@@ -27,7 +27,7 @@
 #define ELP_TASK_NAME           "ELP Task"
 #define ELP_QUEUE_LENGTH        20 /*!< Size of the message queues */
 #define ELP_STACK_SIZE          configMINIMAL_STACK_SIZE /*!< size of the receive and transmit task */
-#define ELP_TASK_PRIORITY       (configMAX_PRIORITIES - 4UL) /*!< priority 2 */
+#define ELP_TASK_PRIORITY       (configMAX_PRIORITIES - 2UL) /*!< priority 2 */
 
 #define ELP_TASK_SPEED                  100      /* Taskspeed in ms */
 

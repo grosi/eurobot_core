@@ -27,7 +27,7 @@
 #define RANGEFINDER_TASK_NAME           "Rangefinder Task"
 #define RANGEFINDER_QUEUE_LENGTH        20 /*!< Size of the message queues */
 #define RANGEFINDER_STACK_SIZE          configMINIMAL_STACK_SIZE /*!< size of the receive and transmit task */
-#define RANGEFINDER_TASK_PRIORITY       (configMAX_PRIORITIES - 5UL) /*!< priority 1*/
+#define RANGEFINDER_TASK_PRIORITY       (configMAX_PRIORITIES - 1UL) /*!< priority 1*/
 
 
 /* exported macro -------------------------------------------------------------*/

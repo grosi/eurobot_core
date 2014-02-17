@@ -27,7 +27,7 @@
 #define STRATEGY_TASK_NAME          "Strategy Task"
 #define STRATEGY_QUEUE_LENGTH       20 /*!< Size of the message queues */
 #define STRATEGY_STACK_SIZE         configMINIMAL_STACK_SIZE /*!< size of the receive and transmit task */
-#define STRATEGY_TASK_PRIORITY      (configMAX_PRIORITIES - 5UL) /*!< priority 1 */
+#define STRATEGY_TASK_PRIORITY      (configMAX_PRIORITIES - 3UL) /*!< priority 3 */
 
 
 /* exported macro -------------------------------------------------------------*/

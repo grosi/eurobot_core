@@ -27,7 +27,7 @@
 #define DEFAULT_TASK_NAME           "Default Task"
 #define TEST_QUEUE_LENGTH           20 /* Size of the message queues */
 #define DEFAULT_STACK_SIZE          configMINIMAL_STACK_SIZE /* size of the receive and transmit task */
-#define DEFAULT_TASK_PRIORITY       (configMAX_PRIORITIES - 1UL) /* priority of default task -> 5 = low */
+#define DEFAULT_TASK_PRIORITY       (configMAX_PRIORITIES - 5UL) /* priority of default task -> 1 = low */
 
 
 

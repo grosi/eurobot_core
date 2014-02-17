@@ -78,7 +78,7 @@ typedef struct
 #define CAN_RX_TASK_NAME            "CAN Rx"
 #define CAN_QUEUE_LENGTH            20 /*!< Size of the message queues */
 #define CAN_STACK_SIZE              configMINIMAL_STACK_SIZE /*!< size of the receive and transmit task */
-#define CAN_TASK_PRIORITY           (configMAX_PRIORITIES - 3UL) /**< priority (3) of the receive and transmit task */
+#define CAN_TASK_PRIORITY           (configMAX_PRIORITIES - 2UL) /**< priority (2) of the receive and transmit task */
 #define CAN_LISTENER_BUFFER_SIZE    20 /*!< adjust to the needed size */
 #define CAN_TX_MAX_WAIT_TIME        5 /*!< max waiting for empty tx-mailbox (* 10 ms) */
 
