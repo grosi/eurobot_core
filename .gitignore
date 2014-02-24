@@ -16,3 +16,8 @@
 *.exe
 *.out
 *.app
+
+# Atollic
+.cproject
+.settings/
+Debug/
