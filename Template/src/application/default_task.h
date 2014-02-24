@@ -39,6 +39,7 @@
 
 /* exported function prototypes -----------------------------------------------*/
 extern void initDefaultTask(void);
+extern inline void deleteDefaultTask(void);
 
 
 #endif /* DEFAULT_TASK_H_ */
