@@ -758,11 +758,19 @@ static void vCANRx(void* pvParameters )
     CanRxMsg rx_message;
     CAN_data_t message_data;
 
+#ifdef DEBUGGING
+    unsigned portBASE_TYPE uxHighWaterMark;
+    /* Inspect our own high water mark on entering the task. */
+    uxHighWaterMark = uxTaskGetStackHighWaterMark(NULL);
+#endif
+
+
     /* for ever */
     for(;;)
     {
         /* if a new CAN-Message is received, call the rx-function or push the data to a queue */
-        if(xQueueReceive(qCANRx,&rx_message,portMAX_DELAY) == pdTRUE){
+        if(xQueueReceive(qCANRx,&rx_message,portMAX_DELAY) == pdTRUE)
+        {
             for(i = 0; i < current_buffer_size; i++)
             {
                 if(can_listener_buffer[i].id == rx_message.StdId)
@@ -807,6 +815,12 @@ static void vCANRx(void* pvParameters )
                 }
             }
         }
+#ifdef DEBUGGING
+        /* Calling the function will have used some stack space, we would
+        therefore now expect uxTaskGetStackHighWaterMark() to return a
+        value lower than when it was called on entering the task. */
+        uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );
+#endif
     }
 }
 
@@ -823,9 +837,17 @@ static void vCANTx(void* pvParameters )
     CanTxMsg tx_Message; /* buffer for a received CAN-message */
     portTickType tx_wait_time;
     uint8_t max_wait_time = 0;
+#ifdef DEBUGGING
+    unsigned portBASE_TYPE uxHighWaterMark;
+#endif
 
     /* We need to initialise tx_wait_time prior to the first call to vTaskDelayUntil(). */
     tx_wait_time = xTaskGetTickCount();
+
+#ifdef DEBUGGING
+    /* Inspect our own high water mark on entering the task. */
+    uxHighWaterMark = uxTaskGetStackHighWaterMark(NULL);
+#endif
 
     /* for ever */
     for(;;)
@@ -854,6 +876,12 @@ static void vCANTx(void* pvParameters )
             /* reset breakout timer */
             max_wait_time = 0;
         }
+#ifdef DEBUGGING
+        /* Calling the function will have used some stack space, we would
+        therefore now expect uxTaskGetStackHighWaterMark() to return a
+        value lower than when it was called on entering the task. */
+        uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );
+#endif
     }
 }
 
