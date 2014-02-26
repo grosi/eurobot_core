@@ -80,7 +80,7 @@ static void vRangefinderTaskUS(void*);
 
 /* Private functions ---------------------------------------------------------*/
 
-/*******************************************************************************
+/**
  * \fn          setSRF08Range
  * \brief       Sets the maximum detection range of the SRF08 sensor module via
  *              I2C. I2C has to be initialised first (use the function initI2C).
@@ -90,7 +90,7 @@ static void vRangefinderTaskUS(void*);
  * \param[in]   slave_address Address of the device. Values: 0xE0, 0xE2, 0xE4, ... , 0xFE.
  * \param[in]   range_in_mm Maximum detection range in millimetres (43 to 11008)
  * \return      None
- ******************************************************************************/
+ */
 void setSRF08Range(uint8_t slave_address, uint16_t range_in_mm) {
 
     /* Do nothing, if the semaphore wasn't created correctly */
@@ -119,7 +119,7 @@ void setSRF08Range(uint8_t slave_address, uint16_t range_in_mm) {
     }
 }
 
-/*******************************************************************************
+/**
  * \fn          setSRF08Gain
  * \brief       Sets the maximum gain for the analogue stages of the SRF08 sensor module
  *              via I2C. I2C has to be initialised first (use the function initI2C).
@@ -129,7 +129,7 @@ void setSRF08Range(uint8_t slave_address, uint16_t range_in_mm) {
  * \param[in]   slave_address Address of the device. Values: 0xE0, 0xE2, 0xE4, ... , 0xFE.
  * \param[in]   gain_value Value for the maximum gain (see datasheet). Value from 0x00 to 0x1F.
  * \return      None
- ******************************************************************************/
+ */
 void setSRF08Gain(uint8_t slave_address, uint8_t gain_value) {
 
     /* Do nothing, if the semaphore wasn't created correctly */
@@ -150,7 +150,7 @@ void setSRF08Gain(uint8_t slave_address, uint8_t gain_value) {
     }
 }
 
-/*******************************************************************************
+/**
  * \fn          startSRF08Meas
  * \brief       Start the ultrasonic measure of the SRF08 sensor module via I2C.
  *              I2C has to be initialised first (use the function initI2C).
@@ -160,7 +160,7 @@ void setSRF08Gain(uint8_t slave_address, uint8_t gain_value) {
  * \param[in]   slave_address Address of the device. Values: 0xE0, 0xE2, 0xE4, ... , 0xFE.
  *              meas_mode Data to measure: SRF08_MEAS_IN, SRF08_MEAS_CM or SRF08_MEAS_US.
  * \return      None
- ******************************************************************************/
+ */
 void startSRF08Meas(uint8_t slave_address, uint8_t meas_mode) {
 
     /* Do nothing, if the semaphore wasn't created correctly */
@@ -177,7 +177,7 @@ void startSRF08Meas(uint8_t slave_address, uint8_t meas_mode) {
     }
 }
 
-/*******************************************************************************
+/**
  * \fn          readSRF08Meas
  * \brief       Read the distance measured by the SRF08 sensor module (started
  *              with startSRF08Meas) via I2C.
@@ -189,7 +189,7 @@ void startSRF08Meas(uint8_t slave_address, uint8_t meas_mode) {
  *
  * \param[in]   slave_address Address of the device. Values: 0xE0, 0xE2, 0xE4, ... , 0xFE.
  * \return      meassure Measured distance/time, 0xFFFF if something is not ok.
- ******************************************************************************/
+ */
 uint16_t readSRF08Meas(uint8_t slave_address) {
 
     /* Return error, if the semaphore wasn't created correctly */
@@ -231,14 +231,14 @@ uint16_t readSRF08Meas(uint8_t slave_address) {
     return meassure;
 }
 
-/*******************************************************************************
+/**
  * \fn          initRangefinderTasks
  * \brief       Initialisation of the Rangefinder Tasks
  *
  * \param[in]   None
  * \return      None
- ******************************************************************************/
-void initRangefinderTasks(void) {
+ */
+void initRangefinderTask(void) {
 
     /* sensors initialisations */
     /* IR: init GPIOs */
@@ -255,14 +255,14 @@ void initRangefinderTasks(void) {
     xTaskCreate( vRangefinderTaskUS, ( signed char * ) RANGEFINDER_TASK_NAME_US, RANGEFINDER_STACK_SIZE, NULL, RANGEFINDER_TASK_PRIORITY, NULL );
 }
 
-/*******************************************************************************
+/**
  * \fn          vRangefinderTaskUS
  * \brief       Task to watch the near range in front and back of the robot
  *              by infrared
  *
  * \param[in]   None
  * \return      None
- ******************************************************************************/
+ */
 static void vRangefinderTaskIR(void* pvParameters ) {
 
     portTickType xLastFlashTime;
@@ -303,14 +303,14 @@ static void vRangefinderTaskIR(void* pvParameters ) {
     }
 }
 
-/*******************************************************************************
+/**
  * \fn          vRangefinderTaskUS
  * \brief       Task to watch the near range in front and back of the robot
  *              by ultrasonic
  *
  * \param[in]   None
  * \return      None
- ******************************************************************************/
+ */
 static void vRangefinderTaskUS(void* pvParameters ) {
 
     portTickType xLastFlashTime;

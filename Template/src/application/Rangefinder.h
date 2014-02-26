@@ -46,7 +46,7 @@ extern volatile uint8_t RangefinderUS_FwAlarm_flag;     /* Ultrasonic forward al
 extern volatile uint8_t RangefinderUS_BwAlarm_flag;     /* Ultrasonic backward alarm */
 
 /* exported function prototypes -----------------------------------------------*/
-extern void initRangefinderTasks(void);
+extern void initRangefinderTask(void);
 
 #endif /* RANGEFINDER_TASK_H_ */
 

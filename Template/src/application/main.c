@@ -72,7 +72,7 @@ int main(void) {
     initTimerTask();
     initStrategyTask();
     initELPTask();
-    initRangefinderTasks();
+    initRangefinderTask();
     initDefaultTask();
     initCANGatekeeper(); /* have to the last initialisation modul! */
 
