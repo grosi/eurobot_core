@@ -1,8 +1,10 @@
 /**
  * \file    ir_sensor.c
  * \author  gross10
- * \date    2014-02-13
+ * \date    2014-02-26
  *
+ * \version 1.1
+ *  added initEXTILines (kasen1)
  * \version 1.0
  *  create this file
  *
@@ -20,6 +22,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx.h"
 #include "ir_sensor.h"
+#include "ext_interrupt.h"
 
 /* Private typedef -----------------------------------------------------------*/
 
@@ -133,6 +136,28 @@ void initIRSensor(uint32_t pin, GPIOMode_TypeDef mode, GPIOOType_TypeDef type,
 
     /* enables port and pin */
     GPIO_Init(port,&sensor_gpio);
+}
+
+
+/**
+ * \fn      initEXTILines
+ * \brief   initialisation of the interrupt lines for the 4 IR sensors
+ */
+void initIREXTILines()
+{
+	initEXTILine(IR_SENSOR_BACK_PORT_CLK, IR_SENSOR_BACK_EXTI_PORT, IR_SENSOR_BACK_EXTI_PIN,
+			IR_SENSOR_BACK_EXTI_LINE, IR_SENSOR_BACK_EXTI_TRIG, IR_SENSOR_BACK_NVIC_CHAN,
+			IR_SENSOR_BACK_NVIC_PPRIO, IR_SENSOR_BACK_NVIC_SPRIO);
+	initEXTILine(IR_SENSOR_FRONT_PORT_CLK, IR_SENSOR_FRONT_EXTI_PORT, IR_SENSOR_FRONT_EXTI_PIN,
+			IR_SENSOR_FRONT_EXTI_LINE, IR_SENSOR_FRONT_EXTI_TRIG, IR_SENSOR_FRONT_NVIC_CHAN,
+			IR_SENSOR_FRONT_NVIC_PPRIO, IR_SENSOR_FRONT_NVIC_SPRIO);
+//TODO: multiple interrupts to same line (10-15)
+//	initEXTILine(IR_SENSOR_LEFT_PORT_CLK, IR_SENSOR_LEFT_EXTI_PORT, IR_SENSOR_LEFT_EXTI_PIN,
+//			IR_SENSOR_LEFT_EXTI_LINE, IR_SENSOR_LEFT_EXTI_TRIG, IR_SENSOR_LEFT_NVIC_CHAN,
+//			IR_SENSOR_LEFT_NVIC_PPRIO, IR_SENSOR_LEFT_NVIC_SPRIO);
+//	initEXTILine(IR_SENSOR_RIGHT_PORT_CLK, IR_SENSOR_RIGHT_EXTI_PORT, IR_SENSOR_RIGHT_EXTI_PIN,
+//			IR_SENSOR_RIGHT_EXTI_LINE, IR_SENSOR_RIGHT_EXTI_TRIG, IR_SENSOR_RIGHT_NVIC_CHAN,
+//			IR_SENSOR_RIGHT_NVIC_PPRIO, IR_SENSOR_RIGHT_NVIC_SPRIO);
 }
 
 

@@ -24,6 +24,8 @@
 /* HW-library */
 #include "../lib/i2c.h"
 #include "../lib/ir_sensor.h"
+#include "../lib/ext_interrupt.h"
+#include "../lib/led.h" //TODO: Remove if not used anymore
 
 /* application */
 #include "app_config.h"
@@ -68,6 +70,7 @@ volatile uint8_t RangefinderIR_FwAlarm_flag = 0; /* Infrared forward alarm */
 volatile uint8_t RangefinderIR_BwAlarm_flag = 0; /* Infrared backward alarm */
 volatile uint8_t RangefinderUS_FwAlarm_flag = 0; /* Ultrasonic forward alarm */
 volatile uint8_t RangefinderUS_BwAlarm_flag = 0; /* Ultrasonic backward alarm */
+volatile uint8_t shadow = 0; //TODO: Remove
 
 /* Sensor values */
 uint16_t distance_fw;                   /* Variable for the distance detected by the fowrward SRF08 (lower- /higher byte joined) */
@@ -75,8 +78,7 @@ uint16_t distance_bw;                   /* Variable for the distance detected by
 
 
 /* Private function prototypes -----------------------------------------------*/
-static void vRangefinderTaskIR(void*);
-static void vRangefinderTaskUS(void*);
+static void vRangefinderTask(void*);
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -243,6 +245,14 @@ void initRangefinderTask(void) {
     /* sensors initialisations */
     /* IR: init GPIOs */
     initIRSensors();
+    /* Configure EXTI Line in interrupt mode */
+    initIREXTILines();
+
+    /* Init Roboboard LEDs */
+    initLED_all(); //TODO: Remove if not used
+
+    /* For evaluation: Generate software interrupt: simulate a rising edge applied on EXTI0 line */
+    EXTI_GenerateSWInterrupt(EXTI_Line5);
 
     /* US: I2C */
     initI2C();
@@ -251,57 +261,57 @@ void initRangefinderTask(void) {
     xSemaphoreI2C = xSemaphoreCreateMutex();
 
     /* Create the tasks */
-    xTaskCreate( vRangefinderTaskIR, ( signed char * ) RANGEFINDER_TASK_NAME_IR, RANGEFINDER_STACK_SIZE, NULL, RANGEFINDER_TASK_PRIORITY, NULL );
-    xTaskCreate( vRangefinderTaskUS, ( signed char * ) RANGEFINDER_TASK_NAME_US, RANGEFINDER_STACK_SIZE, NULL, RANGEFINDER_TASK_PRIORITY, NULL );
+    //xTaskCreate( vRangefinderTask, ( signed char * ) RANGEFINDER_TASK_NAME, RANGEFINDER_STACK_SIZE, NULL, RANGEFINDER_TASK_PRIORITY, NULL );
 }
 
-/**
- * \fn          vRangefinderTaskUS
- * \brief       Task to watch the near range in front and back of the robot
- *              by infrared
- *
- * \param[in]   None
- * \return      None
- */
-static void vRangefinderTaskIR(void* pvParameters ) {
-
-    portTickType xLastFlashTime;
-
-    /* We need to initialise xLastFlashTime prior to the first call to vTaskDelayUntil() */
-    xLastFlashTime = xTaskGetTickCount();
-
-    for(EVER) {
-
-        /* Check front */
-        /* Get IR sensor values, AND because TRUE if object detected, FALSE if no object detected */
-        if(getIRSensor_Left() && getIRSensor_Front() && getIRSensor_Right()) {
-
-            /* Nothing detected, all ok */
-            RangefinderIR_FwAlarm_flag = 0;
-        }
-        else {
-
-            /* Object detected, set alarm */
-            RangefinderIR_FwAlarm_flag = 1;
-        }
-
-        /* Check rear */
-        /* Get IR sensor values */
-        if(getIRSensor_Back()) {
-
-            /* Nothing detected, all ok */
-            RangefinderIR_BwAlarm_flag = 0;
-        }
-        else {
-
-            /* Object detected, set alarm */
-            RangefinderIR_BwAlarm_flag = 1;
-        }
-
-        /* Delay until defined time passed */
-        vTaskDelayUntil( &xLastFlashTime, RANGEFINDER_DELAY / portTICK_RATE_MS);
-    }
-}
+//TODO: commented out for testing
+///**
+// * \fn          vRangefinderTaskUS
+// * \brief       Task to watch the near range in front and back of the robot
+// *              by infrared
+// *
+// * \param[in]   None
+// * \return      None
+// */
+//static void vRangefinderTaskIR(void* pvParameters ) {
+//
+//    portTickType xLastFlashTime;
+//
+//    /* We need to initialise xLastFlashTime prior to the first call to vTaskDelayUntil() */
+//    xLastFlashTime = xTaskGetTickCount();
+//
+//    for(EVER) {
+//
+//        /* Check front */
+//        /* Get IR sensor values, AND because TRUE if object detected, FALSE if no object detected */
+//        if(getIRSensor_Left() && getIRSensor_Front() && getIRSensor_Right()) {
+//
+//            /* Nothing detected, all ok */
+//            RangefinderIR_FwAlarm_flag = 0;
+//        }
+//        else {
+//
+//            /* Object detected, set alarm */
+//            RangefinderIR_FwAlarm_flag = 1;
+//        }
+//
+//        /* Check rear */
+//        /* Get IR sensor values */
+//        if(getIRSensor_Back()) {
+//
+//            /* Nothing detected, all ok */
+//            RangefinderIR_BwAlarm_flag = 0;
+//        }
+//        else {
+//
+//            /* Object detected, set alarm */
+//            RangefinderIR_BwAlarm_flag = 1;
+//        }
+//
+//        /* Delay until defined time passed */
+//        vTaskDelayUntil( &xLastFlashTime, RANGEFINDER_DELAY / portTICK_RATE_MS);
+//    }
+//}
 
 /**
  * \fn          vRangefinderTaskUS
@@ -311,7 +321,7 @@ static void vRangefinderTaskIR(void* pvParameters ) {
  * \param[in]   None
  * \return      None
  */
-static void vRangefinderTaskUS(void* pvParameters ) {
+static void vRangefinderTask(void* pvParameters ) {
 
     portTickType xLastFlashTime;
 
@@ -376,6 +386,54 @@ static void vRangefinderTaskUS(void* pvParameters ) {
         /* Delay until defined time passed */
         vTaskDelayUntil( &xLastFlashTime, RANGEFINDER_DELAY / portTICK_RATE_MS);
     }
+}
+
+/**
+ * \fn
+ * \brief  This function handles External line 5-9 interrupt request.
+ *
+ * \param  None
+ * \retval None
+ */
+void EXTI9_5_IRQHandler(void)
+{
+	if(EXTI_GetITStatus(EXTI_Line5) != RESET)
+	{
+		/* Toggle LED */
+		if(++shadow > 0x3F) {
+			shadow = 0;
+		}
+		setLEDs_bin(shadow);
+
+		/* Clear the EXTI line pending bit */
+		EXTI_ClearITPendingBit(EXTI_Line5);
+	}
+}
+
+/**
+ * \fn
+ * \brief  This function handles External line 10-15 interrupt request.
+ *
+ * \param  None
+ * \retval None
+ */
+void EXTI15_10_IRQHandler(void)
+{
+	if((EXTI_GetITStatus(EXTI_Line11) != RESET)
+//TODO: multiple interrupts to same line
+//		&& (EXTI_GetITStatus(EXTI_Line12) != RESET)
+//		&& (EXTI_GetITStatus(EXTI_Line15) != RESET)
+		)
+	{
+		/* Toggle LED */
+		setLEDs_bin(++shadow);
+
+		/* Clear the EXTI line pending bit */
+		EXTI_ClearITPendingBit(EXTI_Line11);
+//TODO: multiple interrupts to same line
+//		EXTI_ClearITPendingBit(EXTI_Line12);
+//		EXTI_ClearITPendingBit(EXTI_Line15);
+	}
 }
 
 
