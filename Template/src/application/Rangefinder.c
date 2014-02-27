@@ -261,12 +261,12 @@ void initRangefinderTask(void) {
     xSemaphoreI2C = xSemaphoreCreateMutex();
 
     /* Create the tasks */
-    //xTaskCreate( vRangefinderTask, ( signed char * ) RANGEFINDER_TASK_NAME, RANGEFINDER_STACK_SIZE, NULL, RANGEFINDER_TASK_PRIORITY, NULL );
+    xTaskCreate( vRangefinderTask, ( signed char * ) RANGEFINDER_TASK_NAME, RANGEFINDER_STACK_SIZE, NULL, RANGEFINDER_TASK_PRIORITY, NULL );
 }
 
-//TODO: commented out for testing
+//Old IR task:
 ///**
-// * \fn          vRangefinderTaskUS
+// * \fn          vRangefinderTaskIR
 // * \brief       Task to watch the near range in front and back of the robot
 // *              by infrared
 // *
