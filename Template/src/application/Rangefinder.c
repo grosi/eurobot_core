@@ -246,8 +246,8 @@ void initRangefinderTask(void) {
     /* Configure EXTI Line in interrupt mode */
     initIREXTILines();
 
-    /* For evaluation: Generate software interrupt: simulate a rising edge applied on EXTI0 line */
-    EXTI_GenerateSWInterrupt(EXTI_Line5);
+    /* For evaluation: Generate software interrupt: simulate a rising edge applied on EXTI0 line
+    EXTI_GenerateSWInterrupt(EXTI_Line5); */
 
     /* US: I2C */
     initI2C();
@@ -394,8 +394,17 @@ void EXTI9_5_IRQHandler(void)
 {
 	if(EXTI_GetITStatus(EXTI_Line5) != RESET)
 	{
-		/* Object in back detected by IR sensor, set alarm */
-		RangefinderIR_BwAlarm_flag = 1;
+		/* Check if rising or falling interrupt */
+		if(getIRSensor_Back()) {
+
+			/* Nothing detected, all ok */
+			RangefinderIR_BwAlarm_flag = 0;
+		}
+		else {
+
+			/* Object detected, set alarm */
+			RangefinderIR_BwAlarm_flag = 1;
+		}
 
 		/* Clear the EXTI line pending bit */
 		EXTI_ClearITPendingBit(EXTI_Line5);
@@ -413,30 +422,56 @@ void EXTI15_10_IRQHandler(void)
 {
 	if(EXTI_GetITStatus(EXTI_Line11) != RESET) {
 
-		/* Object in front detected by IR sensor , set alarm */
-		RangefinderIR_FwAlarm_flag = 1;
+		/* Check if rising or falling interrupt */
+		if(getIRSensor_Front()) {
+
+			/* Nothing detected, all ok */
+			RangefinderIR_FwAlarm_flag = 0;
+		}
+		else {
+
+			/* Object detected, set alarm */
+			RangefinderIR_FwAlarm_flag = 1;
+		}
 
 		/* Clear the EXTI line pending bit */
 		EXTI_ClearITPendingBit(EXTI_Line11);
 	}
 	if(EXTI_GetITStatus(EXTI_Line12) != RESET) {
 
-		/* Object in front right detected by IR sensor , set alarm */
-		RangefinderIR_FwAlarm_flag = 1;
+		/* Check if rising or falling interrupt */
+		if(getIRSensor_Right()) {
+
+			/* Nothing detected, all ok */
+			RangefinderIR_FwAlarm_flag = 0;
+		}
+		else {
+
+			/* Object detected, set alarm */
+			RangefinderIR_FwAlarm_flag = 1;
+		}
 
 		/* Clear the EXTI line pending bit */
 		EXTI_ClearITPendingBit(EXTI_Line12);
 	}
 	if(EXTI_GetITStatus(EXTI_Line15) != RESET) {
 
-		/* Object in front left detected by IR sensor , set alarm */
-		RangefinderIR_FwAlarm_flag = 1;
+		/* Check if rising or falling interrupt */
+		if(getIRSensor_Left()) {
+
+			/* Nothing detected, all ok */
+			RangefinderIR_FwAlarm_flag = 0;
+		}
+		else {
+
+			/* Object detected, set alarm */
+			RangefinderIR_FwAlarm_flag = 1;
+		}
 
 		/* Clear the EXTI line pending bit */
 		EXTI_ClearITPendingBit(EXTI_Line15);
 	}
 }
-//TODO: Reset IR-Flags
 
 
 /**
