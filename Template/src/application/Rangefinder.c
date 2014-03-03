@@ -25,7 +25,6 @@
 #include "../lib/i2c.h"
 #include "../lib/ir_sensor.h"
 #include "../lib/ext_interrupt.h"
-#include "../lib/led.h" //TODO: Remove if not used anymore
 
 /* application */
 #include "app_config.h"
@@ -70,10 +69,6 @@ volatile uint8_t RangefinderIR_FwAlarm_flag = 0; /* Infrared forward alarm */
 volatile uint8_t RangefinderIR_BwAlarm_flag = 0; /* Infrared backward alarm */
 volatile uint8_t RangefinderUS_FwAlarm_flag = 0; /* Ultrasonic forward alarm */
 volatile uint8_t RangefinderUS_BwAlarm_flag = 0; /* Ultrasonic backward alarm */
-volatile uint8_t shadow1 = 0; //TODO: Remove
-volatile uint8_t shadow2 = 0; //TODO: Remove
-volatile uint8_t shadow3 = 0; //TODO: Remove
-volatile uint8_t shadow4 = 0; //TODO: Remove
 
 /* Sensor values */
 uint16_t distance_fw;                   /* Variable for the distance detected by the fowrward SRF08 (lower- /higher byte joined) */
@@ -251,9 +246,6 @@ void initRangefinderTask(void) {
     /* Configure EXTI Line in interrupt mode */
     initIREXTILines();
 
-    /* Init Roboboard LEDs */
-    initLED_all(); //TODO: Remove if not used
-
     /* For evaluation: Generate software interrupt: simulate a rising edge applied on EXTI0 line */
     EXTI_GenerateSWInterrupt(EXTI_Line5);
 
@@ -402,17 +394,14 @@ void EXTI9_5_IRQHandler(void)
 {
 	if(EXTI_GetITStatus(EXTI_Line5) != RESET)
 	{
-		/* Toggle LED */
-		//setLEDs_bin(++shadow);
-		setLED_1(shadow1);
-		shadow1 = !shadow1;
+		/* Object in back detected by IR sensor, set alarm */
+		RangefinderIR_BwAlarm_flag = 1;
 
 		/* Clear the EXTI line pending bit */
 		EXTI_ClearITPendingBit(EXTI_Line5);
 	}
 }
 
-//TODO: Still some problems
 /**
  * \fn
  * \brief  This function handles External line 10-15 interrupt request.
@@ -424,35 +413,30 @@ void EXTI15_10_IRQHandler(void)
 {
 	if(EXTI_GetITStatus(EXTI_Line11) != RESET) {
 
-		/* Toggle LED */
-		//setLEDs_bin(++shadow);
-		setLED_2(shadow2);
-		shadow2 = !shadow2;
+		/* Object in front detected by IR sensor , set alarm */
+		RangefinderIR_FwAlarm_flag = 1;
 
 		/* Clear the EXTI line pending bit */
 		EXTI_ClearITPendingBit(EXTI_Line11);
 	}
 	if(EXTI_GetITStatus(EXTI_Line12) != RESET) {
 
-		/* Toggle LED */
-		//setLEDs_bin(++shadow);
-		setLED_3(shadow3);
-		shadow3 = !shadow4;
+		/* Object in front right detected by IR sensor , set alarm */
+		RangefinderIR_FwAlarm_flag = 1;
 
 		/* Clear the EXTI line pending bit */
 		EXTI_ClearITPendingBit(EXTI_Line12);
 	}
 	if(EXTI_GetITStatus(EXTI_Line15) != RESET) {
 
-		/* Toggle LED */
-		//setLEDs_bin(++shadow);
-		setLED_4(shadow4);
-		shadow4 = !shadow4;
+		/* Object in front left detected by IR sensor , set alarm */
+		RangefinderIR_FwAlarm_flag = 1;
 
 		/* Clear the EXTI line pending bit */
 		EXTI_ClearITPendingBit(EXTI_Line15);
 	}
 }
+//TODO: Reset IR-Flags
 
 
 /**
