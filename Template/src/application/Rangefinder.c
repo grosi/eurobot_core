@@ -259,55 +259,6 @@ void initRangefinderTask(void) {
     xTaskCreate( vRangefinderTask, ( signed char * ) RANGEFINDER_TASK_NAME, RANGEFINDER_STACK_SIZE, NULL, RANGEFINDER_TASK_PRIORITY, NULL );
 }
 
-//Old IR task:
-///**
-// * \fn          vRangefinderTaskIR
-// * \brief       Task to watch the near range in front and back of the robot
-// *              by infrared
-// *
-// * \param[in]   None
-// * \return      None
-// */
-//static void vRangefinderTaskIR(void* pvParameters ) {
-//
-//    portTickType xLastFlashTime;
-//
-//    /* We need to initialise xLastFlashTime prior to the first call to vTaskDelayUntil() */
-//    xLastFlashTime = xTaskGetTickCount();
-//
-//    for(EVER) {
-//
-//        /* Check front */
-//        /* Get IR sensor values, AND because TRUE if object detected, FALSE if no object detected */
-//        if(getIRSensor_Left() && getIRSensor_Front() && getIRSensor_Right()) {
-//
-//            /* Nothing detected, all ok */
-//            RangefinderIR_FwAlarm_flag = 0;
-//        }
-//        else {
-//
-//            /* Object detected, set alarm */
-//            RangefinderIR_FwAlarm_flag = 1;
-//        }
-//
-//        /* Check rear */
-//        /* Get IR sensor values */
-//        if(getIRSensor_Back()) {
-//
-//            /* Nothing detected, all ok */
-//            RangefinderIR_BwAlarm_flag = 0;
-//        }
-//        else {
-//
-//            /* Object detected, set alarm */
-//            RangefinderIR_BwAlarm_flag = 1;
-//        }
-//
-//        /* Delay until defined time passed */
-//        vTaskDelayUntil( &xLastFlashTime, RANGEFINDER_DELAY / portTICK_RATE_MS);
-//    }
-//}
-
 /**
  * \fn          vRangefinderTaskUS
  * \brief       Task to watch the near range in front and back of the robot
