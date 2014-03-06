@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * @file    i2c.c 
-  * @author  Schüpbach Simon, N. Käser
+  * @author  Schï¿½pbach Simon, N. Kï¿½ser
     *                    base frame: http://eliaselectronics.com/stm32f4-tutorials/stm32f4-i2c-master-tutorial/
     * @date    14.01.2014
     *
@@ -102,7 +102,6 @@ static void startByteI2C(uint8_t Address, uint8_t Direction, uint32_t timeout){
         i++;
         if(i>=timeout){
             i2c_timeout_flag = 1;
-            I2C_ClearFlag(I2C_INTERFACE, I2C_FLAG_BUSY);
             return;
         }
     }
