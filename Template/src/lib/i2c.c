@@ -25,7 +25,7 @@
 /* Private function prototypes -----------------------------------------------*/
 
 /* Global variables --------------------------------------------------------- */
-/* while-timeout flag, 1 if timeout occured, 0 if no timeout occured */
+/* while-timeout flag, 1 if timeout occurred, 0 if no timeout occurred */
 uint8_t i2c_timeout_flag = 0;
 
 /**
@@ -36,6 +36,7 @@ uint8_t i2c_timeout_flag = 0;
     **************************************************************************************
   */
 void initI2C(void){
+
     GPIO_InitTypeDef GPIO_InitStruct;
     I2C_InitTypeDef I2C_InitStruct;
     NVIC_InitTypeDef NVIC_InitStructure;
@@ -43,7 +44,7 @@ void initI2C(void){
     /* enable I2C */
     RCC_APB1PeriphClockCmd(I2C_PORT_CLK, ENABLE);
 
-    /* initilaizes I2C_SCL*/
+    /* initializes I2C_SCL*/
     GPIO_InitStruct.GPIO_Pin = I2C_SCL_PIN;             /* set SCL pin*/
     GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF;           /* set pins to alternate function */
     GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;/* set GPIO speed */
@@ -52,7 +53,7 @@ void initI2C(void){
     GPIO_Init(I2C_SCL_PORT,&GPIO_InitStruct); /* enable SCL Pin*/
     GPIO_PinAFConfig(I2C_SCL_PORT, I2C_SCL_SOURCE, I2C_AF);
 
-    /* initilaizes I2C_SDA*/
+    /* initializes I2C_SDA*/
     GPIO_InitStruct.GPIO_Pin = I2C_SDA_PIN;             /* set SDA pin*/
     GPIO_Init(I2C_SDA_PORT,&GPIO_InitStruct); /* enable SDA Pin*/
     GPIO_PinAFConfig(I2C_SDA_PORT, I2C_SDA_SOURCE, I2C_AF);
@@ -84,7 +85,7 @@ void initI2C(void){
 /**
     *************************************************************************************
   * @brief  start a conversation
-  * @param  adress: adress of the device
+  * @param  address: address of the device
   * @param  direction:  I2C_Direction_Transmitter or I2C_Direction_Receiver
   * @param  timeout: Number of times a while loop checks for status, to prevent deadlock
   * @retval None
@@ -193,7 +194,7 @@ static void writeEndByteI2C(uint8_t Data, uint32_t timeout){
     /* write byte*/
     I2C_SendData(I2C_INTERFACE, Data);
 
-    /* waitwhile the byte has been transmitted */
+    /* wait while the byte has been transmitted */
     while(!I2C_CheckEvent(I2C_INTERFACE, I2C_EVENT_MASTER_BYTE_TRANSMITTED)){
         i++;
         if(i>=timeout){
@@ -220,7 +221,7 @@ static uint8_t readByteI2C(uint32_t timeout){
     i2c_timeout_flag = 0;
     uint32_t i = 0;
 
-    /* enable acknowledge of recieved data */
+    /* enable acknowledge of received data */
     I2C_AcknowledgeConfig(I2C_INTERFACE, ENABLE);
 
     /* wait until one byte has been received */
@@ -254,7 +255,7 @@ static uint8_t readEndByteI2C(uint32_t timeout){
     /* buffer for the received byte */
     uint8_t ReceivedByte;
 
-    /* disabe acknowledge of received data */
+    /* disable acknowledge of received data */
     I2C_AcknowledgeConfig(I2C_INTERFACE, DISABLE);
 
     /* wait until one byte has been received */
@@ -281,8 +282,8 @@ static uint8_t readEndByteI2C(uint32_t timeout){
 /**
     *************************************************************************************
   * @brief  write data to the SPI-Bus
-  * @param  SlaveAddr: adress of the slave
-  * @param  WriteAddr: Adress of the register
+  * @param  SlaveAddr: address of the slave
+  * @param  WriteAddr: address of the register
   * @param  pBuffer: data to send
   * @param  NumByteToWrite: number of bytes to send
   * @param  timeout: Number of times a while loop checks for status, to prevent deadlock
@@ -312,7 +313,7 @@ void writeI2C(SlaveI2C SlaveAddr, uint8_t WriteAddr, uint8_t* pBuffer,uint16_t N
             /* decrement byte to send */
             NumByteToWrite--;
 
-            /* incrment the buffer position */
+            /* increment the buffer position */
             pBuffer++;
         }
 
@@ -368,8 +369,8 @@ void readI2C(SlaveI2C SlaveAddr, uint8_t* pBuffer, uint16_t NumByteToRead, uint3
  * \fn  i2c_handleErrorInterrupt
  * \brief   I2C-interrupt-handler
  */
-void I2C_ERROR_INTERRUPT(void)
-{
+void I2C_ERROR_INTERRUPT(void){
+
     I2C_GenerateSTOP(I2C_INTERFACE, ENABLE);
 
     I2C_ClearFlag(I2C_INTERFACE, I2C_FLAG_AF);
