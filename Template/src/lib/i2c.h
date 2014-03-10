@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * @file    i2c.h
-  * @author  Schüpbach Simon, N. Käser
+  * @author  Schüpbach Simon, kasen1
     *                    base frame: http://eliaselectronics.com/stm32f4-tutorials/stm32f4-i2c-master-tutorial/
     * @date    14.01.2014
     *

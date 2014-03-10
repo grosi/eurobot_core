@@ -1,15 +1,15 @@
 /**
   ******************************************************************************
   * @file    i2c.c 
-  * @author  Schï¿½pbach Simon, N. Kï¿½ser
-    *                    base frame: http://eliaselectronics.com/stm32f4-tutorials/stm32f4-i2c-master-tutorial/
-    * @date    14.01.2014
-    *
-    * @version 1.1
-    *   updated functions: added timeout variable to while loops (14.01.2014)
-    * @version 1.0
-    *   create this file (22.05.2013)
-    *
+  * @author  Schüpbach Simon, kasen1
+  *
+  * @date    14.01.2014
+  *
+  * @version 1.1
+  *   updated functions: added timeout variable to while loops (14.01.2014)
+  * @version 1.0
+  *   create this file (22.05.2013)
+  *
   * @brief   this file include functions for the i2c handling
   ******************************************************************************
   */
@@ -318,19 +318,13 @@ void writeI2C(SlaveI2C SlaveAddr, uint8_t WriteAddr, uint8_t* pBuffer,uint16_t N
 
         /* send the last byte */
         writeEndByteI2C(*pBuffer, timeout);
-        if(i2c_timeout_flag) {
-            initI2C();
-            return;
-        }
+        if(i2c_timeout_flag) return;
 
     }else{
 
         /* send stop condition */
         I2C_GenerateSTOP(I2C_INTERFACE, ENABLE);
-        if(i2c_timeout_flag) {
-            initI2C();
-            return;
-        }
+        if(i2c_timeout_flag) return;
     }
 }
 
@@ -346,33 +340,27 @@ void writeI2C(SlaveI2C SlaveAddr, uint8_t WriteAddr, uint8_t* pBuffer,uint16_t N
   */
 void readI2C(SlaveI2C SlaveAddr, uint8_t* pBuffer, uint16_t NumByteToRead, uint32_t timeout ){
   
-  /* Send the Address of the indexed register */
-  startByteI2C(SlaveAddr,I2C_Direction_Receiver, timeout);
-  if(i2c_timeout_flag) return;
+	/* Send the Address of the indexed register */
+	startByteI2C(SlaveAddr,I2C_Direction_Receiver, timeout);
+	if(i2c_timeout_flag) return;
 
-  /* Receive the data that will be read from the device (MSB First) */
-  while(NumByteToRead > 0x01)
-  {
-    /* read byte */
-    *pBuffer = readByteI2C(timeout);
-    if(i2c_timeout_flag) {
-        initI2C();
-        return;
-    }
+	/* Receive the data that will be read from the device (MSB First) */
+	while(NumByteToRead > 0x01)
+	{
+	/* read byte */
+	*pBuffer = readByteI2C(timeout);
+	if(i2c_timeout_flag) return;
 
-        /* decrement byte to read */
-    NumByteToRead--;
+		/* decrement byte to read */
+	NumByteToRead--;
 
-        /* increment buffer of the received bytes */
-    pBuffer++;
-  }
+		/* increment buffer of the received bytes */
+	pBuffer++;
+	}
 
-    /* read last byte */
-    *pBuffer = readEndByteI2C(timeout);
-    if(i2c_timeout_flag) {
-        initI2C();
-        return;
-    }
+	/* read last byte */
+	*pBuffer = readEndByteI2C(timeout);
+	if(i2c_timeout_flag) return;
 }
 
 
