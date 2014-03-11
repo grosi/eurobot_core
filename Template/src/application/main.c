@@ -78,6 +78,21 @@ int main(void) {
     return 0;
 }
 
+
+/**
+ * \fn      vApplicationStackOverflowHook
+ * \brief   this function is called if an stackoverflow is recognized
+ *          -> FreeRTOSConfig.h "configCHECK_FOR_STACK_OVERFLOW"
+ *
+ * \param   xTask       task-handler from the overflow-task
+ * \param   pcTaskName  pointer to the task-name with the overflow
+ */
+extern void vApplicationStackOverflowHook( xTaskHandle xTask, signed char *pcTaskName )
+{
+    deleteDefaultTask();
+}
+
+
 /**
  * @}
  */
