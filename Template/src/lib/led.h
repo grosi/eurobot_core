@@ -134,6 +134,8 @@ inline void initLED_5();
 inline void setLED_5(uint8_t);
 inline void initLED_6();
 inline void setLED_6(uint8_t);
+inline void initLED_all();
+inline void setLEDs_bin(uint8_t);
 inline void initLED_Color();
 inline void setLED_Color(uint8_t);
 

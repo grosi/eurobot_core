@@ -170,8 +170,39 @@ inline void setLED_6(uint8_t value)
 
 
 /**
+ * \fn      initLED_all
+ * \brief   all leds initialisation
+ */
+inline void initLED_all()
+{
+	initLED_1();
+	initLED_2();
+	initLED_3();
+	initLED_4();
+	initLED_5();
+	initLED_6();
+}
+
+
+/**
+ * \fn      setLEDs_bin
+ * \brief   set the leds to binary value
+ * \param   value   0x00 - 0x3F (6 bit); 1=LED on; 0=LED off
+ */
+void setLEDs_bin(uint8_t value)
+{
+	setLED_1(0x1 & (value));
+	setLED_2(0x1 & (value>>1));
+	setLED_3(0x1 & (value>>2));
+	setLED_4(0x1 & (value>>3));
+	setLED_5(0x1 & (value>>4));
+	setLED_6(0x1 & (value>>5));
+}
+
+
+/**
  * \fn      initLED_Color
- * \brief   led 6 initialisation
+ * \brief   led color initialisation
  */
 inline void initLED_Color()
 {
