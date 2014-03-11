@@ -32,7 +32,7 @@ uint8_t i2c_timeout_flag = 0;
     *************************************************************************************
   * @brief  initialize the i2c interface
   * @param  None
-    * @retval None
+  * @retval None
     **************************************************************************************
   */
 void initI2C(void){
@@ -79,6 +79,33 @@ void initI2C(void){
 
     /* enable I2C */
     I2C_Cmd(I2C_INTERFACE, ENABLE);
+}
+
+
+/**
+    *************************************************************************************
+  * @brief  reinitialize the i2c interface to reset busy flag (just a simple fix)
+  * @param  None
+  * @retval None
+    **************************************************************************************
+  */
+void reinitI2C(void){
+
+    I2C_InitTypeDef I2C_InitStruct;
+    /* configure I2C Interface */
+    I2C_DeInit(I2C_INTERFACE);
+    I2C_InitStruct.I2C_ClockSpeed = CLOCK_SPEED;        /* set speed */
+    I2C_InitStruct.I2C_Mode = I2C_Mode_I2C;                 /* set I2C mode */
+    I2C_InitStruct.I2C_DutyCycle = I2C_DutyCycle_2; /* set 50% duty cycle --> standard */
+    I2C_InitStruct.I2C_OwnAddress1 = OWN_ADRESS;        /* own address */
+    I2C_InitStruct.I2C_Ack = I2C_Ack_Enable;                /* enable acknowledge when reading */
+    I2C_InitStruct.I2C_AcknowledgedAddress = I2C_AcknowledgedAddress_7bit; /* set address length to 7 bit addresses */
+    I2C_Init(I2C_INTERFACE, &I2C_InitStruct);             /* init I2C1 */
+
+    /* enable I2C */
+    I2C_Cmd(I2C_INTERFACE, ENABLE);
+
+    i2c_timeout_flag = 0;
 }
 
 
@@ -294,11 +321,17 @@ void writeI2C(SlaveI2C SlaveAddr, uint8_t WriteAddr, uint8_t* pBuffer,uint16_t N
 
     /* Send the Address of the indexed register */
     startByteI2C(SlaveAddr,I2C_Direction_Transmitter, timeout);
-    if(i2c_timeout_flag) return;
+    if(i2c_timeout_flag) {
+    	reinitI2C();
+    	return;
+    }
 
     /* Send the data that will be written into the device (MSB First) */
     writeByteI2C(WriteAddr, timeout);
-    if(i2c_timeout_flag) return;
+    if(i2c_timeout_flag) {
+    	reinitI2C();
+    	return;
+    }
 
     /* if there are bytes to send */
     if(NumByteToWrite > 0x00){
@@ -308,7 +341,10 @@ void writeI2C(SlaveI2C SlaveAddr, uint8_t WriteAddr, uint8_t* pBuffer,uint16_t N
         {
             /* send byte */
             writeByteI2C(*pBuffer, timeout);
-            if(i2c_timeout_flag) return;
+            if(i2c_timeout_flag) {
+            	reinitI2C();
+            	return;
+            }
 
             /* decrement byte to send */
             NumByteToWrite--;
@@ -319,13 +355,19 @@ void writeI2C(SlaveI2C SlaveAddr, uint8_t WriteAddr, uint8_t* pBuffer,uint16_t N
 
         /* send the last byte */
         writeEndByteI2C(*pBuffer, timeout);
-        if(i2c_timeout_flag) return;
+        if(i2c_timeout_flag) {
+        	reinitI2C();
+        	return;
+        }
 
     }else{
 
         /* send stop condition */
         I2C_GenerateSTOP(I2C_INTERFACE, ENABLE);
-        if(i2c_timeout_flag) return;
+        if(i2c_timeout_flag) {
+        	reinitI2C();
+        	return;
+        }
     }
 }
 
@@ -343,14 +385,20 @@ void readI2C(SlaveI2C SlaveAddr, uint8_t* pBuffer, uint16_t NumByteToRead, uint3
   
 	/* Send the Address of the indexed register */
 	startByteI2C(SlaveAddr,I2C_Direction_Receiver, timeout);
-	if(i2c_timeout_flag) return;
+	if(i2c_timeout_flag) {
+		reinitI2C();
+		return;
+	}
 
 	/* Receive the data that will be read from the device (MSB First) */
 	while(NumByteToRead > 0x01)
 	{
 	/* read byte */
 	*pBuffer = readByteI2C(timeout);
-	if(i2c_timeout_flag) return;
+	if(i2c_timeout_flag) {
+		reinitI2C();
+		return;
+	}
 
 		/* decrement byte to read */
 	NumByteToRead--;
@@ -361,7 +409,10 @@ void readI2C(SlaveI2C SlaveAddr, uint8_t* pBuffer, uint16_t NumByteToRead, uint3
 
 	/* read last byte */
 	*pBuffer = readEndByteI2C(timeout);
-	if(i2c_timeout_flag) return;
+	if(i2c_timeout_flag) {
+		reinitI2C();
+		return;
+	}
 }
 
 
