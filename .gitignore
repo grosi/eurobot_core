@@ -18,7 +18,8 @@
 *.app
 
 # Atollic
-.cproject
+#.cproject
+.code_review_properties
 .settings/
 Debug/
 *.elf

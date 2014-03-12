@@ -104,8 +104,6 @@ void reinitI2C(void){
 
     /* enable I2C */
     I2C_Cmd(I2C_INTERFACE, ENABLE);
-
-    i2c_timeout_flag = 0;
 }
 
 
@@ -322,14 +320,12 @@ void writeI2C(SlaveI2C SlaveAddr, uint8_t WriteAddr, uint8_t* pBuffer,uint16_t N
     /* Send the Address of the indexed register */
     startByteI2C(SlaveAddr,I2C_Direction_Transmitter, timeout);
     if(i2c_timeout_flag) {
-    	reinitI2C();
     	return;
     }
 
     /* Send the data that will be written into the device (MSB First) */
     writeByteI2C(WriteAddr, timeout);
     if(i2c_timeout_flag) {
-    	reinitI2C();
     	return;
     }
 
@@ -342,7 +338,6 @@ void writeI2C(SlaveI2C SlaveAddr, uint8_t WriteAddr, uint8_t* pBuffer,uint16_t N
             /* send byte */
             writeByteI2C(*pBuffer, timeout);
             if(i2c_timeout_flag) {
-            	reinitI2C();
             	return;
             }
 
@@ -356,7 +351,6 @@ void writeI2C(SlaveI2C SlaveAddr, uint8_t WriteAddr, uint8_t* pBuffer,uint16_t N
         /* send the last byte */
         writeEndByteI2C(*pBuffer, timeout);
         if(i2c_timeout_flag) {
-        	reinitI2C();
         	return;
         }
 
@@ -365,7 +359,6 @@ void writeI2C(SlaveI2C SlaveAddr, uint8_t WriteAddr, uint8_t* pBuffer,uint16_t N
         /* send stop condition */
         I2C_GenerateSTOP(I2C_INTERFACE, ENABLE);
         if(i2c_timeout_flag) {
-        	reinitI2C();
         	return;
         }
     }
@@ -386,31 +379,28 @@ void readI2C(SlaveI2C SlaveAddr, uint8_t* pBuffer, uint16_t NumByteToRead, uint3
 	/* Send the Address of the indexed register */
 	startByteI2C(SlaveAddr,I2C_Direction_Receiver, timeout);
 	if(i2c_timeout_flag) {
-		reinitI2C();
 		return;
 	}
 
 	/* Receive the data that will be read from the device (MSB First) */
 	while(NumByteToRead > 0x01)
 	{
-	/* read byte */
-	*pBuffer = readByteI2C(timeout);
-	if(i2c_timeout_flag) {
-		reinitI2C();
-		return;
-	}
+		/* read byte */
+		*pBuffer = readByteI2C(timeout);
+		if(i2c_timeout_flag) {
+			return;
+		}
 
-		/* decrement byte to read */
-	NumByteToRead--;
+			/* decrement byte to read */
+		NumByteToRead--;
 
-		/* increment buffer of the received bytes */
-	pBuffer++;
+			/* increment buffer of the received bytes */
+		pBuffer++;
 	}
 
 	/* read last byte */
 	*pBuffer = readEndByteI2C(timeout);
 	if(i2c_timeout_flag) {
-		reinitI2C();
 		return;
 	}
 }

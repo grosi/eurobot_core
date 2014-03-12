@@ -117,6 +117,12 @@ void setSRF08Range(uint8_t slave_address, uint16_t range_in_mm) {
         /* Release semaphore */
         xSemaphoreGive(xSemaphoreI2C);
     }
+
+    /* Handle i2c error */
+    if(i2c_timeout_flag) {
+    	reinitI2C();
+    	return;
+    }
 }
 
 /**
@@ -148,6 +154,12 @@ void setSRF08Gain(uint8_t slave_address, uint8_t gain_value) {
         /* Release semaphore */
         xSemaphoreGive(xSemaphoreI2C);
     }
+
+    /* Handle i2c error */
+    if(i2c_timeout_flag) {
+    	reinitI2C();
+    	return;
+    }
 }
 
 /**
@@ -174,6 +186,12 @@ void startSRF08Meas(uint8_t slave_address, uint8_t meas_mode) {
 
         /* Release semaphore */
         xSemaphoreGive(xSemaphoreI2C);
+    }
+
+    /* Handle i2c error */
+    if(i2c_timeout_flag) {
+    	reinitI2C();
+    	return;
     }
 }
 
@@ -209,7 +227,13 @@ uint16_t readSRF08Meas(uint8_t slave_address) {
         /* Release semaphore */
         xSemaphoreGive(xSemaphoreI2C);
     }
-    if(i2c_timeout_flag) return 0xFFFF;
+
+    /* Handle i2c error */
+    if(i2c_timeout_flag) {
+    	reinitI2C();
+    	return 0xFFFF;
+    }
+
     /* Store highbyte */
     meassure = buffer << 8;
 
@@ -224,7 +248,13 @@ uint16_t readSRF08Meas(uint8_t slave_address) {
         /* Release semaphore */
         xSemaphoreGive(xSemaphoreI2C);
     }
-    if(i2c_timeout_flag) return 0xFFFF;
+
+    /* Handle i2c error */
+    if(i2c_timeout_flag) {
+    	reinitI2C();
+    	return 0xFFFF;
+    }
+
     /* Store lowbyte */
     meassure = (meassure & 0xFF00) | (buffer & 0x00FF);
 
@@ -288,8 +318,8 @@ static void vRangefinderTask(void* pvParameters ) {
         startSRF08Meas(SRF08_ADDR_FW, SRF08_MEAS_CM);
         startSRF08Meas(SRF08_ADDR_BW, SRF08_MEAS_CM);
 
-        /* Wait 65 ms, for the sound to travel s_max (11 m) twice (=ca. 64.1 ms), and rounded up to 65 ms. */
-        vTaskDelay(65 / portTICK_RATE_MS);
+        /* Wait 70 ms, for the sound to travel s_max (11 m) twice (=ca. 64.1 ms), and rounded up (65 ms still made trouble sometimes). */
+        vTaskDelay(70 / portTICK_RATE_MS);
 
         /* Get distance from the modules */
         distance_fw = readSRF08Meas(SRF08_ADDR_FW);

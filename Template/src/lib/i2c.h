@@ -51,8 +51,11 @@ typedef enum{
 /* own Adress */
 #define OWN_ADRESS          0x20
 
-/* initialize th I2C interface*/
+/* initialize the I2C interface*/
 extern void initI2C(void);
+
+/* reinitialize the I2C interface to fix busy flag error*/
+extern void reinitI2C(void);
 
 /* write data with I2C */
 extern void writeI2C(SlaveI2C SlaveAddr, uint8_t WriteAddr, uint8_t* pBuffer, uint16_t NumByteToWrite, uint32_t timeout );
