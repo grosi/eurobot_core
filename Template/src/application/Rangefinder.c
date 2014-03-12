@@ -70,10 +70,15 @@ volatile uint8_t RangefinderIR_BwAlarm_flag = 0; /* Infrared backward alarm */
 volatile uint8_t RangefinderUS_FwAlarm_flag = 0; /* Ultrasonic forward alarm */
 volatile uint8_t RangefinderUS_BwAlarm_flag = 0; /* Ultrasonic backward alarm */
 
+/* Variables for comparing the last three values */
+volatile uint8_t last_US_FwAlarm_flag[2] = {0,0};
+volatile uint8_t last_US_BwAlarm_flag[2] = {0,0};
+volatile uint8_t last_IR_FwAlarm_flag[2] = {0,0};
+volatile uint8_t last_IR_BwAlarm_flag[2] = {0,0};
+
 /* Sensor values */
 uint16_t distance_fw;                   /* Variable for the distance detected by the fowrward SRF08 (lower- /higher byte joined) */
 uint16_t distance_bw;                   /* Variable for the distance detected by the backward SRF08 (lower- /higher byte joined) */
-
 
 /* Private function prototypes -----------------------------------------------*/
 static void vRangefinderTask(void*);
@@ -333,13 +338,41 @@ static void vRangefinderTask(void* pvParameters ) {
         /* Check if an obstacle is to close */
         else if(distance_fw != 0 && distance_fw < RANGEFINDER_THRESHOLD_FW) {
 
-            /* Object detected, set alarm */
-            RangefinderUS_FwAlarm_flag = 1;
+        	/* Compare last three measures, only set alarm if at least two were positive.
+        	 * Inside of this block the current measure is positive, so check if at least one of the last two was positive too */
+        	if(last_US_FwAlarm_flag[1] || last_US_FwAlarm_flag[0])
+        	{
+        		/* Two of three were positive, set alarm (object detected) */
+				RangefinderUS_FwAlarm_flag = 1;
+        	}
+        	else
+        	{
+        		/* Two of three were negative, so don't set the alarm yet. */
+        		RangefinderUS_FwAlarm_flag = 0;
+        	}
+
+        	/* Remember measure (NOT flag which is affected by the last two measures) */
+        	last_US_FwAlarm_flag[1] = last_US_FwAlarm_flag[0];  /* Move last measure one back */
+        	last_US_FwAlarm_flag[0] = 1;  /* Current measure is positive */
         }
         else {
 
-            /* Nothing detected, all ok */
-            RangefinderUS_FwAlarm_flag = 0;
+        	/* Compare last three measures, only reset alarm if at least two were negative.
+			 * Inside of this block the current measure is negative, so check if at least one of the last two was negative too */
+			if(!(last_US_FwAlarm_flag[1] && last_US_FwAlarm_flag[0]))
+			{
+				/* Two of three were negative, reset alarm  (nothing detected) */
+				RangefinderUS_FwAlarm_flag = 0;
+			}
+        	else
+        	{
+        		/* Two of three were positive, so don't reset the alarm yet. */
+        		RangefinderUS_FwAlarm_flag = 1;
+        	}
+
+        	/* Remember measure (NOT flag which is affected by the last two measures) */
+        	last_US_FwAlarm_flag[1] = last_US_FwAlarm_flag[0];  /* Move last measure one back */
+        	last_US_FwAlarm_flag[0] = 0;  /* Current measure is negative */
         }
 
         /* Check rear */
@@ -350,13 +383,41 @@ static void vRangefinderTask(void* pvParameters ) {
         /* Check if an obstacle is to close */
         else if(distance_bw != 0 && distance_bw < RANGEFINDER_THRESHOLD_BW) {
 
-            /* Object detected, set alarm */
-            RangefinderUS_BwAlarm_flag = 1;
+        	/* Compare last three measures, only set alarm if at least two were positive.
+        	 * Inside of this block the current measure is positive, so check if at least one of the last two was positive too */
+        	if(last_US_BwAlarm_flag[1] || last_US_BwAlarm_flag[0])
+        	{
+        		/* Two of three were positive, set alarm (object detected) */
+				RangefinderUS_BwAlarm_flag = 1;
+        	}
+        	else
+        	{
+        		/* Two of three were negative, so don't set the alarm yet. */
+        		RangefinderUS_BwAlarm_flag = 0;
+        	}
+
+        	/* Remember measure (NOT flag which is affected by the last two measures) */
+        	last_US_BwAlarm_flag[1] = last_US_BwAlarm_flag[0];  /* Move last measure one back */
+        	last_US_BwAlarm_flag[0] = 1;  /* Current measure is positive */
         }
         else {
 
-            /* Nothing detected, all ok */
-            RangefinderUS_BwAlarm_flag = 0;
+        	/* Compare last three measures, only reset alarm if at least two were negative.
+			 * Inside of this block the current measure is negative, so check if at least one of the last two was negative too */
+			if(!(last_US_BwAlarm_flag[1] && last_US_BwAlarm_flag[0]))
+			{
+				/* Two of three were negative, reset alarm  (nothing detected) */
+				RangefinderUS_BwAlarm_flag = 0;
+			}
+        	else
+        	{
+        		/* Two of three were positive, so don't reset the alarm yet. */
+        		RangefinderUS_BwAlarm_flag = 1;
+        	}
+
+        	/* Remember measure (NOT flag which is affected by the last two measures) */
+        	last_US_BwAlarm_flag[1] = last_US_BwAlarm_flag[0];  /* Move last measure one back */
+        	last_US_BwAlarm_flag[0] = 0;  /* Current measure is negative */
         }
 
         /* Delay until defined time passed */
