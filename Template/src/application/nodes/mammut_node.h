@@ -30,7 +30,7 @@
 
 
 /* exported function prototypes -----------------------------------------------*/
-extern void doMammutNode(node_param_t*, uint8_t*);
+extern void doMammutNode(node_param_t*, robo_state_t*, uint8_t*);
 
 
 #endif /* MAMMUT_NODE_H_ */

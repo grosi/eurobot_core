@@ -20,6 +20,17 @@
 /* exported typedef -----------------------------------------------------------*/
 
 /**
+ * \brief current robo state
+ */
+typedef struct
+{
+    uint16_t x;
+    uint16_t y;
+    uint16_t angle;
+}robo_state_t;
+
+
+/**
  *  \brief node parameters
  */
 typedef struct
@@ -41,7 +52,7 @@ typedef struct
 typedef struct
 {
     node_param_t param;
-    void (*node_function)(node_param_t*, uint8_t*);
+    void (*node_function)(node_param_t*, robo_state_t*, uint8_t*);
 }node_t;
 
 

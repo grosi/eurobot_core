@@ -43,7 +43,8 @@ static uint8_t state_node_2 = NODE_STOP;
 static node_t* nodes[NODE_QUANTITY] = {&node_mammut_1};
 static node_t* node_task_1;
 static node_t* node_task_2;
-static float enemey_position[(int)(PLAYGROUND_HEIGH/ENEMY_GRID_SIZE_Y)][(int)(PLAYGROUND_WIDTH/ENEMY_GRID_SIZE_X)] = {0.0};
+volatile static float enemey_position[((int)(PLAYGROUND_HEIGH/ENEMY_GRID_SIZE_Y))][((int)(PLAYGROUND_WIDTH/ENEMY_GRID_SIZE_X))] = {{0.0}};
+static robo_state_t robo_state = {0,0,0};
 
 
 /* Private function prototypes -----------------------------------------------*/
@@ -51,6 +52,7 @@ static void vStrategySchedulerTask(void*);
 static void vNodeTask1(void*);
 static void vNodeTask2(void*);
 static void vTrackEnemy(uint16_t, CAN_data_t*);
+static void vMyPosition(uint16_t, CAN_data_t*);
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -76,6 +78,7 @@ void initStrategyTask(void){
     /* set CAN listeners */
     setFunctionCANListener(vTrackEnemy,ENEMEY_1_POSITION_RESPONSE);
     setFunctionCANListener(vTrackEnemy,ENEMEY_2_POSITION_RESPONSE);
+    setFunctionCANListener(vMyPosition,KALMAN_POSITION_RESPONSE);
 
 }
 
@@ -96,14 +99,19 @@ static void vStrategySchedulerTask(void* pvParameters )
     vTaskDelayUntil(). */
     xLastFlashTime = xTaskGetTickCount();
 
-    /* wait */
-    vTaskDelayUntil( &xLastFlashTime, 10 / portTICK_RATE_MS);
 
+    /* endless */
     for(;;)
     {
-        /* wait */
-        vTaskDelayUntil( &xLastFlashTime, 10 / portTICK_RATE_MS);
 
+
+
+
+
+
+
+        /* wait for 1 second*/
+        vTaskDelayUntil( &xLastFlashTime, 1000 / portTICK_RATE_MS);
     }
 }
 
@@ -120,7 +128,7 @@ static void vNodeTask1(void* pvParameters )
     /* endless */
     for(;;)
     {
-        node_task_1->node_function(&node_task_1->param,&state_node_1);
+        node_task_1->node_function(&node_task_1->param,&robo_state,&state_node_1);
     }
 }
 
@@ -137,8 +145,26 @@ static void vNodeTask2(void* pvParameters )
     /* endless */
     for(;;)
     {
-        node_task_2->node_function(&node_task_2->param,&state_node_2);
+        node_task_2->node_function(&node_task_2->param,&robo_state,&state_node_2);
     }
+}
+
+
+
+/**
+ * \fn          vMyPosition
+ * \brief       save the current robo position
+ * \note        read access has to be atomic!
+ *
+ * \param[in]   id      CAN message ID
+ * \param[in]   data    CAN message data (here, ELP)
+ * \return      None
+ */
+static void vMyPosition(uint16_t id, CAN_data_t* data)
+{
+    robo_state.x = data->elp_x;
+    robo_state.y = data->elp_y;
+    robo_state.angle = data->elp_angle;
 }
 
 

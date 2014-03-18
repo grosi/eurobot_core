@@ -36,7 +36,7 @@
 
 /* Private functions ---------------------------------------------------------*/
 
-void doMammutNode(node_param_t* param, uint8_t* state)
+void doMammutNode(node_param_t* param, robo_state_t* robo_state, uint8_t* node_state)
 {
 
 }
