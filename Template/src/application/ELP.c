@@ -91,26 +91,12 @@ static void vELPTask(void* pvParameters ) {
         /* wait */
         vTaskDelayUntil( &xLastFlashTime, ELP_TASK_SPEED / portTICK_RATE_MS);
 
-        /* Request the laser's ELP */
-        if(laserRateCounter == ELP_LASER_POSITION_REQUEST_RATE)
-        {
-#ifdef ELP_CAN_ON
-            txLaserPostionRequest();
-#endif
-            /* Reset the laserRateCounter */
-            laserRateCounter = 1;
-        }
-        else
-        {
-            /* Increase the counter */
-            laserRateCounter++;
-        }
 
-        /* Request the ultrasonic's ELP */
+        /* Request the navi's ELP */
         if(ultrasonicRateCounter == ELP_ULTRASONIC_POSITION_REQUEST_RATE)
         {
 #ifdef ELP_CAN_ON
-            txUltrasonicPositionRequest();
+        	txNaviPositionRequest();
 #endif
             /* Reset the laserRateCounter */
             ultrasonicRateCounter = 1;
