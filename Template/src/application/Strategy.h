@@ -28,8 +28,8 @@
 #define STRATEGY_NODE_TASK_2_NAME           "Node Task 2"
 #define STRATEGY_QUEUE_LENGTH               20 /*!< Size of the message queues */
 #define STRATEGY_STACK_SIZE                 configMINIMAL_STACK_SIZE /*!< size of the receive and transmit task */
-#define STRATEGY_SCHEDULER_TASK_PRIORITY    (configMAX_PRIORITIES - 3UL) /*!< priority 3 */
-#define STRATEGY_NODE_TASK_PRIORITY         (configMAX_PRIORITIES - 4UL) /*!< priority 2 */
+#define STRATEGY_SCHEDULER_TASK_PRIORITY    (configMAX_PRIORITIES - 4UL) /*!< priority 3 */
+#define STRATEGY_NODE_TASK_PRIORITY         (configMAX_PRIORITIES - 5UL) /*!< priority 2 */
 
 /* node and gamme configurations */
 #define PLAYGROUND_WIDTH            3 /*[m]*/

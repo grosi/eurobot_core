@@ -36,8 +36,8 @@
 
 
 /* Private variables ---------------------------------------------------------*/
-static xTaskHandle xNodeTask1_Handle;
-static xTaskHandle xNodeTask2_Handle;
+static xTaskHandle xNodeTask1_Handle = NULL;
+static xTaskHandle xNodeTask2_Handle = NULL;
 static uint8_t state_node_1 = NODE_STOP;
 static uint8_t state_node_2 = NODE_STOP;
 static node_t* nodes[NODE_QUANTITY] = {&node_mammut_1};
@@ -68,10 +68,10 @@ void initStrategyTask(void){
 
     /* create the task */
     xTaskCreate( vStrategySchedulerTask, ( signed char * ) STRATEGY_SCHEDULER_TASK_NAME, STRATEGY_STACK_SIZE, NULL, STRATEGY_SCHEDULER_TASK_PRIORITY, NULL );
-    xTaskCreate( vNodeTask1, ( signed char * ) STRATEGY_NODE_TASK_1_NAME, STRATEGY_STACK_SIZE, NULL, STRATEGY_NODE_TASK_PRIORITY, xNodeTask1_Handle );
-    xTaskCreate( vNodeTask2, ( signed char * ) STRATEGY_NODE_TASK_2_NAME, STRATEGY_STACK_SIZE, NULL, STRATEGY_NODE_TASK_PRIORITY, xNodeTask2_Handle );
-
-    /* suspend the node task until they will used */
+    xTaskCreate( vNodeTask1, ( signed char * ) STRATEGY_NODE_TASK_1_NAME, STRATEGY_STACK_SIZE, NULL, STRATEGY_NODE_TASK_PRIORITY, &xNodeTask1_Handle );
+    xTaskCreate( vNodeTask2, ( signed char * ) STRATEGY_NODE_TASK_2_NAME, STRATEGY_STACK_SIZE, NULL, STRATEGY_NODE_TASK_PRIORITY, &xNodeTask2_Handle );
+//
+//    /* suspend the node task until they will used */
     vTaskSuspend(xNodeTask1_Handle);
     vTaskSuspend(xNodeTask2_Handle);
 
@@ -79,7 +79,6 @@ void initStrategyTask(void){
     setFunctionCANListener(vTrackEnemy,ENEMEY_1_POSITION_RESPONSE);
     setFunctionCANListener(vTrackEnemy,ENEMEY_2_POSITION_RESPONSE);
     setFunctionCANListener(vMyPosition,KALMAN_POSITION_RESPONSE);
-
 }
 
 
@@ -99,6 +98,7 @@ static void vStrategySchedulerTask(void* pvParameters )
     vTaskDelayUntil(). */
     xLastFlashTime = xTaskGetTickCount();
 
+    vTaskSuspend(xNodeTask1_Handle);
 
     /* endless */
     for(;;)
