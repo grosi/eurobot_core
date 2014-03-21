@@ -43,7 +43,7 @@ node_t node_mammut_1 =
         0.62,               /*!<node x position [m]*/
         0.49,               /*!<node y position [m]*/
         NODE_MAMMUT_POOL_ID,/*!<node pool id */
-        0                   /*!<node weight */
+        NODE_UNDONE,        /*!<node state */
     },
     doMammutNode
 };

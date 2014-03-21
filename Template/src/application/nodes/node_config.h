@@ -20,6 +20,19 @@
 /* exported typedef -----------------------------------------------------------*/
 
 /**
+ * \brief current node state
+ */
+typedef enum
+{
+    NODE_BUSY = 0,          /*!< node is currently in progress and can't aborted */
+    NODE_UNDONE,            /*!< no node is in ready mode -> still undone */
+    NODE_FINISH_SUCCESS,    /*!< node is done and the node-task ready for new tasks */
+    NODE_FINISH_ERROR,      /*!< node is done with errrors and the node-task ready for new tasks -> if the node is in a pool, don't decrement this! */
+    NODE_BUSY_FREE_DRIVE    /*!< node is still in progress, but the next node can drive to his location */
+}node_state_t;
+
+
+/**
  * \brief current robo state
  */
 typedef struct
@@ -42,7 +55,7 @@ typedef struct
     float   x; /*!<[m]*/
     float   y; /*!<[m]*/
     uint8_t pool_id;
-    float   weight;
+    node_state_t node_state;
 }node_param_t;
 
 
@@ -52,7 +65,7 @@ typedef struct
 typedef struct
 {
     node_param_t param;
-    void (*node_function)(node_param_t*, robo_state_t*, uint8_t*);
+    void (*node_function)(node_param_t*, volatile robo_state_t*);
 }node_t;
 
 
@@ -60,13 +73,6 @@ typedef struct
 /* general */
 #define NODE_QUANTITY       11
 #define NODE_POOL_QUANTITY  2
-
-/* nodes states */
-#define NODE_BUSY           0 /*!< node is currently in progress and can't aborted */
-#define NODE_EMPTY          1 /*!< no node is loaded in node-task */
-#define NODE_FINISH_SUCCESS 2 /*!< node is done and the node-task ready for new tasks */
-#define NODE_FINISH_ERROR   3 /*!< node is done with errrors and the node-task ready for new tasks -> if the node is in a pool, don't decrement this! */
-#define NODE_FREE_DRIVE     4 /*!< node is still in progress, but the next node can drive to his location */
 
 /* nodes pools */
 #define NODE_NO_POOL_ID         0
