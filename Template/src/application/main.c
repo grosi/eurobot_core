@@ -63,7 +63,7 @@ int main(void) {
 
     /* module initialisation */
     initTimerTask();
-    initStrategyTask();
+    initSystemTask();
     initELPTask();
     initRangefinderTask();
     initDefaultTask();
