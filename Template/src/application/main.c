@@ -1,5 +1,5 @@
 /**
- * \file        main.c
+ * \file        Main.c
  * \brief       Startup file. In this file is the main function, which is
  *              called at the startup of the controller.
  * \author      meert1, gross10
@@ -33,10 +33,10 @@
 
 /* Includes ------------------------------------------------------------------*/
 /* application modules*/
-#include "app_config.h"
-#include "default_task.h"
+#include "AppConfig.h"
+#include "DefaultTask.h"
 #include "CANGatekeeper.h"
-#include "Strategy.h"
+#include "System.h"
 #include "Timer.h"
 #include "ELP.h"
 #include "Rangefinder.h"

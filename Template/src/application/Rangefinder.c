@@ -27,7 +27,7 @@
 #include "../lib/ext_interrupt.h"
 
 /* application */
-#include "app_config.h"
+#include "AppConfig.h"
 #include "Rangefinder.h"
 
 /* Private typedef -----------------------------------------------------------*/

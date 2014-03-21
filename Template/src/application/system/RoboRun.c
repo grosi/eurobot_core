@@ -15,10 +15,10 @@
 
 /* Includes ------------------------------------------------------------------*/
 /* application */
-#include "../app_config.h"
+#include "../AppConfig.h"
 #include "../CANGatekeeper.h"
-#include "../Strategy.h"
-#include "../nodes/node_config.h"
+#include "../System.h"
+#include "../nodes/NodeConfig.h"
 #include "RoboRun.h"
 
 /* Private typedef -----------------------------------------------------------*/
@@ -38,7 +38,7 @@ static node_t* node_task_1 = NULL;
 static node_t* node_task_2 = NULL;
 
 /* game and strategy */
-static node_t* nodes[NODE_QUANTITY] = {&node_mammut_1};
+static const node_t* nodes[NODE_QUANTITY] = {&node_mammut_1};
 volatile static float enemey_position[((int)(PLAYGROUND_HEIGH/ENEMY_GRID_SIZE_Y))][((int)(PLAYGROUND_WIDTH/ENEMY_GRID_SIZE_X))] = {{0.0}};
 volatile static robo_state_t robo_state = {0,0,0};
 

@@ -19,7 +19,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 /* application */
-#include "app_config.h"
+#include "AppConfig.h"
 #include "CANGatekeeper.h"
 #include "Timer.h"
 

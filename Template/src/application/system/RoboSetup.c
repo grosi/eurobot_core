@@ -15,7 +15,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 /* application */
-#include "../app_config.h"
+#include "../AppConfig.h"
 #include "RoboSetup.h"
 
 /* Private typedef -----------------------------------------------------------*/
