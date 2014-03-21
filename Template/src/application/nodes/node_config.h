@@ -62,9 +62,11 @@ typedef struct
 #define NODE_POOL_QUANTITY  2
 
 /* nodes states */
-#define NODE_BUSY       0
-#define NODE_STOP       1
-#define NODE_FREE_DRIVE 2
+#define NODE_BUSY           0 /*!< node is currently in progress and can't aborted */
+#define NODE_EMPTY          1 /*!< no node is loaded in node-task */
+#define NODE_FINISH_SUCCESS 2 /*!< node is done and the node-task ready for new tasks */
+#define NODE_FINISH_ERROR   3 /*!< node is done with errrors and the node-task ready for new tasks -> if the node is in a pool, don't decrement this! */
+#define NODE_FREE_DRIVE     4 /*!< node is still in progress, but the next node can drive to his location */
 
 /* nodes pools */
 #define NODE_NO_POOL_ID         0
