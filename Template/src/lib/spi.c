@@ -195,11 +195,11 @@ void init_SPI(void)
 void SPI_send_byte(uint8_t data)
 {
 	SPI->DR = data; // write data to be transmitted to the SPI data register
-	GPIO_WriteBit(GPIOB, GPIO_Pin_2, RESET); // set PB2 (CS) low
-	while( !(SPI->SR & SPI_I2S_FLAG_TXE) ); // wait until transmission complete
+	GPIO_WriteBit(SPI_PORT_CS, SPI_PIN_CS, RESET); // set PB2 (CS) low
+	//while( !(SPI->SR & SPI_I2S_FLAG_TXE) ); // wait until transmission complete
 	//while( !(SPI->SR & SPI_I2S_FLAG_RXNE) ); // wait until receive complete
 	while( SPI->SR & SPI_I2S_FLAG_BSY ); // wait until SPI is not busy anymore
-	GPIO_WriteBit(GPIOB, GPIO_Pin_2, SET); // set PB2 (CS) high
+	GPIO_WriteBit(SPI_PORT_CS, SPI_PIN_CS, SET); // set PB2 (CS) high
 	//return SPI->DR; // return received data from SPI data register
 }
 

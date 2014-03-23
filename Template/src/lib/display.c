@@ -28,12 +28,10 @@
 /* Private variables ---------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
 void LCD_write_byte_instruction(uint8_t);
-void LCD_write_byte_data(uint8_t, uint8_t, uint8_t);
-
 
 /**
  * \fn      init_display
- * \brief   initializes the display (will be within ~53ms)
+ * \brief   initializes the display (within ~253ms)
  *
  * \param[in]   None
  * \return  None
@@ -75,8 +73,7 @@ void init_display(void)
 	LCD_write_byte_instruction(0x6A);    // Follower control
 //	delay(200);                          // wait (200ms) for power stable
 	LCD_write_byte_instruction(0x0C);    // Display ON
-	LCD_write_byte_instruction(0x01);    // Reset display
-//  delay(2);                            // wait (2ms)
+	LCD_clear();                         // Reset display
 	LCD_write_byte_instruction(0x06);    // Entry Mode Set
 }
 
@@ -98,8 +95,21 @@ void LCD_write_byte_instruction(uint8_t instruction)
 }
 
 /**
+ * \fn      LCD_clear
+ * \brief   clears/resets the display
+ *
+ * \param[in]   None
+ * \return  None
+ */
+void LCD_clear(void)
+{
+	LCD_write_byte_instruction(0x01);    // clear display
+//  delay(2);                            // wait (2ms)
+}
+
+/**
  * \fn      LCD_write_byte_data
- * \brief   writes an ASCII-character (data-byte) on the display on a specific position
+ * \brief   writes an ASCII-character (data-byte) on the display at a specific position
  *
  * \param[in]   lcd_row       Row in which the character shall appear (0...MAX_NUMBER_ROW-1)
  *              lcd_column    Column in which the character shall appear (0...MAX_NUMBER_ROW-1)
@@ -110,16 +120,16 @@ void LCD_write_byte_data(uint8_t lcd_row, uint8_t lcd_column, uint8_t data)
 {
 	uint8_t lcd_offset;
 
-	/* check if ASCII-character will be within the LCD */
+	/* check if ASCII-character will be within the LCD, set max. otherwise */
     if(lcd_row > (MAX_NUMBER_ROW - 1)) lcd_row = (MAX_NUMBER_ROW - 1);
     if(lcd_column > (MAX_NUMBER_COLUMN - 1)) lcd_column = (MAX_NUMBER_COLUMN - 1);
 
     /* saves the offset of the defined row in a variable (Set RAM Adr: 1xxx'xxxx) */
     switch(lcd_row)
     {
-        case 0:    lcd_offset = 0x80;    // Row 1 (Adr 0 = 1000'0000 = 80h)
+        case 0:    lcd_offset = 0x80;    // Row 1 (Adr 0 = (1)000'0000 = 80h)
     	    break;
-        case 1:    lcd_offset = 0xC0;    // Row 2 (Adr 64 = 1100'0000 = C0h)
+        case 1:    lcd_offset = 0xC0;    // Row 2 (Adr 64 = (1)100'0000 = C0h)
         	break;
         default:   lcd_offset = 0x80;    // Row 1
     };
@@ -137,7 +147,7 @@ void LCD_write_byte_data(uint8_t lcd_row, uint8_t lcd_column, uint8_t data)
 
 /**
  * \fn      LCD_write_string
- * \brief   writes a string on the display on a specific position
+ * \brief   writes a string on the display at a specific position
  *
  * \param[in]   lcd_row       Row in which the string shall appear (0...MAX_NUMBER_ROW-1)
  *              lcd_column    Column in which the string shall appear (0...MAX_NUMBER_ROW-1)
@@ -170,7 +180,7 @@ void LCD_write_string(uint8_t lcd_row, uint8_t lcd_column, uint8_t* string, uint
         string[1] = '\0';
 	}
 
-    c = 0;    // will be used as a (char) counter from now on
+    c = 0;    // will be used as a (char-)counter from now on
 
     /* write every character individually */
     for(; string_length > 0; string_length--)
@@ -191,33 +201,108 @@ void LCD_write_string(uint8_t lcd_row, uint8_t lcd_column, uint8_t* string, uint
     }
 }
 
+/**
+ * \fn      LCD_set_highlighter
+ * \brief   sets the cursor and/or blink-function on the display at a specific position
+ *
+ * \param[in]   lcd_row       Row in which the cursor shall appear (0...MAX_NUMBER_ROW-1)
+ *              lcd_column    Column in which the cursor shall appear (0...MAX_NUMBER_ROW-1)
+ *              mode          0 = cursor and blink-function off
+ *                            1 = cursor on
+ *                            2 = blink-function on
+ *                            3 = cursor and blink-function on
+ * \return  None
+ */
+void LCD_set_highlighter(uint8_t lcd_row, uint8_t lcd_column, uint8_t mode)
+{
+	uint8_t lcd_offset;
 
+	/* check if the cursor or blink-function will be within the LCD, set max. otherwise */
+    if(lcd_row > (MAX_NUMBER_ROW - 1)) lcd_row = (MAX_NUMBER_ROW - 1);
+    if(lcd_column > (MAX_NUMBER_COLUMN - 1)) lcd_column = (MAX_NUMBER_COLUMN - 1);
+
+    /* saves the offset of the defined row in a variable (Set RAM Adr: 1xxx'xxxx) */
+    switch(lcd_row)
+    {
+        case 0:    lcd_offset = 0x80;    // Row 1 (Adr 0 = (1)000'0000 = 80h)
+    	    break;
+        case 1:    lcd_offset = 0xC0;    // Row 2 (Adr 64 = (1)100'0000 = C0h)
+            break;
+        default:   lcd_offset = 0x80;    // Row 1
+    };
+
+    /* set RAM (cursor) position */
+        LCD_write_byte_instruction(lcd_column + lcd_offset);
+
+    switch(mode)
+    {
+        case 1:    LCD_write_byte_instruction(0x0E);    // turn cursor on
+    	    break;
+        case 2:    LCD_write_byte_instruction(0x0D);    // turn blink-function on
+            break;
+        case 3:    LCD_write_byte_instruction(0x0F);    // turn cursor and blink-function on
+            break;
+        default:   LCD_write_byte_instruction(0x0C);    // turn cursor and blink-function off otherwise
+    };
+}
+
+/*********Other LCD-functions:*********/
+void LCD_on(void)
+{
+	LCD_write_byte_instruction(0x0C);
+}
+
+void LCD_off(void)
+{
+	LCD_write_byte_instruction(0x08);
+}
+
+void LCD_shift_display_right(void)
+{
+	LCD_write_byte_instruction(0x1C);
+}
+
+void LCD_shift_display_left(void)
+{
+	LCD_write_byte_instruction(0x18);
+}
+
+void LCD_shift_cursor_right(void)
+{
+	LCD_write_byte_instruction(0x14);
+}
+
+void LCD_shift_cursor_left(void)
+{
+	LCD_write_byte_instruction(0x10);
+}
+
+void LCD_shift_return(void)
+{
+	LCD_write_byte_instruction(0x02);    // returns display to its original status, if shifted
+}
+
+void LCD_set_contrast(uint8_t intensity)    // intensity = 0... 63 (2^6=64)
+{
+	/* check if the intensity is an allowed value */
+	if(intensity < 64)
+	{
+		/* set contrast */
+		LCD_write_byte_instruction(0x5C|(intensity >> 4));    // set bit: C5 & C4
+		LCD_write_byte_instruction(0x70|(intensity & 0x0F));  // set bit: C3, C2, C1 & C0
+	}
+}
+
+void LCD_line_mode_one(void)
+{
+	LCD_write_byte_instruction(0x35);    // set 1-line display mode and 5x16 font
+}
+
+void LCD_line_mode_two(void)
+{
+	LCD_write_byte_instruction(0x39);    // set 2-line display mode and 5x8 font (std)
+}
 
 /**
  * @}
  */
-
-
-
-//// ***********************************************************************
-//// Blinkposition auf dem LCD-Displays setzen / Blinken ein/ausschalten
-//// Übergabe: lcd_x : Spalte (0...SPALTEN_MAX-1)
-////           lcd_y : Zeile  (0...ZEILEN_MAX-1)
-////           lcd_blink :   0 - Blinken/Cursor aus
-////                         1 - Blinken an
-////                         2 - Cursor  an
-//// ***********************************************************************
-//void blink_lcd (unsigned char lcd_x, unsigned char lcd_y, unsigned char lcd_blink) {
-//unsigned char lcd_offset;
-//  write_lcd(0x0C,1);                     // KURSOR ausschalten
-//  if (lcd_x > (SPALTEN_MAX - 1)) lcd_x = 0;
-//  if (lcd_y > (ZEILEN_MAX  - 1)) lcd_y = 0;
-//  switch (lcd_y) {
-//    case 0:  lcd_offset = 0x80; break;   // Zeile 1
-//    case 1:  lcd_offset = 0xC0; break;   // Zeile 2
-//    default: lcd_offset = 0x80;
-//  };
-//  write_lcd(lcd_x+lcd_offset,1);         // Blinkposition setzen
-//  if (lcd_blink == 1) write_lcd(0x0D,1); // Blinken ein
-//  if (lcd_blink == 2) write_lcd(0x0E,1); // Cursor ein
-//}
