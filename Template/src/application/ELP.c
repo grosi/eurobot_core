@@ -18,6 +18,7 @@
 /* application */
 #include "AppConfig.h"
 #include "CANGatekeeper.h"
+#include "system/RoboSetup.h"
 #include "ELP.h"
 
 /* Private typedef -----------------------------------------------------------*/
@@ -90,38 +91,42 @@ static void vELPTask(void* pvParameters )
     vTaskDelayUntil(). */
     xLastFlashTime = xTaskGetTickCount();
 
-    /* endless */
-    for(;;)
+    /* wait for robo is setup with the current game-configs */
+    if(xSemaphoreTake(sELP, portMAX_DELAY) == pdTRUE)
     {
-        table_entry = 0;    /* Start with first table entry */
-
-        /* Process table and call task if necessary */
-        /* Still task in table?                     */
-        while (cycle_table[table_entry].elp_function != LAST_ENTRY)
+        /* endless */
+        for(;;)
         {
-            /* Modulo 0 yields undefined result! Prevent this */
-            if(cycle_table[table_entry].cyle_activation != 0)
+            table_entry = 0;    /* Start with first table entry */
+
+            /* Process table and call task if necessary */
+            /* Still task in table?                     */
+            while (cycle_table[table_entry].elp_function != LAST_ENTRY)
             {
-                /* Call  task? */
-                if (((cyle_count % cycle_table[table_entry].cyle_activation) -
-                        (cycle_table[table_entry].first_activation)) == 0)
+                /* Modulo 0 yields undefined result! Prevent this */
+                if(cycle_table[table_entry].cyle_activation != 0)
                 {
+                    /* Call  task? */
+                    if (((cyle_count % cycle_table[table_entry].cyle_activation) -
+                            (cycle_table[table_entry].first_activation)) == 0)
+                    {
 #ifdef ELP_CAN_ON
-                    (*cycle_table[table_entry].elp_function)();
+                        (*cycle_table[table_entry].elp_function)();
 #endif
+                    }
                 }
+                table_entry++;  /* Prepare next task */
             }
-            table_entry++;  /* Prepare next task */
-        }
 
-        /* Prepare next cycle and check if counter has to be reset */
-        cyle_count++;
-        if (cyle_count >= CYCLE_RESET) {
-            cyle_count = 0;
-        }
+            /* Prepare next cycle and check if counter has to be reset */
+            cyle_count++;
+            if (cyle_count >= CYCLE_RESET) {
+                cyle_count = 0;
+            }
 
-        /* wait for ELP_TASK_SPEED (should be 100ms) */
-        vTaskDelayUntil( &xLastFlashTime, ELP_TASK_SPEED / portTICK_RATE_MS);
+            /* wait for ELP_TASK_SPEED (should be 100ms) */
+            vTaskDelayUntil( &xLastFlashTime, ELP_TASK_SPEED / portTICK_RATE_MS);
+        }
     }
 }
 
