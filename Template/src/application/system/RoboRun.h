@@ -22,12 +22,15 @@
 
 /* exported define ------------------------------------------------------------*/
 /* RTOS */
-#define SYSTEM_NODE_TASK_1_NAME           "Node Task 1"
-#define SYSTEM_NODE_TASK_2_NAME           "Node Task 2"
-#define SYSTEM_NODE_STACK_SIZE            configMINIMAL_STACK_SIZE
-#define SYSTEM_NODE_TASK_PRIORITY         (configMAX_PRIORITIES - 5UL) /*!< priority 2 */
+#define SYSTEM_NODE_TASK_1_NAME     "Node Task 1"
+#define SYSTEM_NODE_TASK_2_NAME     "Node Task 2"
+#define SYSTEM_NODE_STACK_SIZE      configMINIMAL_STACK_SIZE
+#define SYSTEM_NODE_TASK_PRIORITY   (configMAX_PRIORITIES - 5UL) /*!< priority 2 */
+#define ROBORUN_TIMEOUT             1000 /*!< wait for max. 1s */
 
-/* node and gamme configurations */
+/* game configurations */
+#define PLAY_TIME                   90 /*[s]*/
+#define ROBO_AVERAGE_SPEED          0.5 /*[m/s]*/
 #define PLAYGROUND_WIDTH            3 /*[m]*/
 #define PLAYGROUND_HEIGH            2 /*[m]*/
 #define ENEMY_GRID_SIZE_X           0.1 /*[m]*/
@@ -39,11 +42,12 @@
 
 
 /* exported variables ---------------------------------------------------------*/
+//extern node_t* next_node;
 
 
 /* exported function prototypes -----------------------------------------------*/
 extern void initRoboRunState();
-extern void runRoboRunState();
+extern void runRoboRunState(portTickType*);
 
 
 #endif /* ROBORUN_H_ */

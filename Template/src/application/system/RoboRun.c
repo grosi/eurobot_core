@@ -15,8 +15,10 @@
 
 /* Includes ------------------------------------------------------------------*/
 /* application */
+#include <math.h>
 #include "../AppConfig.h"
 #include "../CANGatekeeper.h"
+#include "../Timer.h"
 #include "../System.h"
 #include "../nodes/NodeConfig.h"
 #include "RoboRun.h"
@@ -41,6 +43,7 @@ static node_t* node_task_2 = NULL;
 static const node_t* nodes[NODE_QUANTITY] = {&node_mammut_1};
 volatile static float enemey_position[((int)(PLAYGROUND_HEIGH/ENEMY_GRID_SIZE_Y))][((int)(PLAYGROUND_WIDTH/ENEMY_GRID_SIZE_X))] = {{0.0}};
 volatile static robo_state_t robo_state = {0,0,0};
+node_t* next_node;
 
 
 /* Private function prototypes -----------------------------------------------*/
@@ -70,9 +73,140 @@ void initRoboRunState()
 }
 
 
-void runRoboRunState()
+void runRoboRunState(portTickType* tick)
 {
+    float weight_dec, weight_inc, weright_dest, weight_enemy, weight_src_dest;
+    uint8_t remain_time;
+    uint8_t node_count;
 
+
+    /* node task 1 */
+    if(node_task_1 == NULL)
+    {
+        /* load next node */
+        node_task_1 = next_node;
+        if(node_task_2 == NULL)
+        {
+            node_task_1->param.node_state = NODE_BUSY;
+            vTaskResume(xNodeTask1_Handle);
+        }
+        else
+        {
+            if(node_task_2->param.node_state != NODE_BUSY)
+            {
+                node_task_1->param.node_state = NODE_BUSY;
+                vTaskResume(xNodeTask1_Handle);
+            }
+        }
+    }
+    else
+    {
+        if(node_task_1->param.node_state == NODE_FINISH_SUCCESS || node_task_1->param.node_state == NODE_FINISH_ERROR)
+        {
+            /* load next node */
+            node_task_1 = next_node;
+
+            if(node_task_2 == NULL)
+            {
+                node_task_1->param.node_state = NODE_BUSY;
+                vTaskResume(xNodeTask1_Handle);
+            }
+            else
+            {
+                if(node_task_2->param.node_state != NODE_BUSY)
+                {
+                    node_task_1->param.node_state = NODE_BUSY;
+                    vTaskResume(xNodeTask1_Handle);
+                }
+            }
+
+        }
+    }
+
+    /* node task 2 */
+    if(node_task_2 == NULL)
+    {
+        /* load next node */
+        node_task_2 = next_node;
+
+        if(node_task_1 == NULL)
+        {
+            node_task_2->param.node_state = NODE_BUSY;
+            vTaskResume(xNodeTask2_Handle);
+        }
+        else
+        {
+            if(node_task_1->param.node_state != NODE_BUSY)
+            {
+                node_task_2->param.node_state = NODE_BUSY;
+                vTaskResume(xNodeTask2_Handle);
+            }
+        }
+    }
+    else
+    {
+        if(node_task_2->param.node_state == NODE_FINISH_SUCCESS || node_task_2->param.node_state == NODE_FINISH_ERROR)
+        {
+            /* load next node */
+            node_task_2 = next_node;
+
+            if(node_task_1 == NULL)
+            {
+                node_task_2->param.node_state = NODE_BUSY;
+                vTaskResume(xNodeTask2_Handle);
+            }
+            else
+            {
+                if(node_task_1->param.node_state != NODE_BUSY)
+                {
+                    node_task_2->param.node_state = NODE_BUSY;
+                    vTaskResume(xNodeTask2_Handle);
+                }
+            }
+
+        }
+    }
+
+    /* wait for 1s */
+    vTaskDelayUntil(tick, ROBORUN_TIMEOUT / portTICK_RATE_MS);
+
+
+    /******************/
+    /* calc next node */
+    /******************/
+    remain_time = getRemainingTime();
+    weight_dec = remain_time / PLAY_TIME;
+    weight_inc = (PLAY_TIME - remain_time) / PLAY_TIME;
+
+    for(node_count = 0; node_count < NODE_QUANTITY; node_count++)
+    {
+        /* destination weight depends on the current robo-position and the arrive-direction */
+        switch(nodes[node_count]->param.arrive)
+        {
+            case NORTH:
+                if(robo_state.y <= nodes[node_count]->param.y)
+                {
+                    weight_dec =(nodes[node_count]->param.points/nodes[node_count]->param.time)
+                            * (1/nodes[node_count]->param.percent);
+                }
+                break;
+            case EAST:
+                break;
+            case SOUTH:
+                break;
+            case WEST:
+                break;
+        }
+
+        /* read out the enemy track-position for the node location */
+        /* todo evtl. interrupts ausschalten */
+        weight_enemy = enemey_position[(int)(nodes[node_count]->param.y / (ENEMY_GRID_SIZE_Y*1000))]
+                                       [(int)(nodes[node_count]->param.y / (ENEMY_GRID_SIZE_Y*1000))];
+
+        /* source -> destination node distance-time weight */
+        weight_src_dest = sqrtf((fabsf(robo_state.x - nodes[node_count]->param.x) * fabsf(robo_state.x - nodes[node_count]->param.x)) +
+                (fabsf(robo_state.y - nodes[node_count]->param.y) * fabsf(robo_state.y - nodes[node_count]->param.y))) / ROBO_AVERAGE_SPEED;
+    }
 }
 
 

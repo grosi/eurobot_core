@@ -1,0 +1,117 @@
+/**
+ * \file    NodeConfig.h
+ * \author  gross10
+ * \date    2014-03-17
+ *
+ * \version 1.0
+ *  create this file
+ *
+ * \brief   config file for the game nodes
+ *
+ * \ingroup strategy
+ *
+ * @{
+ */
+
+/* Define to prevent recursive inclusion --------------------------------------*/
+#ifndef NODECONFIG_H_
+#define NODECONFIG_H_
+
+/* exported typedef -----------------------------------------------------------*/
+
+/**
+ * \brief current node state
+ */
+typedef enum
+{
+    NODE_BUSY = 0,          /*!< node is currently in progress and can't aborted */
+    NODE_UNDONE,            /*!< no node is in ready mode -> still undone */
+    NODE_FINISH_SUCCESS,    /*!< node is done and the node-task ready for new tasks */
+    NODE_FINISH_ERROR,      /*!< node is done with errrors and the node-task ready for new tasks -> if the node is in a pool, don't decrement this! */
+    NODE_BUSY_FREE_DRIVE    /*!< node is still in progress, but the next node can drive to his location */
+}node_state_t;
+
+
+/**
+ * \brief the needed arrive direction for a node
+ */
+typedef enum
+{
+    NORTH = 0,
+    EAST,
+    SOUTH,
+    WEST,
+}node_arrive_t;
+
+
+/**
+ * \brief current robo state
+ */
+typedef struct
+{
+    uint16_t x;
+    uint16_t y;
+    uint16_t angle;
+}robo_state_t;
+
+
+/**
+ *  \brief node parameters
+ */
+typedef struct
+{
+    uint8_t id;
+    uint8_t points;
+    float   percent;
+    uint8_t time; /*[s]*/
+    uint16_t x; /*!<[mm]*/
+    uint16_t y; /*!<[mm]*/
+    uint8_t pool_id;
+    node_arrive_t arrive;
+    node_state_t node_state;
+}node_param_t;
+
+
+/**
+ * \brief node complete data
+ */
+typedef struct
+{
+    node_param_t param;
+    void (*node_function)(node_param_t*, volatile robo_state_t*);
+}node_t;
+
+
+/* exported define ------------------------------------------------------------*/
+/* general */
+#define NODE_QUANTITY       11
+#define NODE_POOL_QUANTITY  2
+
+/* nodes pools */
+#define NODE_NO_POOL_ID         0
+#define NODE_MAMMUT_POOL_ID     1
+#define NODE_MAMMUT_POOL_SIZE   6
+#define NODE_MAMMUT_POOL_LEVEL  3
+#define NODE_FRESCO_POOL_ID     2
+#define NODE_FRESCO_POOL_SIZE   2
+#define NODE_FRESCO_POOL_LEVEL  1
+#define NODE_FIRE_POOL_ID       3
+#define NODE_FIRE_POOL_SIZE     0
+#define NODE_FIRE_POOL_LEVEL    0
+
+
+/* exported macro -------------------------------------------------------------*/
+
+
+/* exported variables ---------------------------------------------------------*/
+extern node_t node_mammut_1;
+
+
+/* exported function prototypes -----------------------------------------------*/
+
+
+#endif /* NODECONFIG_H_ */
+
+/**
+ * @}
+ */

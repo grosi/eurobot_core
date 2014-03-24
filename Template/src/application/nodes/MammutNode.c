@@ -1,12 +1,12 @@
 /**
- * \file    RoboError.c
+ * \file    MammutNode.c
  * \author  gross10
- * \date    2014-03-21
+ * \date    2014-03-17
  *
  * \version 1.0
  *  create this file
  *
- * \brief   strategy error sate
+ * \brief   mammut node statemaschine
  *
  * \ingroup strategy
  *
@@ -16,7 +16,8 @@
 /* Includes ------------------------------------------------------------------*/
 /* application */
 #include "../AppConfig.h"
-#include "RoboError.h"
+#include "NodeConfig.h"
+#include "MammutNode.h"
 
 /* Private typedef -----------------------------------------------------------*/
 
@@ -35,12 +36,14 @@
 
 /* Private functions ---------------------------------------------------------*/
 
-
-void runRoboErrorState(portTickType* tick)
+void doMammutNode(node_param_t* param, volatile robo_state_t* robo_state)
 {
 
 }
 
+
 /**
  * @}
  */
+
+

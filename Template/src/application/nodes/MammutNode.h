@@ -1,12 +1,12 @@
 /**
- * \file    RoboError.h
+ * \file    MammutNode.h
  * \author  gross10
- * \date    2014-03-21
+ * \date    2014-03-17
  *
  * \version 1.0
  *  create this file
  *
- * \brief   strategy error state
+ * \brief   mammut node statemaschine
  *
  * \ingroup strategy
  *
@@ -14,8 +14,8 @@
  */
 
 /* Define to prevent recursive inclusion --------------------------------------*/
-#ifndef ROBOERROR_H_
-#define ROBOERROR_H_
+#ifndef MAMMUTNODE_H_
+#define MAMMUTNODE_H_
 
 /* exported typedef -----------------------------------------------------------*/
 
@@ -30,10 +30,11 @@
 
 
 /* exported function prototypes -----------------------------------------------*/
-extern void runRoboErrorState(portTickType*);
+extern void doMammutNode(node_param_t*, volatile robo_state_t*);
 
 
-#endif /* ROBOERROR_H_ */
+#endif /* MAMMUTNODE_H_ */
+
 /**
  * @}
  */

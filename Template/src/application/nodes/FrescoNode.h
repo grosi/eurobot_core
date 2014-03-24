@@ -1,12 +1,12 @@
 /**
- * \file    RoboError.h
+ * \file    FrescoNode.h
  * \author  gross10
- * \date    2014-03-21
+ * \date    2014-03-17
  *
  * \version 1.0
  *  create this file
  *
- * \brief   strategy error state
+ * \brief   fresco node statemaschine
  *
  * \ingroup strategy
  *
@@ -14,8 +14,8 @@
  */
 
 /* Define to prevent recursive inclusion --------------------------------------*/
-#ifndef ROBOERROR_H_
-#define ROBOERROR_H_
+#ifndef FRESCONODE_H_
+#define FRESCONODE_H_
 
 /* exported typedef -----------------------------------------------------------*/
 
@@ -30,10 +30,10 @@
 
 
 /* exported function prototypes -----------------------------------------------*/
-extern void runRoboErrorState(portTickType*);
 
 
-#endif /* ROBOERROR_H_ */
+#endif /* FRESCONODE_H_ */
+
 /**
  * @}
  */
