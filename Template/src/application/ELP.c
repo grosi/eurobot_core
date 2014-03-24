@@ -92,7 +92,7 @@ static void vELPTask(void* pvParameters )
     xLastFlashTime = xTaskGetTickCount();
 
     /* wait for robo is setup with the current game-configs */
-    if(xSemaphoreTake(sELP, portMAX_DELAY) == pdTRUE)
+    if(xSemaphoreTake(sSyncELP, portMAX_DELAY) == pdTRUE)
     {
         /* endless */
         for(;;)
