@@ -27,7 +27,7 @@
 
 
 /* exported variables ---------------------------------------------------------*/
-extern xSemaphoreHandle sSyncELP;
+extern xSemaphoreHandle sSyncRoboSetupELP;
 
 /* exported function prototypes -----------------------------------------------*/
 extern void runRoboSetupState(portTickType*);

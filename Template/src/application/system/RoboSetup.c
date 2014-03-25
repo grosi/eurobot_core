@@ -40,7 +40,7 @@ typedef enum
 
 
 /* Private variables ---------------------------------------------------------*/
-xSemaphoreHandle sSyncELP = NULL;
+xSemaphoreHandle sSyncRoboSetupELP = NULL;
 
 
 /* Private function prototypes -----------------------------------------------*/
@@ -58,8 +58,8 @@ xSemaphoreHandle sSyncELP = NULL;
 void initRoboSetupState()
 {
     /* create semaphore for elp task synchronisation */
-    vSemaphoreCreateBinary(sSyncELP); /* bug in FreeRTOS -> can't create a binary semaphore */
-    xSemaphoreTake(sSyncELP,0); /* take the semaphore */
+    vSemaphoreCreateBinary(sSyncRoboSetupELP); /* bug in FreeRTOS -> can't create a binary semaphore */
+    xSemaphoreTake(sSyncRoboSetupELP,0); /* take the semaphore */
 }
 
 
