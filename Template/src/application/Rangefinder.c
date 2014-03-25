@@ -60,16 +60,6 @@
 
 
 /* Private variables ---------------------------------------------------------*/
-/* Common */
-xSemaphoreHandle xSemaphoreI2C = NULL; //TODO: Define extern (main etc)
-
-/* Globale variables ---------------------------------------------------------*/
-/* Alarm flags, 1 if object detected, 0 if no object detected */
-volatile uint8_t RangefinderIR_FwAlarm_flag = 0; /* Infrared forward alarm */
-volatile uint8_t RangefinderIR_BwAlarm_flag = 0; /* Infrared backward alarm */
-volatile uint8_t RangefinderUS_FwAlarm_flag = 0; /* Ultrasonic forward alarm */
-volatile uint8_t RangefinderUS_BwAlarm_flag = 0; /* Ultrasonic backward alarm */
-
 /* Variables for comparing the last three values */
 volatile uint8_t last_US_FwAlarm_flag[2] = {0,0};
 volatile uint8_t last_US_BwAlarm_flag[2] = {0,0};
@@ -80,191 +70,24 @@ volatile uint8_t last_IR_BwAlarm_flag[2] = {0,0};
 uint16_t distance_fw;                   /* Variable for the distance detected by the fowrward SRF08 (lower- /higher byte joined) */
 uint16_t distance_bw;                   /* Variable for the distance detected by the backward SRF08 (lower- /higher byte joined) */
 
+/* Globale variables ---------------------------------------------------------*/
+/* Mutex for I2C */
+xSemaphoreHandle mHwI2C = NULL;
+
+/* Alarm flags, 1 if object detected, 0 if no object detected */
+volatile uint8_t RangefinderIR_FwAlarm_flag = 0; /* Infrared forward alarm */
+volatile uint8_t RangefinderIR_BwAlarm_flag = 0; /* Infrared backward alarm */
+volatile uint8_t RangefinderUS_FwAlarm_flag = 0; /* Ultrasonic forward alarm */
+volatile uint8_t RangefinderUS_BwAlarm_flag = 0; /* Ultrasonic backward alarm */
+
 /* Private function prototypes -----------------------------------------------*/
 static void vRangefinderTask(void*);
 
 /* Private functions ---------------------------------------------------------*/
-
-/**
- * \fn          setSRF08Range
- * \brief       Sets the maximum detection range of the SRF08 sensor module via
- *              I2C. I2C has to be initialised first (use the function initI2C).
- * \note        xSemaphoreI2C has to be created (e.g. use xSemaphoreCreateMutex()).
- *              Waits without timeout (portMAX_DELAY) to get the semaphore.
- *
- * \param[in]   slave_address Address of the device. Values: 0xE0, 0xE2, 0xE4, ... , 0xFE.
- * \param[in]   range_in_mm Maximum detection range in millimetres (43 to 11008)
- * \return      None
- */
-void setSRF08Range(uint8_t slave_address, uint16_t range_in_mm) {
-
-    /* Do nothing, if the semaphore wasn't created correctly */
-    if(xSemaphoreI2C == NULL) return;
-
-    /* Lower limit: 43 mm */
-    if(43 > range_in_mm) range_in_mm = 43;
-    /* Higher limit: 11008 mm */
-    if(range_in_mm > 11008) range_in_mm = 11008;
-
-    /* Calculate register value with the formula (range = (reg x 43 mm) + 43 mm) */
-    float value = ((float)range_in_mm - 43) / 43;
-
-    /* If necessary, round up */
-    if((value - (int)value) >= 0.5) value++;
-
-    /* Get semaphore for I2C access, without timeout */
-    if(xSemaphoreTake(xSemaphoreI2C, portMAX_DELAY) == pdTRUE) {
-
-        /* Send calculated value to the SRF08 to be written in the range register */
-        uint8_t buffer = (uint8_t)value;
-        writeI2C(slave_address, SRF08_REG_RANGE, &buffer, 1, I2C_TIMEOUT);
-
-        /* Release semaphore */
-        xSemaphoreGive(xSemaphoreI2C);
-    }
-
-    /* Handle i2c error */
-    if(i2c_timeout_flag) {
-    	reinitI2C();
-    	return;
-    }
-}
-
-/**
- * \fn          setSRF08Gain
- * \brief       Sets the maximum gain for the analogue stages of the SRF08 sensor module
- *              via I2C. I2C has to be initialised first (use the function initI2C).
- * \note        xSemaphoreI2C has to be created (e.g. use xSemaphoreCreateMutex()).
- *              Waits without timeout (portMAX_DELAY) to get the semaphore.
- *
- * \param[in]   slave_address Address of the device. Values: 0xE0, 0xE2, 0xE4, ... , 0xFE.
- * \param[in]   gain_value Value for the maximum gain (see datasheet). Value from 0x00 to 0x1F.
- * \return      None
- */
-void setSRF08Gain(uint8_t slave_address, uint8_t gain_value) {
-
-    /* Do nothing, if the semaphore wasn't created correctly */
-    if(xSemaphoreI2C == NULL) return;
-
-    /* Higher limit: 0x1F */
-    if(gain_value > 0x1F) gain_value = 0x1F;
-
-    /* Get semaphore for I2C access, without timeout */
-    if(xSemaphoreTake(xSemaphoreI2C, portMAX_DELAY) == pdTRUE) {
-
-        /* Send the value to the SRF08 to be written in the gain register */
-        uint8_t buffer = gain_value;
-        writeI2C(slave_address, SRF08_REG_GAIN, &buffer, 1, I2C_TIMEOUT);
-
-        /* Release semaphore */
-        xSemaphoreGive(xSemaphoreI2C);
-    }
-
-    /* Handle i2c error */
-    if(i2c_timeout_flag) {
-    	reinitI2C();
-    	return;
-    }
-}
-
-/**
- * \fn          startSRF08Meas
- * \brief       Start the ultrasonic measure of the SRF08 sensor module via I2C.
- *              I2C has to be initialised first (use the function initI2C).
- * \note        xSemaphoreI2C has to be created (e.g. use xSemaphoreCreateMutex()).
- *              Waits without timeout (portMAX_DELAY) to get the semaphore.
- *
- * \param[in]   slave_address Address of the device. Values: 0xE0, 0xE2, 0xE4, ... , 0xFE.
- *              meas_mode Data to measure: SRF08_MEAS_IN, SRF08_MEAS_CM or SRF08_MEAS_US.
- * \return      None
- */
-void startSRF08Meas(uint8_t slave_address, uint8_t meas_mode) {
-
-    /* Do nothing, if the semaphore wasn't created correctly */
-    if(xSemaphoreI2C == NULL) return;
-
-    /* Get semaphore for I2C access, without timeout */
-    if(xSemaphoreTake(xSemaphoreI2C, portMAX_DELAY) == pdTRUE) {
-
-        /* Send the command to measure in cm to the SRF08 */
-        writeI2C(slave_address, SRF08_REG_CMD, &meas_mode, 1, I2C_TIMEOUT);
-
-        /* Release semaphore */
-        xSemaphoreGive(xSemaphoreI2C);
-    }
-
-    /* Handle i2c error */
-    if(i2c_timeout_flag) {
-    	reinitI2C();
-    	return;
-    }
-}
-
-/**
- * \fn          readSRF08Meas
- * \brief       Read the distance measured by the SRF08 sensor module (started
- *              with startSRF08Meas) via I2C.
- *              I2C has to be initialised first (use the function initI2C).
- * \note        Wait at least 65 ms between startSRF08Meas and readSRF08Meas,
- *              because the module is busy waiting for the echo and may lock I2C.
- *              xSemaphoreI2C has to be created (e.g. use xSemaphoreCreateMutex()).
- *              Waits without timeout (portMAX_DELAY) to get the semaphore.
- *
- * \param[in]   slave_address Address of the device. Values: 0xE0, 0xE2, 0xE4, ... , 0xFE.
- * \return      meassure Measured distance/time, 0xFFFF if something is not ok.
- */
-uint16_t readSRF08Meas(uint8_t slave_address) {
-
-    /* Return error, if the semaphore wasn't created correctly */
-    if(xSemaphoreI2C == NULL) return 0xFFFF;
-
-    uint8_t buffer;
-    uint16_t meassure;
-
-    /* Get semaphore for I2C access, without timeout */
-    if(xSemaphoreTake(xSemaphoreI2C, portMAX_DELAY) == pdTRUE) {
-
-        /* Send address of the register we want to read (highbyte of the 1. echo) */
-        writeI2C(slave_address, SRF08_REG_H(1), &buffer, 0, I2C_TIMEOUT); /* buffer not used, because NumByteToWrite is 0 */
-        /* Read register */
-        readI2C(slave_address, &buffer, 1, I2C_TIMEOUT);
-
-        /* Release semaphore */
-        xSemaphoreGive(xSemaphoreI2C);
-    }
-
-    /* Handle i2c error */
-    if(i2c_timeout_flag) {
-    	reinitI2C();
-    	return 0xFFFF;
-    }
-
-    /* Store highbyte */
-    meassure = buffer << 8;
-
-    /* Get semaphore for I2C access, without timeout */
-    if(xSemaphoreTake(xSemaphoreI2C, portMAX_DELAY) == pdTRUE) {
-
-        /* Send address of the register we want to read (lowbyte of the 1. echo) */
-        writeI2C(slave_address, SRF08_REG_L(1), &buffer, 0, I2C_TIMEOUT); /* buffer not used, because NumByteToWrite is 0 */
-        /* Read register */
-        readI2C(slave_address, &buffer, 1, I2C_TIMEOUT);
-
-        /* Release semaphore */
-        xSemaphoreGive(xSemaphoreI2C);
-    }
-
-    /* Handle i2c error */
-    if(i2c_timeout_flag) {
-    	reinitI2C();
-    	return 0xFFFF;
-    }
-
-    /* Store lowbyte */
-    meassure = (meassure & 0xFF00) | (buffer & 0x00FF);
-
-    return meassure;
-}
+void setSRF08Range(uint8_t slave_address, uint16_t range_in_mm);
+void setSRF08Gain(uint8_t slave_address, uint8_t gain_value);
+void startSRF08Meas(uint8_t slave_address, uint8_t meas_mode);
+uint16_t readSRF08Meas(uint8_t slave_address);
 
 /**
  * \fn          initRangefinderTasks
@@ -287,8 +110,8 @@ void initRangefinderTask(void) {
     /* US: I2C */
     initI2C();
 
-    /* Create semaphore for I2C */ //TODO: Move to extern (main etc)
-    xSemaphoreI2C = xSemaphoreCreateMutex();
+    /* Create semaphore for I2C */
+    mHwI2C = xSemaphoreCreateMutex();
 
     /* Create the tasks */
     xTaskCreate( vRangefinderTask, ( signed char * ) RANGEFINDER_TASK_NAME, RANGEFINDER_STACK_SIZE, NULL, RANGEFINDER_TASK_PRIORITY, NULL );
@@ -513,6 +336,188 @@ void EXTI15_10_IRQHandler(void)
 		/* Clear the EXTI line pending bit */
 		EXTI_ClearITPendingBit(EXTI_Line15);
 	}
+}
+
+
+/**
+ * \fn          setSRF08Range
+ * \brief       Sets the maximum detection range of the SRF08 sensor module via
+ *              I2C. I2C has to be initialised first (use the function initI2C).
+ * \note        mHwI2C has to be created (e.g. use xSemaphoreCreateMutex()).
+ *              Waits without timeout (portMAX_DELAY) to get the semaphore.
+ *
+ * \param[in]   slave_address Address of the device. Values: 0xE0, 0xE2, 0xE4, ... , 0xFE.
+ * \param[in]   range_in_mm Maximum detection range in millimetres (43 to 11008)
+ * \return      None
+ */
+void setSRF08Range(uint8_t slave_address, uint16_t range_in_mm) {
+
+    /* Do nothing, if the semaphore wasn't created correctly */
+    if(mHwI2C == NULL) return;
+
+    /* Lower limit: 43 mm */
+    if(43 > range_in_mm) range_in_mm = 43;
+    /* Higher limit: 11008 mm */
+    if(range_in_mm > 11008) range_in_mm = 11008;
+
+    /* Calculate register value with the formula (range = (reg x 43 mm) + 43 mm) */
+    float value = ((float)range_in_mm - 43) / 43;
+
+    /* If necessary, round up */
+    if((value - (int)value) >= 0.5) value++;
+
+    /* Get semaphore for I2C access, without timeout */
+    if(xSemaphoreTake(mHwI2C, portMAX_DELAY) == pdTRUE) {
+
+        /* Send calculated value to the SRF08 to be written in the range register */
+        uint8_t buffer = (uint8_t)value;
+        writeI2C(slave_address, SRF08_REG_RANGE, &buffer, 1, I2C_TIMEOUT);
+
+        /* Release semaphore */
+        xSemaphoreGive(mHwI2C);
+    }
+
+    /* Handle i2c error */
+    if(i2c_timeout_flag) {
+    	reinitI2C();
+    	return;
+    }
+}
+
+/**
+ * \fn          setSRF08Gain
+ * \brief       Sets the maximum gain for the analogue stages of the SRF08 sensor module
+ *              via I2C. I2C has to be initialised first (use the function initI2C).
+ * \note        mHwI2C has to be created (e.g. use xSemaphoreCreateMutex()).
+ *              Waits without timeout (portMAX_DELAY) to get the semaphore.
+ *
+ * \param[in]   slave_address Address of the device. Values: 0xE0, 0xE2, 0xE4, ... , 0xFE.
+ * \param[in]   gain_value Value for the maximum gain (see datasheet). Value from 0x00 to 0x1F.
+ * \return      None
+ */
+void setSRF08Gain(uint8_t slave_address, uint8_t gain_value) {
+
+    /* Do nothing, if the semaphore wasn't created correctly */
+    if(mHwI2C == NULL) return;
+
+    /* Higher limit: 0x1F */
+    if(gain_value > 0x1F) gain_value = 0x1F;
+
+    /* Get semaphore for I2C access, without timeout */
+    if(xSemaphoreTake(mHwI2C, portMAX_DELAY) == pdTRUE) {
+
+        /* Send the value to the SRF08 to be written in the gain register */
+        uint8_t buffer = gain_value;
+        writeI2C(slave_address, SRF08_REG_GAIN, &buffer, 1, I2C_TIMEOUT);
+
+        /* Release semaphore */
+        xSemaphoreGive(mHwI2C);
+    }
+
+    /* Handle i2c error */
+    if(i2c_timeout_flag) {
+    	reinitI2C();
+    	return;
+    }
+}
+
+/**
+ * \fn          startSRF08Meas
+ * \brief       Start the ultrasonic measure of the SRF08 sensor module via I2C.
+ *              I2C has to be initialised first (use the function initI2C).
+ * \note        mHwI2C has to be created (e.g. use xSemaphoreCreateMutex()).
+ *              Waits without timeout (portMAX_DELAY) to get the semaphore.
+ *
+ * \param[in]   slave_address Address of the device. Values: 0xE0, 0xE2, 0xE4, ... , 0xFE.
+ *              meas_mode Data to measure: SRF08_MEAS_IN, SRF08_MEAS_CM or SRF08_MEAS_US.
+ * \return      None
+ */
+void startSRF08Meas(uint8_t slave_address, uint8_t meas_mode) {
+
+    /* Do nothing, if the semaphore wasn't created correctly */
+    if(mHwI2C == NULL) return;
+
+    /* Get semaphore for I2C access, without timeout */
+    if(xSemaphoreTake(mHwI2C, portMAX_DELAY) == pdTRUE) {
+
+        /* Send the command to measure in cm to the SRF08 */
+        writeI2C(slave_address, SRF08_REG_CMD, &meas_mode, 1, I2C_TIMEOUT);
+
+        /* Release semaphore */
+        xSemaphoreGive(mHwI2C);
+    }
+
+    /* Handle i2c error */
+    if(i2c_timeout_flag) {
+    	reinitI2C();
+    	return;
+    }
+}
+
+/**
+ * \fn          readSRF08Meas
+ * \brief       Read the distance measured by the SRF08 sensor module (started
+ *              with startSRF08Meas) via I2C.
+ *              I2C has to be initialised first (use the function initI2C).
+ * \note        Wait at least 65 ms between startSRF08Meas and readSRF08Meas,
+ *              because the module is busy waiting for the echo and may lock I2C.
+ *              mHwI2C has to be created (e.g. use xSemaphoreCreateMutex()).
+ *              Waits without timeout (portMAX_DELAY) to get the semaphore.
+ *
+ * \param[in]   slave_address Address of the device. Values: 0xE0, 0xE2, 0xE4, ... , 0xFE.
+ * \return      meassure Measured distance/time, 0xFFFF if something is not ok.
+ */
+uint16_t readSRF08Meas(uint8_t slave_address) {
+
+    /* Return error, if the semaphore wasn't created correctly */
+    if(mHwI2C == NULL) return 0xFFFF;
+
+    uint8_t buffer;
+    uint16_t meassure;
+
+    /* Get semaphore for I2C access, without timeout */
+    if(xSemaphoreTake(mHwI2C, portMAX_DELAY) == pdTRUE) {
+
+        /* Send address of the register we want to read (highbyte of the 1. echo) */
+        writeI2C(slave_address, SRF08_REG_H(1), &buffer, 0, I2C_TIMEOUT); /* buffer not used, because NumByteToWrite is 0 */
+        /* Read register */
+        readI2C(slave_address, &buffer, 1, I2C_TIMEOUT);
+
+        /* Release semaphore */
+        xSemaphoreGive(mHwI2C);
+    }
+
+    /* Handle i2c error */
+    if(i2c_timeout_flag) {
+    	reinitI2C();
+    	return 0xFFFF;
+    }
+
+    /* Store highbyte */
+    meassure = buffer << 8;
+
+    /* Get semaphore for I2C access, without timeout */
+    if(xSemaphoreTake(mHwI2C, portMAX_DELAY) == pdTRUE) {
+
+        /* Send address of the register we want to read (lowbyte of the 1. echo) */
+        writeI2C(slave_address, SRF08_REG_L(1), &buffer, 0, I2C_TIMEOUT); /* buffer not used, because NumByteToWrite is 0 */
+        /* Read register */
+        readI2C(slave_address, &buffer, 1, I2C_TIMEOUT);
+
+        /* Release semaphore */
+        xSemaphoreGive(mHwI2C);
+    }
+
+    /* Handle i2c error */
+    if(i2c_timeout_flag) {
+    	reinitI2C();
+    	return 0xFFFF;
+    }
+
+    /* Store lowbyte */
+    meassure = (meassure & 0xFF00) | (buffer & 0x00FF);
+
+    return meassure;
 }
 
 

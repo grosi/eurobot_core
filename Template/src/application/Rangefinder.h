@@ -38,7 +38,10 @@
 /* exported macro -------------------------------------------------------------*/
 
 /* exported variables ---------------------------------------------------------*/
-/* Alarm flags (pleas read only!), 1 if object detected, 0 if no object detected */
+/* Mutex for I2C */
+extern xSemaphoreHandle mHwI2C;    /* Created with xSemaphoreCreateMutex() */
+
+/* Alarm flags (read only!), 1 if object detected, 0 if no object detected */
 extern volatile uint8_t RangefinderIR_FwAlarm_flag;     /* Infrared forward alarm */
 extern volatile uint8_t RangefinderIR_BwAlarm_flag;     /* Infrared backward alarm */
 extern volatile uint8_t RangefinderUS_FwAlarm_flag;     /* Ultrasonic forward alarm */
