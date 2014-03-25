@@ -113,6 +113,7 @@ extern uint32_t SystemCoreClock;
 #define configUSE_APPLICATION_TASK_TAG	0
 #define configUSE_COUNTING_SEMAPHORES	1 //TODO
 #define configGENERATE_RUN_TIME_STATS	0
+#define configUSE_QUEUE_SETS			1 /* allowing queue sets */
 
 /* Co-routine definitions. */
 #define configUSE_CO_ROUTINES 		0
@@ -126,10 +127,10 @@ extern uint32_t SystemCoreClock;
 
 /* Set the following definitions to 1 to include the API function, or zero
 to exclude the API function. */
-#define INCLUDE_vTaskPrioritySet		1
-#define INCLUDE_uxTaskPriorityGet		1
+#define INCLUDE_vTaskPrioritySet		0
+#define INCLUDE_uxTaskPriorityGet		0
 #define INCLUDE_vTaskDelete				1
-#define INCLUDE_vTaskCleanUpResources	1
+#define INCLUDE_vTaskCleanUpResources	0
 #define INCLUDE_vTaskSuspend			1
 #define INCLUDE_vTaskDelayUntil			1
 #define INCLUDE_vTaskDelay				1
