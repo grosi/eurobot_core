@@ -24,11 +24,9 @@
  */
 typedef enum
 {
-    NODE_BUSY = 0,          /*!< node is currently in progress and can't aborted */
-    NODE_UNDONE,            /*!< no node is in ready mode -> still undone */
+    NODE_UNDONE = 0,            /*!< no node is in ready mode -> still undone */
     NODE_FINISH_SUCCESS,    /*!< node is done and the node-task ready for new tasks */
     NODE_FINISH_ERROR,      /*!< node is done with errrors and the node-task ready for new tasks -> if the node is in a pool, don't decrement this! */
-    NODE_BUSY_FREE_DRIVE    /*!< node is still in progress, but the next node can drive to his location */
 }node_state_t;
 
 
