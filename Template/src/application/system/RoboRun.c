@@ -27,7 +27,8 @@
 
 
 /* Private define ------------------------------------------------------------*/
-
+#define BINARY_SEMAPHORE_LENGTH	1
+#define SEMAPHORE_SET_SIZE 		(BINARY_SEMAPHORE_LENGTH * 2)
 
 /* Private macro -------------------------------------------------------------*/
 
@@ -36,14 +37,23 @@
 /* RTOS */
 static xTaskHandle xNodeTask1_Handle = NULL;
 static xTaskHandle xNodeTask2_Handle = NULL;
+xSemaphoreHandle sSyncRoboRunNodeTask1;
+xSemaphoreHandle sSyncRoboRunNodeTask2;
+xSemaphoreHandle sSyncNodeTaskxDrive;
+xSemaphoreHandle sSyncNodeTaskxServo;
+static xQueueSetHandle sSyncRoboRunNodeTaskxSet;
 static node_t* node_task_1 = NULL;
 static node_t* node_task_2 = NULL;
 
 /* game and strategy */
-static const node_t* nodes[NODE_QUANTITY] = {&node_mammut_1};
+static const node_t* nodes_red[NODE_QUANTITY] = {&node_mammut_1};
+static const node_t* nodes_yellow[NODE_QUANTITY] = {&node_mammut_1};
+static node_t* node_game;
 volatile static float enemey_position[((int)(PLAYGROUND_HEIGH/ENEMY_GRID_SIZE_Y))][((int)(PLAYGROUND_WIDTH/ENEMY_GRID_SIZE_X))] = {{0.0}};
 volatile static robo_state_t robo_state = {0,0,0};
 node_t* next_node;
+uint8_t start_node;
+
 
 
 /* Private function prototypes -----------------------------------------------*/
@@ -55,7 +65,9 @@ static void vMyPosition(uint16_t, CAN_data_t*);
 /* Private functions ---------------------------------------------------------*/
 
 
-
+/**
+ *
+ */
 void initRoboRunState()
 {
     /* create the task */
@@ -66,6 +78,17 @@ void initRoboRunState()
     vTaskSuspend(xNodeTask1_Handle);
     vTaskSuspend(xNodeTask2_Handle);
 
+    /* create sync-semaphore */
+    vSemaphoreCreateBinary(sSyncRoboRunNodeTask1); /* for RoboRun <-> node-task sync */
+    vSemaphoreCreateBinary(sSyncRoboRunNodeTask2); /* for RoboRun <-> node-task sync */
+    vSemaphoreCreateBinary(sSyncNodeTaskxDrive); /* for RoboRun <-> node-task sync */
+    vSemaphoreCreateBinary(sSyncNodeTaskxServo); /* for RoboRun <-> node-task sync */
+
+    /* create a sync semaphore set */
+    sSyncRoboRunNodeTaskxSet = xQueueCreateSet(SEMAPHORE_SET_SIZE);
+    xQueueAddToSet(sSyncRoboRunNodeTask1,sSyncRoboRunNodeTaskxSet);
+    xQueueAddToSet(sSyncRoboRunNodeTask2,sSyncRoboRunNodeTaskxSet);
+
     /* set CAN listeners */
     setFunctionCANListener(vTrackEnemy,ENEMEY_1_POSITION_RESPONSE);
     setFunctionCANListener(vTrackEnemy,ENEMEY_2_POSITION_RESPONSE);
@@ -73,102 +96,89 @@ void initRoboRunState()
 }
 
 
+/**
+ *
+ */
+uint8_t setConfigRoboRunState(uint8_t start_node_id, uint8_t teamcolor)
+{
+	/* locale variables */
+	uint8_t node_count;
+	uint8_t success = 0;
+
+	/* load correct node-set */
+	if(teamcolor == GIP_TEAMCOLOR_YELLOW)
+	{
+		node_game = nodes_yellow;
+	}
+	else
+	{
+		node_game = nodes_red;
+	}
+
+	/* search start-node address */
+	for(node_count = 0; node_count < NODE_QUANTITY; node_count++)
+	{
+		if((node_game+node_count)->param.id == start_node_id)
+		{
+			next_node = (node_game+node_count);
+			success = 1;
+			break;
+		}
+	}
+
+	return success;
+}
+
+
+/**
+ *
+ */
 void runRoboRunState(portTickType* tick)
 {
-    float weight_dec, weight_inc, weright_dest, weight_enemy, weight_src_dest;
+    float weight_dec, weight_inc, weight_dest, weight_enemy, weight_src_dest;
     uint8_t remain_time;
     uint8_t node_count;
+    node_t* current_node;
+    xQueueSetMemberHandle sSyncRoboRunNodeTaskxSetHandle;
+
 
 
     /* node task 1 */
-    if(node_task_1 == NULL)
+    if(xSemaphoreTake(sSyncRoboRunNodeTask1,0) == pdTRUE)
     {
-        /* load next node */
-        node_task_1 = next_node;
-        if(node_task_2 == NULL)
-        {
-            node_task_1->param.node_state = NODE_BUSY;
-            vTaskResume(xNodeTask1_Handle);
-        }
-        else
-        {
-            if(node_task_2->param.node_state != NODE_BUSY)
-            {
-                node_task_1->param.node_state = NODE_BUSY;
-                vTaskResume(xNodeTask1_Handle);
-            }
-        }
+    	/* load next node */
+		node_task_1 = next_node;
+		current_node = next_node;
+
+		vTaskResume(xNodeTask1_Handle);
     }
     else
     {
-        if(node_task_1->param.node_state == NODE_FINISH_SUCCESS || node_task_1->param.node_state == NODE_FINISH_ERROR)
-        {
-            /* load next node */
-            node_task_1 = next_node;
+		/* node task 2 */
+		if(xSemaphoreTake(sSyncRoboRunNodeTask2,0) == pdTRUE)
+		{
+			/* load next node */
+			node_task_2 = next_node;
+			current_node = next_node;
 
-            if(node_task_2 == NULL)
-            {
-                node_task_1->param.node_state = NODE_BUSY;
-                vTaskResume(xNodeTask1_Handle);
-            }
-            else
-            {
-                if(node_task_2->param.node_state != NODE_BUSY)
-                {
-                    node_task_1->param.node_state = NODE_BUSY;
-                    vTaskResume(xNodeTask1_Handle);
-                }
-            }
-
-        }
+			vTaskResume(xNodeTask2_Handle);
+		}
     }
 
-    /* node task 2 */
-    if(node_task_2 == NULL)
-    {
-        /* load next node */
-        node_task_2 = next_node;
+    /* wait 1s or a given semaphore */
+    sSyncRoboRunNodeTaskxSetHandle = xQueueSelectFromSet(sSyncRoboRunNodeTaskxSet, 1000 / portTICK_RATE_MS);
 
-        if(node_task_1 == NULL)
-        {
-            node_task_2->param.node_state = NODE_BUSY;
-            vTaskResume(xNodeTask2_Handle);
-        }
-        else
-        {
-            if(node_task_1->param.node_state != NODE_BUSY)
-            {
-                node_task_2->param.node_state = NODE_BUSY;
-                vTaskResume(xNodeTask2_Handle);
-            }
-        }
-    }
-    else
-    {
-        if(node_task_2->param.node_state == NODE_FINISH_SUCCESS || node_task_2->param.node_state == NODE_FINISH_ERROR)
-        {
-            /* load next node */
-            node_task_2 = next_node;
+    /* check the node result of node-task 1 */
+	if(sSyncRoboRunNodeTaskxSetHandle == sSyncRoboRunNodeTask1 && node_task_1 != NULL)
+	{
 
-            if(node_task_1 == NULL)
-            {
-                node_task_2->param.node_state = NODE_BUSY;
-                vTaskResume(xNodeTask2_Handle);
-            }
-            else
-            {
-                if(node_task_1->param.node_state != NODE_BUSY)
-                {
-                    node_task_2->param.node_state = NODE_BUSY;
-                    vTaskResume(xNodeTask2_Handle);
-                }
-            }
+	}
 
-        }
-    }
+	/* check the node result of node-task 2 */
+	if(sSyncRoboRunNodeTaskxSetHandle == sSyncRoboRunNodeTask2 && node_task_2 != NULL)
+	{
 
-    /* wait for 1s */
-    vTaskDelayUntil(tick, ROBORUN_TIMEOUT / portTICK_RATE_MS);
+	}
 
 
     /******************/
@@ -181,13 +191,13 @@ void runRoboRunState(portTickType* tick)
     for(node_count = 0; node_count < NODE_QUANTITY; node_count++)
     {
         /* destination weight depends on the current robo-position and the arrive-direction */
-        switch(nodes[node_count]->param.arrive)
+        switch((node_game+node_count)->param.arrive)
         {
             case NORTH:
-                if(robo_state.y <= nodes[node_count]->param.y)
+                if(robo_state.y <= (node_game+node_count)->param.y)
                 {
-                    weight_dec =(nodes[node_count]->param.points/nodes[node_count]->param.time)
-                            * (1/nodes[node_count]->param.percent);
+                    weight_dec =((node_game+node_count)->param.points/(node_game+node_count)->param.time)
+                            * (1/(node_game+node_count)->param.percent);
                 }
                 break;
             case EAST:
@@ -200,12 +210,14 @@ void runRoboRunState(portTickType* tick)
 
         /* read out the enemy track-position for the node location */
         /* todo evtl. interrupts ausschalten */
-        weight_enemy = enemey_position[(int)(nodes[node_count]->param.y / (ENEMY_GRID_SIZE_Y*1000))]
-                                       [(int)(nodes[node_count]->param.y / (ENEMY_GRID_SIZE_Y*1000))];
+        taskENTER_CRITICAL();
+        weight_enemy = enemey_position[(int)((node_game+node_count)->param.y / (ENEMY_GRID_SIZE_Y*1000))]
+                                       [(int)((node_game+node_count)->param.y / (ENEMY_GRID_SIZE_Y*1000))];
+        taskEXIT_CRITICAL();
 
         /* source -> destination node distance-time weight */
-        weight_src_dest = sqrtf((fabsf(robo_state.x - nodes[node_count]->param.x) * fabsf(robo_state.x - nodes[node_count]->param.x)) +
-                (fabsf(robo_state.y - nodes[node_count]->param.y) * fabsf(robo_state.y - nodes[node_count]->param.y))) / ROBO_AVERAGE_SPEED;
+        weight_src_dest = sqrtf((fabsf(robo_state.x - (node_game+node_count)->param.x) * fabsf(robo_state.x - (node_game+node_count)->param.x)) +
+                (fabsf(robo_state.y - (node_game+node_count)->param.y) * fabsf(robo_state.y - (node_game+node_count)->param.y))) / ROBO_AVERAGE_SPEED;
     }
 }
 
@@ -288,6 +300,11 @@ static void vNodeTask1(void* pvParameters )
     for(;;)
     {
         node_task_1->node_function(&node_task_1->param,&robo_state);
+
+        taskENTER_CRITICAL();
+        xSemaphoreGive(sSyncRoboRunNodeTask1);
+        vTaskSuspend(NULL);
+        taskEXIT_CRITICAL();
     }
 }
 
@@ -305,6 +322,11 @@ static void vNodeTask2(void* pvParameters )
     for(;;)
     {
         node_task_2->node_function(&node_task_2->param,&robo_state);
+
+        taskENTER_CRITICAL();
+		xSemaphoreGive(sSyncRoboRunNodeTask2);
+		vTaskSuspend(NULL);
+		taskEXIT_CRITICAL();
     }
 }
 /**

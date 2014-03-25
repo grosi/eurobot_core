@@ -43,7 +43,10 @@
 
 /* exported variables ---------------------------------------------------------*/
 //extern node_t* next_node;
-
+extern xSemaphoreHandle sSyncRoboRunNodeTask1;
+extern xSemaphoreHandle sSyncRoboRunNodeTask2;
+extern xSemaphoreHandle sSyncNodeTaskxDrive;
+extern xSemaphoreHandle sSyncNodeTaskxServo;
 
 /* exported function prototypes -----------------------------------------------*/
 extern void initRoboRunState();
