@@ -7,7 +7,7 @@
  *  - Changed implementation of IR detection to external interrupt
  *  - Implemented comparison of last three US measures
  *  - Fixed I2C error, where the bus was always busy after disconnecting a slave
- *  software tested (12.03.2014)
+ *  - Software tested (12.03.2014)
  * \version 1.0
  *  Software tested (14.01.2014)
  * \version 0.1
