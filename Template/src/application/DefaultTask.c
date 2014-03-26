@@ -1,5 +1,5 @@
 /**
- * \file    default_task.c
+ * \file    DefaultTask.c
  * \author  gross10
  * \date    2013--11-15
  *
@@ -16,8 +16,8 @@
  */
 /* Includes ------------------------------------------------------------------*/
 /* application */
-#include "app_config.h"
-#include "default_task.h"
+#include "AppConfig.h"
+#include "DefaultTask.h"
 
 /* HW-library */
 #include "../lib/led.h"

@@ -1,5 +1,5 @@
 /**
- * \file    default_task.c
+ * \file    DefaultTask.c
  * \author  gross10
  * \date    2013--11-15
  *
@@ -16,8 +16,8 @@
  */
 
 /* Define to prevent recursive inclusion --------------------------------------*/
-#ifndef DEFAULT_TASK_H_
-#define DEFAULT_TASK_H_
+#ifndef DEFAULTTASK_H_
+#define DEFAULTTASK_H_
 
 /* exported typedef -----------------------------------------------------------*/
 
@@ -42,7 +42,7 @@ extern void initDefaultTask(void);
 extern inline void deleteDefaultTask(void);
 
 
-#endif /* DEFAULT_TASK_H_ */
+#endif /* DEFAULTTASK_H_ */
 
 /**
  * @}

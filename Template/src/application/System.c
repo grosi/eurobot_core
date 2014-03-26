@@ -1,6 +1,6 @@
 /**
- * \file    Strategy.h
- * \author  meert1
+ * \file    System.c
+ * \author  gross10
  * \date    2013-11-29
  *
  * \version 1.0
@@ -17,12 +17,13 @@
 
 /* Includes ------------------------------------------------------------------*/
 /* application */
-#include "app_config.h"
-#include "CANGatekeeper.h"
-#include "Strategy.h"
+#include "AppConfig.h"
+#include "system/RoboInitialisation.h"
+#include "system/RoboSetup.h"
+#include "system/RoboRun.h"
+#include "system/RoboError.h"
+#include "System.h"
 
-/* HW-library */
-//#include "..\lib\roboBoardInterface.h" /*!< \todo remove if not used */
 
 /* Private typedef -----------------------------------------------------------*/
 
@@ -34,10 +35,12 @@
 
 
 /* Private variables ---------------------------------------------------------*/
+void (*system_state)(portTickType*); /* functionpointer to the current system-state */
 
 
 /* Private function prototypes -----------------------------------------------*/
-static void vStrategyTask(void*);
+static void vSystemTask(void*);
+
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -49,36 +52,41 @@ static void vStrategyTask(void*);
  * \param[in]   None
  * \return      None
  */
-void initStrategyTask(void){
+void initSystemTask(void){
 
     /* create the task */
-    xTaskCreate( vStrategyTask, ( signed char * ) STRATEGY_TASK_NAME, STRATEGY_STACK_SIZE, NULL, STRATEGY_TASK_PRIORITY, NULL );
+    xTaskCreate( vSystemTask, ( signed char * ) SYSTEM_TASK_NAME, SYSTEM_STACK_SIZE, NULL, SYSTEM_TASK_PRIORITY, NULL );
+
+    /* init system states */
+    initRoboInitialisationState();
+    initRoboRunState();
+
+    /* set start state */
+    system_state = runRoboInitialisationState;
 
 }
 
+
 /**
- * \fn          vStrategyTask
+ * \fn          vSystemTask
  * \brief       Task to handle the strategy
  *
  * \param[in]   None
  * \return      None
  */
-static void vStrategyTask(void* pvParameters ) {
-
+static void vSystemTask(void* pvParameters )
+{
+    /* local variables */
     portTickType xLastFlashTime;
 
     /* We need to initialise xLastFlashTime prior to the first call to
     vTaskDelayUntil(). */
     xLastFlashTime = xTaskGetTickCount();
 
-    /* wait */
-    vTaskDelayUntil( &xLastFlashTime, 10 / portTICK_RATE_MS);
-
+    /* endless */
     for(;;)
     {
-        /* wait */
-        vTaskDelayUntil( &xLastFlashTime, 10 / portTICK_RATE_MS);
-
+        system_state(&xLastFlashTime);
     }
 }
 

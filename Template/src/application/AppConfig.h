@@ -1,5 +1,5 @@
 /**
- * \file    app_config.h
+ * \file    AppConfig.h
  * \author  gross10
  * \date    2013-11-28
  *
