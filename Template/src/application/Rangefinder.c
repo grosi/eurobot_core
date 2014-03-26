@@ -76,6 +76,7 @@ uint16_t distance_bw;                   /* Variable for the distance detected by
 /* Globale variables ---------------------------------------------------------*/
 /* Mutex for I2C */
 xSemaphoreHandle mHwI2C = NULL;
+xSemaphoreHandle sSyncNodeTask = NULL;
 
 /* Alarm flags, 1 if object detected, 0 if no object detected */
 volatile uint8_t RangefinderIR_FwAlarm_flag = 0; /* Infrared forward alarm */
@@ -113,8 +114,11 @@ void initRangefinderTask(void) {
     /* US: I2C */
     initI2C();
 
-    /* Create semaphore for I2C */
+    /* Create mutex for I2C */
     mHwI2C = xSemaphoreCreateMutex();
+
+    /* Create semaphore for informing node task */
+    vSemaphoreCreateBinary(sSyncNodeTask);
 
     /* Create the tasks */
     xTaskCreate( vRangefinderTask, ( signed char * ) RANGEFINDER_TASK_NAME, RANGEFINDER_STACK_SIZE, NULL, RANGEFINDER_TASK_PRIORITY, NULL );
@@ -170,6 +174,8 @@ static void vRangefinderTask(void* pvParameters ) {
         	{
         		/* Two of three were positive, set alarm (object detected) */
 				RangefinderUS_FwAlarm_flag = 1;
+				/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
+				xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
         	}
         	else
         	{
@@ -194,6 +200,8 @@ static void vRangefinderTask(void* pvParameters ) {
         	{
         		/* Two of three were positive, so don't reset the alarm yet. */
         		RangefinderUS_FwAlarm_flag = 1;
+				/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
+        		xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
         	}
 
         	/* Remember measure (NOT flag which is affected by the last two measures) */
@@ -215,6 +223,8 @@ static void vRangefinderTask(void* pvParameters ) {
         	{
         		/* Two of three were positive, set alarm (object detected) */
 				RangefinderUS_BwAlarm_flag = 1;
+				/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
+				xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
         	}
         	else
         	{
@@ -239,6 +249,8 @@ static void vRangefinderTask(void* pvParameters ) {
         	{
         		/* Two of three were positive, so don't reset the alarm yet. */
         		RangefinderUS_BwAlarm_flag = 1;
+				/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
+        		xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
         	}
 
         	/* Remember measure (NOT flag which is affected by the last two measures) */
@@ -272,6 +284,8 @@ void EXTI9_5_IRQHandler(void)
 
 			/* Object detected, set alarm */
 			RangefinderIR_BwAlarm_flag = 1;
+			/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
+			xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
 		}
 
 		/* Clear the EXTI line pending bit */
@@ -300,6 +314,8 @@ void EXTI15_10_IRQHandler(void)
 
 			/* Object detected, set alarm */
 			RangefinderIR_FwAlarm_flag = 1;
+			/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
+			xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
 		}
 
 		/* Clear the EXTI line pending bit */
@@ -317,6 +333,8 @@ void EXTI15_10_IRQHandler(void)
 
 			/* Object detected, set alarm */
 			RangefinderIR_FwAlarm_flag = 1;
+			/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
+			xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
 		}
 
 		/* Clear the EXTI line pending bit */
@@ -334,6 +352,8 @@ void EXTI15_10_IRQHandler(void)
 
 			/* Object detected, set alarm */
 			RangefinderIR_FwAlarm_flag = 1;
+			/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
+			xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
 		}
 
 		/* Clear the EXTI line pending bit */
