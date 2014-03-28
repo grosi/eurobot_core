@@ -124,6 +124,7 @@ typedef struct
 /**
  * \brief	Possible Goto-Barrier
  */
+#define GOTO_NO_BARRIER         0x0000
 #define GOTO_FIRE_1				0x0001
 #define GOTO_FIRE_1_FORCE		0x0002
 #define GOTO_FIRE_2				0x0004
