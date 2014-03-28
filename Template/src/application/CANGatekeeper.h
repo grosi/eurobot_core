@@ -110,10 +110,10 @@ typedef struct
 #define CONFEDERATE_POSITION_RESPONSE   0x280
 #define START_CONFIGURATION_SET         0x2C0
 #define START_CONFIGURATION_CONFIRM     0x300
-#define CHECK_NAVI_REQUEST				0x340
-#define CHECK_NAVI_RESPONSE				0x380
-#define CHECK_DRIVE_REQUEST				0x3C0
-#define CHECK_DRIVE_RESPONSE			0x400
+#define CHECK_NAVI_REQUEST              0x340
+#define CHECK_NAVI_RESPONSE             0x380
+#define CHECK_DRIVE_REQUEST             0x3C0
+#define CHECK_DRIVE_RESPONSE            0x400
 
 
 /**
@@ -125,22 +125,22 @@ typedef struct
  * \brief	Possible Goto-Barrier
  */
 #define GOTO_NO_BARRIER         0x0000
-#define GOTO_FIRE_1				0x0001
-#define GOTO_FIRE_1_FORCE		0x0002
-#define GOTO_FIRE_2				0x0004
-#define GOTO_FIRE_2_FORCE		0x0008
-#define GOTO_FIRE_3				0x0010
-#define GOTO_FIRE_3_FORCE		0x0020
-#define GOTO_FIRE_4				0x0040
-#define GOTO_FIRE_4_FORCE		0x0080
-#define GOTO_FIRE_5				0x0100
-#define GOTO_FIRE_5_FORCE		0x0200
-#define GOTO_FIRE_6				0x0400
-#define GOTO_FIRE_6_FORCE		0x0800
-#define GOTO_FIRE_POOL_1		0x1000
-#define GOTO_FIRE_POOL_1_FORCE	0x2000
-#define GOTO_FIRE_POOL_2		0x4000
-#define GOTO_FIRE_POOL_2_FORCE	0x8000
+#define GOTO_FIRE_1             0x0001
+#define GOTO_FIRE_1_FORCE       0x0002
+#define GOTO_FIRE_2             0x0004
+#define GOTO_FIRE_2_FORCE       0x0008
+#define GOTO_FIRE_3             0x0010
+#define GOTO_FIRE_3_FORCE       0x0020
+#define GOTO_FIRE_4             0x0040
+#define GOTO_FIRE_4_FORCE       0x0080
+#define GOTO_FIRE_5             0x0100
+#define GOTO_FIRE_5_FORCE       0x0200
+#define GOTO_FIRE_6             0x0400
+#define GOTO_FIRE_6_FORCE       0x0800
+#define GOTO_FIRE_POOL_1        0x1000
+#define GOTO_FIRE_POOL_1_FORCE  0x2000
+#define GOTO_FIRE_POOL_2        0x4000
+#define GOTO_FIRE_POOL_2_FORCE  0x8000
 
 
 /**

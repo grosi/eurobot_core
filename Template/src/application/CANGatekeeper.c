@@ -58,15 +58,15 @@
 #define GOTO_SPEED_TX_MASK_D5           0x03
 #define GOTO_SPEED_RX_MASK_D4           0x3F
 #define GOTO_SPEED_RX_MASK_D5           0xC0
-#define GOTO_BARRIER_OFFSET_D5			10
-#define GOTO_BARRIER_OFFSET_D6			2
-#define GOTO_BARRIER_OFFSET_D7			6
-#define GOTO_BARRIER_TX_MASK_D5			0xFC00
-#define GOTO_BARRIER_TX_MASK_D6			0x03FC
-#define GOTO_BARRIER_TX_MASK_D7			0x0003
-#define GOTO_BARRIER_RX_MASK_D5			0x3F
-#define GOTO_BARRIER_RX_MASK_D6			0xFF
-#define GOTO_BARRIER_RX_MASK_D7			0xC0
+#define GOTO_BARRIER_OFFSET_D5          10
+#define GOTO_BARRIER_OFFSET_D6          2
+#define GOTO_BARRIER_OFFSET_D7          6
+#define GOTO_BARRIER_TX_MASK_D5         0xFC00
+#define GOTO_BARRIER_TX_MASK_D6         0x03FC
+#define GOTO_BARRIER_TX_MASK_D7         0x0003
+#define GOTO_BARRIER_RX_MASK_D5         0x3F
+#define GOTO_BARRIER_RX_MASK_D6         0xFF
+#define GOTO_BARRIER_RX_MASK_D7         0xC0
 
 #define GOTO_POINT_1_X_OFFSET_D4        4
 #define GOTO_POINT_1_X_OFFSET_D5        4
@@ -124,15 +124,15 @@
 #define GIP_CONFEDERATE_OFFSET_D0       4
 #define GIP_CONFEDERATE_TX_MASK_D0      0x01
 #define GIP_CONFEDERATE_RX_MASK_D0      0x10
-#define GIP_ENEMY_1_SIZE_OFFSET_D0		2
-#define GIP_ENEMY_1_SIZE_TX_MASK_D0		0x3C
-#define GIP_ENEMY_1_SIZE_RX_MASK_D0		0x0F
-#define GIP_ENEMY_1_SIZE_OFFSET_D1		6
-#define GIP_ENEMY_1_SIZE_TX_MASK_D1		0x03
-#define GIP_ENEMY_1_SIZE_RX_MASK_D1		0xC0
-#define GIP_ENEMY_2_SIZE_OFFSET_D1		0
-#define GIP_ENEMY_2_SIZE_TX_MASK_D1		0x3F
-#define GIP_ENEMY_2_SIZE_RX_MASK_D1		0x3F
+#define GIP_ENEMY_1_SIZE_OFFSET_D0      2
+#define GIP_ENEMY_1_SIZE_TX_MASK_D0     0x3C
+#define GIP_ENEMY_1_SIZE_RX_MASK_D0     0x0F
+#define GIP_ENEMY_1_SIZE_OFFSET_D1      6
+#define GIP_ENEMY_1_SIZE_TX_MASK_D1     0x03
+#define GIP_ENEMY_1_SIZE_RX_MASK_D1     0xC0
+#define GIP_ENEMY_2_SIZE_OFFSET_D1      0
+#define GIP_ENEMY_2_SIZE_TX_MASK_D1     0x3F
+#define GIP_ENEMY_2_SIZE_RX_MASK_D1     0x3F
 
 
 /* Private macro -------------------------------------------------------------*/
@@ -573,7 +573,7 @@ inline void txStartConfigurationSet(uint8_t color, uint8_t enemy, uint8_t confed
 	uint8_t data[2];
 
     data[0] = ((color & GIP_COLOR_TX_MASK_D0) << GIP_COLOR_OFFSET_D0) | ((enemy & GIP_ENEMY_TX_MASK_D0) << GIP_ENEMY_OFFSET_D0) |
-    		((confederate & GIP_CONFEDERATE_TX_MASK_D0) << GIP_CONFEDERATE_OFFSET_D0) | ((enemy_1_size & GIP_ENEMY_1_SIZE_TX_MASK_D0) >> GIP_ENEMY_1_SIZE_OFFSET_D0);
+            ((confederate & GIP_CONFEDERATE_TX_MASK_D0) << GIP_CONFEDERATE_OFFSET_D0) | ((enemy_1_size & GIP_ENEMY_1_SIZE_TX_MASK_D0) >> GIP_ENEMY_1_SIZE_OFFSET_D0);
     data[1] = ((enemy_1_size & GIP_ENEMY_1_SIZE_TX_MASK_D1) << GIP_ENEMY_1_SIZE_OFFSET_D1) | ((enemy_2_size & GIP_ENEMY_2_SIZE_TX_MASK_D1) << GIP_ENEMY_2_SIZE_OFFSET_D1);
 
     createCANMessage(START_CONFIGURATION_SET,2,data);

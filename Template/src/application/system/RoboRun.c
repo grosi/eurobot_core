@@ -101,32 +101,32 @@ void initRoboRunState()
  */
 uint8_t setConfigRoboRunState(uint8_t start_node_id, uint8_t teamcolor)
 {
-	/* locale variables */
-	uint8_t node_count;
-	uint8_t success = 0;
+    /* locale variables */
+    uint8_t node_count;
+    uint8_t success = 0;
 
-	/* load correct node-set */
-	if(teamcolor == GIP_TEAMCOLOR_YELLOW)
-	{
-		node_game = nodes_yellow;
-	}
-	else
-	{
-		node_game = nodes_red;
-	}
+    /* load correct node-set */
+    if(teamcolor == GIP_TEAMCOLOR_YELLOW)
+    {
+        node_game = nodes_yellow;
+    }
+    else
+    {
+        node_game = nodes_red;
+    }
 
-	/* search start-node address */
-	for(node_count = 0; node_count < NODE_QUANTITY; node_count++)
-	{
-		if((node_game+node_count)->param.id == start_node_id)
-		{
-			next_node = (node_game+node_count);
-			success = 1;
-			break;
-		}
-	}
+    /* search start-node address */
+    for(node_count = 0; node_count < NODE_QUANTITY; node_count++)
+    {
+        if((node_game+node_count)->param.id == start_node_id)
+        {
+            next_node = (node_game+node_count);
+            success = 1;
+            break;
+        }
+    }
 
-	return success;
+    return success;
 }
 
 
@@ -146,23 +146,23 @@ void runRoboRunState(portTickType* tick)
     /* node task 1 */
     if(xSemaphoreTake(sSyncRoboRunNodeTask1,0) == pdTRUE)
     {
-    	/* load next node */
-		node_task_1 = next_node;
-		current_node = next_node;
+        /* load next node */
+        node_task_1 = next_node;
+        current_node = next_node;
 
-		vTaskResume(xNodeTask1_Handle);
+        vTaskResume(xNodeTask1_Handle);
     }
     else
     {
-		/* node task 2 */
-		if(xSemaphoreTake(sSyncRoboRunNodeTask2,0) == pdTRUE)
-		{
-			/* load next node */
-			node_task_2 = next_node;
-			current_node = next_node;
+        /* node task 2 */
+        if(xSemaphoreTake(sSyncRoboRunNodeTask2,0) == pdTRUE)
+        {
+            /* load next node */
+            node_task_2 = next_node;
+            current_node = next_node;
 
-			vTaskResume(xNodeTask2_Handle);
-		}
+            vTaskResume(xNodeTask2_Handle);
+        }
     }
 
     /* wait 1s or a given semaphore */
