@@ -50,7 +50,11 @@ typedef struct
     uint16_t x;
     uint16_t y;
     uint16_t angle;
-}robo_state_t;
+    int16_t enemy_1_x; /*!< -1 = no enemy 1 or error */
+    int16_t enemy_1_y; /*!< -1 = no enemy 1 or error */
+    int16_t enemy_2_x; /*!< -1 = no enemy 2 or error */
+    int16_t enemy_2_y; /*!< -1 = no enemy 2 or error */
+}game_state_t;
 
 
 /**
@@ -76,7 +80,7 @@ typedef struct
 typedef struct
 {
     node_param_t param;
-    void (*node_function)(node_param_t*, volatile robo_state_t*);
+    void (*node_function)(node_param_t*, volatile game_state_t*);
 }node_t;
 
 
@@ -96,6 +100,13 @@ typedef struct
 #define NODE_FIRE_POOL_ID       3
 #define NODE_FIRE_POOL_SIZE     0
 #define NODE_FIRE_POOL_LEVEL    0
+
+/* node weighting settings */
+#define NODE_ARRIVE_FRAME       150 /*!< [mm] */
+#define NODE_WORST_ARRIVE       4
+#define NODE_BAD_ARRIVE         3
+#define NODE_WELL_ARRIVE        2
+#define NODE_PERFECT_ARRIVE     1
 
 
 /* exported macro -------------------------------------------------------------*/

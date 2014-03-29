@@ -36,7 +36,7 @@
 node_t node_mammut_1 =
 {
     {
-        0,                  /*!<node id */
+        .id = 0,                  /*!<node id */
         4,                  /*!<node points */
         0.19,               /*!<percent of the total points [%]*/
         5,                  /*!<estimated node time [s]*/
