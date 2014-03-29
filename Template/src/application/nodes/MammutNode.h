@@ -30,7 +30,7 @@
 
 
 /* exported function prototypes -----------------------------------------------*/
-extern void doMammutNode(node_param_t*, volatile robo_state_t*);
+extern void doMammutNode(node_param_t*, volatile game_state_t*);
 
 
 #endif /* MAMMUTNODE_H_ */

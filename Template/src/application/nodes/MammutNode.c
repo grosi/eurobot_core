@@ -36,7 +36,7 @@
 
 /* Private functions ---------------------------------------------------------*/
 
-void doMammutNode(node_param_t* param, volatile robo_state_t* robo_state)
+void doMammutNode(node_param_t* param, volatile game_state_t* game_state)
 {
 
 }
