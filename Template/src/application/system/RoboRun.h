@@ -22,8 +22,7 @@
 
 /* exported define ------------------------------------------------------------*/
 /* RTOS */
-#define SYSTEM_NODE_TASK_1_NAME     "Node Task 1"
-#define SYSTEM_NODE_TASK_2_NAME     "Node Task 2"
+#define SYSTEM_NODE_TASK_NAME       "Node Task"
 #define SYSTEM_NODE_STACK_SIZE      configMINIMAL_STACK_SIZE
 #define SYSTEM_NODE_TASK_PRIORITY   (configMAX_PRIORITIES - 5UL) /*!< priority 2 */
 #define ROBORUN_TIMEOUT             1000 /*!< wait for max. 1s */
@@ -50,6 +49,7 @@ extern xSemaphoreHandle sSyncNodeTaskxServo;
 
 /* exported function prototypes -----------------------------------------------*/
 extern void initRoboRunState();
+extern uint8_t setConfigRoboRunState(uint8_t, uint8_t, uint8_t);
 extern void runRoboRunState(portTickType*);
 
 
