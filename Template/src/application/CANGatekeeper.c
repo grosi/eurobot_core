@@ -20,7 +20,7 @@
  */
 /* Includes ------------------------------------------------------------------*/
 /* application */
-#include "app_config.h" /* global application-settings */
+#include "AppConfig.h" /* global application-settings */
 #include "CANGatekeeper.h"
 
 /* HW-library */
@@ -34,28 +34,40 @@
 /* Private define ------------------------------------------------------------*/
 /* GOTO-protocol */
 #define EMERGENCY_STOP_OBSTACLE_TX_MASK 0x01
-#define GOTO_X_OFFSET_D1                8
-#define GOTO_X_TX_MASK_D0               0xFF
-#define GOTO_X_TX_MASK_D1               0x100
-#define GOTO_X_RX_MASK_D1               0x01
-#define GOTO_Y_OFFSET_D1                1
-#define GOTO_Y_OFFSET_D2                7
-#define GOTO_Y_TX_MASK_D1               0x7F
-#define GOTO_Y_TX_MASK_D2               0x180
-#define GOTO_Y_RX_MASK_D1               0xFE
-#define GOTO_Y_RX_MASK_D2               0x03
-#define GOTO_ANGLE_OFFSET_D2            2
-#define GOTO_ANGLE_OFFSET_D3            6
-#define GOTO_ANGLE_TX_MASK_D2           0x3F
-#define GOTO_ANGLE_TX_MASK_D3           0x3C0
-#define GOTO_ANGLE_RX_MASK_D2           0xFC
-#define GOTO_ANGLE_RX_MASK_D3           0x0F
-#define GOTO_SPEED_OFFSET_D3            4
-#define GOTO_SPEED_OFFSET_D4            4
-#define GOTO_SPEED_TX_MASK_D3           0x0F
-#define GOTO_SPEED_TX_MASK_D4           0xF0
-#define GOTO_SPEED_RX_MASK_D3           0xF0
-#define GOTO_SPEED_RX_MASK_D4           0x0F
+#define GOTO_X_OFFSET_D0				4
+#define GOTO_X_OFFSET_D1                4
+#define GOTO_X_TX_MASK_D0               0xFF0
+#define GOTO_X_TX_MASK_D1               0x0F
+#define GOTO_X_RX_MASK_D0               0xFF
+#define GOTO_X_RX_MASK_D1               0xF0
+#define GOTO_Y_OFFSET_D1                8
+#define GOTO_Y_OFFSET_D2                0
+#define GOTO_Y_TX_MASK_D1               0xF00
+#define GOTO_Y_TX_MASK_D2               0xFF
+#define GOTO_Y_RX_MASK_D1               0x0F
+#define GOTO_Y_RX_MASK_D2               0xFF
+#define GOTO_ANGLE_OFFSET_D3            2
+#define GOTO_ANGLE_OFFSET_D4            6
+#define GOTO_ANGLE_TX_MASK_D3           0x3FC
+#define GOTO_ANGLE_TX_MASK_D4           0x03
+#define GOTO_ANGLE_RX_MASK_D3           0xFF
+#define GOTO_ANGLE_RX_MASK_D4           0xC0
+#define GOTO_SPEED_OFFSET_D4            2
+#define GOTO_SPEED_OFFSET_D5            6
+#define GOTO_SPEED_TX_MASK_D4           0xFC
+#define GOTO_SPEED_TX_MASK_D5           0x03
+#define GOTO_SPEED_RX_MASK_D4           0x3F
+#define GOTO_SPEED_RX_MASK_D5           0xC0
+#define GOTO_BARRIER_OFFSET_D5          10
+#define GOTO_BARRIER_OFFSET_D6          2
+#define GOTO_BARRIER_OFFSET_D7          6
+#define GOTO_BARRIER_TX_MASK_D5         0xFC00
+#define GOTO_BARRIER_TX_MASK_D6         0x03FC
+#define GOTO_BARRIER_TX_MASK_D7         0x0003
+#define GOTO_BARRIER_RX_MASK_D5         0x3F
+#define GOTO_BARRIER_RX_MASK_D6         0xFF
+#define GOTO_BARRIER_RX_MASK_D7         0xC0
+
 #define GOTO_POINT_1_X_OFFSET_D4        4
 #define GOTO_POINT_1_X_OFFSET_D5        4
 #define GOTO_POINT_1_X_TX_MASK_D4       0x0F
@@ -78,11 +90,11 @@
 #define GOTO_POINT_2_Y_TX_MASK_D7       0x7F
 #define GOTO_POINT_2_Y_RX_MASK_D7       0xFE
 #define GOTO_TIME_OFFSET_D0             0
-#define GOTO_TIME_TX_MASK_D0               0x000000FF
+#define GOTO_TIME_TX_MASK_D0            0x000000FF
 #define GOTO_TIME_OFFSET_D1             8
-#define GOTO_TIME_TX_MASK_D1               0x0000FF00
+#define GOTO_TIME_TX_MASK_D1            0x0000FF00
 #define GOTO_TIME_OFFSET_D2             16
-#define GOTO_TIME_TX_MASK_D2               0x00FF0000
+#define GOTO_TIME_TX_MASK_D2            0x00FF0000
 
 /* ELP-protocol */
 #define ELP_X_OFFSET_D1                 8
@@ -106,12 +118,21 @@
 #define GIP_COLOR_OFFSET_D0             7
 #define GIP_COLOR_TX_MASK_D0            0x01
 #define GIP_COLOR_RX_MASK_D0            0x80
-#define GIP_ENEMY_OFFSET_D0             6
-#define GIP_ENEMY_TX_MASK_D0            0x01
-#define GIP_ENEMY_RX_MASK_D0            0x40
-#define GIP_CONFEDERATE_OFFSET_D0       5
+#define GIP_ENEMY_OFFSET_D0             5
+#define GIP_ENEMY_TX_MASK_D0            0x03
+#define GIP_ENEMY_RX_MASK_D0            0x60
+#define GIP_CONFEDERATE_OFFSET_D0       4
 #define GIP_CONFEDERATE_TX_MASK_D0      0x01
-#define GIP_CONFEDERATE_RX_MASK_D0      0x20
+#define GIP_CONFEDERATE_RX_MASK_D0      0x10
+#define GIP_ENEMY_1_SIZE_OFFSET_D0      2
+#define GIP_ENEMY_1_SIZE_TX_MASK_D0     0x3C
+#define GIP_ENEMY_1_SIZE_RX_MASK_D0     0x0F
+#define GIP_ENEMY_1_SIZE_OFFSET_D1      6
+#define GIP_ENEMY_1_SIZE_TX_MASK_D1     0x03
+#define GIP_ENEMY_1_SIZE_RX_MASK_D1     0xC0
+#define GIP_ENEMY_2_SIZE_OFFSET_D1      0
+#define GIP_ENEMY_2_SIZE_TX_MASK_D1     0x3F
+#define GIP_ENEMY_2_SIZE_RX_MASK_D1     0x3F
 
 
 /* Private macro -------------------------------------------------------------*/
@@ -302,44 +323,28 @@ inline void txStopDrive()
  * \brief   drive-command
  *          convert the drive-data to the Goto-protocol
  *
- * \param[in]   x x-coordinate of the end position [9bit]
- * \param[in]   y y-coordinate of the end position [9bit]
+ * \param[in]   x x-coordinate of the end position [12bit]
+ * \param[in]   y y-coordinate of the end position [12bit]
  * \param[in]   angle angle of the end position [10bit]
  * \param[in]   speed robo-speed [8bit]
- * \param[in]   points array with 7bit coordinates of points
+ * \param[in]   barrier flag-set of different barriers
  * \return      None
  */
-void txGotoXY(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, int8_t points[2][2])
+void txGotoXY(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, uint16_t barrier)
 {
-    uint8_t data_len = 5;
     uint8_t data[8];
 
-    data[0] = x & GOTO_X_TX_MASK_D0;
-    data[1] = ((x & GOTO_X_TX_MASK_D1) >> GOTO_X_OFFSET_D1) | ((y & GOTO_Y_TX_MASK_D1) << GOTO_Y_OFFSET_D1);
-    data[2] = ((y & GOTO_Y_TX_MASK_D2) >> GOTO_Y_OFFSET_D2) | ((angle & GOTO_ANGLE_TX_MASK_D2) << GOTO_ANGLE_OFFSET_D2);
-    data[3] = ((angle & GOTO_ANGLE_TX_MASK_D3) >> GOTO_ANGLE_OFFSET_D3) | ((speed & GOTO_SPEED_TX_MASK_D3) << GOTO_SPEED_OFFSET_D3);
-    data[4] = ((speed & GOTO_SPEED_TX_MASK_D4) >> GOTO_SPEED_OFFSET_D4);
-
-    /* check whether a point exists */
-    if(points[0][0] != -1)
-    {
-        data[4] |= (points[0][0] & GOTO_POINT_1_X_TX_MASK_D4) << GOTO_POINT_1_X_OFFSET_D4;
-        data[5] = ((points[0][0] & GOTO_POINT_1_X_TX_MASK_D5) >> GOTO_POINT_1_X_OFFSET_D5) | ((points[0][1] & GOTO_POINT_1_Y_TX_MASK_D5) << GOTO_POINT_1_Y_OFFSET_D5);
-        data[6] = (points[0][1] & GOTO_POINT_1_Y_TX_MASK_D6) << GOTO_POINT_1_Y_OFFSET_D6;
-        data_len += 2;
-
-        /* check whether the second point exists */
-        if(points[1][0] != -1)
-        {
-            data[6] |= (points[1][0] & GOTO_POINT_2_X_TX_MASK_D6) << GOTO_POINT_2_X_OFFSET_D6;
-            data[7] = ((points[1][0] & GOTO_POINT_2_X_TX_MASK_D7) >> GOTO_POINT_2_X_OFFSET_D7) | ((points[1][1] & GOTO_POINT_2_Y_TX_MASK_D7) << GOTO_POINT_2_Y_OFFSET_D7);
-            data_len++;
-        }
-    }
+    data[0] = (x & GOTO_X_TX_MASK_D0) >> GOTO_X_OFFSET_D0;
+    data[1] = ((x & GOTO_X_TX_MASK_D1) << GOTO_X_OFFSET_D1) | ((y & GOTO_Y_TX_MASK_D1) >> GOTO_Y_OFFSET_D1);
+    data[2] = ((y & GOTO_Y_TX_MASK_D2) >> GOTO_Y_OFFSET_D2);
+    data[3] = ((angle & GOTO_ANGLE_TX_MASK_D3) >> GOTO_ANGLE_OFFSET_D3);
+    data[4] = ((angle & GOTO_ANGLE_TX_MASK_D4) << GOTO_ANGLE_OFFSET_D4) | ((speed & GOTO_SPEED_TX_MASK_D4) >> GOTO_SPEED_OFFSET_D4);
+    data[5] = ((speed & GOTO_SPEED_TX_MASK_D5) << GOTO_SPEED_OFFSET_D5) | ((barrier & GOTO_BARRIER_TX_MASK_D5) >> GOTO_BARRIER_OFFSET_D5);
+    data[6] = ((barrier & GOTO_BARRIER_TX_MASK_D6) >> GOTO_BARRIER_OFFSET_D6);
+    data[7] = ((barrier & GOTO_BARRIER_TX_MASK_D7) << GOTO_BARRIER_OFFSET_D7);
 
     /* send the Goto-command to the queue */
-    createCANMessage(GOTO_XY,data_len,data);
-
+    createCANMessage(GOTO_XY,8,data);
 }
 
 
@@ -392,22 +397,22 @@ void txGotoStateResponse(uint32_t time)
 
 
 /**
- * \fn      txLaserPostionRequest
- * \brief   request the position-data of the laser-node
+ * \fn      txNaviPositionRequest
+ * \brief   request the position-data of the navi-node
  *          convert the drive-data to the Goto-protocol
  *
  * \param[in]   None
  * \return      None
  */
-inline void txLaserPostionRequest()
+inline void txNaviPositionRequest()
 {
-    createCANMessage(LASER_POSITION_REQUEST,0,0);
+    createCANMessage(NAVI_POSITION_REQUEST,0,0);
 }
 
 
 /**
- * \fn      txLaserPositionResponse
- * \brief   estimated position of the laser-node
+ * \fn      txNaviPositionResponse
+ * \brief   estimated position of the navi-node
  *          convert the drive-data to the Goto-protocol
  *
  * \param[in]   x x-coordinate of the position [12bit]
@@ -417,41 +422,9 @@ inline void txLaserPostionRequest()
  * \param[in]   id
  * \return      None
  */
-inline void txLaserPositionResponse(int16_t x, int16_t y, int16_t angle, uint8_t id)
+inline void txNaviPositionResponse(int16_t x, int16_t y, int16_t angle, uint8_t id)
 {
-    txPositionResponse(LASER_POSITION_RESPONSE,x,y,angle,id);
-}
-
-
-/**
- * \fn      txUltrasonicPositionRequest
- * \brief   request the position-data of the ultrasonic-node
- *          convert the drive-data to the Goto-protocol
- *
- * \param[in]   None
- * \return      None
- */
-inline void txUltrasonicPositionRequest()
-{
-    createCANMessage(ULTRASONIC_POSITION_REQUEST,0,0);
-}
-
-
-/**
- * \fn      txUltrasonicPositionResponse
- * \brief   estimated position of the ultrasonic-node
- *          convert the drive-data to the Goto-protocol
- *
- * \param[in]   x x-coordinate of the position [12bit]
- * \param[in]   y y-coordinate of the position [12bit]
- * \param[in]   angle angle of the end position [10bit]
- * \param[in]   speed robo-speed [8bit]
- * \param[in]   id
- * \return      None
- */
-inline void txUltrasonicPositionResponse(uint16_t x, uint16_t y, uint16_t angle, uint8_t id)
-{
-    txPositionResponse(ULTRASONIC_POSITION_RESPONSE,x,y,angle,id);
+    txPositionResponse(NAVI_POSITION_RESPONSE,x,y,angle,id);
 }
 
 
@@ -583,18 +556,79 @@ inline void txConfederatePositionResponse(uint16_t x, uint16_t y, uint16_t angle
 }
 
 
-inline void txStartConfigurationSet(uint8_t color, uint8_t enemy, uint8_t confederate)
+/**
+ * \fn      txStartConfigurationSet
+ * \brief   start settings for every node in the system
+ *          convert the start-data to the GIP-protocol
+ *
+ * \param[in]   color team color: 0=Yellow; 1=Red [1bit]
+ * \param[in]   enemy enemy quantity: 0-2 [2bit]
+ * \param[in]   confederate confederate quantity [1bit]
+ * \param[in]   enemy_1_size diameter of enemy 1: 0-50cm [6bit]
+ * \param[in]   enemy_2_size diameter of enemy 2: 0-50cm [6bit]
+ * \return      None
+ */
+inline void txStartConfigurationSet(uint8_t color, uint8_t enemy, uint8_t confederate, uint8_t enemy_1_size, uint8_t enemy_2_size)
 {
-    uint8_t data = ((color & GIP_COLOR_TX_MASK_D0) << GIP_COLOR_OFFSET_D0) | ((enemy & GIP_ENEMY_TX_MASK_D0) << GIP_ENEMY_OFFSET_D0) | ((confederate & GIP_CONFEDERATE_TX_MASK_D0) << GIP_CONFEDERATE_OFFSET_D0);
+	uint8_t data[2];
 
-    createCANMessage(START_CONFIGURATION_SET,1,&data);
+    data[0] = ((color & GIP_COLOR_TX_MASK_D0) << GIP_COLOR_OFFSET_D0) | ((enemy & GIP_ENEMY_TX_MASK_D0) << GIP_ENEMY_OFFSET_D0) |
+            ((confederate & GIP_CONFEDERATE_TX_MASK_D0) << GIP_CONFEDERATE_OFFSET_D0) | ((enemy_1_size & GIP_ENEMY_1_SIZE_TX_MASK_D0) >> GIP_ENEMY_1_SIZE_OFFSET_D0);
+    data[1] = ((enemy_1_size & GIP_ENEMY_1_SIZE_TX_MASK_D1) << GIP_ENEMY_1_SIZE_OFFSET_D1) | ((enemy_2_size & GIP_ENEMY_2_SIZE_TX_MASK_D1) << GIP_ENEMY_2_SIZE_OFFSET_D1);
+
+    createCANMessage(START_CONFIGURATION_SET,2,data);
 }
 
 
+/**
+ * \fn		txStartConfigurationConfirm
+ * \brief	confirm the reception of the start data
+ */
 inline void txStartConfigurationConfirm()
 {
     createCANMessage(START_CONFIGURATION_CONFIRM,0,0);
 }
+
+
+/**
+ * \fn		txCheckNaviRequest
+ * \brief	check if the navi-node is available
+ */
+inline void txCheckNaviRequest()
+{
+	createCANMessage(CHECK_NAVI_REQUEST,0,0);
+}
+
+
+/**
+ * \fn		txCheckNaviResponse
+ * \brief	navi-node confirm
+ */
+inline void txCheckNaviResponse()
+{
+	createCANMessage(CHECK_NAVI_RESPONSE,0,0);
+}
+
+
+/**
+ * \fn		txCheckDriveRequest
+ * \brief	check if the drive-node is available
+ */
+inline void txCheckDriveRequest()
+{
+	createCANMessage(CHECK_DRIVE_REQUEST,0,0);
+}
+
+
+/**
+ * \fn		txCheckDriveResponse
+ * \brief	drive-node confirm
+ */
+inline void txCheckDriveResponse()
+{
+	createCANMessage(CHECK_DRIVE_RESPONSE,0,0);
+}
+
 
 /**
  * \fn      txPositionResponse
@@ -653,33 +687,12 @@ static inline CAN_data_t rxGotoXY(CanRxMsg* rx_message)
     CAN_data_t message_data;
 
     /* convert to GLP */
-    message_data.goto_x = rx_message->Data[0] | ((rx_message->Data[1] & GOTO_X_RX_MASK_D1) << GOTO_X_OFFSET_D1);
-    message_data.goto_y = ((rx_message->Data[1] & GOTO_Y_RX_MASK_D1) >> GOTO_Y_OFFSET_D1) | ((rx_message->Data[2] & GOTO_Y_RX_MASK_D2) << GOTO_Y_OFFSET_D2);
-    message_data.goto_angle = ((rx_message->Data[2] & GOTO_ANGLE_RX_MASK_D2) >> GOTO_ANGLE_OFFSET_D2) | ((rx_message->Data[3] & GOTO_ANGLE_RX_MASK_D3) << GOTO_ANGLE_OFFSET_D3);
-    message_data.goto_speed = ((rx_message->Data[3] & GOTO_SPEED_RX_MASK_D3) >> GOTO_SPEED_OFFSET_D3) | ((rx_message->Data[4] & GOTO_SPEED_RX_MASK_D4) << GOTO_SPEED_OFFSET_D4);
-    if(rx_message->DLC > 5)
-    {
-        message_data.goto_points[0][0] = ((rx_message->Data[4] & GOTO_POINT_1_X_RX_MASK_D4) >> GOTO_POINT_1_X_OFFSET_D4) | ((rx_message->Data[5] & GOTO_POINT_1_X_RX_MASK_D5) << GOTO_POINT_1_X_OFFSET_D5);
-        message_data.goto_points[0][1] = ((rx_message->Data[5] & GOTO_POINT_1_Y_RX_MASK_D5) >> GOTO_POINT_1_Y_OFFSET_D5) | ((rx_message->Data[6] & GOTO_POINT_1_Y_RX_MASK_D6) << GOTO_POINT_1_Y_OFFSET_D6);
-
-        if(rx_message->DLC > 7)
-        {
-            message_data.goto_points[1][0] = ((rx_message->Data[6] & GOTO_POINT_2_X_RX_MASK_D6) >> GOTO_POINT_2_X_OFFSET_D6) | ((rx_message->Data[7] & GOTO_POINT_2_X_RX_MASK_D7) << GOTO_POINT_2_X_OFFSET_D7);
-            message_data.goto_points[1][1] = (rx_message->Data[7] & GOTO_POINT_2_Y_RX_MASK_D7) >> GOTO_POINT_2_Y_OFFSET_D7;
-        }
-        else
-        {
-            message_data.goto_points[1][0] = -1;
-            message_data.goto_points[1][1] = -1;
-        }
-    }
-    else
-    {
-        message_data.goto_points[0][0] = -1;
-        message_data.goto_points[0][1] = -1;
-        message_data.goto_points[1][0] = -1;
-        message_data.goto_points[1][1] = -1;
-    }
+    message_data.goto_x = ((rx_message->Data[0] | GOTO_X_RX_MASK_D0) << GOTO_X_OFFSET_D0) | ((rx_message->Data[1] | GOTO_X_RX_MASK_D1) >> GOTO_X_OFFSET_D1);
+    message_data.goto_y = ((rx_message->Data[1] | GOTO_Y_RX_MASK_D1) << GOTO_Y_OFFSET_D1) | ((rx_message->Data[2] | GOTO_Y_RX_MASK_D2) >> GOTO_Y_OFFSET_D2);
+    message_data.goto_angle = ((rx_message->Data[3] | GOTO_ANGLE_RX_MASK_D3) << GOTO_ANGLE_OFFSET_D3) | ((rx_message->Data[4] | GOTO_ANGLE_RX_MASK_D4) >> GOTO_ANGLE_OFFSET_D4);
+    message_data.goto_speed = ((rx_message->Data[4] | GOTO_SPEED_RX_MASK_D4) << GOTO_SPEED_OFFSET_D4) | ((rx_message->Data[5] | GOTO_SPEED_RX_MASK_D5) >> GOTO_SPEED_OFFSET_D5);
+    message_data.goto_barrier = ((rx_message->Data[5] | GOTO_BARRIER_RX_MASK_D5) << GOTO_BARRIER_OFFSET_D5) | ((rx_message->Data[6] | GOTO_BARRIER_RX_MASK_D6) << GOTO_BARRIER_OFFSET_D6);
+    message_data.goto_barrier |= ((rx_message->Data[7] | GOTO_BARRIER_RX_MASK_D7) >> GOTO_BARRIER_OFFSET_D7);
 
     return message_data;
 }
@@ -727,7 +740,11 @@ static inline CAN_data_t rxPositionResponse(CanRxMsg* rx_message)
 
 
 /**
+ * \fn      rxStartConfigurationSet
+ * \brief   convert the bus-data to GIP
  *
+ * \param[in]   rx_message pointer to the can-data
+ * \return      gip-data
  */
 static inline CAN_data_t rxStartConfigurationSet(CanRxMsg* rx_message)
 {
@@ -737,6 +754,9 @@ static inline CAN_data_t rxStartConfigurationSet(CanRxMsg* rx_message)
     message_data.gip_color = (rx_message->Data[0] & GIP_COLOR_RX_MASK_D0) >> GIP_COLOR_OFFSET_D0;
     message_data.gip_enemy = (rx_message->Data[0] & GIP_ENEMY_RX_MASK_D0) >> GIP_ENEMY_OFFSET_D0;
     message_data.gip_confederate = (rx_message->Data[0] & GIP_CONFEDERATE_RX_MASK_D0) >> GIP_CONFEDERATE_OFFSET_D0;
+    message_data.gip_enemy_1_size = (rx_message->Data[0] & GIP_ENEMY_1_SIZE_RX_MASK_D0) << GIP_ENEMY_1_SIZE_OFFSET_D0;
+    message_data.gip_enemy_1_size |= (rx_message->Data[1] & GIP_ENEMY_1_SIZE_RX_MASK_D1) >> GIP_ENEMY_1_SIZE_OFFSET_D1;
+    message_data.gip_enemy_2_size = (rx_message->Data[1] & GIP_ENEMY_2_SIZE_RX_MASK_D1) >> GIP_ENEMY_2_SIZE_OFFSET_D1;
 
     return message_data;
 }
@@ -775,7 +795,7 @@ static void vCANRx(void* pvParameters )
             {
                 if(can_listener_buffer[i].id == rx_message.StdId)
                 {
-                    /* convert the received data to the specfic protocol */
+                    /* convert the received data to the specific protocol */
                     switch(can_listener_buffer[i].id)
                     {
                         case EMERGENCY_STOP:
@@ -790,8 +810,7 @@ static void vCANRx(void* pvParameters )
                             message_data = rxGotoStateResponse(&rx_message);
                         break;
 
-                        case LASER_POSITION_RESPONSE:
-                        case ULTRASONIC_POSITION_RESPONSE:
+                        case NAVI_POSITION_RESPONSE:
                         case KALMAN_POSITION_RESPONSE:
                         case ENEMEY_1_POSITION_RESPONSE:
                         case ENEMEY_2_POSITION_RESPONSE:

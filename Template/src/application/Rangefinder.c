@@ -23,17 +23,15 @@
  */
 
 /* Includes ------------------------------------------------------------------*/
-/* RTOS */
-#include <memPoolService.h>         /* Memory pool manager service */
+/* application */
+#include "AppConfig.h"
+#include "Rangefinder.h"
 
 /* HW-library */
 #include "../lib/i2c.h"
 #include "../lib/ir_sensor.h"
 #include "../lib/ext_interrupt.h"
 
-/* application */
-#include "app_config.h"
-#include "Rangefinder.h"
 
 /* Private typedef -----------------------------------------------------------*/
 
