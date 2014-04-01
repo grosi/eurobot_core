@@ -37,6 +37,13 @@
 #define ENEMY_GRID_CENTER_WEIGHT    1
 #define ENEMY_GRID_FRAME_WEIGHT     0.5
 
+/* node weighting settings */
+#define NODE_ARRIVE_FRAME       150 /*!< [mm] */
+#define NODE_WORST_ARRIVE       4
+#define NODE_BAD_ARRIVE         3
+#define NODE_WELL_ARRIVE        2
+#define NODE_PERFECT_ARRIVE     1
+
 /* exported macro -------------------------------------------------------------*/
 
 

@@ -24,9 +24,9 @@
  */
 typedef enum
 {
-    NODE_UNDONE = 0,            /*!< no node is in ready mode -> still undone */
+    NODE_UNDONE = 0,        /*!< no node is in ready mode -> still undone */
     NODE_FINISH_SUCCESS,    /*!< node is done and the node-task ready for new tasks */
-    NODE_FINISH_ERROR,      /*!< node is done with errrors and the node-task ready for new tasks -> if the node is in a pool, don't decrement this! */
+    NODE_FINISH_ERROR,      /*!< node is done with errors and the node-task ready for new tasks -> if the node is in a pool, don't decrement this! */
 }node_state_t;
 
 
@@ -88,6 +88,7 @@ typedef struct
 /* general */
 #define NODE_QUANTITY       11
 #define NODE_POOL_QUANTITY  2
+#define NODE_NO_ENEMY       -1
 
 /* nodes pools */
 #define NODE_NO_POOL_ID         0
@@ -100,13 +101,6 @@ typedef struct
 #define NODE_FIRE_POOL_ID       3
 #define NODE_FIRE_POOL_SIZE     0
 #define NODE_FIRE_POOL_LEVEL    0
-
-/* node weighting settings */
-#define NODE_ARRIVE_FRAME       150 /*!< [mm] */
-#define NODE_WORST_ARRIVE       4
-#define NODE_BAD_ARRIVE         3
-#define NODE_WELL_ARRIVE        2
-#define NODE_PERFECT_ARRIVE     1
 
 
 /* exported macro -------------------------------------------------------------*/
