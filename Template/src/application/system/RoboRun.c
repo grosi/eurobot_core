@@ -72,6 +72,7 @@ volatile static game_state_t game_state = {0,               /*!< x-position */
 static void vNodeTask(void*);
 static void vTrackEnemy(uint16_t, CAN_data_t*);
 static void vMyPosition(uint16_t, CAN_data_t*);
+//TODO static void gotoNode(node_param_t* param, volatile game_state_t* game_state); //Maybe only game_state
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -478,7 +479,10 @@ static void vNodeTask(void* pvParameters )
     /* endless */
     for(;;)
     {
-        node_task->node_function(&node_task->param,&game_state);
+    	/* Give goto command */
+    	//TODO: gotoNode(&node_task->param, &game_state);
+
+        node_task->node_function(&node_task->param);
 
         taskENTER_CRITICAL();
         xSemaphoreGive(sSyncRoboRunNodeTask);

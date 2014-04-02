@@ -51,11 +51,10 @@ volatile uint8_t frescoOnWall = 0;    /* Set by EXTI (TODO), value of sensor to 
  * \fn          doFrescoNode
  * \brief       Tries to complete the fresco node. Reports status.
  *
- * \param       param      node parameters
- * \param       game_state current robo state
+ * \param       param  node parameters
  * \return      None
  */
-void doFrescoNode(node_param_t* param, volatile game_state_t* game_state) {
+void doFrescoNode(node_param_t* param) {
 
 	/* Variable to count number of performed attempts to complete fresco action */
 	uint8_t n_fresco_attempts = 0;

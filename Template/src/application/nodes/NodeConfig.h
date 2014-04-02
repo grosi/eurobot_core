@@ -80,7 +80,7 @@ typedef struct
 typedef struct
 {
     node_param_t param;
-    void (*node_function)(node_param_t*, volatile game_state_t*);
+    void (*node_function)(node_param_t*);
 }node_t;
 
 
