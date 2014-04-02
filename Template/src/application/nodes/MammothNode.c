@@ -1,12 +1,12 @@
 /**
- * \file    MammutNode.c
+ * \file    MammothNode.c
  * \author  gross10
  * \date    2014-03-17
  *
  * \version 1.0
  *  create this file
  *
- * \brief   mammut node statemaschine
+ * \brief   mammoth node statemaschine
  *
  * \ingroup strategy
  *
@@ -17,7 +17,7 @@
 /* application */
 #include "../AppConfig.h"
 #include "NodeConfig.h"
-#include "MammutNode.h"
+#include "MammothNode.h"
 
 /* Private typedef -----------------------------------------------------------*/
 
@@ -36,7 +36,7 @@
 
 /* Private functions ---------------------------------------------------------*/
 
-void doMammutNode(node_param_t* param)
+void doMammothNode(node_param_t* param)
 {
 
 }

@@ -46,15 +46,15 @@ xSemaphoreHandle sSyncRoboRunNodeTask; /*!< for RoboRun <-> node-task sync */
 static node_t* node_task = NULL; /*!< pointer to the current running node */
 
 /* game and strategy */
-static node_t* nodes_red[NODE_QUANTITY] = {&node_mammut_1}; /*!< node-set for the yellow teamcolor */
-static node_t* nodes_yellow[NODE_QUANTITY] = {&node_mammut_1}; /*!< node-set for the red teamcolor */
+static node_t* nodes_red[NODE_QUANTITY] = {&node_mammoth_1}; /*!< node-set for the yellow teamcolor */
+static node_t* nodes_yellow[NODE_QUANTITY] = {&node_mammoth_1}; /*!< node-set for the red teamcolor */
 static node_t** nodes_game; /*!< node set of the current game-round */
 static node_t* next_node; /*!< pointer to the next node */
 static uint8_t remain_nodes; /*!< undone nodes */
 static uint8_t enemy_count; /*!< enemy quantity */
-static uint8_t node_pools[NODE_POOL_QUANTITY][3] = {{NODE_MAMMUT_POOL_ID,
-                                                     NODE_MAMMUT_POOL_SIZE,
-                                                     NODE_MAMMUT_POOL_LEVEL},
+static uint8_t node_pools[NODE_POOL_QUANTITY][3] = {{NODE_MAMMOTH_POOL_ID,
+                                                     NODE_MAMMOTH_POOL_SIZE,
+                                                     NODE_MAMMOTH_POOL_LEVEL},
                                                     {NODE_FRESCO_POOL_ID,
                                                      NODE_FRESCO_POOL_SIZE,
                                                      NODE_FRESCO_POOL_LEVEL}}; /*!< pool settings -> have to set to default values after game round */
@@ -162,8 +162,8 @@ void setConfigRoboRunState2Default()
     }
 
     /* node pools to default */
-    node_pools[NODE_MAMMUT_POOL_ID-1][NODE_POOL_SIZE_INFO] = NODE_MAMMUT_POOL_SIZE;
-    node_pools[NODE_MAMMUT_POOL_ID-1][NODE_POOL_LEVEL_INFO] = NODE_MAMMUT_POOL_LEVEL;
+    node_pools[NODE_MAMMOTH_POOL_ID-1][NODE_POOL_SIZE_INFO] = NODE_MAMMOTH_POOL_SIZE;
+    node_pools[NODE_MAMMOTH_POOL_ID-1][NODE_POOL_LEVEL_INFO] = NODE_MAMMOTH_POOL_LEVEL;
     node_pools[NODE_FRESCO_POOL_ID-1][NODE_POOL_SIZE_INFO] = NODE_FRESCO_POOL_SIZE;
     node_pools[NODE_FRESCO_POOL_ID-1][NODE_POOL_LEVEL_INFO] = NODE_FRESCO_POOL_LEVEL;
 

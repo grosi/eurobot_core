@@ -1,12 +1,12 @@
 /**
- * \file    MammutNode.h
+ * \file    MammothNode.h
  * \author  gross10
  * \date    2014-03-17
  *
  * \version 1.0
  *  create this file
  *
- * \brief   mammut node statemaschine
+ * \brief   mammoth node statemaschine
  *
  * \ingroup strategy
  *
@@ -14,8 +14,8 @@
  */
 
 /* Define to prevent recursive inclusion --------------------------------------*/
-#ifndef MAMMUTNODE_H_
-#define MAMMUTNODE_H_
+#ifndef MAMMOTHNODE_H_
+#define MAMMOTHNODE_H_
 
 /* exported typedef -----------------------------------------------------------*/
 
@@ -30,10 +30,10 @@
 
 
 /* exported function prototypes -----------------------------------------------*/
-extern void doMammutNode(node_param_t*);
+extern void doMammothNode(node_param_t*);
 
 
-#endif /* MAMMUTNODE_H_ */
+#endif /* MAMMOTHNODE_H_ */
 
 /**
  * @}

@@ -19,7 +19,7 @@
 #include "NodeConfig.h"
 #include "FireNode.h"
 #include "FrescoNode.h"
-#include "MammutNode.h"
+#include "MammothNode.h"
 
 /* Private typedef -----------------------------------------------------------*/
 
@@ -31,9 +31,9 @@
 
 
 /* Private variables ---------------------------------------------------------*/
-/* mammut nodes configs */
+/* mammoth nodes configs */
 /* node 1 */
-node_t node_mammut_1 =
+node_t node_mammoth_1 =
 {
     {
         .id = 0,                  /*!<node id */
@@ -42,11 +42,11 @@ node_t node_mammut_1 =
         5,                  /*!<estimated node time [s]*/
         0.62,               /*!<node x position [m]*/
         0.49,               /*!<node y position [m]*/
-        NODE_MAMMUT_POOL_ID,/*!<node pool id */
+        NODE_MAMMOTH_POOL_ID,/*!<node pool id */
         WEST,               /*!<node arrive direction */
         NODE_UNDONE,        /*!<node state */
     },
-    doMammutNode
+    doMammothNode
 };
 
 

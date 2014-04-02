@@ -92,9 +92,9 @@ typedef struct
 
 /* nodes pools */
 #define NODE_NO_POOL_ID         0
-#define NODE_MAMMUT_POOL_ID     1
-#define NODE_MAMMUT_POOL_SIZE   6
-#define NODE_MAMMUT_POOL_LEVEL  3
+#define NODE_MAMMOTH_POOL_ID     1
+#define NODE_MAMMOTH_POOL_SIZE   6
+#define NODE_MAMMOTH_POOL_LEVEL  3
 #define NODE_FRESCO_POOL_ID     2
 #define NODE_FRESCO_POOL_SIZE   2
 #define NODE_FRESCO_POOL_LEVEL  1
@@ -107,7 +107,7 @@ typedef struct
 
 
 /* exported variables ---------------------------------------------------------*/
-extern node_t node_mammut_1;
+extern node_t node_mammoth_1;
 
 
 /* exported function prototypes -----------------------------------------------*/
