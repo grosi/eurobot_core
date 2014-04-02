@@ -45,6 +45,7 @@
 /* exported variables ---------------------------------------------------------*/
 /* Mutex for I2C */
 extern xSemaphoreHandle mHwI2C;    /* Created with xSemaphoreCreateMutex() */
+extern xSemaphoreHandle sSyncNodeTask;    /* Is given by Rangefinder, when obstacle detected */
 
 /* Alarm flags (read only!), 1 if object detected, 0 if no object detected */
 extern volatile uint8_t RangefinderIR_FwAlarm_flag;     /* Infrared forward alarm */
