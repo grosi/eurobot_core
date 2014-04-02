@@ -62,14 +62,14 @@ typedef struct
  */
 typedef struct
 {
-    uint8_t id;
-    uint8_t points;
-    float   percent;
-    uint8_t time; /*[s]*/
-    uint16_t x; /*!<[mm]*/
-    uint16_t y; /*!<[mm]*/
-    uint8_t pool_id;
-    node_arrive_t arrive;
+    const uint8_t id;
+    const uint8_t points;
+    const float   percent;
+    const uint8_t time; /*[s]*/
+    const uint16_t x; /*!<[mm]*/
+    const uint16_t y; /*!<[mm]*/
+    const uint8_t pool_id;
+    const node_arrive_t arrive;
     node_state_t node_state;
 }node_param_t;
 
