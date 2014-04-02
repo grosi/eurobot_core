@@ -65,7 +65,7 @@ void doFrescoNode(node_param_t* param) {
 
 	do {
 
-		/* Move separation out, step by step, but stop if fresco panel is on the wall */
+		/* Move fresco panel out, step by step, but stop if is on the wall */
 		while(servo_pos < (SERVO_POS_FRESCO_OUT-SERVO_FRESCO_STEP) && !frescoOnWall) {	//TODO: "<" or ">" and "-" or "+"?
 
 			/* Increment servo position by step size */
@@ -87,7 +87,7 @@ void doFrescoNode(node_param_t* param) {
 			vTaskDelay(SERVO_FRESCO_STEP_DELAY / portTICK_RATE_MS);
 		}
 
-		/* Move separation in */
+		/* Move fresco panel in */
 		setServo_1(SERVO_POS_FRESCO_IN);
 
 		/* Wait some time while servo moves */
