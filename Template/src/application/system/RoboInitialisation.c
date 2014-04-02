@@ -21,6 +21,8 @@
 #include "RoboSetup.h" /* next state if this one is completed successfully */
 #include "RoboError.h" /* next state if this one is completed with errors */
 #include "RoboInitialisation.h"
+/* lib */
+#include "lib/servo.h"
 
 /* Private typedef -----------------------------------------------------------*/
 typedef enum
@@ -131,6 +133,24 @@ void runRoboInitialisationState(portTickType* tick)
             vTaskDelayUntil(tick, ROBOINIT_TIMEOUT / portTICK_RATE_MS);
             break;
     }
+}
+
+
+/**
+ * \fn          vNodeTask
+ * \brief       Function to initialise all the resources needed by the node task
+ *
+ * \param[in]   None
+ * \return      None
+ */
+void initNodeResources()
+{
+	/* Initialise fresco/separation servo */
+	initServo_1();
+	/* Initialise launcher servo */
+	initServo_2();
+//	initServo_3();
+//	initServo_4();
 }
 
 /**

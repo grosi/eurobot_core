@@ -34,6 +34,7 @@
 /* exported function prototypes -----------------------------------------------*/
 extern void initRoboInitialisationState();
 extern void runRoboInitialisationState(portTickType*);
+extern void initNodeResources();
 
 #endif /* ROBOINITIALISATION_H_ */
 /**
