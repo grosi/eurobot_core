@@ -16,8 +16,8 @@
 /* Includes ------------------------------------------------------------------*/
 /* application */
 #include "../AppConfig.h"
-#include "FrescoNode.h"
 #include "NodeConfig.h"
+#include "FrescoNode.h"
 /* lib */
 #include "lib/servo.h"
 #include "lib/sensor.h"
