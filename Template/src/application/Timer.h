@@ -40,7 +40,9 @@
 /* exported function prototypes -----------------------------------------------*/
 extern void initTimerTask(void);
 extern uint8_t getRemainingTime(void);
-extern void startTimer(void);
+extern inline void startTimer(void);
+extern inline void stopTimer(void);
+extern inline void resetTimer(void);
 
 
 #endif /* TIMER_TASK_H_ */

@@ -95,10 +95,38 @@ void vGameTimerCallback(xTimerHandle pxTimer)
  * \param[in]   None
  * \return      None
  */
-void startTimer(void)
+inline void startTimer(void)
 {
     /* Start the timer */
     xTimerStart(xGameTimer,0);
+}
+
+
+/**
+ * \fn          stopTimer
+ * \brief       stops the countdown-timer
+ *
+ * \param[in]   None
+ * \return      None
+ */
+inline void stopTimer(void)
+{
+    /* Stop the timer */
+    xTimerStop(xGameTimer,0);
+}
+
+
+/**
+ * \fn          resetTimer
+ * \brief       resets the countdown-timer to 90s
+ *
+ * \param[in]   None
+ * \return      None
+ */
+inline void resetTimer(void)
+{
+    /* Reset the timer */
+    elapsedTime = 0;
 }
 
 
