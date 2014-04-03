@@ -69,7 +69,8 @@ typedef struct
     const uint16_t x; /*!<[mm]*/
     const uint16_t y; /*!<[mm]*/
     const uint8_t pool_id;
-    const node_arrive_t arrive;
+    const node_arrive_t arrive;  //TODO: Change code to use 'angle' and then remove 'arrive'
+    const uint16_t angle; /*10 bit, 1 bit =ca. 1°*/
     node_state_t node_state;
 }node_param_t;
 
