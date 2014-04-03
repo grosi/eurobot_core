@@ -30,6 +30,7 @@
 extern xSemaphoreHandle sSyncRoboSetupELP;
 
 /* exported function prototypes -----------------------------------------------*/
+extern void initRoboSetupState();
 extern void runRoboSetupState(portTickType*);
 
 

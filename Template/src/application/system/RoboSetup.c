@@ -17,6 +17,8 @@
 /* application */
 #include "../AppConfig.h"
 #include "../CANGatekeeper.h"
+#include "../System.h"
+#include "../Timer.h"
 #include "RoboInitialisation.h" /* next state if the notstop switch is active */
 #include "RoboRun.h" /* next state if this one is completed successfully */
 #include "RoboSetup.h"
@@ -74,6 +76,13 @@ void runRoboSetupState(portTickType* tick)
 {
     static robo_setup_t state = TEAMCOLOR;
 
+    //TODO
+    setConfigRoboRunState(1,GIP_TEAMCOLOR_YELLOW,GIP_ENEMY_QUANTITY_1);
+
+    resetTimer();
+    startTimer(); /* start game timer */
+
+    system_state = runRoboRunState;
 
 
 }
