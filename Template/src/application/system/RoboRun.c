@@ -24,6 +24,7 @@
 #include "../Timer.h"
 #include "../System.h"
 #include "../nodes/NodeConfig.h"
+#include "../Rangefinder.h"
 #include "RoboSetup.h" /* next state if this one is completed successfully */
 #include "RoboError.h" /* next state if this one is completed with errors */
 #include "RoboRun.h"
@@ -72,7 +73,6 @@ volatile static game_state_t game_state = {0,               /*!< x-position */
 static void vNodeTask(void*);
 static void vTrackEnemy(uint16_t, CAN_data_t*);
 static void vMyPosition(uint16_t, CAN_data_t*);
-//TODO static void gotoNode(node_param_t* param, volatile game_state_t* game_state); //Maybe only game_state
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -470,6 +470,47 @@ static void vTrackEnemy(uint16_t id, CAN_data_t* data)
 
 
 /**
+ * \fn          gotoNode
+ * \brief       Function to give the GoTo command and monitor the rangefinder whle moving.
+ *
+ * \param[in]   None
+ * \return      None
+ */
+void gotoNode(node_param_t* param, volatile game_state_t* game_state)  //TODO: Maybe only game_state
+{
+	/* Variable to store estimated GoTo time received from drive system */
+	uint32_t estimated_GoTo_time;
+
+	/* Send GoTo command through CAN to drive system */
+	//txGotoXY(param->x, param->y, param->angle, /*TODO speed*/, /*TODO optional barrierenflags*/);
+
+	/* Wait for GoTo confirmation or handle error */
+	//TODO
+
+	do {
+
+		/* Ask drive system for GoTo state */
+		//TODO
+		/* Receive the GoTo state */
+		estimated_GoTo_time = 0; //TODO  /* In ms */
+
+		/* Try to take semaphore from rangefinder task, use estimated time from drive system as timeout */
+		if(xSemaphoreTake(sSyncNodeTask, estimated_GoTo_time / portTICK_RATE_MS) == pdTRUE) {
+
+			/* Semaphore received, this means an obstacle was detected! */
+
+			/* Check rangefinder- and current robot state infos, and deside if a emergency break is needed */
+			//TODO
+
+			/* Semaphore is always only given by rangefinder task and always only taken by node task */
+		}
+
+	/* Repeat while not at target destination */
+	} while(estimated_GoTo_time != 0);  //TODO: Catch 0xFFFFFF (time unknown)?
+}
+
+
+/**
  * \fn          vNodeTask
  * \brief       Task to handle the strategy
  *
@@ -482,8 +523,9 @@ static void vNodeTask(void* pvParameters )
     for(;;)
     {
     	/* Give goto command */
-    	//TODO: gotoNode(&node_task->param, &game_state);
+    	gotoNode(&node_task->param, &game_state);
 
+    	/* Do node action */
         node_task->node_function(&node_task->param);
 
         taskENTER_CRITICAL();
