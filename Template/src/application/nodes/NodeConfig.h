@@ -92,15 +92,20 @@ typedef struct
 
 /* nodes pools */
 #define NODE_NO_POOL_ID         0
-#define NODE_MAMMOTH_POOL_ID     1
-#define NODE_MAMMOTH_POOL_SIZE   6
-#define NODE_MAMMOTH_POOL_LEVEL  3
+#define NODE_MAMMOTH_POOL_ID    1
+#define NODE_MAMMOTH_POOL_SIZE  6
+#define NODE_MAMMOTH_POOL_LEVEL 3
 #define NODE_FRESCO_POOL_ID     2
 #define NODE_FRESCO_POOL_SIZE   2
 #define NODE_FRESCO_POOL_LEVEL  1
 #define NODE_FIRE_POOL_ID       3
 #define NODE_FIRE_POOL_SIZE     0
 #define NODE_FIRE_POOL_LEVEL    0
+
+/* Servo */
+#define SERVO_POS_FRESCO_IN     (0)   /* Servo position: Fresco panel all the way in */ //TODO
+#define SERVO_POS_FRESCO_OUT    (100) /* Servo position: Fresco panel all the way out */ //TODO
+#define SERVO_MOVING_DELAY      (100) /* Delay in ms to wait while the servo moves the whole way */ //TODO
 
 
 /* exported macro -------------------------------------------------------------*/

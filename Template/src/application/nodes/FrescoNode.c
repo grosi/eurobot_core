@@ -27,11 +27,8 @@
 
 /* Private define ------------------------------------------------------------*/
 /* Servo */
-#define SERVO_POS_FRESCO_IN     (0)   /* Servo position: fresco panel all the way in */ //TODO
-#define SERVO_POS_FRESCO_OUT    (100) /* Servo position: fresco panel all the way in */ //TODO
 #define SERVO_FRESCO_STEP       (2)   /* Size of single step for the fresco servo */ //TODO
 #define SERVO_FRESCO_STEP_DELAY (10)  /* Delay in ms to wait between steps */ //TODO
-#define SERVO_MOVING_DELAY      (100) /* Delay in ms to wait while the servo moves the whole way */ //TODO
 
 
 /* Private macro -------------------------------------------------------------*/
@@ -74,7 +71,7 @@ void doFrescoNode(node_param_t* param) {
 			/* Check if it's the last step */
 			if(servo_pos > SERVO_POS_FRESCO_OUT) {
 
-				/* Set the final servo position without over rotating */
+				/* Set the final servo position without over-rotating */
 				setServo_1(SERVO_POS_FRESCO_OUT);
 			}
 			else {
@@ -82,14 +79,12 @@ void doFrescoNode(node_param_t* param) {
 				/* Set the new servo position */
 				setServo_1(servo_pos);
 			}
-
 			/* Wait some time while servo moves */
 			vTaskDelay(SERVO_FRESCO_STEP_DELAY / portTICK_RATE_MS);
 		}
 
 		/* Move fresco panel in */
 		setServo_1(SERVO_POS_FRESCO_IN);
-
 		/* Wait some time while servo moves */
 		vTaskDelay(SERVO_MOVING_DELAY / portTICK_RATE_MS);
 
