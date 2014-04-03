@@ -385,6 +385,8 @@ void runRoboRunState(portTickType* tick)
     {
     	setConfigRoboRunState2Default();
 
+    	stopTimer();
+
     	system_state = runRoboSetupState;
     }
 }
