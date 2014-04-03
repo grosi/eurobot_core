@@ -36,7 +36,7 @@
 node_t node_mammoth_1 =
 {
     {
-        .id = 0,                  /*!<node id */
+        .id = 1,                  /*!<node id */
         4,                  /*!<node points */
         0.19,               /*!<percent of the total points [%]*/
         5,                  /*!<estimated node time [s]*/
