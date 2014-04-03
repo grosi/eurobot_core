@@ -69,7 +69,6 @@ int main(void) {
     initDefaultTask();
     initCANGatekeeper(); /* have to the last initialisation modul! */
 
-    startTimer();
     vTaskStartScheduler();
 
     /* endless loop */
