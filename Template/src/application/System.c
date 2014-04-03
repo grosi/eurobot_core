@@ -62,6 +62,7 @@ void initSystemTask(void){
 
     /* init system states */
     initRoboInitialisationState();
+    initRoboSetupState();
     initRoboRunState();
 
     /* set start state */
