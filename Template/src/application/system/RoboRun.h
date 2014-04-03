@@ -28,7 +28,7 @@
 #define ROBORUN_TIMEOUT             1000 /*!< wait for max. 1s */
 
 /* game configurations */
-#define PLAY_TIME                   90 /*[s]*/
+#define PLAY_TIME                   90.0 /*[s]*/
 #define ROBO_AVERAGE_SPEED          0.5 /*[m/s]*/
 #define PLAYGROUND_WIDTH            3 /*[m]*/
 #define PLAYGROUND_HEIGH            2 /*[m]*/
