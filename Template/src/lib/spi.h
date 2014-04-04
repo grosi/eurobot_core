@@ -29,16 +29,18 @@
 #define SPI_PORT_SCK        GPIOA            // enable related clock in spi.c
 #define GPIO_PinSource_SCK  GPIO_PinSource5
 
-//#define SPI_PIN_MISO        GPIO_Pin_6    // not used
-//#define SPI_PORT_MISO       GPIOA         // enable related clock in spi.c
-//#define GPIO_PinSource_MISO GPIO_PinSource6
+#define SPI_PIN_MISO        GPIO_Pin_6       // not used
+#define SPI_PORT_MISO       GPIOA            // enable related clock in spi.c
+#define GPIO_PinSource_MISO GPIO_PinSource6
 
 #define SPI_PIN_MOSI        GPIO_Pin_7
-#define SPI_PORT_MOSI       GPIOA           // enable related clock in spi.c
+#define SPI_PORT_MOSI       GPIOA            // enable related clock in spi.c
 #define GPIO_PinSource_MOSI GPIO_PinSource7
 
 #define SPI_PIN_CS          GPIO_Pin_2
 #define SPI_PORT_CS         GPIOB
+
+#define BaudRatePrescaler   SPI_BaudRatePrescaler_256 // = (APB2 frequency (=84MHz) / 256 = 328'125Hz)
 
 /* exported types ------------------------------------------------------------*/
 /* exported constants --------------------------------------------------------*/

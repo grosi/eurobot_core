@@ -29,37 +29,37 @@
     #define SPI                      SPI1
     #define GPIO_AF                  GPIO_AF_SPI1
     #define RCC_APBPeriph            RCC_APB2Periph_SPI1
-    #define RCC_APBPeriphClockCmd    RCC_APB2PeriphClockCmd
+//    #define RCC_APBPeriphClockCmd    RCC_APB2PeriphClockCmd    // allowed?
 #endif
 #if SPI_INTERFACE_NUMBER == 2
     #define SPI                      SPI2
     #define GPIO_AF                  GPIO_AF_SPI2
     #define RCC_APBPeriph            RCC_APB1Periph_SPI2
-    #define RCC_APBPeriphClockCmd    RCC_APB1PeriphClockCmd
+//    #define RCC_APBPeriphClockCmd    RCC_APB1PeriphClockCmd
 #endif
 #if SPI_INTERFACE_NUMBER == 3
     #define SPI                      SPI3
     #define GPIO_AF                  GPIO_AF_SPI3
     #define RCC_APBPeriph            RCC_APB1Periph_SPI3
-    #define RCC_APBPeriphClockCmd    RCC_APB1PeriphClockCmd
+//    #define RCC_APBPeriphClockCmd    RCC_APB1PeriphClockCmd
 #endif
 #if SPI_INTERFACE_NUMBER == 4
     #define SPI                      SPI4
     #define GPIO_AF                  GPIO_AF_SPI4
     #define RCC_APBPeriph            RCC_APB2Periph_SPI4
-    #define RCC_APBPeriphClockCmd    RCC_APB2PeriphClockCmd
+//    #define RCC_APBPeriphClockCmd    RCC_APB2PeriphClockCmd
 #endif
 #if SPI_INTERFACE_NUMBER == 5
     #define SPI                      SPI5
     #define GPIO_AF                  GPIO_AF_SPI5
     #define RCC_APBPeriph            RCC_APB2Periph_SPI5
-    #define RCC_APBPeriphClockCmd    RCC_APB2PeriphClockCmd
+//    #define RCC_APBPeriphClockCmd    RCC_APB2PeriphClockCmd
 #endif
 #if SPI_INTERFACE_NUMBER == 6
     #define SPI                      SPI6
     #define GPIO_AF                  GPIO_AF_SPI6
     #define RCC_APBPeriph            RCC_APB2Periph_SPI6
-    #define RCC_APBPeriphClockCmd    RCC_APB2PeriphClockCmd
+//    #define RCC_APBPeriphClockCmd    RCC_APB2PeriphClockCmd
 #endif
 
 ///* SPI_PORT */
@@ -104,13 +104,14 @@
 /* Private variables ---------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
 
-/**
+
+/**=============================================================================
  * \fn      init_SPI
  * \brief   initializes the SPI peripheral
  *
  * \param[in]   None
  * \return  None
- */
+ =============================================================================*/
 void init_SPI(void)
 {
 	GPIO_InitTypeDef GPIO_InitStruct;
@@ -118,7 +119,7 @@ void init_SPI(void)
 
 	/* enable clock for used IO pins */
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
+//	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
 //	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
 //	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
 //	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
@@ -156,6 +157,16 @@ void init_SPI(void)
 	GPIO_PinAFConfig(SPI_PORT_MOSI, GPIO_PinSource_MOSI, GPIO_AF);
 
 
+	/* enable clock for used IO pin */
+//	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
+//	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
+//	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
+//	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
+//	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);
+//	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);
+//	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOH, ENABLE);
+
 	/* Configure the CS pin */
 	GPIO_InitStruct.GPIO_Pin = SPI_PIN_CS;
 	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_OUT;
@@ -168,39 +179,44 @@ void init_SPI(void)
 
 
 	/* enable peripheral clock for SPI configurations */
-	RCC_APBPeriphClockCmd(RCC_APBPeriph, ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APBPeriph, ENABLE);
+	//RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2 ,ENABLE);
+	//RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI3 ,ENABLE);
 
 	/* SPI configurations */
 	SPI_InitStruct.SPI_Direction = SPI_Direction_1Line_Tx; // set to simplex mode, (MOSI only)
-	SPI_InitStruct.SPI_Mode = SPI_Mode_Master;     // transmit in master mode, NSS pin has to be always high
-	SPI_InitStruct.SPI_DataSize = SPI_DataSize_8b; // one packet of data is 8 bits wide
-	SPI_InitStruct.SPI_CPOL = SPI_CPOL_Low;        // clock is low when idle
-	SPI_InitStruct.SPI_CPHA = SPI_CPHA_1Edge;      // data is sampled at first edge
+	SPI_InitStruct.SPI_Mode = SPI_Mode_Master;      // transmit in master mode, NSS pin has to be always high
+	SPI_InitStruct.SPI_DataSize = SPI_DataSize_8b;  // one packet of data is 8 bits wide
+	SPI_InitStruct.SPI_CPOL = SPI_CPOL_Low;         // clock is low when idle
+	SPI_InitStruct.SPI_CPHA = SPI_CPHA_1Edge;       // data is sampled at first edge
 	SPI_InitStruct.SPI_NSS = SPI_NSS_Soft; // set the NSS management to internal and pull internal NSS high
-	SPI_InitStruct.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_4; // SPI frequency is APB2 frequency / 4 (=42MHz)
-	SPI_InitStruct.SPI_FirstBit = SPI_FirstBit_MSB;// data is transmitted MSB first
+	SPI_InitStruct.SPI_BaudRatePrescaler = BaudRatePrescaler; // SPI frequency is APB2 frequency / x
+	SPI_InitStruct.SPI_FirstBit = SPI_FirstBit_MSB; // data is transmitted MSB first
+	SPI_InitStruct.SPI_CRCPolynomial = 7;
 	SPI_Init(SPI, &SPI_InitStruct);
+
+	SPI_CalculateCRC(SPI, ENABLE);                  // enable CRC calculation
 
 	SPI_Cmd(SPI, ENABLE); // enable SPI
 }
 
 
-/**
+/**=============================================================================
  * \fn      SPI_send
- * \brief   used to transmit a data-byte
+ * \brief   used to transmit a data-byte via SPI
  *
  * \param[in]   data-byte to be transmitted
  * \return  None
- */
+ =============================================================================*/
 void SPI_send_byte(uint8_t data)
 {
-	SPI->DR = data; // write data to be transmitted to the SPI data register
-	GPIO_WriteBit(SPI_PORT_CS, SPI_PIN_CS, RESET); // set PB2 (CS) low
-	//while( !(SPI->SR & SPI_I2S_FLAG_TXE) ); // wait until transmission complete
-	//while( !(SPI->SR & SPI_I2S_FLAG_RXNE) ); // wait until receive complete
-	while( SPI->SR & SPI_I2S_FLAG_BSY ); // wait until SPI is not busy anymore
+	GPIO_WriteBit(SPI_PORT_CS, SPI_PIN_CS, RESET); // set PB2 (CS) low (the CS-PIN's low-active!)
+
+	SPI_I2S_SendData(SPI,data);    // write data to be transmitted to the SPI data register
+	while (SPI_I2S_GetFlagStatus(SPI, SPI_I2S_FLAG_TXE) == RESET);  // wait until transmission complete
+	while(SPI_I2S_GetFlagStatus(SPI, SPI_I2S_FLAG_BSY)); // wait until SPI is not busy anymore
+
 	GPIO_WriteBit(SPI_PORT_CS, SPI_PIN_CS, SET); // set PB2 (CS) high
-	//return SPI->DR; // return received data from SPI data register
 }
 
 /**

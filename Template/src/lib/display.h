@@ -34,11 +34,12 @@
 /* exported macro ------------------------------------------------------------*/
 
 /* exported functions --------------------------------------------------------*/
-extern void init_display();
+extern void init_display(void (*delay)(long tick));
 extern void LCD_clear();
 extern void LCD_write_byte_data(uint8_t, uint8_t, uint8_t);
 extern void LCD_write_string(uint8_t, uint8_t, uint8_t*, uint8_t);
-extern void LCD_set_highlighter(uint8_t, uint8_t, uint8_t);
+extern void LCD_set_cursor(uint8_t, uint8_t, uint8_t);
+extern void LCD_set_contrast(uint8_t);
 
 extern void LCD_on();
 extern void LCD_off();
@@ -47,7 +48,6 @@ extern void LCD_shift_display_left();
 extern void LCD_shift_cursor_right();
 extern void LCD_shift_cursor_left();
 extern void LCD_shift_return();
-extern void LCD_set_contrast(uint8_t);
 extern void LCD_line_mode_one();
 extern void LCD_line_mode_two();
 
