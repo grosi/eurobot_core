@@ -48,8 +48,8 @@ uint8_t getSensorNegEdge(GPIO_TypeDef*, uint16_t, uint8_t** );
  */
 inline void initSensor_Key()
 {
-    initSensor(SENSOR_KEY_PIN, SENSOR_KEY_PIN_MODE, SENSOR_KEY_PIN_TYPE, SENSOR_KEY_PIN_PUPD, SENSOR_KEY_PIN_SPEED,
-            SENSOR_KEY_PORT, SENSOR_KEY_PORT_CLK);
+    initSensor(SENSOR_NOTSTOP_PIN, SENSOR_NOTSTOP_PIN_MODE, SENSOR_NOTSTOP_PIN_TYPE, SENSOR_NOTSTOP_PIN_PUPD, SENSOR_NOTSTOP_PIN_SPEED,
+            SENSOR_NOTSTOP_PORT, SENSOR_NOTSTOP_PORT_CLK);
 }
 
 
@@ -61,7 +61,7 @@ inline void initSensor_Key()
  */
 inline uint8_t getSensor_Key()
 {
-    return !GPIO_ReadInputDataBit(SENSOR_KEY_PORT, SENSOR_KEY_PIN);
+    return !GPIO_ReadInputDataBit(SENSOR_NOTSTOP_PORT, SENSOR_NOTSTOP_PIN);
 }
 
 

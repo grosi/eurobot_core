@@ -27,13 +27,13 @@
 
 /* exported define -----------------------------------------------------------*/
 /* Pin and Port roboboard*/
-#define SENSOR_KEY_PIN       GPIO_Pin_5
-#define SENSOR_KEY_PIN_MODE  GPIO_Mode_IN
-#define SENSOR_KEY_PIN_SPEED GPIO_Speed_2MHz
-#define SENSOR_KEY_PIN_TYPE  GPIO_OType_PP
-#define SENSOR_KEY_PIN_PUPD  GPIO_PuPd_UP
-#define SENSOR_KEY_PORT_CLK  RCC_AHB1Periph_GPIOC
-#define SENSOR_KEY_PORT      GPIOC
+#define SENSOR_NOTSTOP_PIN       GPIO_Pin_5
+#define SENSOR_NOTSTOP_PIN_MODE  GPIO_Mode_IN
+#define SENSOR_NOTSTOP_PIN_SPEED GPIO_Speed_2MHz
+#define SENSOR_NOTSTOP_PIN_TYPE  GPIO_OType_PP
+#define SENSOR_NOTSTOP_PIN_PUPD  GPIO_PuPd_UP
+#define SENSOR_NOTSTOP_PORT_CLK  RCC_AHB1Periph_GPIOC
+#define SENSOR_NOTSTOP_PORT      GPIOC
 
 #define SENSOR_FRESCO_1_PIN       GPIO_Pin_4
 #define SENSOR_FRESCO_1_PIN_MODE  GPIO_Mode_IN
