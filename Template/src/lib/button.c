@@ -291,6 +291,159 @@ inline uint8_t getBoardButtonNegEdge_Blue(uint8_t* button_state)
 }
 
 
+
+
+
+
+/**
+ * \fn      initUserPanelButton_1
+ * \brief   user panel button 1 initialization
+ */
+inline void initUserPanelButton_1()
+{
+    initButton(USERPANEL_BUTTON_1_PIN, USERPANEL_BUTTON_1_PIN_MODE, USERPANEL_BUTTON_1_PIN_TYPE, USERPANEL_BUTTON_1_PIN_PUPD, USERPANEL_BUTTON_1_PIN_SPEED,
+    		USERPANEL_BUTTON_1_PORT, USERPANEL_BUTTON_1_PORT_CLK);
+}
+
+/**
+ * \fn      getUserPanelButton_1
+ * \brief   get the current pin value
+ * \note    the pin is not debounced, low active
+ * \return  current button value
+ */
+inline uint8_t getUserPanelButton_1()
+{
+    return !GPIO_ReadInputDataBit(USERPANEL_BUTTON_1_PORT, USERPANEL_BUTTON_1_PIN);
+}
+
+/**
+ * \fn      getUserPanelButtonPosEdge_1
+ * \brief   get the positive edge from an user panel button
+ * \note    this function have to call every program loop
+ *
+ * \param   button_state    pointer to a temporary button state memory
+ * \return  the positive edge, if there
+ */
+inline uint8_t getUserPanelButtonPosEdge_1(uint8_t* button_state)
+{
+    return getButtonPosEdge(USERPANEL_BUTTON_1_PORT, USERPANEL_BUTTON_1_PIN, &button_state);
+}
+
+/**
+ * \fn      getUserPanelButtonNegEdge_1
+ * \brief   get the negative edge from an user panel button
+ * \note    this function have to call every program loop
+ *
+ * \param   button_state    pointer to a temporary button state memory
+ * \return  the negative edge, if there
+ */
+inline uint8_t getUserPanelButtonNegEdge_1(uint8_t* button_state)
+{
+    return getButtonNegEdge(USERPANEL_BUTTON_1_PORT, USERPANEL_BUTTON_1_PIN, &button_state);
+}
+
+/**
+ * \fn      initUserPanelButton_2
+ * \brief   user panel button 2 initialization
+ */
+inline void initUserPanelButton_2()
+{
+    initButton(USERPANEL_BUTTON_2_PIN, USERPANEL_BUTTON_2_PIN_MODE, USERPANEL_BUTTON_2_PIN_TYPE, USERPANEL_BUTTON_2_PIN_PUPD, USERPANEL_BUTTON_2_PIN_SPEED,
+    		USERPANEL_BUTTON_2_PORT, USERPANEL_BUTTON_2_PORT_CLK);
+}
+
+/**
+ * \fn      getUserPanelButton_2
+ * \brief   get the current pin value
+ * \note    the pin is not debounced, low active
+ * \return  current button value
+ */
+inline uint8_t getUserPanelButton_2()
+{
+    return !GPIO_ReadInputDataBit(USERPANEL_BUTTON_2_PORT, USERPANEL_BUTTON_2_PIN);
+}
+
+/**
+ * \fn      getUserPanelButtonPosEdge_2
+ * \brief   get the positive edge from an user panel button
+ * \note    this function have to call every program loop
+ *
+ * \param   button_state    pointer to a temporary button state memory
+ * \return  the positive edge, if there
+ */
+inline uint8_t getUserPanelButtonPosEdge_2(uint8_t* button_state)
+{
+    return getButtonPosEdge(USERPANEL_BUTTON_2_PORT, USERPANEL_BUTTON_2_PIN, &button_state);
+}
+
+/**
+ * \fn      getUserPanelButtonNegEdge_2
+ * \brief   get the negative edge from an user panel button
+ * \note    this function have to call every program loop
+ *
+ * \param   button_state    pointer to a temporary button state memory
+ * \return  the negative edge, if there
+ */
+inline uint8_t getUserPanelButtonNegEdge_2(uint8_t* button_state)
+{
+    return getButtonNegEdge(USERPANEL_BUTTON_2_PORT, USERPANEL_BUTTON_2_PIN, &button_state);
+}
+
+/**
+ * \fn      initUserPanelButton_3
+ * \brief   user panel button 3 initialization
+ */
+inline void initUserPanelButton_3()
+{
+    initButton(USERPANEL_BUTTON_3_PIN, USERPANEL_BUTTON_3_PIN_MODE, USERPANEL_BUTTON_3_PIN_TYPE, USERPANEL_BUTTON_3_PIN_PUPD, USERPANEL_BUTTON_3_PIN_SPEED,
+    		USERPANEL_BUTTON_3_PORT, USERPANEL_BUTTON_3_PORT_CLK);
+}
+
+/**
+ * \fn      getUserPanelButton_3
+ * \brief   get the current pin value
+ * \note    the pin is not debounced, low active
+ * \return  current button value
+ */
+inline uint8_t getUserPanelButton_3()
+{
+    return !GPIO_ReadInputDataBit(USERPANEL_BUTTON_3_PORT, USERPANEL_BUTTON_3_PIN);
+}
+
+/**
+ * \fn      getUserPanelButtonPosEdge_3
+ * \brief   get the positive edge from an user panel button
+ * \note    this function have to call every program loop
+ *
+ * \param   button_state    pointer to a temporary button state memory
+ * \return  the positive edge, if there
+ */
+inline uint8_t getUserPanelButtonPosEdge_3(uint8_t* button_state)
+{
+    return getButtonPosEdge(USERPANEL_BUTTON_3_PORT, USERPANEL_BUTTON_3_PIN, &button_state);
+}
+
+/**
+ * \fn      getUserPanelButtonNegEdge_3
+ * \brief   get the negative edge from an user panel button
+ * \note    this function have to call every program loop
+ *
+ * \param   button_state    pointer to a temporary button state memory
+ * \return  the negative edge, if there
+ */
+inline uint8_t getUserPanelButtonNegEdge_3(uint8_t* button_state)
+{
+    return getButtonNegEdge(USERPANEL_BUTTON_3_PORT, USERPANEL_BUTTON_3_PIN, &button_state);
+}
+
+
+inline void initUserPanelButtons()
+{
+	initUserPanelButton_1();
+	initUserPanelButton_2();
+	initUserPanelButton_3();
+}
+
 /**
  * \fn      initButton
  * \brief   initialisation a button
@@ -367,4 +520,3 @@ uint8_t getButtonNegEdge(GPIO_TypeDef* port, uint16_t pin, uint8_t** button_stat
 /**
  * @}
  */
-

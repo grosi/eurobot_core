@@ -64,6 +64,31 @@
 #define BOARD_BUTTON_BLUE_PORT_CLK  RCC_AHB1Periph_GPIOA
 #define BOARD_BUTTON_BLUE_PORT      GPIOA
 
+/* Pin and Port user panel */
+#define USERPANEL_BUTTON_1_PIN       GPIO_Pin_8
+#define USERPANEL_BUTTON_1_PIN_MODE  GPIO_Mode_IN
+#define USERPANEL_BUTTON_1_PIN_SPEED GPIO_Speed_2MHz
+#define USERPANEL_BUTTON_1_PIN_TYPE  GPIO_OType_PP
+#define USERPANEL_BUTTON_1_PIN_PUPD  GPIO_PuPd_UP
+#define USERPANEL_BUTTON_1_PORT_CLK  RCC_AHB1Periph_GPIOE
+#define USERPANEL_BUTTON_1_PORT      GPIOE
+
+#define USERPANEL_BUTTON_2_PIN       GPIO_Pin_10
+#define USERPANEL_BUTTON_2_PIN_MODE  GPIO_Mode_IN
+#define USERPANEL_BUTTON_2_PIN_SPEED GPIO_Speed_2MHz
+#define USERPANEL_BUTTON_2_PIN_TYPE  GPIO_OType_PP
+#define USERPANEL_BUTTON_2_PIN_PUPD  GPIO_PuPd_UP
+#define USERPANEL_BUTTON_2_PORT_CLK  RCC_AHB1Periph_GPIOE
+#define USERPANEL_BUTTON_2_PORT      GPIOE
+
+#define USERPANEL_BUTTON_3_PIN       GPIO_Pin_12
+#define USERPANEL_BUTTON_3_PIN_MODE  GPIO_Mode_IN
+#define USERPANEL_BUTTON_3_PIN_SPEED GPIO_Speed_2MHz
+#define USERPANEL_BUTTON_3_PIN_TYPE  GPIO_OType_PP
+#define USERPANEL_BUTTON_3_PIN_PUPD  GPIO_PuPd_UP
+#define USERPANEL_BUTTON_3_PORT_CLK  RCC_AHB1Periph_GPIOE
+#define USERPANEL_BUTTON_3_PORT      GPIOE
+
 /* exported types ------------------------------------------------------------*/
 
 
@@ -95,6 +120,17 @@ inline void initBoardButton_Blue();
 inline uint8_t getBoardButton_Blue();
 inline uint8_t getBoardButtonPosEdge_Blue(uint8_t*);
 inline uint8_t getBoardButtonNegEdge_Blue(uint8_t*);
+
+inline void initUserPanelButtons();
+inline uint8_t getUserPanelButton_1();
+inline uint8_t getUserPanelButtonPosEdge_1(uint8_t*);
+inline uint8_t getUserPanelButtonNegEdge_1(uint8_t*);
+inline uint8_t getUserPanelButton_2();
+inline uint8_t getUserPanelButtonPosEdge_2(uint8_t*);
+inline uint8_t getUserPanelButtonNegEdge_2(uint8_t*);
+inline uint8_t getUserPanelButton_3();
+inline uint8_t getUserPanelButtonPosEdge_3(uint8_t*);
+inline uint8_t getUserPanelButtonNegEdge_3(uint8_t*);
 
 
 #endif /* BUTTON_H_ */
