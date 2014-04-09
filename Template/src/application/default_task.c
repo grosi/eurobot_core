@@ -37,14 +37,22 @@
 #define SERVO_STEP_SIZE 10
 #define SERVO_MIN 1000
 #define SERVO_MAX 2000
-#define SERVO_RIGHT_1 2000
-#define SERVO_LEFT_1 1000
+/* Launcher */
+#define SERVO_RIGHT_1 1750
+#define SERVO_LEFT_1 1200
+#define SERVO_CENTER_1 1500
+/* Fresco */
 #define SERVO_RIGHT_2 2000
-#define SERVO_LEFT_2 1000
+#define SERVO_LEFT_2 1600
+#define SERVO_CENTER_2 1800
+
 #define SERVO_RIGHT_3 2000
 #define SERVO_LEFT_3 1000
+#define SERVO_CENTER_3 1500
+
 #define SERVO_RIGHT_4 2000
 #define SERVO_LEFT_4 1000
+#define SERVO_CENTER_4 1500
 
 /* Private macro -------------------------------------------------------------*/
 
@@ -134,10 +142,10 @@ static void vDefaultTask(void* pvParameters ) {
     vTaskDelayUntil( &xLastFlashTime, 10 );
 
     /* servos to NULL-positions */
-    setServo_1(SERVO_LEFT_1);
-    setServo_2(SERVO_LEFT_2);
-    setServo_3(SERVO_LEFT_3);
-    setServo_4(SERVO_LEFT_4);
+    setServo_1(SERVO_CENTER_1);
+    setServo_2(SERVO_CENTER_2);
+    setServo_3(SERVO_CENTER_3);
+    setServo_4(SERVO_CENTER_4);
 
     /* endless loop */
     for(;;)
