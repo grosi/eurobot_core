@@ -60,7 +60,7 @@ xSemaphoreHandle sSyncRoboSetupELP = NULL;
 void initRoboSetupState()
 {
     /* create semaphore for elp task synchronisation */
-    vSemaphoreCreateBinary(sSyncRoboSetupELP); /* bug in FreeRTOS -> can't create a binary semaphore */
+    vSemaphoreCreateBinary(sSyncRoboSetupELP); /* is given 1 second after startconfigs are transmitted */
     xSemaphoreTake(sSyncRoboSetupELP,0); /* take the semaphore */
 }
 
