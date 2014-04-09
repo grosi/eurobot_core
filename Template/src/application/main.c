@@ -40,7 +40,7 @@
 #include "Timer.h"
 #include "ELP.h"
 #include "Rangefinder.h"
-#include "UserPanel.h"
+
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -49,13 +49,13 @@
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
-/**=============================================================================
+/**
  * \fn          main
  * \brief       the application starts here
  *
  * \param[in]   None
  * \return      0
- =============================================================================*/
+ */
 int main(void)
 {
     /* Configure the NVIC Preemption Priority Bits for STM-Lib V3.1+ */
@@ -66,7 +66,6 @@ int main(void)
     initSystemTask();
     initELPTask();
     initRangefinderTask();
-    initUserPanelTask();
     initDefaultTask();
     initCANGatekeeper(); /* have to be the last initialization modul! */
 
