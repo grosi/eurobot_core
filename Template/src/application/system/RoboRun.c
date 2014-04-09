@@ -59,7 +59,8 @@ static uint8_t node_pools[NODE_POOL_QUANTITY][3] = {{NODE_MAMMOTH_POOL_ID,
                                                     {NODE_FRESCO_POOL_ID,
                                                      NODE_FRESCO_POOL_SIZE,
                                                      NODE_FRESCO_POOL_LEVEL}}; /*!< pool settings -> have to set to default values after game round */
-volatile static uint16_t enemey_position[((int)(PLAYGROUND_HEIGH/ENEMY_GRID_SIZE_Y))][((int)(PLAYGROUND_WIDTH/ENEMY_GRID_SIZE_X))] = {{0.0}}; /*!< enemy-tracking grid */
+volatile static uint16_t enemey_position[20][30] = {{0}}; /*!< enemy-tracking grid TODO*/
+//volatile static uint16_t enemey_position[((int)(PLAYGROUND_HEIGH/ENEMY_GRID_SIZE_Y))][((int)(PLAYGROUND_WIDTH/ENEMY_GRID_SIZE_X))] = {{0.0}}; /*!< enemy-tracking grid */
 volatile static game_state_t game_state = {0,               /*!< x-position */
                                             0,              /*!< y-position */
                                             0,              /*!< angle */
@@ -153,7 +154,7 @@ uint8_t setConfigRoboRunState(uint8_t start_node_id, uint8_t teamcolor, uint8_t 
 void setConfigRoboRunState2Default()
 {
     /* local variable */
-    uint8_t node_count, y, x;
+    uint8_t node_count;// y, x;
 
     /* set all nodes to state UNDONE */
     for(node_count = 0; node_count < NODE_QUANTITY; node_count++)
@@ -201,17 +202,14 @@ void runRoboRunState(portTickType* tick)
     node_t* current_node;
 
 
-
     /* load next node in node task */
     current_node = next_node;
     node_task = next_node;
 
-    //xSemaphoreTake(sSyncRoboRunNodeTask,0); //TODO pruefen ob noetig
-
     vTaskResume(xNodeTask_Handle);
 
     /* wait until current node is done */
-    xSemaphoreTake(sSyncRoboRunNodeTask,portMAX_DELAY); //TODO pruefen ob Semaphore sich selber weggenommen werden kann
+    xSemaphoreTake(sSyncRoboRunNodeTask,portMAX_DELAY);
 
 
     /*********************/
@@ -262,100 +260,200 @@ void runRoboRunState(portTickType* tick)
         if(((*nodes_game)+node_count)->param.node_state == NODE_UNDONE)
         {
             /* destination weight depends on the current robo-position and the arrive-direction */
-            switch(((*nodes_game)+node_count)->param.arrive)
+            /* NORTH */
+            if(((*nodes_game)+node_count)->param.angle >= NODE_NORTH_MIN_ANGLE &&
+                    ((*nodes_game)+node_count)->param.angle <= NODE_NORTH_MAX_ANGLE)
             {
-                case NORTH:
-                    /* opposite arrive */
-                    if(((*nodes_game)+node_count)->param.y > current_node->param.y)
-                    {
-                        weight_arrive = NODE_WORST_ARRIVE;
-                    /* too close */
-                    }else if(((*nodes_game)+node_count)->param.y <= current_node->param.y &&
-                            ((*nodes_game)+node_count)->param.y + NODE_ARRIVE_FRAME > current_node->param.y)
-                    {
-                        weight_arrive = NODE_BAD_ARRIVE;
-                    /* not bad, but not perfect as well */
-                    }else if(((*nodes_game)+node_count)->param.y + NODE_ARRIVE_FRAME <= current_node->param.y &&
-                            (((*nodes_game)+node_count)->param.x - NODE_ARRIVE_FRAME >= current_node->param.x ||
-                            ((*nodes_game)+node_count)->param.x + NODE_ARRIVE_FRAME <= current_node->param.x))
-                    {
-                        weight_arrive = NODE_WELL_ARRIVE;
-                    /* best possible arrive */
-                    }else
-                    {
-                        weight_arrive = NODE_PERFECT_ARRIVE;
-                    }
-                    break;
+                /* opposite arrive */
+                if(((*nodes_game)+node_count)->param.y > current_node->param.y)
+                {
+                    weight_arrive = NODE_WORST_ARRIVE;
+                /* too close */
+                }else if(((*nodes_game)+node_count)->param.y <= current_node->param.y &&
+                        ((*nodes_game)+node_count)->param.y + NODE_ARRIVE_FRAME > current_node->param.y)
+                {
+                    weight_arrive = NODE_BAD_ARRIVE;
+                /* not bad, but not perfect as well */
+                }else if(((*nodes_game)+node_count)->param.y + NODE_ARRIVE_FRAME <= current_node->param.y &&
+                        (((*nodes_game)+node_count)->param.x - NODE_ARRIVE_FRAME >= current_node->param.x ||
+                        ((*nodes_game)+node_count)->param.x + NODE_ARRIVE_FRAME <= current_node->param.x))
+                {
+                    weight_arrive = NODE_WELL_ARRIVE;
+                /* best possible arrive */
+                }else
+                {
+                    weight_arrive = NODE_PERFECT_ARRIVE;
+                }
 
-                case EAST:
-                    /* opposite arrive */
-                    if(((*nodes_game)+node_count)->param.x > current_node->param.x)
-                    {
-                        weight_arrive = NODE_WORST_ARRIVE;
-                    /* too close */
-                    }else if(((*nodes_game)+node_count)->param.x <= current_node->param.x &&
-                            ((*nodes_game)+node_count)->param.x + NODE_ARRIVE_FRAME > current_node->param.x)
-                    {
-                        weight_arrive = NODE_BAD_ARRIVE;
-                    /* not bad, but not perfect as well */
-                    }else if(((*nodes_game)+node_count)->param.x + NODE_ARRIVE_FRAME <= current_node->param.x &&
-                            (((*nodes_game)+node_count)->param.y - NODE_ARRIVE_FRAME >= current_node->param.y ||
-                            ((*nodes_game)+node_count)->param.y + NODE_ARRIVE_FRAME <= current_node->param.y))
-                    {
-                        weight_arrive = NODE_WELL_ARRIVE;
-                    /* best possible arrive */
-                    }else
-                    {
-                        weight_arrive = NODE_PERFECT_ARRIVE;
-                    }
-                    break;
+            /* WEST */
+            } else if(((*nodes_game)+node_count)->param.angle >= NODE_WEST_MIN_ANGLE &&
+                    ((*nodes_game)+node_count)->param.angle <= NODE_WEST_MAX_ANGLE)
+            {
+                /* opposite arrive */
+                if(((*nodes_game)+node_count)->param.x < current_node->param.x)
+                {
+                    weight_arrive = NODE_WORST_ARRIVE;
+                /* too close */
+                }else if(((*nodes_game)+node_count)->param.x >= current_node->param.x &&
+                        ((*nodes_game)+node_count)->param.x - NODE_ARRIVE_FRAME < current_node->param.x)
+                {
+                    weight_arrive = NODE_BAD_ARRIVE;
+                /* not bad, but not perfect as well */
+                }else if(((*nodes_game)+node_count)->param.x - NODE_ARRIVE_FRAME >= current_node->param.x &&
+                        (((*nodes_game)+node_count)->param.y - NODE_ARRIVE_FRAME >= current_node->param.y ||
+                        ((*nodes_game)+node_count)->param.y + NODE_ARRIVE_FRAME <= current_node->param.y))
+                {
+                    weight_arrive = NODE_WELL_ARRIVE;
+                /* best possible arrive */
+                }else
+                {
+                    weight_arrive = NODE_PERFECT_ARRIVE;
+                }
 
-                case SOUTH:
-                    /* opposite arrive */
-                    if(((*nodes_game)+node_count)->param.y < current_node->param.y)
-                    {
-                        weight_arrive = NODE_WORST_ARRIVE;
-                    /* too close */
-                    }else if(((*nodes_game)+node_count)->param.y >= current_node->param.y &&
-                            ((*nodes_game)+node_count)->param.y - NODE_ARRIVE_FRAME < current_node->param.y)
-                    {
-                        weight_arrive = NODE_BAD_ARRIVE;
-                    /* not bad, but not perfect as well */
-                    }else if(((*nodes_game)+node_count)->param.y - NODE_ARRIVE_FRAME >= current_node->param.y &&
-                            (((*nodes_game)+node_count)->param.x - NODE_ARRIVE_FRAME >= current_node->param.x ||
-                            ((*nodes_game)+node_count)->param.x + NODE_ARRIVE_FRAME <= current_node->param.x))
-                    {
-                        weight_arrive = NODE_WELL_ARRIVE;
-                    /* best possible arrive */
-                    }else
-                    {
-                        weight_arrive = NODE_PERFECT_ARRIVE;
-                    }
-                    break;
+            /* SOUTH */
+            } else if(((*nodes_game)+node_count)->param.angle >= NODE_SOUTH_MIN_ANGLE &&
+                    ((*nodes_game)+node_count)->param.angle <= NODE_SOUTH_MAX_ANGLE)
+            {
+                /* opposite arrive */
+                if(((*nodes_game)+node_count)->param.y < current_node->param.y)
+                {
+                    weight_arrive = NODE_WORST_ARRIVE;
+                /* too close */
+                }else if(((*nodes_game)+node_count)->param.y >= current_node->param.y &&
+                        ((*nodes_game)+node_count)->param.y - NODE_ARRIVE_FRAME < current_node->param.y)
+                {
+                    weight_arrive = NODE_BAD_ARRIVE;
+                /* not bad, but not perfect as well */
+                }else if(((*nodes_game)+node_count)->param.y - NODE_ARRIVE_FRAME >= current_node->param.y &&
+                        (((*nodes_game)+node_count)->param.x - NODE_ARRIVE_FRAME >= current_node->param.x ||
+                        ((*nodes_game)+node_count)->param.x + NODE_ARRIVE_FRAME <= current_node->param.x))
+                {
+                    weight_arrive = NODE_WELL_ARRIVE;
+                /* best possible arrive */
+                }else
+                {
+                    weight_arrive = NODE_PERFECT_ARRIVE;
+                }
 
-                case WEST:
-                    /* opposite arrive */
-                    if(((*nodes_game)+node_count)->param.x < current_node->param.x)
-                    {
-                        weight_arrive = NODE_WORST_ARRIVE;
-                    /* too close */
-                    }else if(((*nodes_game)+node_count)->param.x >= current_node->param.x &&
-                            ((*nodes_game)+node_count)->param.x - NODE_ARRIVE_FRAME < current_node->param.x)
-                    {
-                        weight_arrive = NODE_BAD_ARRIVE;
-                    /* not bad, but not perfect as well */
-                    }else if(((*nodes_game)+node_count)->param.x - NODE_ARRIVE_FRAME >= current_node->param.x &&
-                            (((*nodes_game)+node_count)->param.y - NODE_ARRIVE_FRAME >= current_node->param.y ||
-                            ((*nodes_game)+node_count)->param.y + NODE_ARRIVE_FRAME <= current_node->param.y))
-                    {
-                        weight_arrive = NODE_WELL_ARRIVE;
-                    /* best possible arrive */
-                    }else
-                    {
-                        weight_arrive = NODE_PERFECT_ARRIVE;
-                    }
-                    break;
+            /* EAST */
+            } else
+            {
+                /* opposite arrive */
+                if(((*nodes_game)+node_count)->param.x > current_node->param.x)
+                {
+                    weight_arrive = NODE_WORST_ARRIVE;
+                /* too close */
+                }else if(((*nodes_game)+node_count)->param.x <= current_node->param.x &&
+                        ((*nodes_game)+node_count)->param.x + NODE_ARRIVE_FRAME > current_node->param.x)
+                {
+                    weight_arrive = NODE_BAD_ARRIVE;
+                /* not bad, but not perfect as well */
+                }else if(((*nodes_game)+node_count)->param.x + NODE_ARRIVE_FRAME <= current_node->param.x &&
+                        (((*nodes_game)+node_count)->param.y - NODE_ARRIVE_FRAME >= current_node->param.y ||
+                        ((*nodes_game)+node_count)->param.y + NODE_ARRIVE_FRAME <= current_node->param.y))
+                {
+                    weight_arrive = NODE_WELL_ARRIVE;
+                /* best possible arrive */
+                }else
+                {
+                    weight_arrive = NODE_PERFECT_ARRIVE;
+                }
             }
+//            /* destination weight depends on the current robo-position and the arrive-direction */
+//            switch(((*nodes_game)+node_count)->param.arrive)
+//            {
+//                case NORTH:
+//                    /* opposite arrive */
+//                    if(((*nodes_game)+node_count)->param.y > current_node->param.y)
+//                    {
+//                        weight_arrive = NODE_WORST_ARRIVE;
+//                    /* too close */
+//                    }else if(((*nodes_game)+node_count)->param.y <= current_node->param.y &&
+//                            ((*nodes_game)+node_count)->param.y + NODE_ARRIVE_FRAME > current_node->param.y)
+//                    {
+//                        weight_arrive = NODE_BAD_ARRIVE;
+//                    /* not bad, but not perfect as well */
+//                    }else if(((*nodes_game)+node_count)->param.y + NODE_ARRIVE_FRAME <= current_node->param.y &&
+//                            (((*nodes_game)+node_count)->param.x - NODE_ARRIVE_FRAME >= current_node->param.x ||
+//                            ((*nodes_game)+node_count)->param.x + NODE_ARRIVE_FRAME <= current_node->param.x))
+//                    {
+//                        weight_arrive = NODE_WELL_ARRIVE;
+//                    /* best possible arrive */
+//                    }else
+//                    {
+//                        weight_arrive = NODE_PERFECT_ARRIVE;
+//                    }
+//                    break;
+//
+//                case EAST:
+//                    /* opposite arrive */
+//                    if(((*nodes_game)+node_count)->param.x > current_node->param.x)
+//                    {
+//                        weight_arrive = NODE_WORST_ARRIVE;
+//                    /* too close */
+//                    }else if(((*nodes_game)+node_count)->param.x <= current_node->param.x &&
+//                            ((*nodes_game)+node_count)->param.x + NODE_ARRIVE_FRAME > current_node->param.x)
+//                    {
+//                        weight_arrive = NODE_BAD_ARRIVE;
+//                    /* not bad, but not perfect as well */
+//                    }else if(((*nodes_game)+node_count)->param.x + NODE_ARRIVE_FRAME <= current_node->param.x &&
+//                            (((*nodes_game)+node_count)->param.y - NODE_ARRIVE_FRAME >= current_node->param.y ||
+//                            ((*nodes_game)+node_count)->param.y + NODE_ARRIVE_FRAME <= current_node->param.y))
+//                    {
+//                        weight_arrive = NODE_WELL_ARRIVE;
+//                    /* best possible arrive */
+//                    }else
+//                    {
+//                        weight_arrive = NODE_PERFECT_ARRIVE;
+//                    }
+//                    break;
+//
+//                case SOUTH:
+//                    /* opposite arrive */
+//                    if(((*nodes_game)+node_count)->param.y < current_node->param.y)
+//                    {
+//                        weight_arrive = NODE_WORST_ARRIVE;
+//                    /* too close */
+//                    }else if(((*nodes_game)+node_count)->param.y >= current_node->param.y &&
+//                            ((*nodes_game)+node_count)->param.y - NODE_ARRIVE_FRAME < current_node->param.y)
+//                    {
+//                        weight_arrive = NODE_BAD_ARRIVE;
+//                    /* not bad, but not perfect as well */
+//                    }else if(((*nodes_game)+node_count)->param.y - NODE_ARRIVE_FRAME >= current_node->param.y &&
+//                            (((*nodes_game)+node_count)->param.x - NODE_ARRIVE_FRAME >= current_node->param.x ||
+//                            ((*nodes_game)+node_count)->param.x + NODE_ARRIVE_FRAME <= current_node->param.x))
+//                    {
+//                        weight_arrive = NODE_WELL_ARRIVE;
+//                    /* best possible arrive */
+//                    }else
+//                    {
+//                        weight_arrive = NODE_PERFECT_ARRIVE;
+//                    }
+//                    break;
+//
+//                case WEST:
+//                    /* opposite arrive */
+//                    if(((*nodes_game)+node_count)->param.x < current_node->param.x)
+//                    {
+//                        weight_arrive = NODE_WORST_ARRIVE;
+//                    /* too close */
+//                    }else if(((*nodes_game)+node_count)->param.x >= current_node->param.x &&
+//                            ((*nodes_game)+node_count)->param.x - NODE_ARRIVE_FRAME < current_node->param.x)
+//                    {
+//                        weight_arrive = NODE_BAD_ARRIVE;
+//                    /* not bad, but not perfect as well */
+//                    }else if(((*nodes_game)+node_count)->param.x - NODE_ARRIVE_FRAME >= current_node->param.x &&
+//                            (((*nodes_game)+node_count)->param.y - NODE_ARRIVE_FRAME >= current_node->param.y ||
+//                            ((*nodes_game)+node_count)->param.y + NODE_ARRIVE_FRAME <= current_node->param.y))
+//                    {
+//                        weight_arrive = NODE_WELL_ARRIVE;
+//                    /* best possible arrive */
+//                    }else
+//                    {
+//                        weight_arrive = NODE_PERFECT_ARRIVE;
+//                    }
+//                    break;
+//            }
             weight_dest =((((*nodes_game)+node_count)->param.points/((*nodes_game)+node_count)->param.time)
                     * (1/((*nodes_game)+node_count)->param.percent)) * weight_arrive;
 
@@ -381,7 +479,7 @@ void runRoboRunState(portTickType* tick)
 
 
     /* game is finished */
-    if(remain_nodes == 0) //TODO evtl. +1
+    if(remain_nodes == 0)
     {
     	setConfigRoboRunState2Default();
 
