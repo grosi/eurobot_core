@@ -34,7 +34,7 @@
 /* exported macro ------------------------------------------------------------*/
 
 /* exported functions --------------------------------------------------------*/
-extern void init_display(void (*delay)(long tick));
+extern void LCD_init(void (*delay)(long tick));
 extern void LCD_clear();
 extern void LCD_write_byte_data(uint8_t, uint8_t, uint8_t);
 extern void LCD_write_string(uint8_t, uint8_t, uint8_t*, uint8_t);

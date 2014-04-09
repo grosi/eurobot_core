@@ -40,7 +40,7 @@ void LCD_write_byte_instruction(uint8_t);
  * \param[in]   function-pointer to the RTOS-delay-function
  * \return  None
  =============================================================================*/
-void init_display(void (*delay)(long))
+void LCD_init(void (*delay)(long))
 {
 	GPIO_InitTypeDef GPIO_InitStruct;
 
