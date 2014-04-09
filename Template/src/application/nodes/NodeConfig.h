@@ -31,18 +31,6 @@ typedef enum
 
 
 /**
- * \brief the needed arrive direction for a node
- */
-typedef enum
-{
-    NORTH = 0,
-    EAST,
-    SOUTH,
-    WEST,
-}node_arrive_t;
-
-
-/**
  * \brief current robo state
  */
 typedef struct
@@ -69,7 +57,6 @@ typedef struct
     const uint16_t x; /*!<[mm]*/
     const uint16_t y; /*!<[mm]*/
     const uint8_t pool_id;
-    const node_arrive_t arrive;  //TODO: Change code to use 'angle' and then remove 'arrive'
     const uint16_t angle; /*10 bit, 1 bit =ca. 1°*/
     node_state_t node_state;
 }node_param_t;
@@ -103,8 +90,18 @@ typedef struct
 #define NODE_FIRE_POOL_SIZE     0
 #define NODE_FIRE_POOL_LEVEL    0
 
+/* nodes arrive direction ranges */
+#define NODE_NORTH_MIN_ANGLE    45
+#define NODE_NORTH_MAX_ANGLE    134
+#define NODE_WEST_MIN_ANGLE     135
+#define NODE_WEST_MAX_ANGLE     224
+#define NODE_SOUTH_MIN_ANGLE    225
+#define NODE_SOUTH_MAX_ANGLE    314
+#define NODE_EAST_MIN_ANGLE     315 /*!< note, that the zero line is crossed */
+#define NODE_EAST_MAX_ANGLE     44  /*!< note, that the zero line is crossed */
+
 /* Servo */
-#define SERVO_POS_FRESCO_IN     (0)   /* Servo position: Fresco panel all the way in */ //TODO
+#define SERVO_POS_FRESCO_IN     (0)   /* Servo position: Fresco panel all the way in */ //TODO take this to the specific nodes
 #define SERVO_POS_FRESCO_OUT    (100) /* Servo position: Fresco panel all the way out */ //TODO
 #define SERVO_MOVING_DELAY      (100) /* Delay in ms to wait while the servo moves the whole way */ //TODO
 

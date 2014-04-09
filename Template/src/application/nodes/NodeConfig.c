@@ -36,15 +36,15 @@
 node_t node_mammoth_1 =
 {
     {
-        .id = 1,                  /*!<node id */
-        4,                  /*!<node points */
-        0.19,               /*!<percent of the total points [%]*/
-        5,                  /*!<estimated node time [s]*/
-        0.62,               /*!<node x position [m]*/
-        0.49,               /*!<node y position [m]*/
-        NODE_MAMMOTH_POOL_ID,/*!<node pool id */
-        WEST,               /*!<node arrive direction */
-        NODE_UNDONE,        /*!<node state */
+        .id = 1,                            /*!<node id */
+        .points = 4,                        /*!<node points */
+        .percent = 0.19,                    /*!<percent of the total points [%]*/
+        .time = 5,                          /*!<estimated node time [s]*/
+        .x = 0.62,                          /*!<node x position [m]*/
+        .y = 0.49,                          /*!<node y position [m]*/
+        .pool_id = NODE_MAMMOTH_POOL_ID,    /*!<node pool id */
+        .angle = 180,                       /*!<node arrive direction */
+        .node_state = NODE_UNDONE,          /*!<node state */
     },
     doMammothNode
 };
