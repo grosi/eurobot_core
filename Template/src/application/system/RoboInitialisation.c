@@ -21,8 +21,10 @@
 #include "RoboSetup.h" /* next state if this one is completed successfully */
 #include "RoboError.h" /* next state if this one is completed with errors */
 #include "RoboInitialisation.h"
+
 /* lib */
 #include "lib/servo.h"
+#include "lib/display.h"
 
 /* Private typedef -----------------------------------------------------------*/
 typedef enum
@@ -87,7 +89,9 @@ void runRoboInitialisationState(portTickType* tick)
     switch(state)
     {
         case DISPLAY_INIT:
-            // Display init
+            LCD_init((void(*)(long))vTaskDelay);
+
+            state = DRIVE_INIT;
             break;
 
         case DRIVE_INIT:
@@ -137,7 +141,7 @@ void runRoboInitialisationState(portTickType* tick)
 
 
 /**
- * \fn          vNodeTask
+ * \fn          initNodeResources
  * \brief       Function to initialise all the resources needed by the node task
  *
  * \param[in]   None
