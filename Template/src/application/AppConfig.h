@@ -1,5 +1,5 @@
 /**
- * \file    app_config.h
+ * \file    AppConfig.h
  * \author  gross10
  * \date    2013-11-28
  *
@@ -17,8 +17,18 @@
 #ifndef __APP_CONFIG_H
 #define __APP_CONFIG_H
 
+/* Includes ------------------------------------------------------------------*/
+/* RTOS (are necessary, because they could only include one time*/
+#include "FreeRTOS.h"
+#include "queue.h"
+#include "task.h"
+#include "semphr.h"
+#include "timers.h"
+#include "memPoolService.h"
 
-/* define this only in debug mode, if a error is occured the programm is capture in a loop */
+
+/* define this only in debug mode, if a error is occured the programm is capture in a loop
+ * define the "INCLUDE_uxTaskGetStackHighWaterMark 1" in FreeRTOS.h*/
 //#define DEBUGGING
 
 /* typedefs */

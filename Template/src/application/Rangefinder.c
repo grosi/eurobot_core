@@ -23,7 +23,7 @@
 //#include "..\lib\roboBoardInterface.h" /*!< \todo remove if not used */
 
 /* application */
-#include "app_config.h"
+#include "AppConfig.h"
 #include "Rangefinder.h"
 
 /* Private typedef -----------------------------------------------------------*/

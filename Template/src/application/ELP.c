@@ -22,7 +22,7 @@
 #include "..\lib\SWD.h" /** \todo remove if LED are not used */
 
 /* application */
-#include "app_config.h"
+#include "AppConfig.h"
 #include "CANGatekeeper.h"
 #include "ELP.h"
 

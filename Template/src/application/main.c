@@ -40,7 +40,7 @@
 #include "memPoolService.h"
 
 /* application */
-#include "app_config.h"
+#include "AppConfig.h"
 #include "default_task.h"
 #include "CANGatekeeper.h"
 #include "Strategy.h"

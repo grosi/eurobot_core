@@ -27,7 +27,7 @@
 #include "../lib/can.h" /* CAN library */
 
 /* application */
-#include "app_config.h" /* global application-settings */
+#include "AppConfig.h" /* global application-settings */
 #include "CANGatekeeper.h"
 
 
