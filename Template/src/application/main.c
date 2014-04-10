@@ -40,6 +40,7 @@
 #include "Timer.h"
 #include "ELP.h"
 #include "Rangefinder.h"
+#include "interrupt_handlers.h"
 
 
 /* Private typedef -----------------------------------------------------------*/

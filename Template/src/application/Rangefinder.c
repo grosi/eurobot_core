@@ -265,99 +265,97 @@ static void vRangefinderTask(void* pvParameters ) {
 
 /**
  * \fn
- * \brief  This function handles External line 5-9 interrupt request.
+ * \brief  This function is called by the external line 5-9 interrupt handler
  *
  * \param  None
  * \retval None
  */
-void EXTI9_5_IRQHandler(void)
-{
-	if(EXTI_GetITStatus(EXTI_Line5) != RESET)
-	{
-		/* Check if rising or falling interrupt */
-		if(getIRSensor_Back()) {
+void IRSensorBack_IT(void) {
 
-			/* Nothing detected, all ok */
-			RangefinderIR_BwAlarm_flag = 0;
-		}
-		else {
+	/* Check if rising or falling interrupt */
+	if(getIRSensor_Back()) {
 
-			/* Object detected, set alarm */
-			RangefinderIR_BwAlarm_flag = 1;
-			/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
-			xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
-		}
+		/* Nothing detected, all ok */
+		RangefinderIR_BwAlarm_flag = 0;
+	}
+	else {
 
-		/* Clear the EXTI line pending bit */
-		EXTI_ClearITPendingBit(EXTI_Line5);
+		/* Object detected, set alarm */
+		RangefinderIR_BwAlarm_flag = 1;
+		/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
+		xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
 	}
 }
 
 /**
  * \fn
- * \brief  This function handles External line 10-15 interrupt request.
+ * \brief  This function is called by the external line 10-15 interrupt handler
  *
  * \param  None
  * \retval None
  */
-void EXTI15_10_IRQHandler(void)
-{
-	if(EXTI_GetITStatus(EXTI_Line11) != RESET) {
+void IRSensorFront_IT(void) {
 
-		/* Check if rising or falling interrupt */
-		if(getIRSensor_Front()) {
+	/* Check if rising or falling interrupt */
+	if(getIRSensor_Front()) {
 
-			/* Nothing detected, all ok */
-			RangefinderIR_FwAlarm_flag = 0;
-		}
-		else {
-
-			/* Object detected, set alarm */
-			RangefinderIR_FwAlarm_flag = 1;
-			/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
-			xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
-		}
-
-		/* Clear the EXTI line pending bit */
-		EXTI_ClearITPendingBit(EXTI_Line11);
+		/* Nothing detected, all ok */
+		RangefinderIR_FwAlarm_flag = 0;
 	}
-	if(EXTI_GetITStatus(EXTI_Line12) != RESET) {
+	else {
 
-		/* Check if rising or falling interrupt */
-		if(getIRSensor_Right()) {
-
-			/* Nothing detected, all ok */
-			RangefinderIR_FwAlarm_flag = 0;
-		}
-		else {
-
-			/* Object detected, set alarm */
-			RangefinderIR_FwAlarm_flag = 1;
-			/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
-			xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
-		}
-
-		/* Clear the EXTI line pending bit */
-		EXTI_ClearITPendingBit(EXTI_Line12);
+		/* Object detected, set alarm */
+		RangefinderIR_FwAlarm_flag = 1;
+		/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
+		xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
 	}
-	if(EXTI_GetITStatus(EXTI_Line15) != RESET) {
+}
 
-		/* Check if rising or falling interrupt */
-		if(getIRSensor_Left()) {
+/**
+ * \fn
+ * \brief  This function is called by the external line 10-15 interrupt handler
+ *
+ * \param  None
+ * \retval None
+ */
+void IRSensorRight_IT(void) {
 
-			/* Nothing detected, all ok */
-			RangefinderIR_FwAlarm_flag = 0;
-		}
-		else {
+	/* Check if rising or falling interrupt */
+	if(getIRSensor_Right()) {
 
-			/* Object detected, set alarm */
-			RangefinderIR_FwAlarm_flag = 1;
-			/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
-			xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
-		}
+		/* Nothing detected, all ok */
+		RangefinderIR_FwAlarm_flag = 0;
+	}
+	else {
 
-		/* Clear the EXTI line pending bit */
-		EXTI_ClearITPendingBit(EXTI_Line15);
+		/* Object detected, set alarm */
+		RangefinderIR_FwAlarm_flag = 1;
+		/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
+		xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
+	}
+}
+
+/**
+ * \fn
+ * \brief  This function is called by the external line 10-15 interrupt handler
+ *
+ * \param  None
+ * \retval None
+ */
+void IRSensorLeft_IT(void) {
+
+	/* Check if rising or falling interrupt */
+	if(getIRSensor_Left()) {
+
+		/* Nothing detected, all ok */
+		RangefinderIR_FwAlarm_flag = 0;
+	}
+	else {
+
+		/* Object detected, set alarm */
+		RangefinderIR_FwAlarm_flag = 1;
+		/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
+		xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
 	}
 }
 

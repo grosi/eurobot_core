@@ -8,8 +8,6 @@
  *
  * \brief   Configuration of external interrupts
  *
- * \todo    unit test
- *
  * \defgroup ext_interrupt Ext_Interrupt
  * \brief   external interrupt functions
  * \ingroup firmware
