@@ -24,6 +24,11 @@
 #include "stm32f4xx.h"
 
 #include "Rangefinder.h"
+//TODO:
+// #include "file_with_emergencystop_function.h"
+// and remove following line:
+void EmergencyStop_IT(void){};
+// also see the TODO in code below.
 
 
 /**
@@ -143,9 +148,8 @@ void EXTI9_5_IRQHandler(void) {
 	}
 	if(EXTI_GetITStatus(EXTI_Line7) != RESET) {
 
-		/*
-		 * Add your_function_IT() here
-		 */
+		/* Call TODO(module name) function */
+		EmergencyStop_IT();
 
 		/* Clear the EXTI line pending bit */
 		EXTI_ClearITPendingBit(EXTI_Line7);
