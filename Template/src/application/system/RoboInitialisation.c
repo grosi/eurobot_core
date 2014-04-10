@@ -144,6 +144,8 @@ void runRoboInitialisationState(portTickType* tick)
  * \fn          initNodeResources
  * \brief       Function to initialise all the resources needed by the node task
  *
+ * \TODO move to RoboRun.c -> init
+ *
  * \param[in]   None
  * \return      None
  */
