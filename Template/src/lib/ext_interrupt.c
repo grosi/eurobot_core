@@ -75,25 +75,6 @@ void initEXTILine(uint32_t RCC_AHB1Periph, uint8_t EXTI_PortSourceGPIOx, uint8_t
 }
 
 
-//Example:
-///**
-//* @brief This function handles External line 5-9 interrupt request.
-//* @param None
-//* @retval None
-//*/
-//void EXTI9_5_IRQHandler(void)
-//{
-//	if(EXTI_GetITStatus(EXTI_Line5) != RESET)
-//	{
-//		/* Toggle LED */
-//		setLEDbin(++shadow);
-//
-//		/* Clear the EXTI line pending bit */
-//		EXTI_ClearITPendingBit(EXTI_Line5);
-//	}
-//}
-
-
 /**
  * @}
  */
