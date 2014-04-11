@@ -380,9 +380,9 @@ void runRoboSetupState(portTickType* tick)
             /* game starts if key sensor is activated */
             //if(getSensor_Key())
             {
-                setRoboSetup2Default();
-                startTimer(); /* start game-timer */
-                system_state = runRoboRunState;
+//                setRoboSetup2Default();
+//                startTimer(); /* start game-timer */
+//                system_state = runRoboRunState;
             }
 
             /* back to setup */
