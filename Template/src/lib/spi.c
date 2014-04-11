@@ -119,13 +119,6 @@ void init_SPI(void)
 
 	/* enable clock for used IO pins */
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
-//	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
-//	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
-//	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
-//	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
-//	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);
-//	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);
-//	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOH, ENABLE);
 
 	/* configure the SCK pin */
 	GPIO_InitStruct.GPIO_Pin = SPI_PIN_SCK;
@@ -134,14 +127,6 @@ void init_SPI(void)
 	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_NOPULL;
 	GPIO_Init(SPI_PORT_SCK, &GPIO_InitStruct);
-
-	/* Configure the MISO pin */
-//	GPIO_InitStruct.GPIO_Pin = SPI_PIN_MISO;
-//	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF;
-//	GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;
-//	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-//	GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_NOPULL;
-//	GPIO_Init(SPI_PORT_MISO, &GPIO_InitStruct);
 
 	/* Configure the MOSI pin */
 	GPIO_InitStruct.GPIO_Pin = SPI_PIN_MOSI;
@@ -153,35 +138,10 @@ void init_SPI(void)
 
 	/* connect SPI pins to SPI alternate function */
 	GPIO_PinAFConfig(SPI_PORT_SCK, GPIO_PinSource_SCK, GPIO_AF);
-	//GPIO_PinAFConfig(SPI_PORT_MISO, GPIO_PinSource_MISO, GPIO_AF);
 	GPIO_PinAFConfig(SPI_PORT_MOSI, GPIO_PinSource_MOSI, GPIO_AF);
-
-
-	/* enable clock for used IO pin */
-//	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
-//	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
-//	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
-//	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
-//	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);
-//	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);
-//	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOH, ENABLE);
-
-	/* Configure the CS pin */
-	GPIO_InitStruct.GPIO_Pin = SPI_PIN_CS;
-	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_NOPULL;
-	GPIO_Init(SPI_PORT_CS, &GPIO_InitStruct);
-
-	GPIO_WriteBit(SPI_PORT_CS, SPI_PIN_CS, SET); // set CS high
-
 
 	/* enable peripheral clock for SPI configurations */
 	RCC_APB2PeriphClockCmd(RCC_APBPeriph, ENABLE);
-	//RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2 ,ENABLE);
-	//RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI3 ,ENABLE);
 
 	/* SPI configurations */
 	SPI_InitStruct.SPI_Direction = SPI_Direction_1Line_Tx; // set to simplex mode, (MOSI only)
@@ -210,13 +170,9 @@ void init_SPI(void)
  =============================================================================*/
 void SPI_send_byte(uint8_t data)
 {
-	GPIO_WriteBit(SPI_PORT_CS, SPI_PIN_CS, RESET); // set PB2 (CS) low (the CS-PIN's low-active!)
-
 	SPI_I2S_SendData(SPI,data);    // write data to be transmitted to the SPI data register
 	while (SPI_I2S_GetFlagStatus(SPI, SPI_I2S_FLAG_TXE) == RESET);  // wait until transmission complete
 	while(SPI_I2S_GetFlagStatus(SPI, SPI_I2S_FLAG_BSY)); // wait until SPI is not busy anymore
-
-	GPIO_WriteBit(SPI_PORT_CS, SPI_PIN_CS, SET); // set PB2 (CS) high
 }
 
 /**
