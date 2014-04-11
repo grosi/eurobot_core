@@ -48,13 +48,7 @@ void LCD_init(void (*delay)(long))
 
 	/* enable clock for used IO pin (RS) */
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
-//	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
-//	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
-//	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
-//	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
-//	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);
-//	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);
-//	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOH, ENABLE);
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
 
 	/* initialize SPI */
 	init_SPI();        // (spi.h needs to be included)
@@ -66,6 +60,15 @@ void LCD_init(void (*delay)(long))
 	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_NOPULL;
 	GPIO_Init(DISPLAY_PORT_RS, &GPIO_InitStruct);
+
+	GPIO_InitStruct.GPIO_Pin = DISPLAY_PIN_CS;
+    GPIO_InitStruct.GPIO_Mode = GPIO_Mode_OUT;
+    GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;
+    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_NOPULL;
+    GPIO_Init(DISPLAY_PORT_CS, &GPIO_InitStruct);
+
+    GPIO_WriteBit(DISPLAY_PORT_CS, DISPLAY_PIN_CS, RESET); // set CS low (always)
 
 	/* wait until power supply is stable (50ms) */
 	Delay(50);    // works only when the scheduler's active
@@ -81,7 +84,7 @@ void LCD_init(void (*delay)(long))
 	LCD_write_byte_instruction(0x0D);    // Display on, Cursor off, Blink-function on
 
 	LCD_clear();                         // Reset display (0x01)
-//	LCD_write_byte_instruction(0x06);    // Entry Mode Set
+	LCD_write_byte_instruction(0x06);    // Entry Mode Set
 }
 
 
@@ -95,11 +98,10 @@ void LCD_init(void (*delay)(long))
 void LCD_write_byte_instruction(uint8_t instruction)
 {
 	/* reset RS pin to write into the instruction register */
-	GPIO_WriteBit(DISPLAY_PORT_RS, DISPLAY_PIN_RS, RESET);
-
+    Delay(2);
 	/* write instruction byte */
 	SPI_send_byte(instruction);
-	Delay(1);    // minimum waiting time until the next byte can be sent (= 30us)
+	Delay(2);    // minimum waiting time until the next byte can be sent (= 30us)
 }
 
 
@@ -126,39 +128,19 @@ void LCD_clear(void)
  *              data          ASCII-character
  * \return  None
  =============================================================================*/
-void LCD_write_byte_data(uint8_t lcd_row, uint8_t lcd_column, uint8_t data)
+void LCD_write_byte_data(uint8_t data)
 {
-	uint8_t lcd_offset;
-
-	/* check if ASCII-character will be within the LCD, set max. otherwise */
-    if(lcd_row > (MAX_NUMBER_ROW - 1)) lcd_row = (MAX_NUMBER_ROW - 1);
-    if(lcd_column > (MAX_NUMBER_COLUMN - 1)) lcd_column = (MAX_NUMBER_COLUMN - 1);
-
-    /* saves the offset of the defined row in a variable & set RAM Adr: 1xxx'xxxx */
-    switch(lcd_row)
-    {
-        case 0:    lcd_offset = 0x80;    // Row 1 (Adr 0 = (1)000'0000 = 80h)
-    	    break;
-        case 1:    lcd_offset = 0xC0;    // Row 2 (Adr 64 = (1)100'0000 = C0h)
-        	break;
-        default:   lcd_offset = 0x80;    // Row 1
-    };
-
-    /* set RAM (cursor) position */
-    LCD_write_byte_instruction(lcd_column + lcd_offset);
-
 	/* set RS pin to write into the data register */
 	GPIO_WriteBit(DISPLAY_PORT_RS, DISPLAY_PIN_RS, SET);
+	Delay(1);
 
 	/* write data byte */
 	SPI_send_byte(data);
 
+	Delay(1);
+	GPIO_WriteBit(DISPLAY_PORT_RS, DISPLAY_PIN_RS, RESET);
 
-//	GPIO_WriteBit(DISPLAY_PORT_RS, DISPLAY_PIN_RS, SET);
-
-	Delay(1);                  // minimum waiting time until the next byte can be sent (= 30us)
-
-//	GPIO_WriteBit(DISPLAY_PORT_RS, DISPLAY_PIN_RS, RESET);
+	Delay(1); // minimum waiting time until the next byte can be sent (= 30us)
 }
 
 
@@ -201,18 +183,16 @@ void LCD_write_string(uint8_t lcd_row, uint8_t lcd_column, uint8_t* string, uint
     /* write every character individually */
     for(; string_length > 0; string_length--)
     {
-    	LCD_write_byte_data(lcd_row, lcd_column + c, string[c]);
+    	LCD_write_byte_data(string[c]);
     	c++;
     }
 
     /* clear rest of the line if clr_line is set */
     if(clr_line > 0)
     {
-//    	c++;    // so that the last character won't be overwritten
-
     	for(; (MAX_NUMBER_COLUMN - (lcd_column + c)) > 0; c++)
     	{
-    		LCD_write_byte_data(lcd_row, lcd_column + c, ' ');
+    		LCD_write_byte_data(' ');
     	}
     }
 }

@@ -25,6 +25,8 @@
 /* exported define -----------------------------------------------------------*/
 #define DISPLAY_PIN_RS      GPIO_Pin_6
 #define DISPLAY_PORT_RS     GPIOA        // enable related clock in display.c
+#define DISPLAY_PIN_CS      GPIO_Pin_2
+#define DISPLAY_PORT_CS     GPIOB
 
 #define MAX_NUMBER_ROW      2            // the display has 2 rows
 #define MAX_NUMBER_COLUMN   16           // and 16 columns
@@ -36,7 +38,7 @@
 /* exported functions --------------------------------------------------------*/
 extern void LCD_init(void (*delay)(long tick));
 extern void LCD_clear();
-extern void LCD_write_byte_data(uint8_t, uint8_t, uint8_t);
+extern void LCD_write_byte_data(uint8_t);
 extern void LCD_write_string(uint8_t, uint8_t, uint8_t*, uint8_t);
 extern void LCD_set_cursor(uint8_t, uint8_t, uint8_t);
 extern void LCD_set_contrast(uint8_t);

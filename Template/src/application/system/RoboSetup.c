@@ -182,14 +182,14 @@ menu_t startnode =
     .title = "STARTNODE",
     .byte0 = "-",
     .byte15 = "+",
-    .opt1 = "0...",
+    .opt1 = "1...",
     .pos1 = 1,
     .opt2 = SETUP_STARTNODE_OPTION,
     .pos2 = 7,
-    .opt3 = "..??",
+    .opt3 = "..11",
     .pos3 = 11,
     .cursor_position = SETUP_STARTNODE_CURSOR_DEFAULT,
-    .max_result = 50,  // ?
+    .max_result = 11,  // ?
     .result = SETUP_STARTNODE_RESULT_DEFAULT,    // 0... ??
     .confirmed = FALSE
 };
@@ -216,17 +216,17 @@ menu_t setup_finished =
 menu_t ready =
 {
     .title = "READY",
-    .byte0 = "<",
-    .byte15 = ">",
-    .opt1 = "ABORT",
+    .byte0 = " ",
+    .byte15 = " ",
+    .opt1 = "<ABORT>",
     .pos1 = 4,
     .opt2 = "",
-    .pos2 = 9,
+    .pos2 = 16,
     .opt3 = "",
     .pos3 = 16,    // pos3 have to be >= 16 if not used!
-    .cursor_position = SETUP_SETUPFINISH_CURSOR_DEFAULT,
+    .cursor_position = SETUP_READY_CURSOR_DEFAULT,
     .max_result = 1,
-    .result = SETUP_SETUPFINISH_RESULT,    // 0 = NO, 1 = YES
+    .result = SETUP_READY_RESULT,    // 0 = NO, 1 = YES
     .confirmed = FALSE
 };
 
@@ -356,7 +356,7 @@ void runRoboSetupState(portTickType* tick)
                     /* send the results and prepare for game*/
                     txStartConfigurationSet(teamcolor.result,enemy_quantity.result,
                             friend_quantity.result,enemy_size1.result,enemy_size2.result); /* CAN */
-                    setConfigRoboRunState(1,GIP_TEAMCOLOR_YELLOW,GIP_ENEMY_QUANTITY_1); /* run state */
+                    setConfigRoboRunState(1,teamcolor.result,enemy_quantity.result); /* run state */
                     resetTimer(); /* set game-timer to default */
 
                     /* wait for 1 second -> gyro initialisation */
@@ -410,17 +410,23 @@ void runRoboSetupState(portTickType* tick)
 static void write_current_menu(menu_t **current_menu)
 {
     /* write title */
+    LCD_set_cursor(0,0,0);
     LCD_write_string(0, 0, (*current_menu)->title, TRUE);
 
     /* write byte0 */
+    LCD_set_cursor(MAX_NUMBER_ROW-1,0,0);
     LCD_write_string(MAX_NUMBER_ROW-1, 0, (*current_menu)->byte0, TRUE);
 
     /* write options */
+    LCD_set_cursor(MAX_NUMBER_ROW-1,(*current_menu)->pos1,0);
     LCD_write_string(MAX_NUMBER_ROW-1, (*current_menu)->pos1, (*current_menu)->opt1, TRUE);
+    LCD_set_cursor(MAX_NUMBER_ROW-1,(*current_menu)->pos2,0);
     LCD_write_string(MAX_NUMBER_ROW-1, (*current_menu)->pos2, (*current_menu)->opt2, TRUE);
+    LCD_set_cursor(MAX_NUMBER_ROW-1,(*current_menu)->pos3,0);
     LCD_write_string(MAX_NUMBER_ROW-1, (*current_menu)->pos3, (*current_menu)->opt3, TRUE);
 
     /* write byte15 */
+    LCD_set_cursor(MAX_NUMBER_ROW-1,MAX_NUMBER_COLUMN-1,0);
     LCD_write_string(MAX_NUMBER_ROW-1, MAX_NUMBER_COLUMN-1, (*current_menu)->byte15, TRUE);
 
     /* set cursor */
@@ -447,7 +453,6 @@ static void menu_handler(menu_t *current_menu, uint8_t res1, uint8_t res2, uint8
     static uint8_t button_left_state = 0;
     static uint8_t button_right_state = 0;
     static menu_t* last_menu = NULL;
-    static menu_type_t last_mode = SELECTION_MENU;
 
 
     /* check if display is necessary */
@@ -455,23 +460,6 @@ static void menu_handler(menu_t *current_menu, uint8_t res1, uint8_t res2, uint8
     {
         write_current_menu(&current_menu);
         last_menu = current_menu;
-    }
-
-    /* check if menu mode has changed and set cursor mode*/
-    if(last_mode != mode)
-    {
-        if(mode == SELECTION_MENU)
-        {
-            /* set cursor */
-            LCD_set_cursor(MAX_NUMBER_ROW-1, current_menu->cursor_position, DISPLAY_CURSOR_MODE);
-        }
-        else
-        {
-            /* turn off cursor */
-            LCD_set_cursor(0, 0, 0);
-        }
-
-        last_mode = mode;
     }
 
     /* MODE button */
@@ -549,6 +537,7 @@ static void menu_handler(menu_t *current_menu, uint8_t res1, uint8_t res2, uint8
                     current_menu->opt2[2] = '\0';
                     LCD_write_string(MAX_NUMBER_ROW-1, current_menu->pos2, current_menu->opt2, FALSE);
                 }
+                LCD_set_cursor(MAX_NUMBER_ROW-1, current_menu->cursor_position, DISPLAY_CURSOR_MODE);
 
                 break;
         }
