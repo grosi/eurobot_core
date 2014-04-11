@@ -23,6 +23,7 @@
 /* exported define ------------------------------------------------------------*/
 /* delays */
 #define SETUP_BUTTOM_DELAY 100    // sampling delay of the buttons in ms
+#define SETUP_ELP_START_DElAY 1000
 //#define MenuDelay 1000     // delay to ignore the buttons after switching a menu in ms
 //#define WelcomeMessageDelay 3000    // delay to read the welcome message
 
@@ -36,7 +37,7 @@
 
 /* default values of the menus */
 #define SETUP_TEAMCOLOR_CURSOR_DEFAULT 2
-#define SETUP_TEAMCOLOR_RESULT_DEFAULT 0 // RED = 0, YELLOW = 1
+#define SETUP_TEAMCOLOR_RESULT_DEFAULT GIP_TEAMCOLOR_RED // RED = 1, YELLOW = 0
 
 #define SETUP_FRIEND_CURSOR_DEFAULT 10
 #define SETUP_FRIEND_RESULT_DEFAULT 1 // 0, 1

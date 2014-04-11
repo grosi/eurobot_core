@@ -72,7 +72,8 @@ typedef enum
     ENEMY_SIZE1,
     ENEMY_SIZE2,
     STARTNODE,
-    SETUP_FINISHED
+    SETUP_FINISHED,
+    READY
 }menu_current_t;
 
 /* Private define ------------------------------------------------------------*/
@@ -99,7 +100,7 @@ menu_t teamcolor =
     .pos3 = 16, /*!< pos3 have to be >= 16 if not used! */
     .cursor_position = SETUP_TEAMCOLOR_CURSOR_DEFAULT,
     .max_result = 1,
-    .result = SETUP_TEAMCOLOR_RESULT_DEFAULT, // TODO RED = 0, YELLOW = 1
+    .result = SETUP_TEAMCOLOR_RESULT_DEFAULT, // TODO RED = 1, YELLOW = 0 GIP_TEAMCOLOR_RED
     .confirmed = FALSE
 };
 
@@ -211,6 +212,27 @@ menu_t setup_finished =
     .confirmed = FALSE
 };
 
+/* READY */
+menu_t ready =
+{
+    .title = "READY",
+    .byte0 = "<",
+    .byte15 = ">",
+    .opt1 = "ABORT",
+    .pos1 = 4,
+    .opt2 = "",
+    .pos2 = 9,
+    .opt3 = "",
+    .pos3 = 16,    // pos3 have to be >= 16 if not used!
+    .cursor_position = SETUP_SETUPFINISH_CURSOR_DEFAULT,
+    .max_result = 1,
+    .result = SETUP_SETUPFINISH_RESULT,    // 0 = NO, 1 = YES
+    .confirmed = FALSE
+};
+
+/* statemachine */
+static menu_current_t current_menu;
+
 /* RTOS */
 xSemaphoreHandle sSyncRoboSetupELP = NULL;
 
@@ -237,6 +259,10 @@ void initRoboSetupState()
 
     /* hw modules */
     initUserPanelButtons();
+    //initSensor_Key();
+
+    /* set first state */
+    current_menu = TEAMCOLOR;
 }
 
 
@@ -249,29 +275,25 @@ void initRoboSetupState()
  */
 void runRoboSetupState(portTickType* tick)
 {
-    /* local variables */
-    static menu_current_t current_menu = TEAMCOLOR;
-
-//    uint8_t welcome_message[] = WelcomeMessage;
-//    uint8_t game_message_top[] = GameMessageTop;
-//    uint8_t game_message_bottom[] = GameMessageBotton;
-
-    /* write the welcome message */
-//    LCD_line_mode_one();
-//    LCD_write_string(0, 0, welcome_message, TRUE);
-//    vTaskDelayUntil( &xLastFlashTime, WelcomeMessageDelay / portTICK_RATE_MS);    // wait 3s
-//    LCD_line_mode_two();
-
+    /* statemaschine */
     switch(current_menu)
     {
         case TEAMCOLOR:
             menu_handler(&teamcolor, 0, 1, 1, SELECTION_MENU);    // res1 = 0 (RED), res2 = 1 (YELLOW), res3 = res2 (not used), mode = selection-mode
-            if (teamcolor.confirmed == TRUE) current_menu = FRIEND_QUANTITY;
+            if (teamcolor.confirmed == TRUE)
+            {
+                teamcolor.confirmed = FALSE;
+                current_menu = FRIEND_QUANTITY;
+            }
             break;
 
         case FRIEND_QUANTITY:
             menu_handler(&friend_quantity, 0, 1, 1, SELECTION_MENU);    // res1 = 0, res2 = 1, res3 = res2 (not used), mode = selection-mode
-            if (friend_quantity.confirmed == TRUE) current_menu = ENEMY_QUANTITY;
+            if (friend_quantity.confirmed == TRUE)
+            {
+                friend_quantity.confirmed = FALSE;
+                current_menu = ENEMY_QUANTITY;
+            }
             break;
 
         case ENEMY_QUANTITY:
@@ -286,6 +308,7 @@ void runRoboSetupState(portTickType* tick)
                 {
                     current_menu = STARTNODE;
                 }
+                enemy_quantity.confirmed = FALSE;
             }
             break;
 
@@ -293,18 +316,34 @@ void runRoboSetupState(portTickType* tick)
             menu_handler(&enemy_size1, 0, 0, 0, ADJUSTING_MENU);    // res1-3 = 0 (not used), mode = adjusting-mode
             if (enemy_size1.confirmed == TRUE)
             {
-                current_menu = ENEMY_SIZE2;
+                if(enemy_quantity.result > 1)
+                {
+                    current_menu = ENEMY_SIZE2;
+                }
+                else
+                {
+                    current_menu = STARTNODE;
+                }
+                enemy_size1.confirmed = FALSE;
             }
             break;
 
         case ENEMY_SIZE2:
             menu_handler(&enemy_size2, 0, 0, 0, ADJUSTING_MENU);    // res1-3 = 0 (not used), mode = adjusting-mode
-            if (enemy_size2.confirmed == TRUE) current_menu = STARTNODE;
+            if (enemy_size2.confirmed == TRUE)
+            {
+                current_menu = STARTNODE;
+                enemy_size2.confirmed = FALSE;
+            }
             break;
 
         case STARTNODE:
             menu_handler(&startnode, 0, 0, 0, ADJUSTING_MENU);    // res1-3 = 0 (not used), mode = adjusting-mode
-            if (startnode.confirmed == TRUE) current_menu = SETUP_FINISHED;
+            if (startnode.confirmed == TRUE)
+            {
+                current_menu = SETUP_FINISHED;
+                startnode.confirmed = FALSE;
+            }
             break;
 
         case SETUP_FINISHED:
@@ -314,46 +353,50 @@ void runRoboSetupState(portTickType* tick)
                 /* if confirmed with YES... */
                 if(setup_finished.result == 1)
                 {
-                    /* ...reset cursor */
-                    LCD_set_cursor(0, 0, 0);
+                    /* send the results and prepare for game*/
+                    txStartConfigurationSet(teamcolor.result,enemy_quantity.result,
+                            friend_quantity.result,enemy_size1.result,enemy_size2.result); /* CAN */
+                    setConfigRoboRunState(1,GIP_TEAMCOLOR_YELLOW,GIP_ENEMY_QUANTITY_1); /* run state */
+                    resetTimer(); /* set game-timer to default */
 
-                    /* ...write game message */
-//                    LCD_write_string(0, 0, game_message_top, TRUE);
-//                    LCD_write_string(MAX_NUMBER_ROW-1, 0, game_message_bottom, TRUE);
+                    /* wait for 1 second -> gyro initialisation */
+                    vTaskDelayUntil(tick, SETUP_ELP_START_DElAY / portTICK_RATE_MS);    // wait 10s
+                    xSemaphoreGive(sSyncRoboSetupELP);
 
-                    /* ...send the results */
-                    setConfigRoboRunState(1,GIP_TEAMCOLOR_YELLOW,GIP_ENEMY_QUANTITY_1);
-                    resetTimer();
-                    //...
-
-                    /* ...wait */
-//                    vTaskDelayUntil( &xLastFlashTime, 10000 / portTICK_RATE_MS);    // wait 10s
-
-                    /* ...reset setup to its defaults */
-                    current_menu = TEAMCOLOR;
-                    setRoboSetup2Default();
+                    /* goto ready state */
+                    current_menu = READY;
                 }
                 else
                 {
                     current_menu = TEAMCOLOR;
                 }
+                setup_finished.confirmed = FALSE;
             }
+            break;
+
+        case READY:
+            menu_handler(&ready, 0, 1, 1, SELECTION_MENU);
+
+            /* game starts if key sensor is activated */
+            //if(getSensor_Key())
+            {
+                setRoboSetup2Default();
+                startTimer(); /* start game-timer */
+                system_state = runRoboRunState;
+            }
+
+            /* back to setup */
+            if(ready.confirmed == TRUE)
+            {
+                current_menu = TEAMCOLOR;
+                ready.confirmed = FALSE;
+            }
+
             break;
     }
 
-    /* wait TODO*/
+    /* state delay for button debouncing */
     vTaskDelayUntil(tick, SETUP_BUTTOM_DELAY / portTICK_RATE_MS);
-
-
-//    static robo_setup_t state = TEAMCOLOR;
-//
-//    //TODO
-//    setConfigRoboRunState(1,GIP_TEAMCOLOR_YELLOW,GIP_ENEMY_QUANTITY_1);
-//
-//    resetTimer();
-//    startTimer(); /* start game timer */
-//
-//    system_state = runRoboRunState;
 }
 
 
@@ -399,27 +442,47 @@ static void write_current_menu(menu_t **current_menu)
  */
 static void menu_handler(menu_t *current_menu, uint8_t res1, uint8_t res2, uint8_t res3, menu_type_t mode)
 {
-//    portTickType xLastFlashTime;
-//
-//    /* We need to initialize xLastFlashTime prior to the first call to
-//    vTaskDelayUntil(). */
-//    xLastFlashTime = xTaskGetTickCount();
+    /* local variables */
+    static uint8_t button_mode_state = 0;
+    static uint8_t button_left_state = 0;
+    static uint8_t button_right_state = 0;
+    static menu_t* last_menu = NULL;
+    static menu_type_t last_mode = SELECTION_MENU;
 
-    write_current_menu(&current_menu);
 
-    /* wait some time until checking the buttons again */
-//    vTaskDelayUntil(&xLastFlashTime, MenuDelay / portTICK_RATE_MS);
+    /* check if display is necessary */
+    if(last_menu != current_menu)
+    {
+        write_current_menu(&current_menu);
+        last_menu = current_menu;
+    }
 
-    if(!getUserPanelButton_2())    // leave the menu if button 2 is pushed
+    /* check if menu mode has changed and set cursor mode*/
+    if(last_mode != mode)
+    {
+        if(mode == SELECTION_MENU)
+        {
+            /* set cursor */
+            LCD_set_cursor(MAX_NUMBER_ROW-1, current_menu->cursor_position, DISPLAY_CURSOR_MODE);
+        }
+        else
+        {
+            /* turn off cursor */
+            LCD_set_cursor(0, 0, 0);
+        }
+
+        last_mode = mode;
+    }
+
+    /* MODE button */
+    if(!getUserPanelButtonPosEdge_2(&button_mode_state))
     {
         switch(mode)
         {
             case SELECTION_MENU:
-                /* update cursor */
-                LCD_set_cursor(MAX_NUMBER_ROW-1, current_menu->cursor_position, DISPLAY_CURSOR_MODE);
 
-                /* check if button 1 is pushed */
-                if (getUserPanelButton_1())
+                /* check if button 1 (left) is pushed */
+                if(getUserPanelButtonPosEdge_1(&button_left_state))
                 {
                     /* set new cursor position and result if the cursor is not at pos1 */
                     if(current_menu->cursor_position >= current_menu->pos2)        // check pos2 & pos3
@@ -434,11 +497,13 @@ static void menu_handler(menu_t *current_menu, uint8_t res1, uint8_t res2, uint8
                             current_menu->cursor_position = current_menu->pos1;
                             current_menu->result = res1;
                         }
+                        /* update cursor */
+                        LCD_set_cursor(MAX_NUMBER_ROW-1, current_menu->cursor_position, DISPLAY_CURSOR_MODE);
                     }
                 }
 
-                /* check if button 3 is pushed */
-                if (getUserPanelButton_3())
+                /* check if button 3 (right) pushed */
+                if(getUserPanelButtonPosEdge_3(&button_right_state))
                 {
                     /* set new cursor position and result if the cursor is not at pos3 */
                     if(current_menu->cursor_position <= current_menu->pos2)        // check pos1 & pos2
@@ -453,31 +518,38 @@ static void menu_handler(menu_t *current_menu, uint8_t res1, uint8_t res2, uint8
                             current_menu->cursor_position = current_menu->pos3;
                             current_menu->result = res3;
                         }
+                        /* update cursor */
+                        LCD_set_cursor(MAX_NUMBER_ROW-1, current_menu->cursor_position, DISPLAY_CURSOR_MODE);
                     }
                 }
                 break;
 
+                /* TODO */
             case ADJUSTING_MENU:
-                /* turn off cursor */
-                LCD_set_cursor(0, 0, 0);
 
                 /* check if button 1 is pushed and result > 0 */
-                if (getUserPanelButton_1() && current_menu->result > 0)
+                if (getUserPanelButtonPosEdge_1(&button_left_state) && current_menu->result > 0)
                 {
                     current_menu->result--;    // decrease result
+                    /* update display (option 2) */
+                    current_menu->opt2[0] = ('0' + ((current_menu->result)/10));
+                    current_menu->opt2[1] = ('0' + ((current_menu->result)%10));
+                    current_menu->opt2[2] = '\0';
+                    LCD_write_string(MAX_NUMBER_ROW-1, current_menu->pos2, current_menu->opt2, FALSE);
                 }
 
                 /* check if button 3 is pushed and result < max_result */
-                if (getUserPanelButton_3() && current_menu->result < current_menu->max_result)
+                if (getUserPanelButtonPosEdge_3(&button_right_state) && current_menu->result < current_menu->max_result)
                 {
                     current_menu->result++;    // increase result
+
+                    /* update display (option 2) */
+                    current_menu->opt2[0] = ('0' + ((current_menu->result)/10));
+                    current_menu->opt2[1] = ('0' + ((current_menu->result)%10));
+                    current_menu->opt2[2] = '\0';
+                    LCD_write_string(MAX_NUMBER_ROW-1, current_menu->pos2, current_menu->opt2, FALSE);
                 }
 
-                /* update display (option 2) */
-                current_menu->opt2[0] = ('0' + ((current_menu->result)/10));
-                current_menu->opt2[1] = ('0' + ((current_menu->result)%10));
-                current_menu->opt2[2] = '\0';
-                LCD_write_string(MAX_NUMBER_ROW-1, current_menu->pos2, current_menu->opt2, FALSE);
                 break;
         }
     }
@@ -534,6 +606,10 @@ static void setRoboSetup2Default()
     setup_finished.cursor_position = SETUP_SETUPFINISH_CURSOR_DEFAULT;
     setup_finished.result = SETUP_SETUPFINISH_RESULT;
     setup_finished.confirmed = FALSE;
+
+    ready.cursor_position = SETUP_SETUPFINISH_CURSOR_DEFAULT;
+    ready.result = SETUP_SETUPFINISH_RESULT;
+    ready.confirmed = FALSE;
 }
 
 /**
