@@ -64,6 +64,7 @@ void initSystemTask(void){
     initRoboInitialisationState();
     initRoboSetupState();
     initRoboRunState();
+    initRoboErrorState();
 
     /* set start state */
     system_state = runRoboInitialisationState;
