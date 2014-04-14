@@ -22,6 +22,7 @@
 #include "../AppConfig.h"
 #include "../CANGatekeeper.h"
 #include "../Timer.h"
+#include "../ELP.h"
 #include "../System.h"
 #include "../nodes/NodeConfig.h"
 #include "../Rangefinder.h"
@@ -249,7 +250,7 @@ void runRoboRunState(portTickType* tick)
     /******************/
     /* calc next node */
     /******************/
-    remain_time = getRemainingTime();
+    remain_time = getRemainingGameTime();
     weight_dec = remain_time / PLAY_TIME;
     weight_inc = (PLAY_TIME - remain_time) / PLAY_TIME;
     weight_next_node = INFINITY;
@@ -477,13 +478,13 @@ void runRoboRunState(portTickType* tick)
     }
 
 
-
     /* game is finished */
     if(remain_nodes == 0)
     {
     	setConfigRoboRunState2Default();
 
-    	stopTimer();
+    	stopGameTimer();
+    	stopELP();
 
     	system_state = runRoboSetupState;
     }
