@@ -51,7 +51,7 @@ void vGameTimerCallback(xTimerHandle);
  * \param[in]   None
  * \return      None
  */
-void initTimerTask(void)
+void initGameTimer(void)
 {
     /* create sw-timer */
     xGameTimer = xTimerCreate(( signed char * )TIMER_NAME,
@@ -95,7 +95,7 @@ void vGameTimerCallback(xTimerHandle pxTimer)
  * \param[in]   None
  * \return      None
  */
-inline void startTimer(void)
+inline void startGameTimer(void)
 {
     /* Start the timer */
     xTimerStart(xGameTimer,0);
@@ -109,7 +109,7 @@ inline void startTimer(void)
  * \param[in]   None
  * \return      None
  */
-inline void stopTimer(void)
+inline void stopGameTimer(void)
 {
     /* Stop the timer */
     xTimerStop(xGameTimer,0);
@@ -123,7 +123,7 @@ inline void stopTimer(void)
  * \param[in]   None
  * \return      None
  */
-inline void resetTimer(void)
+inline void resetGameTimer(void)
 {
     /* Reset the timer */
     elapsedTime = 0;
@@ -137,7 +137,7 @@ inline void resetTimer(void)
  * \param[in]   None
  * \return      remaining time in seconds
  */
-uint8_t getRemainingTime(void)
+uint8_t getRemainingGameTime(void)
 {
     /* Return the remaining time of the game */
     return TIMER_STOP_TIME - elapsedTime;
