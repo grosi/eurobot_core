@@ -6,7 +6,7 @@
  * \version 1.0
  *  create this file
  *
- * \brief   Sensor access for the roboboard. This libary is only for the small
+ * \brief   Sensor access for the roboboard and user-panel. This libary is only for the small
  *          roboter.
  * \note    the sensors must be connected in low-active mode
  *
@@ -59,6 +59,15 @@
 #define SENSOR_FRESCO_WALL_PORT_CLK  RCC_AHB1Periph_GPIOB
 #define SENSOR_FRESCO_WALL_PORT      GPIOB
 
+/* Pin and Port user panel */
+#define SENSOR_KEY_PIN       GPIO_Pin_5
+#define SENSOR_KEY_PIN_MODE  GPIO_Mode_IN
+#define SENSOR_KEY_PIN_SPEED GPIO_Speed_2MHz
+#define SENSOR_KEY_PIN_TYPE  GPIO_OType_PP
+#define SENSOR_KEY_PIN_PUPD  GPIO_PuPd_UP
+#define SENSOR_KEY_PORT_CLK  RCC_AHB1Periph_GPIOC
+#define SENSOR_KEY_PORT      GPIOC
+
 /* exported types ------------------------------------------------------------*/
 
 
@@ -69,20 +78,20 @@
 
 
 /* exported functions --------------------------------------------------------*/
-inline void initSensor_Key();
-inline uint8_t getSensor_Key();
-inline void initSensor_Fresco_1();
-inline uint8_t getSensor_Fresco_1();
-inline uint8_t getSensorPosEdge_Fresco_1(uint8_t*);
-inline uint8_t getSensorNegEdge_Fresco_1(uint8_t*);
-inline void initButton_Fresco_2();
-inline uint8_t getSensor_Fresco_2();
-inline uint8_t getSensorPosEdge_Fresco_2(uint8_t*);
-inline uint8_t SensorNegEdge_Frecko_2(uint8_t*);
-inline void initSensor_Fresco_Wall();
-inline uint8_t getSensor_Fresco_Wall();
-inline uint8_t getSensorPosEdge_Fresco_Wall(uint8_t*);
-inline uint8_t getSensorNegEdge_Fresco_Wall(uint8_t*);
+void initSensor_Key();
+uint8_t getSensor_Key();
+void initSensor_Fresco_1();
+uint8_t getSensor_Fresco_1();
+uint8_t getSensorPosEdge_Fresco_1(uint8_t*);
+uint8_t getSensorNegEdge_Fresco_1(uint8_t*);
+void initButton_Fresco_2();
+uint8_t getSensor_Fresco_2();
+uint8_t getSensorPosEdge_Fresco_2(uint8_t*);
+uint8_t SensorNegEdge_Frecko_2(uint8_t*);
+void initSensor_Fresco_Wall();
+uint8_t getSensor_Fresco_Wall();
+uint8_t getSensorPosEdge_Fresco_Wall(uint8_t*);
+uint8_t getSensorNegEdge_Fresco_Wall(uint8_t*);
 
 #endif /* SENSOR_H_ */
 

@@ -6,7 +6,7 @@
  * \version 1.0
  *  create this file
  *
- * \brief   Sensor access for the roboboard. This libary is only for the small
+ * \brief   Sensor access for the roboboard and user-panel. This libary is only for the small
  *          roboter
  * \note    the sensors must be connected in low-active mode
  *
@@ -46,7 +46,7 @@ uint8_t getSensorNegEdge(GPIO_TypeDef*, uint16_t, uint8_t** );
  * \fn      initSensor_Key
  * \brief   button S1 initialisation
  */
-inline void initSensor_Key()
+void initSensor_Key()
 {
     initSensor(SENSOR_NOTSTOP_PIN, SENSOR_NOTSTOP_PIN_MODE, SENSOR_NOTSTOP_PIN_TYPE, SENSOR_NOTSTOP_PIN_PUPD, SENSOR_NOTSTOP_PIN_SPEED,
             SENSOR_NOTSTOP_PORT, SENSOR_NOTSTOP_PORT_CLK);
@@ -59,7 +59,7 @@ inline void initSensor_Key()
  * \note    the pin is not debounced, high active
  * \return  current button value
  */
-inline uint8_t getSensor_Key()
+uint8_t getSensor_Key()
 {
     return !GPIO_ReadInputDataBit(SENSOR_NOTSTOP_PORT, SENSOR_NOTSTOP_PIN);
 }
@@ -69,7 +69,7 @@ inline uint8_t getSensor_Key()
  * \fn      initSensor_Fresco_1
  * \brief   sensor fresco 1 initialisation
  */
-inline void initSensor_Fresco_1()
+void initSensor_Fresco_1()
 {
     initSensor(SENSOR_FRESCO_1_PIN, SENSOR_FRESCO_1_PIN_MODE, SENSOR_FRESCO_1_PIN_TYPE, SENSOR_FRESCO_1_PIN_PUPD, SENSOR_FRESCO_1_PIN_SPEED,
             SENSOR_FRESCO_1_PORT, SENSOR_FRESCO_1_PORT_CLK);
@@ -82,7 +82,7 @@ inline void initSensor_Fresco_1()
  * \note    the pin is not debounced
  * \return  current button value
  */
-inline uint8_t getSensor_Fresco_1()
+uint8_t getSensor_Fresco_1()
 {
     return !GPIO_ReadInputDataBit(SENSOR_FRESCO_1_PORT, SENSOR_FRESCO_1_PIN);
 }
@@ -96,7 +96,7 @@ inline uint8_t getSensor_Fresco_1()
  * \param   sensor_state    pointer to a temporary button state memory
  * \return  the positive edge, if there
  */
-inline uint8_t getSensorPosEdge_Fresco_1(uint8_t* sensor_state)
+uint8_t getSensorPosEdge_Fresco_1(uint8_t* sensor_state)
 {
     return getSensorPosEdge(SENSOR_FRESCO_1_PORT,SENSOR_FRESCO_1_PIN, &sensor_state);
 }
@@ -110,7 +110,7 @@ inline uint8_t getSensorPosEdge_Fresco_1(uint8_t* sensor_state)
  * \param   button_state    pointer to a temporary button state memory
  * \return  the neagtive edge, if there
  */
-inline uint8_t getSensorNegEdge_Fresco_1(uint8_t* sensor_state)
+uint8_t getSensorNegEdge_Fresco_1(uint8_t* sensor_state)
 {
     return getSensorNegEdge(SENSOR_FRESCO_1_PORT,SENSOR_FRESCO_1_PIN, &sensor_state);
 }
@@ -120,7 +120,7 @@ inline uint8_t getSensorNegEdge_Fresco_1(uint8_t* sensor_state)
  * \fn      initSensor_Fresco_2
  * \brief   sensor fresco 2 initialisation
  */
-inline void initSensor_Fresco_2()
+void initSensor_Fresco_2()
 {
     initSensor(SENSOR_FRESCO_2_PIN, SENSOR_FRESCO_2_PIN_MODE, SENSOR_FRESCO_2_PIN_TYPE, SENSOR_FRESCO_2_PIN_PUPD, SENSOR_FRESCO_2_PIN_SPEED,
             SENSOR_FRESCO_2_PORT, SENSOR_FRESCO_2_PORT_CLK);
@@ -133,7 +133,7 @@ inline void initSensor_Fresco_2()
  * \note    the pin is not debounced
  * \return  current button value
  */
-inline uint8_t getSensor_Fresco_2()
+uint8_t getSensor_Fresco_2()
 {
     return !GPIO_ReadInputDataBit(SENSOR_FRESCO_2_PORT, SENSOR_FRESCO_2_PIN);
 }
@@ -147,7 +147,7 @@ inline uint8_t getSensor_Fresco_2()
  * \param   sensor_state    pointer to a temporary button state memory
  * \return  the positive edge, if there
  */
-inline uint8_t getSensorPosEdge_Fresco_2(uint8_t* sensor_state)
+uint8_t getSensorPosEdge_Fresco_2(uint8_t* sensor_state)
 {
     return getSensorPosEdge(SENSOR_FRESCO_2_PORT,SENSOR_FRESCO_2_PIN, &sensor_state);
 }
@@ -161,7 +161,7 @@ inline uint8_t getSensorPosEdge_Fresco_2(uint8_t* sensor_state)
  * \param   button_state    pointer to a temporary button state memory
  * \return  the neagtive edge, if there
  */
-inline uint8_t getSensorNegEdge_Fresco_2(uint8_t* sensor_state)
+uint8_t getSensorNegEdge_Fresco_2(uint8_t* sensor_state)
 {
     return getSensorNegEdge(SENSOR_FRESCO_2_PORT,SENSOR_FRESCO_2_PIN, &sensor_state);
 }
@@ -171,7 +171,7 @@ inline uint8_t getSensorNegEdge_Fresco_2(uint8_t* sensor_state)
  * \fn      initSensor_Fresco_Wall
  * \brief   sensor fresco 1 initialisation
  */
-inline void initSensor_Fresco_Wall()
+void initSensor_Fresco_Wall()
 {
     initSensor(SENSOR_FRESCO_WALL_PIN, SENSOR_FRESCO_WALL_PIN_MODE, SENSOR_FRESCO_WALL_PIN_TYPE, SENSOR_FRESCO_WALL_PIN_PUPD, SENSOR_FRESCO_WALL_PIN_SPEED,
             SENSOR_FRESCO_WALL_PORT, SENSOR_FRESCO_WALL_PORT_CLK);
@@ -184,7 +184,7 @@ inline void initSensor_Fresco_Wall()
  * \note    the pin is not debounced
  * \return  current button value
  */
-inline uint8_t getSensor_Fresco_Wall()
+uint8_t getSensor_Fresco_Wall()
 {
     return !GPIO_ReadInputDataBit(SENSOR_FRESCO_WALL_PORT, SENSOR_FRESCO_WALL_PIN);
 }
@@ -198,7 +198,7 @@ inline uint8_t getSensor_Fresco_Wall()
  * \param   sensor_state    pointer to a temporary button state memory
  * \return  the positive edge, if there
  */
-inline uint8_t getSensorPosEdge_Fresco_Wall(uint8_t* sensor_state)
+uint8_t getSensorPosEdge_Fresco_Wall(uint8_t* sensor_state)
 {
     return getSensorPosEdge(SENSOR_FRESCO_WALL_PORT,SENSOR_FRESCO_WALL_PIN, &sensor_state);
 }
@@ -212,7 +212,7 @@ inline uint8_t getSensorPosEdge_Fresco_Wall(uint8_t* sensor_state)
  * \param   button_state    pointer to a temporary button state memory
  * \return  the neagtive edge, if there
  */
-inline uint8_t getSensorNegEdge_Fresco_Wall(uint8_t* sensor_state)
+uint8_t getSensorNegEdge_Fresco_Wall(uint8_t* sensor_state)
 {
     return getSensorNegEdge(SENSOR_FRESCO_WALL_PORT,SENSOR_FRESCO_WALL_PIN, &sensor_state);
 }

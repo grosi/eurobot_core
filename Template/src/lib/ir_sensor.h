@@ -97,12 +97,12 @@
 
 
 /* exported functions --------------------------------------------------------*/
-void initIRSensors();
-inline uint8_t getIRSensor_Back();
-inline uint8_t getIRSensor_Front();
-inline uint8_t getIRSensor_Left();
-inline uint8_t getIRSensor_Right();
-void initIREXTILines();
+extern void initIRSensors();
+extern uint8_t getIRSensor_Back();
+extern uint8_t getIRSensor_Front();
+extern uint8_t getIRSensor_Left();
+extern uint8_t getIRSensor_Right();
+extern void initIREXTILines();
 
 #endif /* IR_SENSOR_H_ */
 

@@ -64,7 +64,7 @@ void initIRSensors()
  * \note    the pin is not debounced
  * \return  current button value
  */
-inline uint8_t getIRSensor_Back()
+uint8_t getIRSensor_Back()
 {
     return GPIO_ReadInputDataBit(IR_SENSOR_BACK_PORT, IR_SENSOR_BACK_PIN);
 }
@@ -76,7 +76,7 @@ inline uint8_t getIRSensor_Back()
  * \note    the pin is not debounced
  * \return  current button value
  */
-inline uint8_t getIRSensor_Front()
+uint8_t getIRSensor_Front()
 {
     return GPIO_ReadInputDataBit(IR_SENSOR_FRONT_PORT, IR_SENSOR_FRONT_PIN);
 }
@@ -88,7 +88,7 @@ inline uint8_t getIRSensor_Front()
  * \note    the pin is not debounced
  * \return  current button value
  */
-inline uint8_t getIRSensor_Left()
+uint8_t getIRSensor_Left()
 {
     return GPIO_ReadInputDataBit(IR_SENSOR_LEFT_PORT, IR_SENSOR_LEFT_PIN);
 }
@@ -100,7 +100,7 @@ inline uint8_t getIRSensor_Left()
  * \note    the pin is not debounced
  * \return  current button value
  */
-inline uint8_t getIRSensor_Right()
+uint8_t getIRSensor_Right()
 {
     return GPIO_ReadInputDataBit(IR_SENSOR_RIGHT_PORT, IR_SENSOR_RIGHT_PIN);
 }

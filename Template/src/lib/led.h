@@ -122,32 +122,32 @@
 
 
 /* exported functions --------------------------------------------------------*/
-inline void initLED_1();
-inline void setLED_1(uint8_t);
-inline void initLED_2();
-inline void setLED_2(uint8_t);
-inline void initLED_3();
-inline void setLED_3(uint8_t);
-inline void initLED_4();
-inline void setLED_4(uint8_t);
-inline void initLED_5();
-inline void setLED_5(uint8_t);
-inline void initLED_6();
-inline void setLED_6(uint8_t);
-inline void initLED_all();
-inline void setLEDs_bin(uint8_t);
-inline void initLED_Color();
-inline void setLED_Color(uint8_t);
+extern void initLED_1();
+extern void setLED_1(uint8_t);
+extern void initLED_2();
+extern void setLED_2(uint8_t);
+extern void initLED_3();
+extern void setLED_3(uint8_t);
+extern void initLED_4();
+extern void setLED_4(uint8_t);
+extern void initLED_5();
+extern void setLED_5(uint8_t);
+extern void initLED_6();
+extern void setLED_6(uint8_t);
+extern void initLED_all();
+extern void setLEDs_bin(uint8_t);
+extern void initLED_Color();
+extern void setLED_Color(uint8_t);
 
 
-inline void initBoardLED_red();
-inline void setBoardLED_red(uint8_t);
-inline void initBoardLED_orange();
-inline void setBoardLED_orange(uint8_t);
-inline void initBoardLED_blue();
-inline void setBoardLED_blue(uint8_t);
-inline void initBoardLED_green();
-inline void setBoardLED_green(uint8_t);
+extern void initBoardLED_red();
+extern void setBoardLED_red(uint8_t);
+extern void initBoardLED_orange();
+extern void setBoardLED_orange(uint8_t);
+extern void initBoardLED_blue();
+extern void setBoardLED_blue(uint8_t);
+extern void initBoardLED_green();
+extern void setBoardLED_green(uint8_t);
 
 
 #endif /* LED_H_ */
