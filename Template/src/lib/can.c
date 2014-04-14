@@ -416,7 +416,7 @@ static inline void initCANInterrupt(void)
 
     /* config the interrupt channel */
     NVIC_InitStructure.NVIC_IRQChannel = CAN_NVIC_CHANNEL;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 5;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = CAN_NVIC_PRIORITY;
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x0;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
