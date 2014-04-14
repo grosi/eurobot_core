@@ -21,6 +21,10 @@
 #include "FrescoNode.h"
 #include "MammothNode.h"
 
+/* lib */
+#include "../../lib/servo.h"
+
+
 /* Private typedef -----------------------------------------------------------*/
 
 
@@ -54,6 +58,24 @@ node_t node_mammoth_1 =
 
 
 /* Private functions ---------------------------------------------------------*/
+
+
+/**
+ * \fn          initNodeResources
+ * \brief       Function to initialise all the resources needed by the node task
+ *
+ * \TODO init sensors (incl. exti)
+ *
+ * \param[in]   None
+ * \return      None
+ */
+void initNodeResources()
+{
+	/* Initialise fresco/separation servo */
+	initServo_1();
+	/* Initialise launcher servo */
+	initServo_2();
+}
 
 
 /**

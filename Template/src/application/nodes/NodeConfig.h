@@ -114,6 +114,7 @@ extern node_t node_mammoth_1;
 
 
 /* exported function prototypes -----------------------------------------------*/
+extern void initNodeResources(void);
 
 
 #endif /* NODECONFIG_H_ */
