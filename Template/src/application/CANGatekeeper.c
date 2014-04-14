@@ -154,7 +154,7 @@ static inline CAN_data_t rxPositionResponse(CanRxMsg*);
 static inline CAN_data_t rxStartConfigurationSet(CanRxMsg*);
 static void vCANRx(void*);
 static void vCANTx(void*);
-static inline void catchCANRx(CanRxMsg);
+static void catchCANRx(CanRxMsg);
 
 
 /* Private functions ---------------------------------------------------------*/
@@ -175,6 +175,11 @@ void initCANGatekeeper(void)
     /* create the queues */
     qCANRx = xQueueCreate(CAN_QUEUE_LENGTH,sizeof(CanRxMsg)); /* RX-Message Queue */
     qCANTx = xQueueCreate(CAN_QUEUE_LENGTH,sizeof(CanTxMsg)); /* TX-Message Queue */
+
+#ifdef DEBUGGING
+    vQueueAddToRegistry(qCANRx, (signed char*) "CAN RX");
+    vQueueAddToRegistry(qCANTx, (signed char*) "CAN TX");
+#endif
 
     /* create tasks */
     xTaskCreate( vCANRx, ( signed char * ) CAN_RX_TASK_NAME, CAN_STACK_SIZE, NULL, CAN_TASK_PRIORITY, NULL );
@@ -266,11 +271,17 @@ void createCANMessage(uint16_t id, uint8_t dlc, uint8_t data[8])
     /* send the message to the queue depenced to the ID priority*/
     if(tx_message.StdId <= ID_HIGH_LEVEL_PRIORITY)
     {
-        xQueueSendToFront(qCANTx, &tx_message,0);
+        if(xQueueSendToFront(qCANTx, &tx_message,0)==pdFALSE)
+        {
+            dlc++; //TODO
+        }
     }
     else
     {
-        xQueueSendToBack(qCANTx, &tx_message,0);
+        if(xQueueSendToBack(qCANTx, &tx_message,0)==pdFALSE)
+            {
+            dlc++; //TODO;
+            }
     }
 }
 
@@ -283,7 +294,7 @@ void createCANMessage(uint16_t id, uint8_t dlc, uint8_t data[8])
  * \param[in]   None
  * \return      None
  */
-inline void txEmergencyShutdown()
+void txEmergencyShutdown()
 {
     createCANMessage(EMERGENCY_SHUTDOWN,0,0);
 }
@@ -297,7 +308,7 @@ inline void txEmergencyShutdown()
  * \param[in]   obstacle_id id of the obstacle (0 = playground, 1 = enemey)
  * \return      None
  */
-inline void txEmergencyStop(uint8_t obstacle_id)
+void txEmergencyStop(uint8_t obstacle_id)
 {
     uint8_t data = obstacle_id & EMERGENCY_STOP_OBSTACLE_TX_MASK;
     createCANMessage(EMERGENCY_STOP,1,&data);
@@ -312,7 +323,7 @@ inline void txEmergencyStop(uint8_t obstacle_id)
  * \param[in]   None
  * \return      None
  */
-inline void txStopDrive()
+void txStopDrive()
 {
     createCANMessage(STOP_DRIVE,0,0);
 }
@@ -356,7 +367,7 @@ void txGotoXY(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, uint16_t ba
  * \param[in]   None
  * \return      None
  */
-inline void txGotoConfirm()
+void txGotoConfirm()
 {
     createCANMessage(GOTO_CONFIRM,0,0);
 }
@@ -370,7 +381,7 @@ inline void txGotoConfirm()
  * \param[in]   None
  * \return      None
  */
-inline void txGotoStateRequest()
+void txGotoStateRequest()
 {
     createCANMessage(GOTO_CONFIRM,0,0);
 }
@@ -404,7 +415,7 @@ void txGotoStateResponse(uint32_t time)
  * \param[in]   None
  * \return      None
  */
-inline void txNaviPositionRequest()
+void txNaviPositionRequest()
 {
     createCANMessage(NAVI_POSITION_REQUEST,0,0);
 }
@@ -422,7 +433,7 @@ inline void txNaviPositionRequest()
  * \param[in]   id
  * \return      None
  */
-inline void txNaviPositionResponse(int16_t x, int16_t y, int16_t angle, uint8_t id)
+void txNaviPositionResponse(int16_t x, int16_t y, int16_t angle, uint8_t id)
 {
     txPositionResponse(NAVI_POSITION_RESPONSE,x,y,angle,id);
 }
@@ -436,7 +447,7 @@ inline void txNaviPositionResponse(int16_t x, int16_t y, int16_t angle, uint8_t 
  * \param[in]   None
  * \return      None
  */
-inline void txKalmanPositionRequest()
+void txKalmanPositionRequest()
 {
     createCANMessage(KALMAN_POSITION_REQUEST,0,0);
 }
@@ -454,7 +465,7 @@ inline void txKalmanPositionRequest()
  * \param[in]   id
  * \return      None
  */
-inline void txKalmanPositionResponse(uint16_t x, uint16_t y, uint16_t angle, uint8_t id)
+void txKalmanPositionResponse(uint16_t x, uint16_t y, uint16_t angle, uint8_t id)
 {
     txPositionResponse(KALMAN_POSITION_RESPONSE,x,y,angle,id);
 }
@@ -468,7 +479,7 @@ inline void txKalmanPositionResponse(uint16_t x, uint16_t y, uint16_t angle, uin
  * \param[in]   None
  * \return      None
  */
-inline void txEnemey1PositionRequest()
+void txEnemey1PositionRequest()
 {
     createCANMessage(ENEMEY_1_POSITION_REQUEST,0,0);
 }
@@ -486,7 +497,7 @@ inline void txEnemey1PositionRequest()
  * \param[in]   id
  * \return      None
  */
-inline void txEnemey1PositionResponse(uint16_t x, uint16_t y, uint16_t angle, uint8_t id)
+void txEnemey1PositionResponse(uint16_t x, uint16_t y, uint16_t angle, uint8_t id)
 {
     txPositionResponse(ENEMEY_1_POSITION_RESPONSE,x,y,angle,id);
 }
@@ -500,7 +511,7 @@ inline void txEnemey1PositionResponse(uint16_t x, uint16_t y, uint16_t angle, ui
  * \param[in]   None
  * \return      None
  */
-inline void txEnemey2PositionRequest()
+void txEnemey2PositionRequest()
 {
     createCANMessage(ENEMEY_2_POSITION_REQUEST,0,0);
 }
@@ -518,7 +529,7 @@ inline void txEnemey2PositionRequest()
  * \param[in]   id
  * \return      None
  */
-inline void txEnemey2PositionResponse(uint16_t x, uint16_t y, uint16_t angle, uint8_t id)
+void txEnemey2PositionResponse(uint16_t x, uint16_t y, uint16_t angle, uint8_t id)
 {
     txPositionResponse(ENEMEY_2_POSITION_RESPONSE,x,y,angle,id);
 }
@@ -532,7 +543,7 @@ inline void txEnemey2PositionResponse(uint16_t x, uint16_t y, uint16_t angle, ui
  * \param[in]   None
  * \return      None
  */
-inline void txConfederatePositionRequest()
+void txConfederatePositionRequest()
 {
     createCANMessage(CONFEDERATE_POSITION_REQUEST,0,0);
 }
@@ -550,7 +561,7 @@ inline void txConfederatePositionRequest()
  * \param[in]   id
  * \return      None
  */
-inline void txConfederatePositionResponse(uint16_t x, uint16_t y, uint16_t angle, uint8_t id)
+void txConfederatePositionResponse(uint16_t x, uint16_t y, uint16_t angle, uint8_t id)
 {
     txPositionResponse(CONFEDERATE_POSITION_RESPONSE,x,y,angle,id);
 }
@@ -568,7 +579,7 @@ inline void txConfederatePositionResponse(uint16_t x, uint16_t y, uint16_t angle
  * \param[in]   enemy_2_size diameter of enemy 2: 0-50cm [6bit]
  * \return      None
  */
-inline void txStartConfigurationSet(uint8_t color, uint8_t enemy, uint8_t confederate, uint8_t enemy_1_size, uint8_t enemy_2_size)
+void txStartConfigurationSet(uint8_t color, uint8_t enemy, uint8_t confederate, uint8_t enemy_1_size, uint8_t enemy_2_size)
 {
 	uint8_t data[2];
 
@@ -584,7 +595,7 @@ inline void txStartConfigurationSet(uint8_t color, uint8_t enemy, uint8_t confed
  * \fn		txStartConfigurationConfirm
  * \brief	confirm the reception of the start data
  */
-inline void txStartConfigurationConfirm()
+void txStartConfigurationConfirm()
 {
     createCANMessage(START_CONFIGURATION_CONFIRM,0,0);
 }
@@ -594,7 +605,7 @@ inline void txStartConfigurationConfirm()
  * \fn		txCheckNaviRequest
  * \brief	check if the navi-node is available
  */
-inline void txCheckNaviRequest()
+void txCheckNaviRequest()
 {
 	createCANMessage(CHECK_NAVI_REQUEST,0,0);
 }
@@ -604,7 +615,7 @@ inline void txCheckNaviRequest()
  * \fn		txCheckNaviResponse
  * \brief	navi-node confirm
  */
-inline void txCheckNaviResponse()
+void txCheckNaviResponse()
 {
 	createCANMessage(CHECK_NAVI_RESPONSE,0,0);
 }
@@ -624,7 +635,7 @@ inline void txCheckDriveRequest()
  * \fn		txCheckDriveResponse
  * \brief	drive-node confirm
  */
-inline void txCheckDriveResponse()
+void txCheckDriveResponse()
 {
 	createCANMessage(CHECK_DRIVE_RESPONSE,0,0);
 }
@@ -817,7 +828,7 @@ static void vCANRx(void* pvParameters )
                         case CONFEDERATE_POSITION_RESPONSE:
                             message_data = rxPositionResponse(&rx_message);
 
-                        case START_CONFIGURATION_CONFIRM:
+                        case START_CONFIGURATION_SET:
                             message_data = rxStartConfigurationSet(&rx_message);
                     }
 
@@ -912,9 +923,9 @@ static void vCANTx(void* pvParameters )
  * \param       can_rx_data: received data from the CAN-bus
  * \return      None
  */
-static inline void catchCANRx(CanRxMsg can_rx_data)
+static void catchCANRx(CanRxMsg can_rx_data)
 {
-    xQueueSendToBack(qCANRx,&can_rx_data,0);
+    xQueueSendToBackFromISR(qCANRx,&can_rx_data,0);
 }
 
 /**
