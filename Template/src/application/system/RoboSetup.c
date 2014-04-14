@@ -19,6 +19,7 @@
 #include "../CANGatekeeper.h"
 #include "../System.h"
 #include "../Timer.h"
+#include "../ELP.h"
 #include "RoboInitialisation.h" /* next state if the notstop switch is active */
 #include "RoboRun.h" /* next state if this one is completed successfully */
 #include "RoboSetup.h"
@@ -92,10 +93,10 @@ menu_t teamcolor =
     .title = "TEAMCOLOR",
     .byte0 = "<",
     .byte15 = ">",
-    .opt1 = "RED",
+    .opt1 = "YELLOW",
     .pos1 = 2,
-    .opt2 = "YELLOW",
-    .pos2 = 8,
+    .opt2 = "RED",
+    .pos2 = 10,
     .opt3 = "",
     .pos3 = 16, /*!< pos3 have to be >= 16 if not used! */
     .cursor_position = SETUP_TEAMCOLOR_CURSOR_DEFAULT,
@@ -233,9 +234,6 @@ menu_t ready =
 /* statemachine */
 static menu_current_t current_menu;
 
-/* RTOS */
-xSemaphoreHandle sSyncRoboSetupELP = NULL;
-
 
 /* Private function prototypes -----------------------------------------------*/
 static void write_current_menu(menu_t **);
@@ -253,10 +251,6 @@ static void setRoboSetup2Default();
  */
 void initRoboSetupState()
 {
-    /* create semaphore for elp task synchronisation */
-    vSemaphoreCreateBinary(sSyncRoboSetupELP); /* is given 1 second after startconfigs are transmitted */
-    xSemaphoreTake(sSyncRoboSetupELP,0); /* take the semaphore */
-
     /* hw modules */
     initUserPanelButtons();
     //initSensor_Key();
@@ -357,11 +351,11 @@ void runRoboSetupState(portTickType* tick)
                     txStartConfigurationSet(teamcolor.result,enemy_quantity.result,
                             friend_quantity.result,enemy_size1.result,enemy_size2.result); /* CAN */
                     setConfigRoboRunState(1,teamcolor.result,enemy_quantity.result); /* run state */
-                    resetTimer(); /* set game-timer to default */
+                    resetGameTimer(); /* set game-timer to default */
 
                     /* wait for 1 second -> gyro initialisation */
-                    vTaskDelayUntil(tick, SETUP_ELP_START_DElAY / portTICK_RATE_MS);    // wait 10s
-                    xSemaphoreGive(sSyncRoboSetupELP);
+                    vTaskDelayUntil(tick, SETUP_ELP_START_DELAY / portTICK_RATE_MS);    // wait 10s
+                    startELP();
 
                     /* goto ready state */
                     current_menu = READY;
@@ -388,6 +382,7 @@ void runRoboSetupState(portTickType* tick)
             /* back to setup */
             if(ready.confirmed == TRUE)
             {
+                stopELP(); /* stop the ELP */
                 current_menu = TEAMCOLOR;
                 ready.confirmed = FALSE;
             }
