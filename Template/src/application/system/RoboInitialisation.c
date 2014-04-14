@@ -144,7 +144,7 @@ void runRoboInitialisationState(portTickType* tick)
  * \fn          initNodeResources
  * \brief       Function to initialise all the resources needed by the node task
  *
- * \TODO move to RoboRun.c -> init
+ * \TODO init sensors (incl. exti)
  *
  * \param[in]   None
  * \return      None
@@ -155,8 +155,6 @@ void initNodeResources()
 	initServo_1();
 	/* Initialise launcher servo */
 	initServo_2();
-//	initServo_3();
-//	initServo_4();
 }
 
 /**

@@ -57,9 +57,6 @@ void initSystemTask(void){
     /* create the task */
     xTaskCreate( vSystemTask, ( signed char * ) SYSTEM_TASK_NAME, SYSTEM_STACK_SIZE, NULL, SYSTEM_TASK_PRIORITY, NULL );
 
-    /* init node resources */
-    initNodeResources();
-
     /* init system states */
     initRoboInitialisationState();
     initRoboSetupState();
