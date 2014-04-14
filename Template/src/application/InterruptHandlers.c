@@ -1,5 +1,5 @@
 /**
- * \file    interrupt_handlers.c
+ * \file    InterruptHandlers.c
  * \author  kasen1
  * \date    2014-04-10
  *
