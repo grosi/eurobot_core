@@ -30,6 +30,7 @@
 
 
 /* exported function prototypes -----------------------------------------------*/
+extern void initRoboErrorState();
 extern void runRoboErrorState(portTickType*);
 
 
