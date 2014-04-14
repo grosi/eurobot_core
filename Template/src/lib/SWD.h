@@ -20,9 +20,9 @@
 #define SWD_H_
 
 /* exported function prototypes -----------------------------------------------*/
-void SWV_puts(const char *s );
-void SWV_printnum(long number);
-void SWV_printfloat(double number, int digits);
+extern void SWV_puts(const char *s );
+extern void SWV_printnum(long number);
+extern void SWV_printfloat(double number, int digits);
 
 #endif /* SWD_H_ */
 
