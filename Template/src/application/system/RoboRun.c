@@ -38,6 +38,9 @@
 #define NODE_POOL_SIZE_INFO  1
 #define NODE_POOL_LEVEL_INFO 2
 
+#define ROBO_SPEED           100     /* Speed in percent */
+#define ROBO_BARRIER_FLAGS   0x0000
+
 /* Private macro -------------------------------------------------------------*/
 
 
@@ -578,13 +581,13 @@ static void vTrackEnemy(uint16_t id, CAN_data_t* data)
  * \param[in]   None
  * \return      None
  */
-void gotoNode(node_param_t* param, volatile game_state_t* game_state)  //TODO: Maybe only game_state
+void gotoNode(node_param_t* param, volatile game_state_t* game_state)
 {
 	/* Variable to store estimated GoTo time received from drive system */
 	uint32_t estimated_GoTo_time;
 
 	/* Send GoTo command through CAN to drive system */
-	//txGotoXY(param->x, param->y, param->angle, /*TODO speed*/, /*TODO optional barrierenflags*/);
+	txGotoXY(param->x, param->y, param->angle, ROBO_SPEED, ROBO_BARRIER_FLAGS);
 
 	/* Wait for GoTo confirmation or handle error */
 	//TODO
