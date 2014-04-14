@@ -63,9 +63,9 @@ int main(void)
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 
     /* module initialization */
-    initTimerTask();
+    initGameTimer();
+    initELPTimer();
     initSystemTask();
-    initELPTask();
     initRangefinderTask();
     initDefaultTask();
     initCANGatekeeper(); /* have to be the last initialization modul! */
