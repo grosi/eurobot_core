@@ -36,7 +36,7 @@ typedef struct
 /* Private define ------------------------------------------------------------*/
 #define ELP_CAN_ON
 #define LAST_ENTRY   0  /* Last entry for table_entry table[]         */
-#define CYCLE_RESET  24  /* Number of cycles until cycle-counter reset */
+#define CYCLE_RESET  28  /* Number of cycles until cycle-counter reset */
 
 /* Private macro -------------------------------------------------------------*/
 
@@ -44,17 +44,19 @@ typedef struct
 /* Private variables ---------------------------------------------------------*/
 static const cycle_table_t cycle_table[] =
 {
-    {0,4,txNaviPositionRequest},
-    {2,6,txKalmanPositionRequest},
-    {4,6,txConfederatePositionRequest},
-    {6,8,txEnemey1PositionRequest},
-    {8,8,txEnemey2PositionRequest},
+    {ELP_NAVI_POSITION_REQUEST_START,ELP_NAVI_POSITION_REQUEST_RATE,txNaviPositionRequest},
+    {ELP_KALMAN_POSITION_REQUEST_START,ELP_KALMAN_POSITION_REQUEST_RATE,txKalmanPositionRequest},
+    {ELP_CONFEDERATE_POSITION_REQUEST_START,ELP_CONFEDERATE_POSITION_REQUEST_RATE,txConfederatePositionRequest},
+    {ELP_ENEMY1_POSITION_REQUEST_START,ELP_ENEMY1_POSITION_REQUEST_RATE,txEnemey1PositionRequest},
+    {ELP_ENEMY2_POSITION_REQUEST_START,ELP_ENEMY2_POSITION_REQUEST_RATE,txEnemey2PositionRequest},
 
     {0,0,LAST_ENTRY}
 };
 
+static xTimerHandle xELPTimer;
+
 /* Private function prototypes -----------------------------------------------*/
-static void vELPTask(void*);
+static void vELPTimerCallback(xTimerHandle);
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -66,68 +68,83 @@ static void vELPTask(void*);
  * \param[in]   None
  * \return      None
  */
-void initELPTask(void)
+void initELPTimer(void)
 {
-    /* create the task */
-    xTaskCreate( vELPTask, ( signed char * ) ELP_TASK_NAME, ELP_STACK_SIZE, NULL, ELP_TASK_PRIORITY, NULL );
-
+    /* create sw-timer */
+    xELPTimer = xTimerCreate(( signed char * )ELP_NAME,
+            ELP_PERIODE / portTICK_RATE_MS,
+            pdTRUE,
+            NULL,
+            vELPTimerCallback);
 }
 
-/*
- * \fn          vELPTask
- * \brief       Task to pull the ELP-MSG's
+
+/**
+ * \fn          vELPTimerCallback
+ * \brief       Time base for the cycle ELP tasks
  *
  * \param[in]   None
  * \return      None
  */
-static void vELPTask(void* pvParameters )
+static void vELPTimerCallback(xTimerHandle pxTimer)
 {
     /* locale variable */
-    portTickType xLastFlashTime;
-    uint8_t cyle_count = 0;
-    uint8_t table_entry = 0;
+    static uint8_t cyle_count = 0;
+    uint8_t table_entry = 0; /* Start with first table entry */
 
-    /* We need to initialise xLastFlashTime prior to the first call to
-    vTaskDelayUntil(). */
-    xLastFlashTime = xTaskGetTickCount();
 
-    /* wait for robo is setup with the current game-configs */
-    if(xSemaphoreTake(sSyncRoboSetupELP, portMAX_DELAY) == pdTRUE)
+    /* Process table and call task if necessary */
+    /* Still task in table?                     */
+    while (cycle_table[table_entry].elp_function != LAST_ENTRY)
     {
-        /* endless */
-        for(;;)
+        /* Modulo 0 yields undefined result! Prevent this */
+        if(cycle_table[table_entry].cyle_activation != 0)
         {
-            table_entry = 0;    /* Start with first table entry */
-
-            /* Process table and call task if necessary */
-            /* Still task in table?                     */
-            while (cycle_table[table_entry].elp_function != LAST_ENTRY)
+            /* Call  task? */
+            if (((cyle_count % cycle_table[table_entry].cyle_activation) -
+                    (cycle_table[table_entry].first_activation)) == 0)
             {
-                /* Modulo 0 yields undefined result! Prevent this */
-                if(cycle_table[table_entry].cyle_activation != 0)
-                {
-                    /* Call  task? */
-                    if (((cyle_count % cycle_table[table_entry].cyle_activation) -
-                            (cycle_table[table_entry].first_activation)) == 0)
-                    {
 #ifdef ELP_CAN_ON
-                        (*cycle_table[table_entry].elp_function)();
+                (*cycle_table[table_entry].elp_function)();
 #endif
-                    }
-                }
-                table_entry++;  /* Prepare next task */
             }
-
-            /* Prepare next cycle and check if counter has to be reset */
-            cyle_count++;
-            if (cyle_count >= CYCLE_RESET) {
-                cyle_count = 0;
-            }
-
-            /* wait for ELP_TASK_SPEED (should be 100ms) */
-            vTaskDelayUntil( &xLastFlashTime, ELP_TASK_SPEED / portTICK_RATE_MS);
         }
+        table_entry++;  /* Prepare next task */
     }
+
+    /* Prepare next cycle and check if counter has to be reset */
+    cyle_count++;
+    if (cyle_count >= CYCLE_RESET) {
+        cyle_count = 0;
+    }
+}
+
+
+/**
+ * \fn          startELP
+ * \brief       starts the elp-timer
+ *
+ * \param[in]   None
+ * \return      None
+ */
+inline void startELP(void)
+{
+    /* Start the timer */
+    xTimerStart(xELPTimer,0);
+}
+
+
+/**
+ * \fn          stopELP
+ * \brief       stops the elp-timer
+ *
+ * \param[in]   None
+ * \return      None
+ */
+inline void stopELP(void)
+{
+    /* Stop the timer */
+    xTimerStop(xELPTimer,0);
 }
 
 /**
