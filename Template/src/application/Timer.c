@@ -21,6 +21,7 @@
 /* application */
 #include "AppConfig.h"
 #include "CANGatekeeper.h"
+#include "System.h"
 #include "Timer.h"
 
 
@@ -79,6 +80,7 @@ void vGameTimerCallback(xTimerHandle pxTimer)
         txStopDrive();
 
         /** \todo Stop the strategy task */
+        SystemReset();
     }
     else
     {
