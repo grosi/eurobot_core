@@ -266,7 +266,7 @@ void initIRSensor_Back()
  */
 uint8_t getIRSensor_Back()
 {
-    return !GPIO_ReadInputDataBit(IR_SENSOR_BACK_PORT, IR_SENSOR_BACK_PIN);
+    return GPIO_ReadInputDataBit(IR_SENSOR_BACK_PORT, IR_SENSOR_BACK_PIN);
 }
 
 
@@ -317,7 +317,7 @@ void initIRSensor_Front()
  */
 uint8_t getIRSensor_Front()
 {
-    return !GPIO_ReadInputDataBit(IR_SENSOR_FRONT_PORT, IR_SENSOR_FRONT_PIN);
+    return GPIO_ReadInputDataBit(IR_SENSOR_FRONT_PORT, IR_SENSOR_FRONT_PIN);
 }
 
 
@@ -368,7 +368,7 @@ void initIRSensor_Left()
  */
 uint8_t getIRSensor_Left()
 {
-    return !GPIO_ReadInputDataBit(IR_SENSOR_LEFT_PORT, IR_SENSOR_LEFT_PIN);
+    return GPIO_ReadInputDataBit(IR_SENSOR_LEFT_PORT, IR_SENSOR_LEFT_PIN);
 }
 
 
@@ -419,7 +419,7 @@ void initIRSensor_Right()
  */
 uint8_t getIRSensor_Right()
 {
-    return !GPIO_ReadInputDataBit(IR_SENSOR_RIGHT_PORT, IR_SENSOR_RIGHT_PIN);
+    return GPIO_ReadInputDataBit(IR_SENSOR_RIGHT_PORT, IR_SENSOR_RIGHT_PIN);
 }
 
 
