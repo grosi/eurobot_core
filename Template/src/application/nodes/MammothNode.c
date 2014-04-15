@@ -18,7 +18,7 @@
 #include "../AppConfig.h"
 #include "NodeConfig.h"
 #include "MammothNode.h"
-#include "Rangefinder.h"
+#include "../Rangefinder.h"
 /* lib */
 #include "lib/servo.h"
 
