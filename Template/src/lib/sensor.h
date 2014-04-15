@@ -181,7 +181,7 @@ extern void initSensor_Fresco_1();
 extern uint8_t getSensor_Fresco_1();
 extern uint8_t getSensorPosEdge_Fresco_1(uint8_t*);
 extern uint8_t getSensorNegEdge_Fresco_1(uint8_t*);
-extern void initButton_Fresco_2();
+extern void initSensor_Fresco_2();
 extern uint8_t getSensor_Fresco_2();
 extern uint8_t getSensorPosEdge_Fresco_2(uint8_t*);
 extern uint8_t SensorNegEdge_Freco_2(uint8_t*);

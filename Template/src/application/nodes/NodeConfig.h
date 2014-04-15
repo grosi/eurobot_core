@@ -27,6 +27,7 @@ typedef enum
     NODE_UNDONE = 0,        /*!< no node is in ready mode -> still undone */
     NODE_FINISH_SUCCESS,    /*!< node is done and the node-task ready for new tasks */
     NODE_FINISH_ERROR,      /*!< node is done with errors and the node-task ready for new tasks -> if the node is in a pool, don't decrement this! */
+    CAN_ERROR,              /*!< didn't receive CAN goto ACK after several retries */
 }node_state_t;
 
 

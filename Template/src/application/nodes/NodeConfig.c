@@ -16,6 +16,7 @@
 /* Includes ------------------------------------------------------------------*/
 /* application */
 #include "../AppConfig.h"
+#include "../CANGatekeeper.h"
 #include "NodeConfig.h"
 #include "FireNode.h"
 #include "FrescoNode.h"
@@ -23,18 +24,23 @@
 
 /* lib */
 #include "../../lib/servo.h"
+#include "../../lib/sensor.h"
+#include "../../lib/exti_sensor.h"
 
 
 /* Private typedef -----------------------------------------------------------*/
 
 
 /* Private define ------------------------------------------------------------*/
+#define GOTOCONFIRM_QUEUE_LENGTH (1)
 
 
 /* Private macro -------------------------------------------------------------*/
 
 
 /* Private variables ---------------------------------------------------------*/
+/* CAN */
+xQueueHandle qGotoConfirm;
 /* mammoth nodes configs */
 /* node 1 */
 node_t node_mammoth_1 =
@@ -75,6 +81,15 @@ void initNodeResources()
 	initServo_1();
 	/* Initialise launcher servo */
 	initServo_2();
+	/* Initialise fresco sensors */
+	initSensor_Fresco_1();
+	initSensor_Fresco_Wall();
+	/* Set external interrupt for fresco wall sensor */
+	initSensorEXTI_Wall();
+
+	/* Create a queue and set CAN listener for GoTo ACK */
+    qGotoConfirm = xQueueCreate(GOTOCONFIRM_QUEUE_LENGTH, sizeof(CAN_data_t));
+	setQueueCANListener(qGotoConfirm, GOTO_CONFIRM);
 }
 
 
