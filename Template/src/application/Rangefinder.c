@@ -29,8 +29,8 @@
 
 /* HW-library */
 #include "../lib/i2c.h"
-#include "../lib/ir_sensor.h"
-#include "../lib/ext_interrupt.h"
+#include "../lib/sensor.h"
+#include "../lib/exti_sensor.h"
 
 
 /* Private typedef -----------------------------------------------------------*/
@@ -104,9 +104,15 @@ void initRangefinderTask(void) {
 
     /* sensors initialisations */
     /* IR: init GPIOs */
-    initIRSensors();
+	initIRSensorEXTI_Back();
+	initIRSensorEXTI_Front();
+	initIRSensorEXTI_Left();
+	initIRSensorEXTI_Right();
     /* Configure EXTI Line in interrupt mode */
-    initIREXTILines();
+	initIRSensorEXTI_Back();
+	initIRSensorEXTI_Front();
+	initIRSensorEXTI_Left();
+	initIRSensorEXTI_Right();
 
     /* For evaluation: Generate software interrupt: simulate a rising edge applied on EXTI0 line
     EXTI_GenerateSWInterrupt(EXTI_Line5); */
