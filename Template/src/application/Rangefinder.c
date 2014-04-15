@@ -33,6 +33,7 @@
 #include "../lib/exti_sensor.h"
 
 
+
 /* Private typedef -----------------------------------------------------------*/
 
 /* Private define ------------------------------------------------------------*/
@@ -104,15 +105,16 @@ void initRangefinderTask(void) {
 
     /* sensors initialisations */
     /* IR: init GPIOs */
-	initIRSensorEXTI_Back();
-	initIRSensorEXTI_Front();
-	initIRSensorEXTI_Left();
-	initIRSensorEXTI_Right();
+    initIRSensor_Back();
+    initIRSensor_Front();
+    initIRSensor_Left();
+    initIRSensor_Right();
+
     /* Configure EXTI Line in interrupt mode */
-	initIRSensorEXTI_Back();
-	initIRSensorEXTI_Front();
-	initIRSensorEXTI_Left();
-	initIRSensorEXTI_Right();
+    initIRSensorEXTI_Back();
+    initIRSensorEXTI_Front();
+    initIRSensorEXTI_Left();
+    initIRSensorEXTI_Right();
 
     /* For evaluation: Generate software interrupt: simulate a rising edge applied on EXTI0 line
     EXTI_GenerateSWInterrupt(EXTI_Line5); */
