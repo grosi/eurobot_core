@@ -37,6 +37,8 @@ extern void (*system_state)(portTickType*);
 
 /* exported function prototypes -----------------------------------------------*/
 extern void initSystemTask(void);
+extern void SystemReset(void);
+extern void EmergencyStop_Handler(void);
 
 
 #endif /* SYSTEM_H_ */

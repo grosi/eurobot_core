@@ -24,6 +24,10 @@
 #include "system/RoboError.h"
 #include "System.h"
 
+/* lib */
+#include "../lib/sensor.h"
+#include "../lib/exti_sensor.h"
+
 
 /* Private typedef -----------------------------------------------------------*/
 
@@ -63,6 +67,11 @@ void initSystemTask(void){
     initRoboRunState();
     initRoboErrorState();
 
+    /* init system hw */
+    initSensor_EmergencyStop();
+    initSensorEXTI_EmergencyStop();
+    initSensor_Key();
+
     /* set start state */
     system_state = runRoboInitialisationState;
 
@@ -90,6 +99,33 @@ static void vSystemTask(void* pvParameters )
     {
         system_state(&xLastFlashTime);
     }
+}
+
+/**
+ * \fn      SysteReset
+ * \brief   reset the system
+ */
+void SystemReset(void)
+{
+    /* stay in ErrorState if there */
+    if(system_state != runRoboErrorState)
+    {
+        /* set correct state in initialisation state */
+        setConfigRoboInitialisationState2Emergency();
+        setConfigRoboSetup2Default();
+        setConfigRoboRunState2Default();
+
+        system_state = runRoboInitialisationState;
+    }
+}
+
+/**
+ * \fn      EmergencyStop_Handler
+ * \brief   catch the emergency stop interrupt
+ */
+void EmergencyStop_Handler(void)
+{
+    SystemReset();
 }
 
 /**
