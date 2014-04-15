@@ -26,6 +26,7 @@
 
 /* application */
 #include "Rangefinder.h"
+#include "System.h"
 #include "InterruptHandlers.h"
 
 //TODO:
@@ -47,6 +48,7 @@ void EXTI0_IRQHandler(void) {
 	/*
 	 * Add your_function_IT() here
 	 */
+    EmergencyStop_Handler();
 
 	/* Clear the EXTI line pending bit */
 	EXTI_ClearITPendingBit(EXTI_Line0);
@@ -152,8 +154,10 @@ void EXTI9_5_IRQHandler(void) {
 	}
 	if(EXTI_GetITStatus(EXTI_Line7) != RESET) {
 
-		/* Call TODO(module name) function */
-		EmergencyStop_IT();
+	    /*
+         * Add your_function_IT() here
+         */
+
 
 		/* Clear the EXTI line pending bit */
 		EXTI_ClearITPendingBit(EXTI_Line7);
