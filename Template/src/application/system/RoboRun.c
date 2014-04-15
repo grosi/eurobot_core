@@ -605,7 +605,7 @@ void gotoNode(node_param_t* param, volatile game_state_t* game_state)
 			/* Semaphore received, this means an obstacle was detected! */
 
 			/* Check rangefinder- and current robot state infos, and deside if a emergency break is needed */
-			//TODO
+			//TODO (and don't forget to use critical to be sure game_state isn't changed in the meantime --> Issue #27)
 
 			/* Semaphore is always only given by rangefinder task and always only taken by node task */
 		}
