@@ -13,7 +13,7 @@
  *
  * \todo unit test
  *
- * \defgroup interrupt_hangdlers Interrupt_hangdlers
+ * \defgroup interrupt_hangdlers Interrupt_handlers
  * \brief   interrupt handlers
  * \ingroup firmware
  *
@@ -21,9 +21,13 @@
  */
 
 /* Includes ------------------------------------------------------------------*/
+/* BSP */
 #include "stm32f4xx.h"
 
+/* application */
 #include "Rangefinder.h"
+#include "InterruptHandlers.h"
+
 //TODO:
 // #include "file_with_emergencystop_function.h"
 // and remove following line:

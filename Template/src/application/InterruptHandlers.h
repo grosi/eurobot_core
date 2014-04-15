@@ -21,8 +21,8 @@
  */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef INTERRUPT_HANDLERS_H_
-#define INTERRUPT_HANDLERS_H_
+#ifndef INTERRUPTHANDLERS_H_
+#define INTERRUPTHANDLERS_H_
 
 /* exported functions --------------------------------------------------------*/
 extern void EXTI0_IRQHandler(void);
@@ -34,7 +34,7 @@ extern void EXTI9_5_IRQHandler(void);
 extern void EXTI15_10_IRQHandler(void);
 
 
-#endif /* INTERRUPT_HANDLERS_H_ */
+#endif /* INTERRUPTHANDLERS_H_ */
 
 /**
  * @}

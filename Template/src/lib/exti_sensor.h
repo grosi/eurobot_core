@@ -1,12 +1,16 @@
 /**
- * \file    ext_interrupt.h
- * \author  kasen1
+ * \file    exti_sensor.h
+ * \author  gross10
  * \date    2014-02-26
  *
+ * \version 1.1
+ *  added interrupt defines (kasen1)
  * \version 1.0
  *  create this file
  *
- * \brief   Configuration of external interrupts
+ * \brief   Sensor access for the ir sensor from the rangefinder module.
+ *
+ * \todo    unit test
  *
  * \defgroup ir_sensor IR_Sensor
  * \brief   ir sensor library
@@ -15,8 +19,8 @@
  * @{
  */
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef EXT_INTERRUPT_H_
-#define EXT_INTERRUPT_H_
+#ifndef EXTI_SENSOR_H_
+#define EXTI_SENSOR_H_
 
 /* exported typedef ----------------------------------------------------------*/
 
@@ -34,12 +38,17 @@
 
 
 /* exported functions --------------------------------------------------------*/
-extern void initEXTILine(uint32_t RCC_AHB1Periph, uint8_t EXTI_PortSourceGPIOx,
-		uint8_t EXTI_PinSourcex, uint32_t EXTI_Line, EXTITrigger_TypeDef EXTI_Trigger,
-		uint8_t NVIC_IRQChannel, uint8_t NVIC_IRQChannelPreemptionPriority, uint8_t NVIC_IRQChannelSubPriority);
+extern void initSensorEXTI_EmergencyStop();
+extern void initSensorEXTI_Fresco_1();
+extern void initSensorEXTI_Fresco_2();
+extern void initSensorEXTI_Wall();
+extern void initIRSensorEXTI_Back();
+extern void initIRSensorEXTI_Front();
+extern void initIRSensorEXTI_Left();
+extern void initIRSensorEXTI_Right();
+extern void initSensorEXTI_Key();
 
-
-#endif /* EXT_INTERRUPT_H_ */
+#endif /* EXTI_SENSOR_H_ */
 
 /**
  * @}
