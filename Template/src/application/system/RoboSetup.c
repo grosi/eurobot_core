@@ -27,6 +27,7 @@
 /* lib */
 #include "lib/button.h"
 #include "lib/display.h"
+#include "lib/sensor.h"
 
 
 /* Private typedef -----------------------------------------------------------*/
@@ -372,11 +373,11 @@ void runRoboSetupState(portTickType* tick)
             menu_handler(&ready, 0, 1, 1, SELECTION_MENU);
 
             /* game starts if key sensor is activated */
-            //if(getSensor_Key())
+            if(getSensor_Key())
             {
-//                setRoboSetup2Default();
-//                startTimer(); /* start game-timer */
-//                system_state = runRoboRunState;
+                setConfigRoboSetup2Default();
+                startGameTimer(); /* start game-timer */
+                system_state = runRoboRunState;
             }
 
             /* back to setup */
