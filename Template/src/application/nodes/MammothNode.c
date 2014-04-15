@@ -29,9 +29,6 @@
 
 
 /* Private macro -------------------------------------------------------------*/
-/* Servo */
-#define SERVO_POS_LAUNCHER_LOAD     (0)   /* Servo position: Launcher all the way front */ //TODO
-#define SERVO_POS_LAUNCHER_LAUNCH   (100) /* Servo position: Launcher all the way back */ //TODO
 /* Separation */
 #define RETRY_SEPARATION_DELAY      (10)  /* Time in ms to wait before rechecking if the separation is blocked */
 #define RETRY_SEPARATION_COUNT_MAX  (10)  /* Number of retrys if the seperation is blocked */

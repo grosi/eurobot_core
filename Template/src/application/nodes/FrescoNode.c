@@ -58,18 +58,19 @@ void doFrescoNode(node_param_t* param) {
 	/* Variable to count number of frescos in robot */
 	uint8_t n_frescos_present = 0;
 	/* Variable to set the servo position step by step */
-	uint16_t servo_pos = SERVO_POS_FRESCO_IN;
+	volatile uint16_t servo_pos;
 
 	do {
 
-		/* Move fresco panel out, step by step, but stop if is on the wall */
-		while(servo_pos < (SERVO_POS_FRESCO_OUT-SERVO_FRESCO_STEP) && !frescoOnWall) {	//TODO: "<" or ">" and "-" or "+"?
+		/* Move fresco panel out, step by step, but stop if on the wall */
+		servo_pos = SERVO_POS_FRESCO_IN;
+		while(servo_pos > (SERVO_POS_FRESCO_OUT+SERVO_FRESCO_STEP) && !frescoOnWall) {
 
-			/* Increment servo position by step size */
-			servo_pos += SERVO_FRESCO_STEP;
+			/* Decrement servo position by step size */
+			servo_pos -= SERVO_FRESCO_STEP;
 
 			/* Check if it's the last step */
-			if(servo_pos > SERVO_POS_FRESCO_OUT) {
+			if(servo_pos < SERVO_POS_FRESCO_OUT) {
 
 				/* Set the final servo position without over-rotating */
 				setServo_1(SERVO_POS_FRESCO_OUT);
@@ -83,10 +84,32 @@ void doFrescoNode(node_param_t* param) {
 			vTaskDelay(SERVO_FRESCO_STEP_DELAY / portTICK_RATE_MS);
 		}
 
-		/* Move fresco panel in */
-		setServo_1(SERVO_POS_FRESCO_IN);
-		/* Wait some time while servo moves */
-		vTaskDelay(SERVO_MOVING_DELAY / portTICK_RATE_MS);
+		/* Move fresco panel in, step by step */
+		servo_pos = SERVO_POS_FRESCO_OUT;
+		while(servo_pos < (SERVO_POS_FRESCO_IN-SERVO_FRESCO_STEP)) {
+
+			/* Increment servo position by step size */
+			servo_pos += SERVO_FRESCO_STEP;
+
+			/* Check if it's the last step */
+			if(servo_pos > SERVO_POS_FRESCO_IN) {
+
+				/* Set the final servo position without over-rotating */
+				setServo_1(SERVO_POS_FRESCO_IN);
+			}
+			else {
+
+				/* Set the new servo position */
+				setServo_1(servo_pos);
+			}
+			/* Wait some time while servo moves */
+			vTaskDelay(SERVO_FRESCO_STEP_DELAY / portTICK_RATE_MS);
+		}
+
+//			/* Move fresco panel in, not step by step */
+//			setServo_1(SERVO_POS_FRESCO_IN);
+//			/* Wait some time while servo moves */
+//			vTaskDelay(SERVO_MOVING_DELAY / portTICK_RATE_MS);
 
 		/* Increment number of performed attempts */
 		n_fresco_attempts++;

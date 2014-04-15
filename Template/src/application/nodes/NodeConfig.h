@@ -75,36 +75,38 @@ typedef struct
 
 /* exported define ------------------------------------------------------------*/
 /* general */
-#define NODE_QUANTITY       11
-#define NODE_POOL_QUANTITY  2
-#define NODE_NO_ENEMY       -1
+#define NODE_QUANTITY              11
+#define NODE_POOL_QUANTITY         2
+#define NODE_NO_ENEMY              -1
 
 /* nodes pools */
-#define NODE_NO_POOL_ID         0
-#define NODE_MAMMOTH_POOL_ID    1
-#define NODE_MAMMOTH_POOL_SIZE  6
-#define NODE_MAMMOTH_POOL_LEVEL 3
-#define NODE_FRESCO_POOL_ID     2
-#define NODE_FRESCO_POOL_SIZE   2
-#define NODE_FRESCO_POOL_LEVEL  1
-#define NODE_FIRE_POOL_ID       3
-#define NODE_FIRE_POOL_SIZE     0
-#define NODE_FIRE_POOL_LEVEL    0
+#define NODE_NO_POOL_ID            0
+#define NODE_MAMMOTH_POOL_ID       1
+#define NODE_MAMMOTH_POOL_SIZE     6
+#define NODE_MAMMOTH_POOL_LEVEL    3
+#define NODE_FRESCO_POOL_ID        2
+#define NODE_FRESCO_POOL_SIZE      2
+#define NODE_FRESCO_POOL_LEVEL     1
+#define NODE_FIRE_POOL_ID          3
+#define NODE_FIRE_POOL_SIZE        0
+#define NODE_FIRE_POOL_LEVEL       0
 
 /* nodes arrive direction ranges */
-#define NODE_NORTH_MIN_ANGLE    45
-#define NODE_NORTH_MAX_ANGLE    134
-#define NODE_WEST_MIN_ANGLE     135
-#define NODE_WEST_MAX_ANGLE     224
-#define NODE_SOUTH_MIN_ANGLE    225
-#define NODE_SOUTH_MAX_ANGLE    314
-#define NODE_EAST_MIN_ANGLE     315 /*!< note, that the zero line is crossed */
-#define NODE_EAST_MAX_ANGLE     44  /*!< note, that the zero line is crossed */
+#define NODE_NORTH_MIN_ANGLE       45
+#define NODE_NORTH_MAX_ANGLE       134
+#define NODE_WEST_MIN_ANGLE        135
+#define NODE_WEST_MAX_ANGLE        224
+#define NODE_SOUTH_MIN_ANGLE       225
+#define NODE_SOUTH_MAX_ANGLE       314
+#define NODE_EAST_MIN_ANGLE        315 /*!< note, that the zero line is crossed */
+#define NODE_EAST_MAX_ANGLE        44  /*!< note, that the zero line is crossed */
 
 /* Servo */
-#define SERVO_POS_FRESCO_IN     (0)   /* Servo position: Fresco panel all the way in */ //TODO take this to the specific nodes
-#define SERVO_POS_FRESCO_OUT    (100) /* Servo position: Fresco panel all the way out */ //TODO
-#define SERVO_MOVING_DELAY      (100) /* Delay in ms to wait while the servo moves the whole way */ //TODO
+#define SERVO_MOVING_DELAY         200  /* Delay in ms to wait while the servo moves the whole way */
+#define SERVO_POS_FRESCO_IN        2000 /* Servo position: Fresco panel all the way in */
+#define SERVO_POS_FRESCO_OUT       1600 /* Servo position: Fresco panel all the way out */
+#define SERVO_POS_LAUNCHER_LOAD    1750 /* Servo position: Launcher all the way front */
+#define SERVO_POS_LAUNCHER_LAUNCH  1200 /* Servo position: Launcher all the way back */
 
 
 /* exported macro -------------------------------------------------------------*/
