@@ -25,6 +25,7 @@
 /* lib */
 #include "lib/servo.h"
 #include "lib/display.h"
+#include "lib/sensor.h"
 
 /* Private typedef -----------------------------------------------------------*/
 typedef enum
@@ -32,7 +33,7 @@ typedef enum
     DISPLAY_INIT = 0,
     DRIVE_INIT,
     NAVI_INIT,
-    NOTSTOP_ACTIVE
+    EMERGENCY_ACTIVE
 }robot_init_t;
 
 
@@ -44,6 +45,7 @@ typedef enum
 
 /* Private variables ---------------------------------------------------------*/
 static xQueueHandle qStateResponse;
+static robot_init_t state; /* statemachine */
 
 /* Private function prototypes -----------------------------------------------*/
 
@@ -65,6 +67,19 @@ void initRoboInitialisationState()
     /* set CAN listeners */
     setQueueCANListener(qStateResponse, CHECK_NAVI_RESPONSE);
     setQueueCANListener(qStateResponse, CHECK_DRIVE_RESPONSE);
+
+    /* set first state */
+    state = DISPLAY_INIT;
+}
+
+
+/**
+ * \fn      setConfigRoboInitialisationState2Default
+ * \brief   set all necessary values to default
+ */
+void setConfigRoboInitialisationState2Emergency()
+{
+    state = EMERGENCY_ACTIVE;
 }
 
 
@@ -77,21 +92,18 @@ void initRoboInitialisationState()
  */
 void runRoboInitialisationState(portTickType* tick)
 {
-    static robot_init_t state = DISPLAY_INIT;
+    /* local variable */
     CAN_data_t can_response;
 
-//    if(GET NOTSTOP)
-//    {
-//        state = NOTSTOP_ACTIVE;
-//    }
 
-    /* small statemaschine */
+    /* small statemachine */
     switch(state)
     {
         case DISPLAY_INIT:
             LCD_init((void(*)(long))vTaskDelay);
 
             state = DRIVE_INIT;
+
             break;
 
         case DRIVE_INIT:
@@ -100,9 +112,10 @@ void runRoboInitialisationState(portTickType* tick)
 
             /* wait for max 1s */
             if(xQueueReceive(qStateResponse,&can_response,ROBOINIT_TIMEOUT / portTICK_RATE_MS) == pdTRUE)
-            /* drive-node is okey -> goto to navi-node check */
+            /* drive-node is okay -> goto to navi-node check */
             {
-                state = NAVI_INIT;
+                //state = NAVI_INIT;
+                system_state = runRoboSetupState;
             }
             /* drive-node is not alive -> goto RoboError state */
             else
@@ -117,7 +130,7 @@ void runRoboInitialisationState(portTickType* tick)
 
             /* wait for max 1s */
             if(xQueueReceive(qStateResponse,&can_response,ROBOINIT_TIMEOUT / portTICK_RATE_MS) == pdTRUE)
-            /* navi-node is okey -> goto to next system-state */
+            /* navi-node is okay -> goto to next system-state */
             {
                 system_state = runRoboSetupState;
             }
@@ -128,12 +141,12 @@ void runRoboInitialisationState(portTickType* tick)
             }
             break;
 
-        case NOTSTOP_ACTIVE:
+        case EMERGENCY_ACTIVE:
             /* wait until the notstop-switch is released */
-            //    if(GET NOTSTOP)
-            //    {
-            //        state = DISPLAY_INIT;
-            //    }
+            if(getSensor_EmergencyStop())
+            {
+                state = DISPLAY_INIT;
+            }
             vTaskDelayUntil(tick, ROBOINIT_TIMEOUT / portTICK_RATE_MS);
             break;
     }

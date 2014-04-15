@@ -33,6 +33,7 @@
 
 /* exported function prototypes -----------------------------------------------*/
 extern void initRoboInitialisationState();
+extern void setConfigRoboInitialisationState2Emergency();
 extern void runRoboInitialisationState(portTickType*);
 extern void initNodeResources();
 
