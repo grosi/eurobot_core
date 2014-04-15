@@ -37,9 +37,9 @@
 #define SENSOR_EMERGENCYSTOP_EXTI_PORT  EXTI_PortSourceGPIOB
 #define SENSOR_EMERGENCYSTOP_EXTI_PIN   EXTI_PinSource0
 #define SENSOR_EMERGENCYSTOP_EXTI_LINE  EXTI_Line0
-#define SENSOR_EMERGENCYSTOP_EXTI_TRIG  EXTI_Trigger_Rising_Falling
+#define SENSOR_EMERGENCYSTOP_EXTI_TRIG  EXTI_Trigger_Rising
 #define SENSOR_EMERGENCYSTOP_EXTI_CHAN  EXTI0_IRQn
-#define SENSOR_EMERGENCYSTOP_EXTI_PPRIO 1
+#define SENSOR_EMERGENCYSTOP_EXTI_PPRIO 5
 #define SENSOR_EMERGENCYSTOP_EXTI_SPRIO 0
 
 #define SENSOR_FRESCO_1_PIN             GPIO_Pin_5
@@ -52,9 +52,9 @@
 #define SENSOR_FRESCO_1_EXTI_PORT       EXTI_PortSourceGPIOC
 #define SENSOR_FRESCO_1_EXTI_PIN        EXTI_PinSource5
 #define SENSOR_FRESCO_1_EXTI_LINE       EXTI_Line5
-#define SENSOR_FRESCO_1_EXTI_TRIG       EXTI_Trigger_Rising_Falling
+#define SENSOR_FRESCO_1_EXTI_TRIG       EXTI_Trigger_Falling
 #define SENSOR_FRESCO_1_EXTI_CHAN       EXTI9_5_IRQn
-#define SENSOR_FRESCO_1_EXTI_PPRIO      1
+#define SENSOR_FRESCO_1_EXTI_PPRIO      5
 #define SENSOR_FRESCO_1_EXTI_SPRIO      0
 
 #define SENSOR_FRESCO_2_PIN             GPIO_Pin_4
@@ -67,9 +67,9 @@
 #define SENSOR_FRESCO_2_EXTI_PORT       EXTI_PortSourceGPIOC
 #define SENSOR_FRESCO_2_EXTI_PIN        EXTI_PinSource4
 #define SENSOR_FRESCO_2_EXTI_LINE       EXTI_Line4
-#define SENSOR_FRESCO_2_EXTI_TRIG       EXTI_Trigger_Rising_Falling
+#define SENSOR_FRESCO_2_EXTI_TRIG       EXTI_Trigger_Falling
 #define SENSOR_FRESCO_2_EXTI_CHAN       EXTI4_IRQn
-#define SENSOR_FRESCO_2_EXTI_PPRIO      1
+#define SENSOR_FRESCO_2_EXTI_PPRIO      5
 #define SENSOR_FRESCO_2_EXTI_SPRIO      0
 
 #define SENSOR_FRESCO_WALL_PIN          GPIO_Pin_1
@@ -82,9 +82,9 @@
 #define SENSOR_FRESCO_WALL_EXTI_PORT    EXTI_PortSourceGPIOB
 #define SENSOR_FRESCO_WALL_EXTI_PIN     EXTI_PinSource1
 #define SENSOR_FRESCO_WALL_EXTI_LINE    EXTI_Line1
-#define SENSOR_FRESCO_WALL_EXTI_TRIG    EXTI_Trigger_Rising_Falling
+#define SENSOR_FRESCO_WALL_EXTI_TRIG    EXTI_Trigger_Falling
 #define SENSOR_FRESCO_WALL_EXTI_CHAN    EXTI1_IRQn
-#define SENSOR_FRESCO_WALL_EXTI_PPRIO   1
+#define SENSOR_FRESCO_WALL_EXTI_PPRIO   5
 #define SENSOR_FRESCO_WALL_EXTI_SPRIO   0
 
 #define IR_SENSOR_BACK_PIN              GPIO_Pin_5
@@ -97,10 +97,10 @@
 #define IR_SENSOR_BACK_EXTI_PORT        EXTI_PortSourceGPIOB
 #define IR_SENSOR_BACK_EXTI_PIN         EXTI_PinSource5
 #define IR_SENSOR_BACK_EXTI_LINE        EXTI_Line5
-#define IR_SENSOR_BACK_EXTI_TRIG        EXTI_Trigger_Rising_Falling
+#define IR_SENSOR_BACK_EXTI_TRIG        EXTI_Trigger_Falling
 #define IR_SENSOR_BACK_NVIC_CHAN        EXTI9_5_IRQn
-#define IR_SENSOR_BACK_NVIC_PPRIO       1
-#define IR_SENSOR_BACK_NVIC_SPRIO       1
+#define IR_SENSOR_BACK_NVIC_PPRIO       5
+#define IR_SENSOR_BACK_NVIC_SPRIO       0
 
 #define IR_SENSOR_FRONT_PIN             GPIO_Pin_11
 #define IR_SENSOR_FRONT_PIN_MODE        GPIO_Mode_IN
@@ -114,8 +114,8 @@
 #define IR_SENSOR_FRONT_EXTI_LINE       EXTI_Line11
 #define IR_SENSOR_FRONT_EXTI_TRIG       EXTI_Trigger_Rising_Falling
 #define IR_SENSOR_FRONT_NVIC_CHAN       EXTI15_10_IRQn
-#define IR_SENSOR_FRONT_NVIC_PPRIO      0x01
-#define IR_SENSOR_FRONT_NVIC_SPRIO      0x01
+#define IR_SENSOR_FRONT_NVIC_PPRIO      5
+#define IR_SENSOR_FRONT_NVIC_SPRIO      0
 
 #define IR_SENSOR_LEFT_PIN              GPIO_Pin_15
 #define IR_SENSOR_LEFT_PIN_MODE         GPIO_Mode_IN
@@ -129,8 +129,8 @@
 #define IR_SENSOR_LEFT_EXTI_LINE        EXTI_Line15
 #define IR_SENSOR_LEFT_EXTI_TRIG        EXTI_Trigger_Rising_Falling
 #define IR_SENSOR_LEFT_NVIC_CHAN        EXTI15_10_IRQn
-#define IR_SENSOR_LEFT_NVIC_PPRIO       0x01
-#define IR_SENSOR_LEFT_NVIC_SPRIO       0x01
+#define IR_SENSOR_LEFT_NVIC_PPRIO       5
+#define IR_SENSOR_LEFT_NVIC_SPRIO       0
 
 #define IR_SENSOR_RIGHT_PIN             GPIO_Pin_12
 #define IR_SENSOR_RIGHT_PIN_MODE        GPIO_Mode_IN
@@ -144,8 +144,8 @@
 #define IR_SENSOR_RIGHT_EXTI_LINE       EXTI_Line12
 #define IR_SENSOR_RIGHT_EXTI_TRIG       EXTI_Trigger_Rising_Falling
 #define IR_SENSOR_RIGHT_NVIC_CHAN       EXTI15_10_IRQn
-#define IR_SENSOR_RIGHT_NVIC_PPRIO      0x01
-#define IR_SENSOR_RIGHT_NVIC_SPRIO      0x01
+#define IR_SENSOR_RIGHT_NVIC_PPRIO      5
+#define IR_SENSOR_RIGHT_NVIC_SPRIO      0
 
 /* Pin and Port user panel */
 #define SENSOR_KEY_PIN                  GPIO_Pin_7
@@ -158,9 +158,9 @@
 #define SENSOR_KEY_EXTI_PORT            EXTI_PortSourceGPIOB
 #define SENSOR_KEY_EXTI_PIN             EXTI_PinSource7
 #define SENSOR_KEY_EXTI_LINE            EXTI_Line7
-#define SENSOR_KEY_EXTI_TRIG            EXTI_Trigger_Rising_Falling
+#define SENSOR_KEY_EXTI_TRIG            EXTI_Trigger_Falling
 #define SENSOR_KEY_EXTI_CHAN            EXTI9_5_IRQn
-#define SENSOR_KEY_EXTI_PPRIO           1
+#define SENSOR_KEY_EXTI_PPRIO           5
 #define SENSOR_KEY_EXTI_SPRIO           0
 
 /* exported types ------------------------------------------------------------*/
