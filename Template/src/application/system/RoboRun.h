@@ -48,15 +48,12 @@
 
 
 /* exported variables ---------------------------------------------------------*/
-//extern node_t* next_node;
-extern xSemaphoreHandle sSyncRoboRunNodeTask1;
-extern xSemaphoreHandle sSyncRoboRunNodeTask2;
-extern xSemaphoreHandle sSyncNodeTaskxDrive;
-extern xSemaphoreHandle sSyncNodeTaskxServo;
+
 
 /* exported function prototypes -----------------------------------------------*/
 extern void initRoboRunState();
 extern uint8_t setConfigRoboRunState(uint8_t, uint8_t, uint8_t);
+extern void setConfigRoboRunState2Default();
 extern void runRoboRunState(portTickType*);
 
 

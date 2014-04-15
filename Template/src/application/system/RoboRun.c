@@ -89,17 +89,17 @@ static void vMyPosition(uint16_t, CAN_data_t*);
 void initRoboRunState()
 {
     /* create the task */
-    xTaskCreate( vNodeTask, ( signed char * ) SYSTEM_NODE_TASK_NAME, SYSTEM_NODE_STACK_SIZE, NULL, SYSTEM_NODE_TASK_PRIORITY, &xNodeTask_Handle );
+    //xTaskCreate( vNodeTask, ( signed char * ) SYSTEM_NODE_TASK_NAME, SYSTEM_NODE_STACK_SIZE, NULL, SYSTEM_NODE_TASK_PRIORITY, &xNodeTask_Handle );
 
     /* init node resources */
     initNodeResources();
 
     /* suspend the node task until they will used */
-    vTaskSuspend(xNodeTask_Handle);
+    //vTaskSuspend(xNodeTask_Handle);
 
     /* create sync-semaphore */
     vSemaphoreCreateBinary(sSyncRoboRunNodeTask); /* for RoboRun <-> node-task sync */
-    xSemaphoreTake(sSyncRoboRunNodeTask,0); /* take semaphore here, because the node-task will empty at the beginning */
+    //xSemaphoreTake(sSyncRoboRunNodeTask,0); /* take semaphore here, because the node-task will empty at the beginning */
 
     /* set CAN listeners */
     setFunctionCANListener(vTrackEnemy,ENEMEY_1_POSITION_RESPONSE);
@@ -111,6 +111,7 @@ void initRoboRunState()
 /**
  * \fn      setConfigRoboRunState
  * \brief   set the necessary configurations for operation
+ * \note    have to call before runRoboRunState
  *
  * \param[in]   start_node_id   number of the first node
  * \param[in]   teamcolor       red or yellow
@@ -150,6 +151,14 @@ uint8_t setConfigRoboRunState(uint8_t start_node_id, uint8_t teamcolor, uint8_t 
     /* set enemy count */
     enemy_count = enemies;
 
+    /* create the node-task */
+    xTaskCreate(vNodeTask, ( signed char * ) SYSTEM_NODE_TASK_NAME,
+                SYSTEM_NODE_STACK_SIZE, NULL, SYSTEM_NODE_TASK_PRIORITY, &xNodeTask_Handle );
+    /* suspend the node task until they will used */
+    vTaskSuspend(xNodeTask_Handle);
+    /* take semaphore here, because the node-task will empty at the beginning */
+    xSemaphoreTake(sSyncRoboRunNodeTask,0);
+
     return success;
 }
 
@@ -185,7 +194,18 @@ void setConfigRoboRunState2Default()
 //            enemey_position[y][x] =
 //        }
 //    }
+    /* give the node-task semaphore free */
+    xSemaphoreGive(sSyncRoboRunNodeTask);
 
+    /* delete task until the next game round */
+    if(xNodeTask_Handle != NULL)
+    {
+        vTaskDelete(xNodeTask_Handle);
+    }
+
+    /* stop timers */
+    stopGameTimer();
+    stopELP();
 }
 
 
@@ -488,9 +508,6 @@ void runRoboRunState(portTickType* tick)
     if(remain_nodes == 0)
     {
     	setConfigRoboRunState2Default();
-
-    	stopGameTimer();
-    	stopELP();
 
     	system_state = runRoboSetupState;
     }
