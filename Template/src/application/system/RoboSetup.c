@@ -238,7 +238,7 @@ static menu_current_t current_menu;
 /* Private function prototypes -----------------------------------------------*/
 static void write_current_menu(menu_t **);
 static void menu_handler(menu_t *, uint8_t, uint8_t, uint8_t, menu_type_t);
-static void setRoboSetup2Default();
+void setConfigRoboSetup2Default();
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -350,7 +350,7 @@ void runRoboSetupState(portTickType* tick)
                     /* send the results and prepare for game*/
                     txStartConfigurationSet(teamcolor.result,enemy_quantity.result,
                             friend_quantity.result,enemy_size1.result,enemy_size2.result); /* CAN */
-                    setConfigRoboRunState(1,teamcolor.result,enemy_quantity.result); /* run state */
+                    setConfigRoboRunState(startnode.result,teamcolor.result,enemy_quantity.result); /* run state */
                     resetGameTimer(); /* set game-timer to default */
 
                     /* wait for 1 second -> gyro initialisation */
@@ -552,7 +552,7 @@ static void menu_handler(menu_t *current_menu, uint8_t res1, uint8_t res2, uint8
  * \param[in]   None
  * \return  None
  */
-static void setRoboSetup2Default()
+void setConfigRoboSetup2Default()
 {
     teamcolor.cursor_position = SETUP_TEAMCOLOR_CURSOR_DEFAULT;
     teamcolor.result = SETUP_TEAMCOLOR_RESULT_DEFAULT;
@@ -594,6 +594,8 @@ static void setRoboSetup2Default()
     ready.cursor_position = SETUP_SETUPFINISH_CURSOR_DEFAULT;
     ready.result = SETUP_SETUPFINISH_RESULT;
     ready.confirmed = FALSE;
+
+    current_menu = TEAMCOLOR;
 }
 
 /**

@@ -72,6 +72,7 @@
 
 /* exported function prototypes -----------------------------------------------*/
 extern void initRoboSetupState();
+extern void setConfigRoboSetup2Default();
 extern void runRoboSetupState(portTickType*);
 
 
