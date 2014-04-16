@@ -42,10 +42,10 @@ extern void initSensorEXTI_EmergencyStop();
 extern void initSensorEXTI_Fresco_1();
 extern void initSensorEXTI_Fresco_2();
 extern void initSensorEXTI_Wall();
-extern void initIRSensorEXTI_Back();
-extern void initIRSensorEXTI_Front();
-extern void initIRSensorEXTI_Left();
-extern void initIRSensorEXTI_Right();
+extern void initIRSensorEXTI_BwLeft();
+extern void initIRSensorEXTI_FwLeft();
+extern void initIRSensorEXTI_BwRight();
+extern void initIRSensorEXTI_FwRight();
 extern void initSensorEXTI_Key();
 
 #endif /* EXTI_SENSOR_H_ */

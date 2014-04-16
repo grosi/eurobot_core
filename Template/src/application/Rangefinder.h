@@ -59,10 +59,10 @@ extern volatile uint8_t RangefinderUS_BwAlarm_flag;     /* Ultrasonic backward a
 
 /* exported function prototypes -----------------------------------------------*/
 extern void initRangefinderTask(void);
-extern void IRSensorBack_IT(void);
-extern void IRSensorFront_IT(void);
-extern void IRSensorRight_IT(void);
-extern void IRSensorLeft_IT(void);
+extern void IRSensorFwLeft_IT(void);
+extern void IRSensorFwRight_IT(void);
+extern void IRSensorBwLeft_IT(void);
+extern void IRSensorBwRight_IT(void);
 
 #endif /* RANGEFINDER_TASK_H_ */
 

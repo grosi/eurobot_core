@@ -248,206 +248,206 @@ uint8_t getSensorNegEdge_EmergencyStop(uint8_t* sensor_state)
 
 
 /**
- * \fn      initIRSensor_Back
+ * \fn      initIRSensor_BwLeft
  * \brief   IR sensor initialisation
  */
-void initIRSensor_Back()
+void initIRSensor_BwLeft()
 {
-    initSensor(IR_SENSOR_BACK_PIN, IR_SENSOR_BACK_PIN_MODE, IR_SENSOR_BACK_PIN_TYPE, IR_SENSOR_BACK_PIN_PUPD, IR_SENSOR_BACK_PIN_SPEED,
-            IR_SENSOR_BACK_PORT, IR_SENSOR_BACK_PORT_CLK);
+    initSensor(IR_SENSOR_BWLEFT_PIN, IR_SENSOR_BWLEFT_PIN_MODE, IR_SENSOR_BWLEFT_PIN_TYPE, IR_SENSOR_BWLEFT_PIN_PUPD, IR_SENSOR_BWLEFT_PIN_SPEED,
+            IR_SENSOR_BWLEFT_PORT, IR_SENSOR_BWLEFT_PORT_CLK);
 }
 
 
 /**
- * \fn      getIRSensor_Back
+ * \fn      getIRSensor_BwLeft
  * \brief   get the current pin value
  * \note    the pin is not debounced, high active
  * \return  current button value
  */
-uint8_t getIRSensor_Back()
+uint8_t getIRSensor_BwLeft()
 {
-    return GPIO_ReadInputDataBit(IR_SENSOR_BACK_PORT, IR_SENSOR_BACK_PIN);
+    return GPIO_ReadInputDataBit(IR_SENSOR_BWLEFT_PORT, IR_SENSOR_BWLEFT_PIN);
 }
 
 
 /**
- * \fn      getIRSensorPosEdge_Back
+ * \fn      getIRSensorPosEdge_BwLeft
  * \brief   get the positive edge
  * \note    this function have to call every programm loop
  *
  * \param   sensor_state    pointer to a temporary button state memory
  * \return  the positive edge, if there
  */
-uint8_t getIRSensorPosEdge_Back(uint8_t* sensor_state)
+uint8_t getIRSensorPosEdge_BwLeft(uint8_t* sensor_state)
 {
-    return getSensorPosEdge(IR_SENSOR_BACK_PORT,IR_SENSOR_BACK_PIN, &sensor_state);
+    return getSensorPosEdge(IR_SENSOR_BWLEFT_PORT,IR_SENSOR_BWLEFT_PIN, &sensor_state);
 }
 
 
 /**
- * \fn      getIRSensorNegEdge_Back
+ * \fn      getIRSensorNegEdge_BwLeft
  * \brief   get the negative edge
  * \note    this function have to call every programm loop
  *
  * \param   button_state    pointer to a temporary button state memory
  * \return  the neagtive edge, if there
  */
-uint8_t getIRSensorNegEdge_Back(uint8_t* sensor_state)
+uint8_t getIRSensorNegEdge_BwLeft(uint8_t* sensor_state)
 {
-    return getSensorNegEdge(IR_SENSOR_BACK_PORT,IR_SENSOR_BACK_PIN, &sensor_state);
+    return getSensorNegEdge(IR_SENSOR_BWLEFT_PORT,IR_SENSOR_BWLEFT_PIN, &sensor_state);
 }
 
 
 /**
- * \fn      initIRSensor_Front
+ * \fn      initIRSensor_FwLeft
  * \brief   IR sensor initialisation
  */
-void initIRSensor_Front()
+void initIRSensor_FwLeft()
 {
-    initSensor(IR_SENSOR_FRONT_PIN, IR_SENSOR_FRONT_PIN_MODE, IR_SENSOR_FRONT_PIN_TYPE, IR_SENSOR_FRONT_PIN_PUPD, IR_SENSOR_FRONT_PIN_SPEED,
-            IR_SENSOR_FRONT_PORT, IR_SENSOR_FRONT_PORT_CLK);
+    initSensor(IR_SENSOR_FWLEFT_PIN, IR_SENSOR_FWLEFT_PIN_MODE, IR_SENSOR_FWLEFT_PIN_TYPE, IR_SENSOR_FWLEFT_PIN_PUPD, IR_SENSOR_FWLEFT_PIN_SPEED,
+            IR_SENSOR_FWLEFT_PORT, IR_SENSOR_FWLEFT_PORT_CLK);
 }
 
 
 /**
- * \fn      getIRSensor_Front
+ * \fn      getIRSensor_FwLeft
  * \brief   get the current pin value
  * \note    the pin is not debounced, high active
  * \return  current button value
  */
-uint8_t getIRSensor_Front()
+uint8_t getIRSensor_FwLeft()
 {
-    return GPIO_ReadInputDataBit(IR_SENSOR_FRONT_PORT, IR_SENSOR_FRONT_PIN);
+    return GPIO_ReadInputDataBit(IR_SENSOR_FWLEFT_PORT, IR_SENSOR_FWLEFT_PIN);
 }
 
 
 /**
- * \fn      getIRSensorPosEdge_Front
+ * \fn      getIRSensorPosEdge_FwLeft
  * \brief   get the positive edge
  * \note    this function have to call every programm loop
  *
  * \param   sensor_state    pointer to a temporary button state memory
  * \return  the positive edge, if there
  */
-uint8_t getIRSensorPosEdge_Front(uint8_t* sensor_state)
+uint8_t getIRSensorPosEdge_FwLeft(uint8_t* sensor_state)
 {
-    return getSensorPosEdge(IR_SENSOR_FRONT_PORT,IR_SENSOR_FRONT_PIN, &sensor_state);
+    return getSensorPosEdge(IR_SENSOR_FWLEFT_PORT,IR_SENSOR_FWLEFT_PIN, &sensor_state);
 }
 
 
 /**
- * \fn      getIRSensorNegEdge_Front
+ * \fn      getIRSensorNegEdge_FwLeft
  * \brief   get the negative edge
  * \note    this function have to call every programm loop
  *
  * \param   button_state    pointer to a temporary button state memory
  * \return  the neagtive edge, if there
  */
-uint8_t getIRSensorNegEdge_Front(uint8_t* sensor_state)
+uint8_t getIRSensorNegEdge_FwLeft(uint8_t* sensor_state)
 {
-    return getSensorNegEdge(IR_SENSOR_FRONT_PORT,IR_SENSOR_FRONT_PIN, &sensor_state);
+    return getSensorNegEdge(IR_SENSOR_FWLEFT_PORT,IR_SENSOR_FWLEFT_PIN, &sensor_state);
 }
 
 
 /**
- * \fn      initIRSensor_Left
+ * \fn      initIRSensor_BwRight
  * \brief   IR sensor initialisation
  */
-void initIRSensor_Left()
+void initIRSensor_BwRight()
 {
-    initSensor(IR_SENSOR_LEFT_PIN, IR_SENSOR_LEFT_PIN_MODE, IR_SENSOR_LEFT_PIN_TYPE, IR_SENSOR_LEFT_PIN_PUPD, IR_SENSOR_LEFT_PIN_SPEED,
-            IR_SENSOR_LEFT_PORT, IR_SENSOR_LEFT_PORT_CLK);
+    initSensor(IR_SENSOR_BWRIGHT_PIN, IR_SENSOR_BWRIGHT_PIN_MODE, IR_SENSOR_BWRIGHT_PIN_TYPE, IR_SENSOR_BWRIGHT_PIN_PUPD, IR_SENSOR_BWRIGHT_PIN_SPEED,
+            IR_SENSOR_BWRIGHT_PORT, IR_SENSOR_BWRIGHT_PORT_CLK);
 }
 
 
 /**
- * \fn      getIRSensor_Left
+ * \fn      getIRSensor_BwRight
  * \brief   get the current pin value
  * \note    the pin is not debounced, high active
  * \return  current button value
  */
-uint8_t getIRSensor_Left()
+uint8_t getIRSensor_BwRight()
 {
-    return GPIO_ReadInputDataBit(IR_SENSOR_LEFT_PORT, IR_SENSOR_LEFT_PIN);
+    return GPIO_ReadInputDataBit(IR_SENSOR_BWRIGHT_PORT, IR_SENSOR_BWRIGHT_PIN);
 }
 
 
 /**
- * \fn      getIRSensorPosEdge_Left
+ * \fn      getIRSensorPosEdge_BwRight
  * \brief   get the positive edge
  * \note    this function have to call every programm loop
  *
  * \param   sensor_state    pointer to a temporary button state memory
  * \return  the positive edge, if there
  */
-uint8_t getIRSensorPosEdge_Left(uint8_t* sensor_state)
+uint8_t getIRSensorPosEdge_BwRight(uint8_t* sensor_state)
 {
-    return getSensorPosEdge(IR_SENSOR_LEFT_PORT,IR_SENSOR_LEFT_PIN, &sensor_state);
+    return getSensorPosEdge(IR_SENSOR_BWRIGHT_PORT,IR_SENSOR_BWRIGHT_PIN, &sensor_state);
 }
 
 
 /**
- * \fn      getIRSensorNegEdge_Left
+ * \fn      getIRSensorNegEdge_BwRight
  * \brief   get the negative edge
  * \note    this function have to call every programm loop
  *
  * \param   button_state    pointer to a temporary button state memory
  * \return  the neagtive edge, if there
  */
-uint8_t getIRSensorNegEdge_Left(uint8_t* sensor_state)
+uint8_t getIRSensorNegEdge_BwRight(uint8_t* sensor_state)
 {
-    return getSensorNegEdge(IR_SENSOR_LEFT_PORT,IR_SENSOR_LEFT_PIN, &sensor_state);
+    return getSensorNegEdge(IR_SENSOR_BWRIGHT_PORT,IR_SENSOR_BWRIGHT_PIN, &sensor_state);
 }
 
 
 /**
- * \fn      initIRSensor_Right
+ * \fn      initIRSensor_FwRight
  * \brief   IR sensor initialisation
  */
-void initIRSensor_Right()
+void initIRSensor_FwRight()
 {
-    initSensor(IR_SENSOR_RIGHT_PIN, IR_SENSOR_RIGHT_PIN_MODE, IR_SENSOR_RIGHT_PIN_TYPE, IR_SENSOR_RIGHT_PIN_PUPD, IR_SENSOR_RIGHT_PIN_SPEED,
-            IR_SENSOR_RIGHT_PORT, IR_SENSOR_RIGHT_PORT_CLK);
+    initSensor(IR_SENSOR_FWRIGHT_PIN, IR_SENSOR_FWRIGHT_PIN_MODE, IR_SENSOR_FWRIGHT_PIN_TYPE, IR_SENSOR_FWRIGHT_PIN_PUPD, IR_SENSOR_FWRIGHT_PIN_SPEED,
+            IR_SENSOR_FWRIGHT_PORT, IR_SENSOR_FWRIGHT_PORT_CLK);
 }
 
 
 /**
- * \fn      getIRSensor_Right
+ * \fn      getIRSensor_FwRight
  * \brief   get the current pin value
  * \note    the pin is not debounced, high active
  * \return  current button value
  */
-uint8_t getIRSensor_Right()
+uint8_t getIRSensor_FwRight()
 {
-    return GPIO_ReadInputDataBit(IR_SENSOR_RIGHT_PORT, IR_SENSOR_RIGHT_PIN);
+    return GPIO_ReadInputDataBit(IR_SENSOR_FWRIGHT_PORT, IR_SENSOR_FWRIGHT_PIN);
 }
 
 
 /**
- * \fn      getIRSensorPosEdge_Right
+ * \fn      getIRSensorPosEdge_FwRight
  * \brief   get the positive edge
  * \note    this function have to call every programm loop
  *
  * \param   sensor_state    pointer to a temporary button state memory
  * \return  the positive edge, if there
  */
-uint8_t getIRSensorPosEdge_Right(uint8_t* sensor_state)
+uint8_t getIRSensorPosEdge_FwRight(uint8_t* sensor_state)
 {
-    return getSensorPosEdge(IR_SENSOR_RIGHT_PORT,IR_SENSOR_RIGHT_PIN, &sensor_state);
+    return getSensorPosEdge(IR_SENSOR_FWRIGHT_PORT,IR_SENSOR_FWRIGHT_PIN, &sensor_state);
 }
 
 
 /**
- * \fn      getIRSensorNegEdge_Right
+ * \fn      getIRSensorNegEdge_FwRight
  * \brief   get the negative edge
  * \note    this function have to call every programm loop
  *
  * \param   button_state    pointer to a temporary button state memory
  * \return  the neagtive edge, if there
  */
-uint8_t getIRSensorNegEdge_Right(uint8_t* sensor_state)
+uint8_t getIRSensorNegEdge_FwRight(uint8_t* sensor_state)
 {
-    return getSensorNegEdge(IR_SENSOR_RIGHT_PORT,IR_SENSOR_RIGHT_PIN, &sensor_state);
+    return getSensorNegEdge(IR_SENSOR_FWRIGHT_PORT,IR_SENSOR_FWRIGHT_PIN, &sensor_state);
 }
 
 

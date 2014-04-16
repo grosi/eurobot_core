@@ -1,8 +1,10 @@
 /**
- * \file    Rangefinder.c
- * \author  kasen1
- * \date    2013-11-29
+ * \file     Rangefinder.c
+ * \author   kasen1
+ * \date     2013-04-13
  *
+ * \version 1.1
+ *  - IR sensors in new arrangement
  * \version 1.1
  *  - Changed implementation of IR detection to external interrupt
  *  - Implemented comparison of last three US measures
@@ -13,11 +15,13 @@
  * \version 0.1
  *  Import from template (14.01.2014)
  *
- * \brief   task for the rangefinder sensors
+ * \brief    task for the rangefinder sensors
+ *
+ * \todo     Unit test for version 1.1 on robot
  *
  * \defgroup rangefinder Rangefinder
- * \brief   Rangefinder task
- * \ingroup hw_task
+ * \brief    Rangefinder task
+ * \ingroup  hw_task
  *
  * @{
  */
@@ -105,18 +109,18 @@ void initRangefinderTask(void) {
 
     /* sensors initialisations */
     /* IR: init GPIOs */
-    initIRSensor_Back();
-    initIRSensor_Front();
-    initIRSensor_Left();
-    initIRSensor_Right();
+    initIRSensor_FwLeft();
+    initIRSensor_FwRight();
+    initIRSensor_BwLeft();
+    initIRSensor_BwRight();
 
     /* Configure EXTI Line in interrupt mode */
-    initIRSensorEXTI_Back();
-    initIRSensorEXTI_Front();
-    initIRSensorEXTI_Left();
-    initIRSensorEXTI_Right();
+    initIRSensorEXTI_FwLeft();
+    initIRSensorEXTI_FwRight();
+    initIRSensorEXTI_BwLeft();
+    initIRSensorEXTI_BwRight();
 
-    /* For evaluation: Generate software interrupt: simulate a rising edge applied on EXTI0 line
+    /* For testing: Generate software interrupt: simulate a rising edge applied on EXTI5 line
     EXTI_GenerateSWInterrupt(EXTI_Line5); */
 
     /* US: I2C */
@@ -273,15 +277,63 @@ static void vRangefinderTask(void* pvParameters ) {
 
 /**
  * \fn
+ * \brief  This function is called by the external line 10-15 interrupt handler
+ *
+ * \param  None
+ * \retval None
+ */
+void IRSensorFwLeft_IT(void) {
+
+	/* Check if rising or falling interrupt */
+	if(getIRSensor_FwLeft()) {
+
+		/* Nothing detected, all ok */
+		RangefinderIR_FwAlarm_flag = 0;
+	}
+	else {
+
+		/* Object detected, set alarm */
+		RangefinderIR_FwAlarm_flag = 1;
+		/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
+		xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
+	}
+}
+
+/**
+ * \fn
+ * \brief  This function is called by the external line 10-15 interrupt handler
+ *
+ * \param  None
+ * \retval None
+ */
+void IRSensorFwRight_IT(void) {
+
+	/* Check if rising or falling interrupt */
+	if(getIRSensor_FwRight()) {
+
+		/* Nothing detected, all ok */
+		RangefinderIR_FwAlarm_flag = 0;
+	}
+	else {
+
+		/* Object detected, set alarm */
+		RangefinderIR_FwAlarm_flag = 1;
+		/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
+		xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
+	}
+}
+
+/**
+ * \fn
  * \brief  This function is called by the external line 5-9 interrupt handler
  *
  * \param  None
  * \retval None
  */
-void IRSensorBack_IT(void) {
+void IRSensorBwLeft_IT(void) {
 
 	/* Check if rising or falling interrupt */
-	if(getIRSensor_Back()) {
+	if(getIRSensor_BwLeft()) {
 
 		/* Nothing detected, all ok */
 		RangefinderIR_BwAlarm_flag = 0;
@@ -302,66 +354,18 @@ void IRSensorBack_IT(void) {
  * \param  None
  * \retval None
  */
-void IRSensorFront_IT(void) {
+void IRSensorBwRight_IT(void) {
 
 	/* Check if rising or falling interrupt */
-	if(getIRSensor_Front()) {
+	if(getIRSensor_BwRight()) {
 
 		/* Nothing detected, all ok */
-		RangefinderIR_FwAlarm_flag = 0;
+		RangefinderIR_BwAlarm_flag = 0;
 	}
 	else {
 
 		/* Object detected, set alarm */
-		RangefinderIR_FwAlarm_flag = 1;
-		/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
-		xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
-	}
-}
-
-/**
- * \fn
- * \brief  This function is called by the external line 10-15 interrupt handler
- *
- * \param  None
- * \retval None
- */
-void IRSensorRight_IT(void) {
-
-	/* Check if rising or falling interrupt */
-	if(getIRSensor_Right()) {
-
-		/* Nothing detected, all ok */
-		RangefinderIR_FwAlarm_flag = 0;
-	}
-	else {
-
-		/* Object detected, set alarm */
-		RangefinderIR_FwAlarm_flag = 1;
-		/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
-		xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
-	}
-}
-
-/**
- * \fn
- * \brief  This function is called by the external line 10-15 interrupt handler
- *
- * \param  None
- * \retval None
- */
-void IRSensorLeft_IT(void) {
-
-	/* Check if rising or falling interrupt */
-	if(getIRSensor_Left()) {
-
-		/* Nothing detected, all ok */
-		RangefinderIR_FwAlarm_flag = 0;
-	}
-	else {
-
-		/* Object detected, set alarm */
-		RangefinderIR_FwAlarm_flag = 1;
+		RangefinderIR_BwAlarm_flag = 1;
 		/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
 		xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
 	}
