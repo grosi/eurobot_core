@@ -34,12 +34,19 @@
 
 
 /* Private define ------------------------------------------------------------*/
-#define NODE_POOL_ID_INFO    0
-#define NODE_POOL_SIZE_INFO  1
-#define NODE_POOL_LEVEL_INFO 2
+/* Node */
+#define NODE_POOL_ID_INFO      0
+#define NODE_POOL_SIZE_INFO    1
+#define NODE_POOL_LEVEL_INFO   2
+/* CAN */
+#define ROBO_SPEED             100     /* Speed in percent */
+#define ROBO_BARRIER_FLAGS     0x0000
+#define GOTO_ACK_DELAY         10      /* Delay in ms to wait before checking goto confirmation */
+#define GOTO_NACK_MAX_RETRIES  5       /* Number of retries (incl. first try) if there's no confirmation from drive system (uint8_t) */
+#define GOTO_STATERESP_TIMEOUT (500 / portTICK_RATE_MS)    /* Timeout in ticks to wait for GoTo state response. (portMAX_DELAY, portTICK_RATE_MS) */
+#define MASK_24BIT             0xFFFFFF
+#define GOTO_TIME_UNKNOWN      0xFFFFFF
 
-#define ROBO_SPEED           100     /* Speed in percent */
-#define ROBO_BARRIER_FLAGS   0x0000
 
 /* Private macro -------------------------------------------------------------*/
 
@@ -602,24 +609,59 @@ static void vTrackEnemy(uint16_t id, CAN_data_t* data)
  */
 void gotoNode(node_param_t* param, volatile game_state_t* game_state)
 {
-	/* Variable to store estimated GoTo time received from drive system */
+	/* Variable for CAN RX */
+	CAN_data_t CAN_buffer;
+	uint8_t CAN_ok = pdFALSE;
+
+	/* Variable to store estimated GoTo time received from drive system (24 Bit, 1 Bit ca. 1 ms) */
 	uint32_t estimated_GoTo_time;
 
-	/* Send GoTo command through CAN to drive system */
-	txGotoXY(param->x, param->y, param->angle, ROBO_SPEED, ROBO_BARRIER_FLAGS);
+	uint8_t i=0;
+	do {
 
-	/* Wait for GoTo confirmation or handle error */
-	//TODO
+		i++;
+
+		/* Send GoTo command through CAN to drive system */
+		txGotoXY(param->x, param->y, param->angle, ROBO_SPEED, ROBO_BARRIER_FLAGS);
+
+		/* Receive GoTo confirmation */
+		CAN_ok = xQueueReceive(qGotoConfirm, &CAN_buffer, GOTO_ACK_DELAY / portTICK_RATE_MS);
+
+	/* Retry if no transmission confirmed received and another retry is allowed */
+	} while((CAN_ok != pdTRUE) && (i <= GOTO_NACK_MAX_RETRIES));
+
+	/* If still no GoTo confirmation was received, report error */
+	if(CAN_ok != pdTRUE) {
+
+		/* No confirmation was received from drive system! */
+		param->node_state = GOTO_CAN_ERROR;
+		return;
+	}
 
 	do {
 
 		/* Ask drive system for GoTo state */
-		//TODO
-		/* Receive the GoTo state */
-		estimated_GoTo_time = 0; //TODO  /* In ms */
+		txGotoStateRequest();
+		/* Receive the GoTo state response */
+		CAN_ok = xQueueReceive(qGotoStateResp, &CAN_buffer, GOTO_STATERESP_TIMEOUT);
+		/* Check if time out */
+		if(CAN_ok != pdTRUE) {
+
+			/* Drive system didn't answer within specified time, report */
+			param->node_state =  GOTO_CAN_ERROR;
+			return;
+		}
+
+		/* Extract time */
+		estimated_GoTo_time = CAN_buffer.state_time && MASK_24BIT;  /* In ms */
+		if(estimated_GoTo_time == GOTO_TIME_UNKNOWN) {
+
+			/* Set to 1 second -> Retry in 1 second */
+			estimated_GoTo_time = 1000;
+		}
 
 		/* Try to take semaphore from rangefinder task, use estimated time from drive system as timeout */
-		if(xSemaphoreTake(sSyncNodeTask, estimated_GoTo_time / portTICK_RATE_MS) == pdTRUE) {
+		if(estimated_GoTo_time != 0 && xSemaphoreTake(sSyncNodeTask, estimated_GoTo_time / portTICK_RATE_MS) == pdTRUE) {
 
 			/* Semaphore received, this means an obstacle was detected! */
 
@@ -630,7 +672,7 @@ void gotoNode(node_param_t* param, volatile game_state_t* game_state)
 		}
 
 	/* Repeat while not at target destination */
-	} while(estimated_GoTo_time != 0);  //TODO: Catch 0xFFFFFF (time unknown)?
+	} while(estimated_GoTo_time != 0);
 }
 
 
@@ -649,8 +691,11 @@ static void vNodeTask(void* pvParameters )
     	/* Give goto command */
     	gotoNode(&node_task->param, &game_state);
 
-    	/* Do node action */
-        node_task->node_function(&node_task->param);
+    	/* Only if there was no CAN error */
+    	if(node_task->param.node_state != GOTO_CAN_ERROR) {
+    		/* Do node action */
+    		node_task->node_function(&node_task->param);
+    	}
 
         taskENTER_CRITICAL();
         xSemaphoreGive(sSyncRoboRunNodeTask);

@@ -32,7 +32,8 @@
 
 
 /* Private define ------------------------------------------------------------*/
-#define GOTOCONFIRM_QUEUE_LENGTH (1)
+#define GOTOCONFIRM_QUEUE_LENGTH   1
+#define GOTOSTATERESP_QUEUE_LENGTH 1
 
 
 /* Private macro -------------------------------------------------------------*/
@@ -41,6 +42,7 @@
 /* Private variables ---------------------------------------------------------*/
 /* CAN */
 xQueueHandle qGotoConfirm;
+xQueueHandle qGotoStateResp;
 /* mammoth nodes configs */
 /* node 1 */
 node_t node_mammoth_1 =
@@ -91,7 +93,21 @@ void initNodeResources()
 
 	/* Create a queue and set CAN listener for GoTo ACK */
     qGotoConfirm = xQueueCreate(GOTOCONFIRM_QUEUE_LENGTH, sizeof(CAN_data_t));
-	setQueueCANListener(qGotoConfirm, GOTO_CONFIRM);
+    if(qGotoConfirm != 0) {
+    	setQueueCANListener(qGotoConfirm, GOTO_CONFIRM);
+    }
+//TODO:
+//    else {
+//    }
+
+    /* Create a queue and set CAN listener for GoTo state response */
+	qGotoStateResp = xQueueCreate(GOTOSTATERESP_QUEUE_LENGTH, sizeof(CAN_data_t));
+	if(qGotoStateResp != 0) {
+		setQueueCANListener(qGotoStateResp, GOTO_STATE_RESPONSE);
+	}
+//TODO:
+//    else {
+//    }
 }
 
 

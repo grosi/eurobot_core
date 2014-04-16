@@ -30,8 +30,8 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* Separation */
-#define RETRY_SEPARATION_DELAY      (10)  /* Time in ms to wait before rechecking if the separation is blocked */
-#define RETRY_SEPARATION_COUNT_MAX  (10)  /* Number of retries if the seperation is blocked */
+#define SEPARATION_RETRY_DELAY  10  /* Time in ms to wait before rechecking if the separation is blocked */
+#define SEPARATION_MAX_RETRIES  10  /* Number of retries if the seperation is blocked */
 
 
 /* Private variables ---------------------------------------------------------*/
@@ -92,7 +92,7 @@ void doMammothNode(node_param_t* param) {
 	if(!Mammoth_flag_SeparationDone) {
 
 		/* Retry it now */
-		Mammoth_flag_SeparationDone = moveSeparationOutSavely(RETRY_SEPARATION_DELAY, RETRY_SEPARATION_COUNT_MAX);
+		Mammoth_flag_SeparationDone = moveSeparationOutSavely(SEPARATION_RETRY_DELAY, SEPARATION_MAX_RETRIES);
 		/* Don't continue if it's still not possible to move separation out */
 		if(!Mammoth_flag_SeparationDone) {
 
@@ -117,7 +117,7 @@ void doMammothNode(node_param_t* param) {
 	/* Move the launcher servo all the way forward */
 	setServo_2(SERVO_POS_LAUNCHER_LOAD);
 	/* Move the separation out if it's save to do so */
-	Mammoth_flag_SeparationDone = moveSeparationOutSavely(RETRY_SEPARATION_DELAY, RETRY_SEPARATION_COUNT_MAX);
+	Mammoth_flag_SeparationDone = moveSeparationOutSavely(SEPARATION_RETRY_DELAY, SEPARATION_MAX_RETRIES);
 	/* Wait some time while servos move */
 	vTaskDelay(SERVO_MOVING_DELAY / portTICK_RATE_MS);
 
