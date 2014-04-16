@@ -1,6 +1,6 @@
 /**
  * \file    NodeConfig.h
- * \author  gross10
+ * \author  gross10, kasen1
  * \date    2014-03-17
  *
  * \version 1.0

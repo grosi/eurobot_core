@@ -1,6 +1,6 @@
 /**
  * \file    led.h
- * \author  gross10
+ * \author  gross10, kasen1
  * \date    2014-02-06
  *
  * \version 1.0

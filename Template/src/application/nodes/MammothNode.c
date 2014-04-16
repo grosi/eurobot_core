@@ -1,6 +1,6 @@
 /**
  * \file    MammothNode.c
- * \author  gross10
+ * \author  kasen1, gross10
  * \date    2014-03-17
  *
  * \version 1.0

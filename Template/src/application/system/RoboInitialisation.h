@@ -1,6 +1,6 @@
 /**
  * \file    RoboInitialisation.h
- * \author  gross10
+ * \author  gross10, kasen1
  * \date    2014-03-21
  *
  * \version 1.0
@@ -35,7 +35,6 @@
 extern void initRoboInitialisationState();
 extern void setConfigRoboInitialisationState2Emergency();
 extern void runRoboInitialisationState(portTickType*);
-extern void initNodeResources();
 
 #endif /* ROBOINITIALISATION_H_ */
 /**
