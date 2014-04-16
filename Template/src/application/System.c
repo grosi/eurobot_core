@@ -67,10 +67,12 @@ void initSystemTask(void){
     initRoboRunState();
     initRoboErrorState();
 
+#ifndef STANDALONE
     /* init system hw */
     initSensor_EmergencyStop();
     initSensorEXTI_EmergencyStop();
     initSensor_Key();
+#endif
 
     /* set start state */
     system_state = runRoboInitialisationState;
