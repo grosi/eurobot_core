@@ -31,6 +31,9 @@
  * define the "INCLUDE_uxTaskGetStackHighWaterMark 1" in FreeRTOS.h*/
 //#define DEBUGGING
 
+/* uncomment this define if your core node is not connect to all  */
+#define STANDALONE
+
 /* typedefs */
 typedef enum { FALSE = 0, TRUE } boolean;
 
