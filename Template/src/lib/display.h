@@ -23,8 +23,10 @@
 /* exported typedef ----------------------------------------------------------*/
 
 /* exported define -----------------------------------------------------------*/
+#define DISPLAY_PIN_SCK     GPIO_Pin_5
+#define DISPLAY_PIN_MOSI    GPIO_Pin_7
 #define DISPLAY_PIN_RS      GPIO_Pin_6
-#define DISPLAY_PORT_RS     GPIOA        // enable related clock in display.c
+#define DISPLAY_PORT        GPIOA        // enable related clock in display.c
 #define DISPLAY_PIN_CS      GPIO_Pin_2
 #define DISPLAY_PORT_CS     GPIOB
 

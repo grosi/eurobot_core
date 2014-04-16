@@ -23,11 +23,28 @@
 #include "spi.h"
 
 /* Private typedef -----------------------------------------------------------*/
+typedef enum
+{
+    DISPLAY_FINISH = 0,
+    DISPLAY_INSTRUCTION,
+    DISPLAY_DATA
+}display_com_t;
+
+typedef enum
+{
+    SPI_CS_HIGH = 0,
+    SPI_CS_LOW,
+    SPI_SET_DATA,
+    SPI_WRITE_DATA
+}spi_state_t;
+
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 
 /* Private variables ---------------------------------------------------------*/
 void (*Delay)(long);
+static volatile display_com_t display_command = DISPLAY_FINISH;
+static volatile uint8_t display_data;
 
 /* Private function prototypes -----------------------------------------------*/
 void LCD_write_byte_instruction(uint8_t);
@@ -42,33 +59,60 @@ void LCD_write_byte_instruction(uint8_t);
  =============================================================================*/
 void LCD_init(void (*delay)(long))
 {
+    /* local variable */
 	GPIO_InitTypeDef GPIO_InitStruct;
+	TIM_TimeBaseInitTypeDef timer_init;
+    NVIC_InitTypeDef interrupt_init;
 
 	Delay = delay;    // saves function pointer in a private variable
 
-	/* enable clock for used IO pin (RS) */
+	/* enable clock (42MHz) */
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
-
-	/* initialize SPI */
-	init_SPI();        // (spi.h needs to be included)
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
 
 	/* initialize the RS pin */
 	GPIO_InitStruct.GPIO_Pin = DISPLAY_PIN_RS;
 	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_OUT;
 	GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;
 	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_NOPULL;
-	GPIO_Init(DISPLAY_PORT_RS, &GPIO_InitStruct);
+	GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_DOWN;
+	GPIO_Init(DISPLAY_PORT, &GPIO_InitStruct);
 
+	/* SCK pin */
+	GPIO_InitStruct.GPIO_Pin = DISPLAY_PIN_SCK;
+	GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_UP;
+	GPIO_Init(DISPLAY_PORT, &GPIO_InitStruct);
+
+	/* MOSI pin */
+	GPIO_InitStruct.GPIO_Pin = DISPLAY_PIN_MOSI;
+	GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	GPIO_Init(DISPLAY_PORT, &GPIO_InitStruct);
+
+	/* CS pin */
 	GPIO_InitStruct.GPIO_Pin = DISPLAY_PIN_CS;
-    GPIO_InitStruct.GPIO_Mode = GPIO_Mode_OUT;
-    GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;
-    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_UP;
     GPIO_Init(DISPLAY_PORT_CS, &GPIO_InitStruct);
 
-    GPIO_WriteBit(DISPLAY_PORT_CS, DISPLAY_PIN_CS, RESET); // set CS low (always)
+    GPIO_WriteBit(DISPLAY_PORT_CS, DISPLAY_PIN_CS, SET); /* set display inactive */
+    GPIO_WriteBit(DISPLAY_PORT, DISPLAY_PIN_SCK, SET); /* set SCK */
+    GPIO_WriteBit(DISPLAY_PORT, DISPLAY_PIN_RS, RESET); /* set RS low */
+
+    /* TIM2 init */
+    timer_init.TIM_CounterMode = TIM_CounterMode_Up;
+    timer_init.TIM_Prescaler = 420 - 1; /* 42MHz / 420 = 100kHz */
+    timer_init.TIM_ClockDivision = TIM_CKD_DIV1; /* 100KHz / 1 = 100KHz */
+    timer_init.TIM_Period = 1; /* every 10us a interrupt will fired */
+    TIM_TimeBaseInit(TIM2, &timer_init);
+    TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
+
+    /* init interrupt-controller */
+    interrupt_init.NVIC_IRQChannel = TIM2_IRQn;
+    interrupt_init.NVIC_IRQChannelPreemptionPriority = 0;
+    interrupt_init.NVIC_IRQChannelSubPriority = 0;
+    interrupt_init.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&interrupt_init);
 
 	/* wait until power supply is stable (50ms) */
 	Delay(50);    // works only when the scheduler's active
@@ -88,6 +132,78 @@ void LCD_init(void (*delay)(long))
 }
 
 
+/**
+ * \fn      TIM2_IRQHandler
+ * \brief   interrupt handler of timer 2
+ */
+void TIM2_IRQHandler(void)
+{
+    /* local variables */
+    static uint8_t bit = 0;
+    static spi_state_t spi_state = SPI_CS_LOW;
+
+    /* have to be the first function in an interrupt-handler */
+    TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
+
+    /* SPI statemachine */
+    switch(spi_state)
+    {
+        /* CS low */
+        case SPI_CS_LOW:
+            GPIO_WriteBit(DISPLAY_PORT_CS, DISPLAY_PIN_CS, RESET);
+            spi_state = SPI_SET_DATA;
+            break;
+
+        /* set data */
+        case SPI_SET_DATA:
+            GPIO_WriteBit(DISPLAY_PORT, DISPLAY_PIN_SCK, RESET); /* reset SCK */
+
+            /* set data bit */
+            if((display_data << bit) & 0x80)
+                {GPIO_WriteBit(DISPLAY_PORT, DISPLAY_PIN_MOSI, SET);} /* set MOSI */
+            else {GPIO_WriteBit(DISPLAY_PORT, DISPLAY_PIN_MOSI, RESET);} /* set MOSI */
+
+            /* set RS pin if the command is type of SPI data */
+            if(display_command == DISPLAY_DATA && bit == 7)
+                {GPIO_WriteBit(DISPLAY_PORT, DISPLAY_PIN_RS, SET);} /* set RS */
+
+            spi_state = SPI_WRITE_DATA;
+            bit++;
+
+            break;
+
+        /* write data */
+        case SPI_WRITE_DATA:
+            GPIO_WriteBit(DISPLAY_PORT, DISPLAY_PIN_SCK, SET);
+
+
+            /* goto CS high (last SPI state) */
+            if(bit == 8)
+            {
+                bit = 0;
+                spi_state = SPI_CS_HIGH;
+            }
+            /* set next data bit */
+            else
+            {
+                spi_state = SPI_SET_DATA;
+            }
+
+            break;
+
+        /* CS high + communication finished */
+        case SPI_CS_HIGH:
+            GPIO_WriteBit(DISPLAY_PORT_CS, DISPLAY_PIN_CS, SET);
+            GPIO_WriteBit(DISPLAY_PORT, DISPLAY_PIN_RS, RESET); /* reset RS */
+            display_command = DISPLAY_FINISH;
+            spi_state = SPI_CS_LOW;
+            TIM_Cmd(TIM2, DISABLE); /* stop SW SPI */
+
+            break;
+    }
+}
+
+
 /**=============================================================================
  * \fn      LCD_write_byte_instruction
  * \brief   writes an instruction-byte to the display
@@ -97,11 +213,15 @@ void LCD_init(void (*delay)(long))
  =============================================================================*/
 void LCD_write_byte_instruction(uint8_t instruction)
 {
-	/* reset RS pin to write into the instruction register */
-    Delay(2);
-	/* write instruction byte */
-	SPI_send_byte(instruction);
-	Delay(2);    // minimum waiting time until the next byte can be sent (= 30us)
+    /* wait until the previous data is sent */
+    while(display_command != DISPLAY_FINISH);
+
+    /* send next data block */
+    display_data = instruction;
+    display_command = DISPLAY_INSTRUCTION;
+    TIM_Cmd(TIM2, ENABLE); /* start SW SPI */
+
+    Delay(1); /* minimum waiting time until the next byte can be sent (= 30us)*/
 }
 
 
@@ -130,17 +250,15 @@ void LCD_clear(void)
  =============================================================================*/
 void LCD_write_byte_data(uint8_t data)
 {
-	/* set RS pin to write into the data register */
-	GPIO_WriteBit(DISPLAY_PORT_RS, DISPLAY_PIN_RS, SET);
-	Delay(1);
+    /* wait until the previous data is sent */
+    while(display_command != DISPLAY_FINISH);
 
-	/* write data byte */
-	SPI_send_byte(data);
+    /* send next data block */
+    display_data = data;
+    display_command = DISPLAY_DATA;
+    TIM_Cmd(TIM2, ENABLE); /* start SW SPI */
 
-	Delay(1);
-	GPIO_WriteBit(DISPLAY_PORT_RS, DISPLAY_PIN_RS, RESET);
-
-	Delay(1); // minimum waiting time until the next byte can be sent (= 30us)
+    Delay(1); /* minimum waiting time until the next byte can be sent (= 30us)*/
 }
 
 
