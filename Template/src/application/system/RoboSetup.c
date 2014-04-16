@@ -280,6 +280,7 @@ void runRoboSetupState(portTickType* tick)
                 teamcolor.confirmed = FALSE;
                 current_menu = FRIEND_QUANTITY;
             }
+
             break;
 
         case FRIEND_QUANTITY:
