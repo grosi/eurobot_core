@@ -79,7 +79,7 @@ void initSensorEXTI_Fresco_2()
 
 
 /**
- * \fn      initSensorEXTI_Fresco_2
+ * \fn      initSensorEXTI_Wall
  * \brief   initialisation of the EXTI-line
  */
 void initSensorEXTI_Wall()
