@@ -3,6 +3,9 @@
  * \author  kasen1
  * \date    2014-01-14
  *
+ * \version 1.2
+ *  - IR sensors in new arrangement
+ *  - Added flag for separation blocked alarm
  * \version 1.1
  *  - Changed implementation of IR detection to external interrupt
  *  - Implemented comparison of last three US measures
@@ -14,6 +17,8 @@
  *  Import from template (14.01.2014)
  *
  * \brief   task for the rangefinder sensors
+ *
+ * \todo     Unit test for version 1.2 on robot
  *
  * \defgroup rangefinder Rangefinder
  * \brief   Rangefinder task
@@ -40,8 +45,9 @@
 
 /* Rangefinder settings */ //TODO: Adjust values
 #define RANGEFINDER_RANGE           100     /* Maximum detection range in cm (int16_t values from 5 to 1100) */
-#define RANGEFINDER_THRESHOLD_FW    30      /* Minimum allowed distance in cm to an obstacle (in front) without alert*/
-#define RANGEFINDER_THRESHOLD_BW    30      /* Minimum allowed distance in cm to an obstacle (in back) without alert*/
+#define RANGEFINDER_THRESHOLD_FW    30      /* Minimum allowed distance in cm to an obstacle (in front) without alert */
+#define RANGEFINDER_THRESHOLD_BW    30      /* Minimum allowed distance in cm to an obstacle (in back) without alert */
+#define RANGEFINDER_THRESHOLD_SE    3       /* Minimum allowed space in cm for the separation (fresco panel) without alert */
 #define RANGEFINDER_DELAY           100     /* Task delay in ms between measures */
 
 /* exported macro -------------------------------------------------------------*/
@@ -56,6 +62,7 @@ extern volatile uint8_t Rangefinder_flag_FwAlarmIR;     /* Infrared forward alar
 extern volatile uint8_t Rangefinder_flag_BwAlarmIR;     /* Infrared backward alarm */
 extern volatile uint8_t Rangefinder_flag_FwAlarmUS;     /* Ultrasonic forward alarm */
 extern volatile uint8_t Rangefinder_flag_BwAlarmUS;     /* Ultrasonic backward alarm */
+extern volatile uint8_t Rangefinder_flag_SeAlarmUS;     /* Ultrasonic separation alarm */
 
 /* exported function prototypes -----------------------------------------------*/
 extern void initRangefinderTask(void);

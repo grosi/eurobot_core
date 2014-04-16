@@ -3,8 +3,9 @@
  * \author   kasen1
  * \date     2013-04-13
  *
- * \version 1.1
+ * \version 1.2
  *  - IR sensors in new arrangement
+ *  - Added flag for separation blocked alarm
  * \version 1.1
  *  - Changed implementation of IR detection to external interrupt
  *  - Implemented comparison of last three US measures
@@ -17,7 +18,7 @@
  *
  * \brief    task for the rangefinder sensors
  *
- * \todo     Unit test for version 1.1 on robot
+ * \todo     Unit test for version 1.2 on robot
  *
  * \defgroup rangefinder Rangefinder
  * \brief    Rangefinder task
@@ -88,6 +89,7 @@ volatile uint8_t Rangefinder_flag_FwAlarmIR = 0; /* Infrared forward alarm */
 volatile uint8_t Rangefinder_flag_BwAlarmIR = 0; /* Infrared backward alarm */
 volatile uint8_t Rangefinder_flag_FwAlarmUS = 0; /* Ultrasonic forward alarm */
 volatile uint8_t Rangefinder_flag_BwAlarmUS = 0; /* Ultrasonic backward alarm */
+volatile uint8_t Rangefinder_flag_SeAlarmUS = 0; /* Ultrasonic separation alarm */
 
 /* Private function prototypes -----------------------------------------------*/
 static void vRangefinderTask(void*);
@@ -219,6 +221,19 @@ static void vRangefinderTask(void* pvParameters ) {
         	/* Remember measure (NOT flag which is affected by the last two measures) */
         	flag_FwAlarmUS_last[1] = flag_FwAlarmUS_last[0];  /* Move last measure one back */
         	flag_FwAlarmUS_last[0] = 0;  /* Current measure is negative */
+        }
+        /* Check if separation space is blocked */
+        if(distance_fw != 0xFFFF) {
+			if(distance_fw <= RANGEFINDER_THRESHOLD_SE) {
+
+				/* Set flag */
+				Rangefinder_flag_SeAlarmUS = 1;
+			}
+			else {
+
+				/* Reset flag */
+				Rangefinder_flag_SeAlarmUS = 0;
+			}
         }
 
         /* Check rear */

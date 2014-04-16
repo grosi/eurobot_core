@@ -59,8 +59,9 @@ uint8_t moveSeparationOutSavely(uint8_t retry_delay, uint8_t retry_count_max) {
 	uint8_t i = 0;
 
 	/* Check the rangefinder */
-	while(Rangefinder_flag_FwAlarmUS || Rangefinder_flag_FwAlarmIR) {
+	while(Rangefinder_flag_SeAlarmUS) {
 
+		/* Separation (fresco panel) space is blocked, wait or return */
 		if(i < retry_count_max) {
 
 			vTaskDelay(retry_delay / portTICK_RATE_MS);
