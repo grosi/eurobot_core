@@ -91,8 +91,10 @@ void initRoboRunState()
     /* create the task */
     //xTaskCreate( vNodeTask, ( signed char * ) SYSTEM_NODE_TASK_NAME, SYSTEM_NODE_STACK_SIZE, NULL, SYSTEM_NODE_TASK_PRIORITY, &xNodeTask_Handle );
 
+#ifndef STANDALONE
     /* init node resources */
     initNodeResources();
+#endif
 
     /* suspend the node task until they will used */
     //vTaskSuspend(xNodeTask_Handle);
