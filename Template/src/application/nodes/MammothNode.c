@@ -31,7 +31,7 @@
 /* Private macro -------------------------------------------------------------*/
 /* Separation */
 #define RETRY_SEPARATION_DELAY      (10)  /* Time in ms to wait before rechecking if the separation is blocked */
-#define RETRY_SEPARATION_COUNT_MAX  (10)  /* Number of retrys if the seperation is blocked */
+#define RETRY_SEPARATION_COUNT_MAX  (10)  /* Number of retries if the seperation is blocked */
 
 
 /* Private variables ---------------------------------------------------------*/
@@ -49,13 +49,13 @@ volatile uint8_t Mammoth_flag_SeparationDone = 1;
  * \brief       Moves the separation out if it's save to do so (checks rangefinder)
  * \note        Doesn't wait after the servo value is set. Also doesn't move the servo in again.
  *
- * \param       retry_delay      Delay in ms between retrys
- * \param       retry_count_max  Max. number of retrys (including first try)
+ * \param       retry_delay      Delay in ms between retries
+ * \param       retry_count_max  Max. number of retries (including first try)
  * \return      separation_done  1 if separation done, 0 if undone
  */
 uint8_t moveSeparationOutSavely(uint8_t retry_delay, uint8_t retry_count_max) {
 
-	/* Variable to count number of retrys */
+	/* Variable to count number of retries */
 	uint8_t i = 0;
 
 	/* Check the rangefinder */
@@ -68,7 +68,7 @@ uint8_t moveSeparationOutSavely(uint8_t retry_delay, uint8_t retry_count_max) {
 		}
 		else {
 
-			/* Max retrys reached */
+			/* Max retries reached */
 			return 0;
 		}
 	}
