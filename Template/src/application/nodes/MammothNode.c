@@ -59,7 +59,7 @@ uint8_t moveSeparationOutSavely(uint8_t retry_delay, uint8_t retry_count_max) {
 	uint8_t i = 0;
 
 	/* Check the rangefinder */
-	while(RangefinderUS_FwAlarm_flag || RangefinderIR_FwAlarm_flag) {
+	while(Rangefinder_flag_FwAlarmUS || Rangefinder_flag_FwAlarmIR) {
 
 		if(i < retry_count_max) {
 

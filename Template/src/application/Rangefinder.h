@@ -52,10 +52,10 @@ extern xSemaphoreHandle mHwI2C;    /* Created with xSemaphoreCreateMutex() */
 extern xSemaphoreHandle sSyncNodeTask;    /* Is given by Rangefinder, when obstacle detected */
 
 /* Alarm flags (read only!), 1 if object detected, 0 if no object detected */
-extern volatile uint8_t RangefinderIR_FwAlarm_flag;     /* Infrared forward alarm */
-extern volatile uint8_t RangefinderIR_BwAlarm_flag;     /* Infrared backward alarm */
-extern volatile uint8_t RangefinderUS_FwAlarm_flag;     /* Ultrasonic forward alarm */
-extern volatile uint8_t RangefinderUS_BwAlarm_flag;     /* Ultrasonic backward alarm */
+extern volatile uint8_t Rangefinder_flag_FwAlarmIR;     /* Infrared forward alarm */
+extern volatile uint8_t Rangefinder_flag_BwAlarmIR;     /* Infrared backward alarm */
+extern volatile uint8_t Rangefinder_flag_FwAlarmUS;     /* Ultrasonic forward alarm */
+extern volatile uint8_t Rangefinder_flag_BwAlarmUS;     /* Ultrasonic backward alarm */
 
 /* exported function prototypes -----------------------------------------------*/
 extern void initRangefinderTask(void);

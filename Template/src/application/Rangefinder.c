@@ -69,10 +69,10 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* Variables for comparing the last three values */
-volatile uint8_t last_US_FwAlarm_flag[2] = {0,0};
-volatile uint8_t last_US_BwAlarm_flag[2] = {0,0};
-volatile uint8_t last_IR_FwAlarm_flag[2] = {0,0};
-volatile uint8_t last_IR_BwAlarm_flag[2] = {0,0};
+volatile uint8_t flag_FwAlarmIR_last[2] = {0,0};
+volatile uint8_t flag_BwAlarmIR_last[2] = {0,0};
+volatile uint8_t flag_FwAlarmUS_last[2] = {0,0};
+volatile uint8_t flag_BwAlarmUS_last[2] = {0,0};
 
 /* Sensor values */
 uint16_t distance_fw;                   /* Variable for the distance detected by the fowrward SRF08 (lower- /higher byte joined) */
@@ -84,10 +84,10 @@ xSemaphoreHandle mHwI2C = NULL;
 xSemaphoreHandle sSyncNodeTask = NULL;
 
 /* Alarm flags, 1 if object detected, 0 if no object detected */
-volatile uint8_t RangefinderIR_FwAlarm_flag = 0; /* Infrared forward alarm */
-volatile uint8_t RangefinderIR_BwAlarm_flag = 0; /* Infrared backward alarm */
-volatile uint8_t RangefinderUS_FwAlarm_flag = 0; /* Ultrasonic forward alarm */
-volatile uint8_t RangefinderUS_BwAlarm_flag = 0; /* Ultrasonic backward alarm */
+volatile uint8_t Rangefinder_flag_FwAlarmIR = 0; /* Infrared forward alarm */
+volatile uint8_t Rangefinder_flag_BwAlarmIR = 0; /* Infrared backward alarm */
+volatile uint8_t Rangefinder_flag_FwAlarmUS = 0; /* Ultrasonic forward alarm */
+volatile uint8_t Rangefinder_flag_BwAlarmUS = 0; /* Ultrasonic backward alarm */
 
 /* Private function prototypes -----------------------------------------------*/
 static void vRangefinderTask(void*);
@@ -182,43 +182,43 @@ static void vRangefinderTask(void* pvParameters ) {
 
         	/* Compare last three measures, only set alarm if at least two were positive.
         	 * Inside of this block the current measure is positive, so check if at least one of the last two was positive too */
-        	if(last_US_FwAlarm_flag[1] || last_US_FwAlarm_flag[0])
+        	if(flag_FwAlarmUS_last[1] || flag_FwAlarmUS_last[0])
         	{
         		/* Two of three were positive, set alarm (object detected) */
-				RangefinderUS_FwAlarm_flag = 1;
+				Rangefinder_flag_FwAlarmUS = 1;
 				/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
 				xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
         	}
         	else
         	{
         		/* Two of three were negative, so don't set the alarm yet. */
-        		RangefinderUS_FwAlarm_flag = 0;
+        		Rangefinder_flag_FwAlarmUS = 0;
         	}
 
         	/* Remember measure (NOT flag which is affected by the last two measures) */
-        	last_US_FwAlarm_flag[1] = last_US_FwAlarm_flag[0];  /* Move last measure one back */
-        	last_US_FwAlarm_flag[0] = 1;  /* Current measure is positive */
+        	flag_FwAlarmUS_last[1] = flag_FwAlarmUS_last[0];  /* Move last measure one back */
+        	flag_FwAlarmUS_last[0] = 1;  /* Current measure is positive */
         }
         else {
 
         	/* Compare last three measures, only reset alarm if at least two were negative.
 			 * Inside of this block the current measure is negative, so check if at least one of the last two was negative too */
-			if(!(last_US_FwAlarm_flag[1] && last_US_FwAlarm_flag[0]))
+			if(!(flag_FwAlarmUS_last[1] && flag_FwAlarmUS_last[0]))
 			{
 				/* Two of three were negative, reset alarm  (nothing detected) */
-				RangefinderUS_FwAlarm_flag = 0;
+				Rangefinder_flag_FwAlarmUS = 0;
 			}
         	else
         	{
         		/* Two of three were positive, so don't reset the alarm yet. */
-        		RangefinderUS_FwAlarm_flag = 1;
+        		Rangefinder_flag_FwAlarmUS = 1;
 				/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
         		xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
         	}
 
         	/* Remember measure (NOT flag which is affected by the last two measures) */
-        	last_US_FwAlarm_flag[1] = last_US_FwAlarm_flag[0];  /* Move last measure one back */
-        	last_US_FwAlarm_flag[0] = 0;  /* Current measure is negative */
+        	flag_FwAlarmUS_last[1] = flag_FwAlarmUS_last[0];  /* Move last measure one back */
+        	flag_FwAlarmUS_last[0] = 0;  /* Current measure is negative */
         }
 
         /* Check rear */
@@ -231,43 +231,43 @@ static void vRangefinderTask(void* pvParameters ) {
 
         	/* Compare last three measures, only set alarm if at least two were positive.
         	 * Inside of this block the current measure is positive, so check if at least one of the last two was positive too */
-        	if(last_US_BwAlarm_flag[1] || last_US_BwAlarm_flag[0])
+        	if(flag_BwAlarmUS_last[1] || flag_BwAlarmUS_last[0])
         	{
         		/* Two of three were positive, set alarm (object detected) */
-				RangefinderUS_BwAlarm_flag = 1;
+				Rangefinder_flag_BwAlarmUS = 1;
 				/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
 				xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
         	}
         	else
         	{
         		/* Two of three were negative, so don't set the alarm yet. */
-        		RangefinderUS_BwAlarm_flag = 0;
+        		Rangefinder_flag_BwAlarmUS = 0;
         	}
 
         	/* Remember measure (NOT flag which is affected by the last two measures) */
-        	last_US_BwAlarm_flag[1] = last_US_BwAlarm_flag[0];  /* Move last measure one back */
-        	last_US_BwAlarm_flag[0] = 1;  /* Current measure is positive */
+        	flag_BwAlarmUS_last[1] = flag_BwAlarmUS_last[0];  /* Move last measure one back */
+        	flag_BwAlarmUS_last[0] = 1;  /* Current measure is positive */
         }
         else {
 
         	/* Compare last three measures, only reset alarm if at least two were negative.
 			 * Inside of this block the current measure is negative, so check if at least one of the last two was negative too */
-			if(!(last_US_BwAlarm_flag[1] && last_US_BwAlarm_flag[0]))
+			if(!(flag_BwAlarmUS_last[1] && flag_BwAlarmUS_last[0]))
 			{
 				/* Two of three were negative, reset alarm  (nothing detected) */
-				RangefinderUS_BwAlarm_flag = 0;
+				Rangefinder_flag_BwAlarmUS = 0;
 			}
         	else
         	{
         		/* Two of three were positive, so don't reset the alarm yet. */
-        		RangefinderUS_BwAlarm_flag = 1;
+        		Rangefinder_flag_BwAlarmUS = 1;
 				/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
         		xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
         	}
 
         	/* Remember measure (NOT flag which is affected by the last two measures) */
-        	last_US_BwAlarm_flag[1] = last_US_BwAlarm_flag[0];  /* Move last measure one back */
-        	last_US_BwAlarm_flag[0] = 0;  /* Current measure is negative */
+        	flag_BwAlarmUS_last[1] = flag_BwAlarmUS_last[0];  /* Move last measure one back */
+        	flag_BwAlarmUS_last[0] = 0;  /* Current measure is negative */
         }
 
         /* Delay until defined time passed */
@@ -288,12 +288,12 @@ void IRSensorFwLeft_IT(void) {
 	if(getIRSensor_FwLeft()) {
 
 		/* Nothing detected, all ok */
-		RangefinderIR_FwAlarm_flag = 0;
+		Rangefinder_flag_FwAlarmIR = 0;
 	}
 	else {
 
 		/* Object detected, set alarm */
-		RangefinderIR_FwAlarm_flag = 1;
+		Rangefinder_flag_FwAlarmIR = 1;
 		/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
 		xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
 	}
@@ -312,12 +312,12 @@ void IRSensorFwRight_IT(void) {
 	if(getIRSensor_FwRight()) {
 
 		/* Nothing detected, all ok */
-		RangefinderIR_FwAlarm_flag = 0;
+		Rangefinder_flag_FwAlarmIR = 0;
 	}
 	else {
 
 		/* Object detected, set alarm */
-		RangefinderIR_FwAlarm_flag = 1;
+		Rangefinder_flag_FwAlarmIR = 1;
 		/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
 		xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
 	}
@@ -336,12 +336,12 @@ void IRSensorBwLeft_IT(void) {
 	if(getIRSensor_BwLeft()) {
 
 		/* Nothing detected, all ok */
-		RangefinderIR_BwAlarm_flag = 0;
+		Rangefinder_flag_BwAlarmIR = 0;
 	}
 	else {
 
 		/* Object detected, set alarm */
-		RangefinderIR_BwAlarm_flag = 1;
+		Rangefinder_flag_BwAlarmIR = 1;
 		/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
 		xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
 	}
@@ -360,12 +360,12 @@ void IRSensorBwRight_IT(void) {
 	if(getIRSensor_BwRight()) {
 
 		/* Nothing detected, all ok */
-		RangefinderIR_BwAlarm_flag = 0;
+		Rangefinder_flag_BwAlarmIR = 0;
 	}
 	else {
 
 		/* Object detected, set alarm */
-		RangefinderIR_BwAlarm_flag = 1;
+		Rangefinder_flag_BwAlarmIR = 1;
 		/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
 		xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
 	}
