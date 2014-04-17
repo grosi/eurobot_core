@@ -39,16 +39,16 @@
 /* exported define ------------------------------------------------------------*/
 /* Rangefinder-task RTOS configuration */
 #define RANGEFINDER_TASK_NAME       "Rangefinder Task"
-#define RANGEFINDER_QUEUE_LENGTH    20      /* Size of the message queues */
-#define RANGEFINDER_STACK_SIZE      configMINIMAL_STACK_SIZE /* size of the receive and transmit task */
-#define RANGEFINDER_TASK_PRIORITY   (configMAX_PRIORITIES - 2UL) /* priority 5*/
+#define RANGEFINDER_QUEUE_LENGTH    20      /*!< Size of the message queues */
+#define RANGEFINDER_STACK_SIZE      configMINIMAL_STACK_SIZE /*!< size of the receive and transmit task */
+#define RANGEFINDER_TASK_PRIORITY   (configMAX_PRIORITIES - 2UL) /*!< priority 5*/
 
 /* Rangefinder settings */ //TODO: Adjust values
-#define RANGEFINDER_RANGE           100     /* Maximum detection range in cm (int16_t values from 5 to 1100) */
-#define RANGEFINDER_THRESHOLD_FW    30      /* Minimum allowed distance in cm to an obstacle (in front) without alert */
-#define RANGEFINDER_THRESHOLD_BW    30      /* Minimum allowed distance in cm to an obstacle (in back) without alert */
-#define RANGEFINDER_THRESHOLD_SE    3       /* Minimum allowed space in cm for the separation (fresco panel) without alert */
-#define RANGEFINDER_DELAY           100     /* Task delay in ms between measures */
+#define RANGEFINDER_RANGE           100     /*!< Maximum detection range in cm (int16_t values from 5 to 1100) */
+#define RANGEFINDER_THRESHOLD_FW    30      /*!< Minimum allowed distance in cm to an obstacle (in front) without alert */
+#define RANGEFINDER_THRESHOLD_BW    30      /*!< Minimum allowed distance in cm to an obstacle (in back) without alert */
+#define RANGEFINDER_THRESHOLD_SE    3       /*!< Minimum allowed space in cm for the separation (fresco panel) without alert */
+#define RANGEFINDER_DELAY           100     /*!< Task delay in ms between measures */
 
 /* exported macro -------------------------------------------------------------*/
 

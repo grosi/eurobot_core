@@ -28,12 +28,12 @@
 #define ROBORUN_TIMEOUT             1000 /*!< wait for max. 1s */
 
 /* game configurations */
-#define PLAY_TIME                   90.0 /*[s]*/
-#define ROBO_AVERAGE_SPEED          0.5 /*[m/s]*/
-#define PLAYGROUND_WIDTH            3 /*[m]*/
-#define PLAYGROUND_HEIGH            2 /*[m]*/
-#define ENEMY_GRID_SIZE_X           0.1 /*[m]*/
-#define ENEMY_GRID_SIZE_Y           0.1 /*[m]*/
+#define PLAY_TIME                   90.0 /*!< [s] */
+#define ROBO_AVERAGE_SPEED          0.5  /*!< [m/s] */
+#define PLAYGROUND_WIDTH            3    /*!< [m] */
+#define PLAYGROUND_HEIGH            2    /*!< [m] */
+#define ENEMY_GRID_SIZE_X           0.1  /*!< [m] */
+#define ENEMY_GRID_SIZE_Y           0.1  /*!< [m] */
 #define ENEMY_GRID_CENTER_WEIGHT    1
 #define ENEMY_GRID_FRAME_WEIGHT     0.5
 
