@@ -70,8 +70,6 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* Variables for comparing the last three values */
-volatile uint8_t flag_FwAlarmIR_last[2] = {0,0};
-volatile uint8_t flag_BwAlarmIR_last[2] = {0,0};
 volatile uint8_t flag_FwAlarmUS_last[2] = {0,0};
 volatile uint8_t flag_BwAlarmUS_last[2] = {0,0};
 
