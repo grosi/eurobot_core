@@ -37,6 +37,8 @@
 /* exported typedef -----------------------------------------------------------*/
 
 /* exported define ------------------------------------------------------------*/
+/* Rangefinder module */
+#define RANGEFINDER_ONLY_FW                 /* Comment out to use Fw and Bw sensors */
 /* Rangefinder-task RTOS configuration */
 #define RANGEFINDER_TASK_NAME       "Rangefinder Task"
 #define RANGEFINDER_QUEUE_LENGTH    20      /*!< Size of the message queues */

@@ -71,7 +71,9 @@
 /* Private variables ---------------------------------------------------------*/
 /* Variables for comparing the last three values */
 volatile uint8_t flag_FwAlarmUS_last[2] = {0,0};
+#ifndef RANGEFINDER_ONLY_FW
 volatile uint8_t flag_BwAlarmUS_last[2] = {0,0};
+#endif /* RANGEFINDER_ONLY_FW */
 
 /* Sensor values */
 uint16_t distance_fw;                   /* Variable for the distance detected by the fowrward SRF08 (lower- /higher byte joined) */
@@ -153,24 +155,32 @@ static void vRangefinderTask(void* pvParameters ) {
 
 	/* Set the range */
 	setSRF08Range(SRF08_ADDR_FW, RANGEFINDER_RANGE * 10); /* In mm */
+#ifndef RANGEFINDER_ONLY_FW
 	setSRF08Range(SRF08_ADDR_BW, RANGEFINDER_RANGE * 10); /* In mm */
+#endif /* RANGEFINDER_ONLY_FW */
 
 	/* Set the gain register to evaluated value */
 	setSRF08Gain(SRF08_ADDR_FW, 0x1F);
+#ifndef RANGEFINDER_ONLY_FW
 	setSRF08Gain(SRF08_ADDR_BW, 0x1F);
+#endif /* RANGEFINDER_ONLY_FW */
 
 	for(EVER) {
 
 		/* Start the ultrasonic measures */
 		startSRF08Meas(SRF08_ADDR_FW, SRF08_MEAS_CM);
+#ifndef RANGEFINDER_ONLY_FW
 		startSRF08Meas(SRF08_ADDR_BW, SRF08_MEAS_CM);
+#endif /* RANGEFINDER_ONLY_FW */
 
 		/* Wait 70 ms, for the sound to travel s_max (11 m) twice (=ca. 64.1 ms), and rounded up (65 ms still made trouble sometimes). */
 		vTaskDelay(70 / portTICK_RATE_MS);
 
 		/* Get distance from the modules */
 		distance_fw = readSRF08Meas(SRF08_ADDR_FW);
+#ifndef RANGEFINDER_ONLY_FW
 		distance_bw = readSRF08Meas(SRF08_ADDR_BW);
+#endif /* RANGEFINDER_ONLY_FW */
 
 		/* Check front */
 		/* Check for error */
@@ -234,6 +244,7 @@ static void vRangefinderTask(void* pvParameters ) {
 			}
 		}
 
+#ifndef RANGEFINDER_ONLY_FW
 		/* Check rear */
 		/* Check for error */
 		if(distance_bw == 0xFFFF) {
@@ -282,6 +293,7 @@ static void vRangefinderTask(void* pvParameters ) {
 			flag_BwAlarmUS_last[1] = flag_BwAlarmUS_last[0];  /* Move last measure one back */
 			flag_BwAlarmUS_last[0] = 0;  /* Current measure is negative */
 		}
+#endif /* RANGEFINDER_ONLY_FW */
 
 		/* Delay until defined time passed */
 		vTaskDelayUntil( &xLastFlashTime, RANGEFINDER_DELAY / portTICK_RATE_MS);
@@ -344,6 +356,7 @@ void IRSensorFwRight_IT(void) {
  * \retval None
  */
 void IRSensorBwLeft_IT(void) {
+#ifndef RANGEFINDER_ONLY_FW
 
 	/* Check if rising or falling interrupt */
 	if(getIRSensor_BwLeft()) {
@@ -358,6 +371,7 @@ void IRSensorBwLeft_IT(void) {
 		/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
 		xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
 	}
+#endif /* RANGEFINDER_ONLY_FW */
 }
 
 /**
@@ -368,6 +382,7 @@ void IRSensorBwLeft_IT(void) {
  * \retval None
  */
 void IRSensorBwRight_IT(void) {
+#ifndef RANGEFINDER_ONLY_FW
 
 	/* Check if rising or falling interrupt */
 	if(getIRSensor_BwRight()) {
@@ -382,6 +397,7 @@ void IRSensorBwRight_IT(void) {
 		/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
 		xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
 	}
+#endif /* RANGEFINDER_ONLY_FW */
 }
 
 
