@@ -61,10 +61,10 @@
 
 /* SRF08 I2C commands */
 #define SRF08_MEAS_IN   0x50            /* Measure in inches */
-#define SRF08_MEAS_CM   0x51            /* Measure in centimeters */
+#define SRF08_MEAS_CM   0x51            /* Measure in centimetres */
 #define SRF08_MEAS_US   0x52            /* Measure in micro-seconds */
 #define SRF08_ANN_IN    0x53            /* Measure in inches (ANN mode) */
-#define SRF08_ANN_CM    0x54            /* Measure in centimeters (ANN mode) */
+#define SRF08_ANN_CM    0x54            /* Measure in centimetres (ANN mode) */
 #define SRF08_ANN_US    0x55            /* Measure in micro-seconds (ANN mode) */
 
 
@@ -76,7 +76,7 @@ volatile uint8_t flag_BwAlarmUS_last[2] = {0,0};
 #endif /* RANGEFINDER_ONLY_FW */
 
 /* Sensor values */
-uint16_t distance_fw;                   /* Variable for the distance detected by the fowrward SRF08 (lower- /higher byte joined) */
+uint16_t distance_fw;                   /* Variable for the distance detected by the forward SRF08 (lower- /higher byte joined) */
 uint16_t distance_bw;                   /* Variable for the distance detected by the backward SRF08 (lower- /higher byte joined) */
 
 /* Globale variables ---------------------------------------------------------*/
@@ -399,7 +399,6 @@ void IRSensorBwRight_IT(void) {
 	}
 #endif /* RANGEFINDER_ONLY_FW */
 }
-
 
 /**
  * \fn          setSRF08Range
