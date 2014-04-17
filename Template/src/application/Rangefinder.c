@@ -109,33 +109,33 @@ uint16_t readSRF08Meas(uint8_t slave_address);
  */
 void initRangefinderTask(void) {
 
-    /* sensors initialisations */
-    /* IR: init GPIOs */
-    initIRSensor_FwLeft();
-    initIRSensor_FwRight();
-    initIRSensor_BwLeft();
-    initIRSensor_BwRight();
+	/* sensors initialisations */
+	/* IR: init GPIOs */
+	initIRSensor_FwLeft();
+	initIRSensor_FwRight();
+	initIRSensor_BwLeft();
+	initIRSensor_BwRight();
 
-    /* Configure EXTI Line in interrupt mode */
-    initIRSensorEXTI_FwLeft();
-    initIRSensorEXTI_FwRight();
-    initIRSensorEXTI_BwLeft();
-    initIRSensorEXTI_BwRight();
+	/* Configure EXTI Line in interrupt mode */
+	initIRSensorEXTI_FwLeft();
+	initIRSensorEXTI_FwRight();
+	initIRSensorEXTI_BwLeft();
+	initIRSensorEXTI_BwRight();
 
-    /* For testing: Generate software interrupt: simulate a rising edge applied on EXTI5 line
-    EXTI_GenerateSWInterrupt(EXTI_Line5); */
+	/* For testing: Generate software interrupt: simulate a rising edge applied on EXTI5 line
+	EXTI_GenerateSWInterrupt(EXTI_Line5); */
 
-    /* US: I2C */
-    initI2C();
+	/* US: I2C */
+	initI2C();
 
-    /* Create mutex for I2C */
-    mHwI2C = xSemaphoreCreateMutex();
+	/* Create mutex for I2C */
+	mHwI2C = xSemaphoreCreateMutex();
 
-    /* Create semaphore for informing node task */
-    vSemaphoreCreateBinary(sSyncNodeTask);
+	/* Create semaphore for informing node task */
+	vSemaphoreCreateBinary(sSyncNodeTask);
 
-    /* Create the tasks */
-    xTaskCreate( vRangefinderTask, ( signed char * ) RANGEFINDER_TASK_NAME, RANGEFINDER_STACK_SIZE, NULL, RANGEFINDER_TASK_PRIORITY, NULL );
+	/* Create the tasks */
+	xTaskCreate( vRangefinderTask, ( signed char * ) RANGEFINDER_TASK_NAME, RANGEFINDER_STACK_SIZE, NULL, RANGEFINDER_TASK_PRIORITY, NULL );
 }
 
 /**
@@ -148,82 +148,82 @@ void initRangefinderTask(void) {
  */
 static void vRangefinderTask(void* pvParameters ) {
 
-    portTickType xLastFlashTime;
+	portTickType xLastFlashTime;
 
-    /* We need to initialise xLastFlashTime prior to the first call to vTaskDelayUntil() */
-    xLastFlashTime = xTaskGetTickCount();
+	/* We need to initialise xLastFlashTime prior to the first call to vTaskDelayUntil() */
+	xLastFlashTime = xTaskGetTickCount();
 
-    /* Set the range */
-    setSRF08Range(SRF08_ADDR_FW, RANGEFINDER_RANGE * 10); /* In mm */
-    setSRF08Range(SRF08_ADDR_BW, RANGEFINDER_RANGE * 10); /* In mm */
+	/* Set the range */
+	setSRF08Range(SRF08_ADDR_FW, RANGEFINDER_RANGE * 10); /* In mm */
+	setSRF08Range(SRF08_ADDR_BW, RANGEFINDER_RANGE * 10); /* In mm */
 
-    /* Set the gain register to evaluated value */
-    setSRF08Gain(SRF08_ADDR_FW, 0x1F);
-    setSRF08Gain(SRF08_ADDR_BW, 0x1F);
+	/* Set the gain register to evaluated value */
+	setSRF08Gain(SRF08_ADDR_FW, 0x1F);
+	setSRF08Gain(SRF08_ADDR_BW, 0x1F);
 
-    for(EVER) {
+	for(EVER) {
 
-        /* Start the ultrasonic measures */
-        startSRF08Meas(SRF08_ADDR_FW, SRF08_MEAS_CM);
-        startSRF08Meas(SRF08_ADDR_BW, SRF08_MEAS_CM);
+		/* Start the ultrasonic measures */
+		startSRF08Meas(SRF08_ADDR_FW, SRF08_MEAS_CM);
+		startSRF08Meas(SRF08_ADDR_BW, SRF08_MEAS_CM);
 
-        /* Wait 70 ms, for the sound to travel s_max (11 m) twice (=ca. 64.1 ms), and rounded up (65 ms still made trouble sometimes). */
-        vTaskDelay(70 / portTICK_RATE_MS);
+		/* Wait 70 ms, for the sound to travel s_max (11 m) twice (=ca. 64.1 ms), and rounded up (65 ms still made trouble sometimes). */
+		vTaskDelay(70 / portTICK_RATE_MS);
 
-        /* Get distance from the modules */
-        distance_fw = readSRF08Meas(SRF08_ADDR_FW);
-        distance_bw = readSRF08Meas(SRF08_ADDR_BW);
+		/* Get distance from the modules */
+		distance_fw = readSRF08Meas(SRF08_ADDR_FW);
+		distance_bw = readSRF08Meas(SRF08_ADDR_BW);
 
-        /* Check front */
-        /* Check for error */
-        if(distance_fw == 0xFFFF) {
-            /* ERROR (Semaphore not created correctly or timeout) */
-        }
-        /* Check if an obstacle is to close */
-        else if(distance_fw != 0 && distance_fw < RANGEFINDER_THRESHOLD_FW) {
+		/* Check front */
+		/* Check for error */
+		if(distance_fw == 0xFFFF) {
+			/* ERROR (Semaphore not created correctly or timeout) */
+		}
+		/* Check if an obstacle is to close */
+		else if(distance_fw != 0 && distance_fw < RANGEFINDER_THRESHOLD_FW) {
 
-        	/* Compare last three measures, only set alarm if at least two were positive.
-        	 * Inside of this block the current measure is positive, so check if at least one of the last two was positive too */
-        	if(flag_FwAlarmUS_last[1] || flag_FwAlarmUS_last[0])
-        	{
-        		/* Two of three were positive, set alarm (object detected) */
+			/* Compare last three measures, only set alarm if at least two were positive.
+			 * Inside of this block the current measure is positive, so check if at least one of the last two was positive too */
+			if(flag_FwAlarmUS_last[1] || flag_FwAlarmUS_last[0])
+			{
+				/* Two of three were positive, set alarm (object detected) */
 				Rangefinder_flag_FwAlarmUS = 1;
 				/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
 				xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
-        	}
-        	else
-        	{
-        		/* Two of three were negative, so don't set the alarm yet. */
-        		Rangefinder_flag_FwAlarmUS = 0;
-        	}
+			}
+			else
+			{
+				/* Two of three were negative, so don't set the alarm yet. */
+				Rangefinder_flag_FwAlarmUS = 0;
+			}
 
-        	/* Remember measure (NOT flag which is affected by the last two measures) */
-        	flag_FwAlarmUS_last[1] = flag_FwAlarmUS_last[0];  /* Move last measure one back */
-        	flag_FwAlarmUS_last[0] = 1;  /* Current measure is positive */
-        }
-        else {
+			/* Remember measure (NOT flag which is affected by the last two measures) */
+			flag_FwAlarmUS_last[1] = flag_FwAlarmUS_last[0];  /* Move last measure one back */
+			flag_FwAlarmUS_last[0] = 1;  /* Current measure is positive */
+		}
+		else {
 
-        	/* Compare last three measures, only reset alarm if at least two were negative.
+			/* Compare last three measures, only reset alarm if at least two were negative.
 			 * Inside of this block the current measure is negative, so check if at least one of the last two was negative too */
 			if(!(flag_FwAlarmUS_last[1] && flag_FwAlarmUS_last[0]))
 			{
 				/* Two of three were negative, reset alarm  (nothing detected) */
 				Rangefinder_flag_FwAlarmUS = 0;
 			}
-        	else
-        	{
-        		/* Two of three were positive, so don't reset the alarm yet. */
-        		Rangefinder_flag_FwAlarmUS = 1;
+			else
+			{
+				/* Two of three were positive, so don't reset the alarm yet. */
+				Rangefinder_flag_FwAlarmUS = 1;
 				/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
-        		xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
-        	}
+				xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
+			}
 
-        	/* Remember measure (NOT flag which is affected by the last two measures) */
-        	flag_FwAlarmUS_last[1] = flag_FwAlarmUS_last[0];  /* Move last measure one back */
-        	flag_FwAlarmUS_last[0] = 0;  /* Current measure is negative */
-        }
-        /* Check if separation space is blocked */
-        if(distance_fw != 0xFFFF) {
+			/* Remember measure (NOT flag which is affected by the last two measures) */
+			flag_FwAlarmUS_last[1] = flag_FwAlarmUS_last[0];  /* Move last measure one back */
+			flag_FwAlarmUS_last[0] = 0;  /* Current measure is negative */
+		}
+		/* Check if separation space is blocked */
+		if(distance_fw != 0xFFFF) {
 			if(distance_fw <= RANGEFINDER_THRESHOLD_SE) {
 
 				/* Set flag */
@@ -234,60 +234,60 @@ static void vRangefinderTask(void* pvParameters ) {
 				/* Reset flag */
 				Rangefinder_flag_SeAlarmUS = 0;
 			}
-        }
+		}
 
-        /* Check rear */
-        /* Check for error */
-        if(distance_bw == 0xFFFF) {
-            /* ERROR (Semaphore not created correctly or timeout) */
-        }
-        /* Check if an obstacle is to close */
-        else if(distance_bw != 0 && distance_bw < RANGEFINDER_THRESHOLD_BW) {
+		/* Check rear */
+		/* Check for error */
+		if(distance_bw == 0xFFFF) {
+			/* ERROR (Semaphore not created correctly or timeout) */
+		}
+		/* Check if an obstacle is to close */
+		else if(distance_bw != 0 && distance_bw < RANGEFINDER_THRESHOLD_BW) {
 
-        	/* Compare last three measures, only set alarm if at least two were positive.
-        	 * Inside of this block the current measure is positive, so check if at least one of the last two was positive too */
-        	if(flag_BwAlarmUS_last[1] || flag_BwAlarmUS_last[0])
-        	{
-        		/* Two of three were positive, set alarm (object detected) */
+			/* Compare last three measures, only set alarm if at least two were positive.
+			 * Inside of this block the current measure is positive, so check if at least one of the last two was positive too */
+			if(flag_BwAlarmUS_last[1] || flag_BwAlarmUS_last[0])
+			{
+				/* Two of three were positive, set alarm (object detected) */
 				Rangefinder_flag_BwAlarmUS = 1;
 				/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
 				xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
-        	}
-        	else
-        	{
-        		/* Two of three were negative, so don't set the alarm yet. */
-        		Rangefinder_flag_BwAlarmUS = 0;
-        	}
+			}
+			else
+			{
+				/* Two of three were negative, so don't set the alarm yet. */
+				Rangefinder_flag_BwAlarmUS = 0;
+			}
 
-        	/* Remember measure (NOT flag which is affected by the last two measures) */
-        	flag_BwAlarmUS_last[1] = flag_BwAlarmUS_last[0];  /* Move last measure one back */
-        	flag_BwAlarmUS_last[0] = 1;  /* Current measure is positive */
-        }
-        else {
+			/* Remember measure (NOT flag which is affected by the last two measures) */
+			flag_BwAlarmUS_last[1] = flag_BwAlarmUS_last[0];  /* Move last measure one back */
+			flag_BwAlarmUS_last[0] = 1;  /* Current measure is positive */
+		}
+		else {
 
-        	/* Compare last three measures, only reset alarm if at least two were negative.
+			/* Compare last three measures, only reset alarm if at least two were negative.
 			 * Inside of this block the current measure is negative, so check if at least one of the last two was negative too */
 			if(!(flag_BwAlarmUS_last[1] && flag_BwAlarmUS_last[0]))
 			{
 				/* Two of three were negative, reset alarm  (nothing detected) */
 				Rangefinder_flag_BwAlarmUS = 0;
 			}
-        	else
-        	{
-        		/* Two of three were positive, so don't reset the alarm yet. */
-        		Rangefinder_flag_BwAlarmUS = 1;
+			else
+			{
+				/* Two of three were positive, so don't reset the alarm yet. */
+				Rangefinder_flag_BwAlarmUS = 1;
 				/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
-        		xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
-        	}
+				xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
+			}
 
-        	/* Remember measure (NOT flag which is affected by the last two measures) */
-        	flag_BwAlarmUS_last[1] = flag_BwAlarmUS_last[0];  /* Move last measure one back */
-        	flag_BwAlarmUS_last[0] = 0;  /* Current measure is negative */
-        }
+			/* Remember measure (NOT flag which is affected by the last two measures) */
+			flag_BwAlarmUS_last[1] = flag_BwAlarmUS_last[0];  /* Move last measure one back */
+			flag_BwAlarmUS_last[0] = 0;  /* Current measure is negative */
+		}
 
-        /* Delay until defined time passed */
-        vTaskDelayUntil( &xLastFlashTime, RANGEFINDER_DELAY / portTICK_RATE_MS);
-    }
+		/* Delay until defined time passed */
+		vTaskDelayUntil( &xLastFlashTime, RANGEFINDER_DELAY / portTICK_RATE_MS);
+	}
 }
 
 /**
@@ -400,36 +400,36 @@ void IRSensorBwRight_IT(void) {
  */
 void setSRF08Range(uint8_t slave_address, uint16_t range_in_mm) {
 
-    /* Do nothing, if the semaphore wasn't created correctly */
-    if(mHwI2C == NULL) return;
+	/* Do nothing, if the semaphore wasn't created correctly */
+	if(mHwI2C == NULL) return;
 
-    /* Lower limit: 43 mm */
-    if(43 > range_in_mm) range_in_mm = 43;
-    /* Higher limit: 11008 mm */
-    if(range_in_mm > 11008) range_in_mm = 11008;
+	/* Lower limit: 43 mm */
+	if(43 > range_in_mm) range_in_mm = 43;
+	/* Higher limit: 11008 mm */
+	if(range_in_mm > 11008) range_in_mm = 11008;
 
-    /* Calculate register value with the formula (range = (reg x 43 mm) + 43 mm) */
-    float value = ((float)range_in_mm - 43) / 43;
+	/* Calculate register value with the formula (range = (reg x 43 mm) + 43 mm) */
+	float value = ((float)range_in_mm - 43) / 43;
 
-    /* If necessary, round up */
-    if((value - (int)value) >= 0.5) value++;
+	/* If necessary, round up */
+	if((value - (int)value) >= 0.5) value++;
 
-    /* Get semaphore for I2C access, without timeout */
-    if(xSemaphoreTake(mHwI2C, portMAX_DELAY) == pdTRUE) {
+	/* Get semaphore for I2C access, without timeout */
+	if(xSemaphoreTake(mHwI2C, portMAX_DELAY) == pdTRUE) {
 
-        /* Send calculated value to the SRF08 to be written in the range register */
-        uint8_t buffer = (uint8_t)value;
-        writeI2C(slave_address, SRF08_REG_RANGE, &buffer, 1, I2C_TIMEOUT);
+		/* Send calculated value to the SRF08 to be written in the range register */
+		uint8_t buffer = (uint8_t)value;
+		writeI2C(slave_address, SRF08_REG_RANGE, &buffer, 1, I2C_TIMEOUT);
 
-        /* Release semaphore */
-        xSemaphoreGive(mHwI2C);
-    }
+		/* Release semaphore */
+		xSemaphoreGive(mHwI2C);
+	}
 
-    /* Handle i2c error */
-    if(i2c_timeout_flag) {
-    	reinitI2C();
-    	return;
-    }
+	/* Handle i2c error */
+	if(i2c_timeout_flag) {
+		reinitI2C();
+		return;
+	}
 }
 
 /**
@@ -445,28 +445,28 @@ void setSRF08Range(uint8_t slave_address, uint16_t range_in_mm) {
  */
 void setSRF08Gain(uint8_t slave_address, uint8_t gain_value) {
 
-    /* Do nothing, if the semaphore wasn't created correctly */
-    if(mHwI2C == NULL) return;
+	/* Do nothing, if the semaphore wasn't created correctly */
+	if(mHwI2C == NULL) return;
 
-    /* Higher limit: 0x1F */
-    if(gain_value > 0x1F) gain_value = 0x1F;
+	/* Higher limit: 0x1F */
+	if(gain_value > 0x1F) gain_value = 0x1F;
 
-    /* Get semaphore for I2C access, without timeout */
-    if(xSemaphoreTake(mHwI2C, portMAX_DELAY) == pdTRUE) {
+	/* Get semaphore for I2C access, without timeout */
+	if(xSemaphoreTake(mHwI2C, portMAX_DELAY) == pdTRUE) {
 
-        /* Send the value to the SRF08 to be written in the gain register */
-        uint8_t buffer = gain_value;
-        writeI2C(slave_address, SRF08_REG_GAIN, &buffer, 1, I2C_TIMEOUT);
+		/* Send the value to the SRF08 to be written in the gain register */
+		uint8_t buffer = gain_value;
+		writeI2C(slave_address, SRF08_REG_GAIN, &buffer, 1, I2C_TIMEOUT);
 
-        /* Release semaphore */
-        xSemaphoreGive(mHwI2C);
-    }
+		/* Release semaphore */
+		xSemaphoreGive(mHwI2C);
+	}
 
-    /* Handle i2c error */
-    if(i2c_timeout_flag) {
-    	reinitI2C();
-    	return;
-    }
+	/* Handle i2c error */
+	if(i2c_timeout_flag) {
+		reinitI2C();
+		return;
+	}
 }
 
 /**
@@ -482,24 +482,24 @@ void setSRF08Gain(uint8_t slave_address, uint8_t gain_value) {
  */
 void startSRF08Meas(uint8_t slave_address, uint8_t meas_mode) {
 
-    /* Do nothing, if the semaphore wasn't created correctly */
-    if(mHwI2C == NULL) return;
+	/* Do nothing, if the semaphore wasn't created correctly */
+	if(mHwI2C == NULL) return;
 
-    /* Get semaphore for I2C access, without timeout */
-    if(xSemaphoreTake(mHwI2C, portMAX_DELAY) == pdTRUE) {
+	/* Get semaphore for I2C access, without timeout */
+	if(xSemaphoreTake(mHwI2C, portMAX_DELAY) == pdTRUE) {
 
-        /* Send the command to measure in cm to the SRF08 */
-        writeI2C(slave_address, SRF08_REG_CMD, &meas_mode, 1, I2C_TIMEOUT);
+		/* Send the command to measure in cm to the SRF08 */
+		writeI2C(slave_address, SRF08_REG_CMD, &meas_mode, 1, I2C_TIMEOUT);
 
-        /* Release semaphore */
-        xSemaphoreGive(mHwI2C);
-    }
+		/* Release semaphore */
+		xSemaphoreGive(mHwI2C);
+	}
 
-    /* Handle i2c error */
-    if(i2c_timeout_flag) {
-    	reinitI2C();
-    	return;
-    }
+	/* Handle i2c error */
+	if(i2c_timeout_flag) {
+		reinitI2C();
+		return;
+	}
 }
 
 /**
@@ -517,55 +517,55 @@ void startSRF08Meas(uint8_t slave_address, uint8_t meas_mode) {
  */
 uint16_t readSRF08Meas(uint8_t slave_address) {
 
-    /* Return error, if the semaphore wasn't created correctly */
-    if(mHwI2C == NULL) return 0xFFFF;
+	/* Return error, if the semaphore wasn't created correctly */
+	if(mHwI2C == NULL) return 0xFFFF;
 
-    uint8_t buffer;
-    uint16_t meassure;
+	uint8_t buffer;
+	uint16_t meassure;
 
-    /* Get semaphore for I2C access, without timeout */
-    if(xSemaphoreTake(mHwI2C, portMAX_DELAY) == pdTRUE) {
+	/* Get semaphore for I2C access, without timeout */
+	if(xSemaphoreTake(mHwI2C, portMAX_DELAY) == pdTRUE) {
 
-        /* Send address of the register we want to read (highbyte of the 1. echo) */
-        writeI2C(slave_address, SRF08_REG_H(1), &buffer, 0, I2C_TIMEOUT); /* buffer not used, because NumByteToWrite is 0 */
-        /* Read register */
-        readI2C(slave_address, &buffer, 1, I2C_TIMEOUT);
+		/* Send address of the register we want to read (highbyte of the 1. echo) */
+		writeI2C(slave_address, SRF08_REG_H(1), &buffer, 0, I2C_TIMEOUT); /* buffer not used, because NumByteToWrite is 0 */
+		/* Read register */
+		readI2C(slave_address, &buffer, 1, I2C_TIMEOUT);
 
-        /* Release semaphore */
-        xSemaphoreGive(mHwI2C);
-    }
+		/* Release semaphore */
+		xSemaphoreGive(mHwI2C);
+	}
 
-    /* Handle i2c error */
-    if(i2c_timeout_flag) {
-    	reinitI2C();
-    	return 0xFFFF;
-    }
+	/* Handle i2c error */
+	if(i2c_timeout_flag) {
+		reinitI2C();
+		return 0xFFFF;
+	}
 
-    /* Store highbyte */
-    meassure = buffer << 8;
+	/* Store highbyte */
+	meassure = buffer << 8;
 
-    /* Get semaphore for I2C access, without timeout */
-    if(xSemaphoreTake(mHwI2C, portMAX_DELAY) == pdTRUE) {
+	/* Get semaphore for I2C access, without timeout */
+	if(xSemaphoreTake(mHwI2C, portMAX_DELAY) == pdTRUE) {
 
-        /* Send address of the register we want to read (lowbyte of the 1. echo) */
-        writeI2C(slave_address, SRF08_REG_L(1), &buffer, 0, I2C_TIMEOUT); /* buffer not used, because NumByteToWrite is 0 */
-        /* Read register */
-        readI2C(slave_address, &buffer, 1, I2C_TIMEOUT);
+		/* Send address of the register we want to read (lowbyte of the 1. echo) */
+		writeI2C(slave_address, SRF08_REG_L(1), &buffer, 0, I2C_TIMEOUT); /* buffer not used, because NumByteToWrite is 0 */
+		/* Read register */
+		readI2C(slave_address, &buffer, 1, I2C_TIMEOUT);
 
-        /* Release semaphore */
-        xSemaphoreGive(mHwI2C);
-    }
+		/* Release semaphore */
+		xSemaphoreGive(mHwI2C);
+	}
 
-    /* Handle i2c error */
-    if(i2c_timeout_flag) {
-    	reinitI2C();
-    	return 0xFFFF;
-    }
+	/* Handle i2c error */
+	if(i2c_timeout_flag) {
+		reinitI2C();
+		return 0xFFFF;
+	}
 
-    /* Store lowbyte */
-    meassure = (meassure & 0xFF00) | (buffer & 0x00FF);
+	/* Store lowbyte */
+	meassure = (meassure & 0xFF00) | (buffer & 0x00FF);
 
-    return meassure;
+	return meassure;
 }
 
 
