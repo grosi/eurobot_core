@@ -6,6 +6,8 @@
  * \version 1.2
  *  - IR sensors in new arrangement
  *  - Added flag for separation blocked alarm
+ *  - Added option to only use forward rangefinder by defining RANGEFINDER_ONLY_FW
+ *  - Task is suspended at beginning, so ultrasonic only running when really used
  * \version 1.1
  *  - Changed implementation of IR detection to external interrupt
  *  - Implemented comparison of last three US measures
@@ -80,9 +82,10 @@ uint16_t distance_fw;                   /* Variable for the distance detected by
 uint16_t distance_bw;                   /* Variable for the distance detected by the backward SRF08 (lower- /higher byte joined) */
 
 /* Globale variables ---------------------------------------------------------*/
-/* Mutex for I2C */
-xSemaphoreHandle mHwI2C = NULL;
-xSemaphoreHandle sSyncNodeTask = NULL;
+/* RTOS */
+xTaskHandle xRangefinderTask_Handle = NULL;
+xSemaphoreHandle mHwI2C = NULL;  /* Mutex for I2C */
+xSemaphoreHandle sSyncNodeTask = NULL;  /* Semaphore for node task synchronisation */
 
 /* Alarm flags, 1 if object detected, 0 if no object detected */
 volatile uint8_t Rangefinder_flag_FwAlarmIR = 0; /* Infrared forward alarm */
@@ -135,7 +138,7 @@ void initRangefinderTask(void) {
 	vSemaphoreCreateBinary(sSyncNodeTask);
 
 	/* Create the tasks */
-	xTaskCreate( vRangefinderTask, ( signed char * ) RANGEFINDER_TASK_NAME, RANGEFINDER_STACK_SIZE, NULL, RANGEFINDER_TASK_PRIORITY, NULL );
+	xTaskCreate( vRangefinderTask, ( signed char * ) RANGEFINDER_TASK_NAME, RANGEFINDER_STACK_SIZE, NULL, RANGEFINDER_TASK_PRIORITY, &xRangefinderTask_Handle);
 }
 
 /**
@@ -164,6 +167,11 @@ static void vRangefinderTask(void* pvParameters ) {
 #ifndef RANGEFINDER_ONLY_FW
 	setSRF08Gain(SRF08_ADDR_BW, 0x1F);
 #endif /* RANGEFINDER_ONLY_FW */
+
+	/* Suspend ourselves, so the task is only running when really used.
+	 * This way there is less possible ultrasonic disturbance (navigation and other robot),
+	 * infrared is still running. */
+	vTaskSuspend(NULL);
 
 	for(EVER) {
 
@@ -579,6 +587,35 @@ uint16_t readSRF08Meas(uint8_t slave_address) {
 	meassure = (meassure & 0xFF00) | (buffer & 0x00FF);
 
 	return meassure;
+}
+
+/**
+ * \fn          suspendRangefinderTask
+ * \brief       Suspend the rangefinder task and do some configuration.
+ *              To resume, use default freeRTOS function (vTaskResume).
+ *
+ * \param[in]   None
+ * \return      None
+ */
+void suspendRangefinderTask(void) {
+
+	/* Suspend task */
+	vTaskSuspend(xRangefinderTask_Handle);
+
+	/* Reset variables for comparing the last three values */
+	flag_FwAlarmUS_last[0] = 0;
+	flag_FwAlarmUS_last[1] = 0;
+#ifndef RANGEFINDER_ONLY_FW
+	flag_BwAlarmUS_last[0] = 0;
+	flag_BwAlarmUS_last[1] = 0;
+#endif /* RANGEFINDER_ONLY_FW */
+
+	/* Reset alarm flags */
+	Rangefinder_flag_FwAlarmIR = 0;
+	Rangefinder_flag_BwAlarmIR = 0;
+	Rangefinder_flag_FwAlarmUS = 0;
+	Rangefinder_flag_BwAlarmUS = 0;
+	Rangefinder_flag_SeAlarmUS = 0;
 }
 
 

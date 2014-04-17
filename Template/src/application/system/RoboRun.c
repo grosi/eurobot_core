@@ -609,6 +609,9 @@ static void vTrackEnemy(uint16_t id, CAN_data_t* data)
  */
 void gotoNode(node_param_t* param, volatile game_state_t* game_state)
 {
+	/* Activate rangefinder */
+	vTaskResume(xRangefinderTask_Handle);
+
 	/* Variable for CAN RX */
 	CAN_data_t CAN_buffer;
 	uint8_t CAN_ok = pdFALSE;
@@ -673,6 +676,9 @@ void gotoNode(node_param_t* param, volatile game_state_t* game_state)
 
 	/* Repeat while not at target destination */
 	} while(estimated_GoTo_time != 0);
+
+	/* Suspend rangefinder safely */
+	suspendRangefinderTask();
 }
 
 

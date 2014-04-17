@@ -89,6 +89,9 @@ uint8_t moveSeparationOutSavely(uint8_t retry_delay, uint8_t retry_count_max) {
  */
 void doMammothNode(node_param_t* param) {
 
+	/* Activate rangefinder (needed to check separation space) */
+	vTaskResume(xRangefinderTask_Handle);
+
 	/* Check if on the previous run the separation couldn't be done because it was blocked too long */
 	if(!Mammoth_flag_SeparationDone) {
 
@@ -126,6 +129,9 @@ void doMammothNode(node_param_t* param) {
 	setServo_1(SERVO_POS_FRESCO_IN);
 	/* Wait some time while servo moves */
 	vTaskDelay(SERVO_MOVING_DELAY / portTICK_RATE_MS);
+
+	/* Suspend rangefinder safely */
+	suspendRangefinderTask();
 
 	/* Report status */
 	param->node_state = NODE_FINISH_SUCCESS;

@@ -31,8 +31,7 @@
 #define RANGEFINDER_TASK_H_
 
 /* Includes -------------------------------------------------------------------*/
-#include "FreeRTOS.h"
-#include "semphr.h"
+#include "AppConfig.h"
 
 /* exported typedef -----------------------------------------------------------*/
 
@@ -55,9 +54,10 @@
 /* exported macro -------------------------------------------------------------*/
 
 /* exported variables ---------------------------------------------------------*/
-/* Mutex for I2C */
-extern xSemaphoreHandle mHwI2C;    /* Created with xSemaphoreCreateMutex() */
-extern xSemaphoreHandle sSyncNodeTask;    /* Is given by Rangefinder, when obstacle detected */
+/* RTOS */
+extern xTaskHandle xRangefinderTask_Handle;
+extern xSemaphoreHandle mHwI2C;  /* Mutex for I2C */
+extern xSemaphoreHandle sSyncNodeTask;  /* Semaphore for node task synchronisation */
 
 /* Alarm flags (read only!), 1 if object detected, 0 if no object detected */
 extern volatile uint8_t Rangefinder_flag_FwAlarmIR;     /* Infrared forward alarm */
@@ -68,6 +68,7 @@ extern volatile uint8_t Rangefinder_flag_SeAlarmUS;     /* Ultrasonic separation
 
 /* exported function prototypes -----------------------------------------------*/
 extern void initRangefinderTask(void);
+extern void suspendRangefinderTask(void);
 extern void IRSensorFwLeft_IT(void);
 extern void IRSensorFwRight_IT(void);
 extern void IRSensorBwLeft_IT(void);
