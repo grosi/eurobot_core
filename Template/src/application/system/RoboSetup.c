@@ -36,19 +36,19 @@
  */
 typedef struct
 {
-    uint8_t title[MAX_NUMBER_COLUMN+1];
-    uint8_t byte0[2];
-    uint8_t byte15[2];
-    uint8_t opt1[MAX_NUMBER_COLUMN+1];
-    const uint8_t pos1;                         // 0... (MAX_NUMBER_COLUMN-1)
-    uint8_t opt2[MAX_NUMBER_COLUMN+1];    // will change in an adjusting menu
-    const uint8_t pos2;
-    uint8_t opt3[MAX_NUMBER_COLUMN+1];
-    const uint8_t pos3;
-    uint8_t cursor_position;
-    uint8_t max_result;
-    uint8_t result;
-    uint8_t confirmed;                          /*!< FALSE = not yet confirmed, TRUE = confirmed */
+    uint8_t title[MAX_NUMBER_COLUMN+1];   // configuration title
+    uint8_t byte0[2];                     // byte0 for "<" or "-"
+    uint8_t byte15[2];                    // byte15 for ">" or "+"
+    uint8_t opt1[MAX_NUMBER_COLUMN+1];    // option 1
+    const uint8_t pos1;                   // position of option 1 (0... (MAX_NUMBER_COLUMN-1))
+    uint8_t opt2[MAX_NUMBER_COLUMN+1];    // option 2 (could change in an adjusting menu)
+    const uint8_t pos2;                   // position of option 2 (0... (MAX_NUMBER_COLUMN-1))
+    uint8_t opt3[MAX_NUMBER_COLUMN+1];    // option 3
+    const uint8_t pos3;                   // position of option 3 (0... (MAX_NUMBER_COLUMN-1))
+    uint8_t cursor_position;              // current position of the cursor
+    uint8_t max_result;                   // max. possible result
+    uint8_t result;                       // current result
+    uint8_t confirmed;                    /*!< FALSE = not yet confirmed, TRUE = confirmed */
 } menu_t;
 
 
@@ -64,7 +64,7 @@ typedef enum
 
 
 /**
- * \brief states of the statemaschine
+ * \brief states of the state machine
  */
 typedef enum
 {
@@ -80,11 +80,10 @@ typedef enum
 
 /* Private define ------------------------------------------------------------*/
 
-
 /* Private macro -------------------------------------------------------------*/
 
-
 /* Private variables ---------------------------------------------------------*/
+
 /**
  * \brief menu-architecture
  */
@@ -191,8 +190,8 @@ menu_t startnode =
     .opt3 = "..11",
     .pos3 = 11,
     .cursor_position = SETUP_STARTNODE_CURSOR_DEFAULT,
-    .max_result = 11,  // ?
-    .result = SETUP_STARTNODE_RESULT_DEFAULT,    // 0... ??
+    .max_result = 11,
+    .result = SETUP_STARTNODE_RESULT_DEFAULT,    // 0... 11
     .confirmed = FALSE
 };
 
@@ -207,7 +206,7 @@ menu_t setup_finished =
     .opt2 = "YES",
     .pos2 = 9,
     .opt3 = "",
-    .pos3 = 16,    // pos3 have to be >= 16 if not used!
+    .pos3 = 16,    /*!< pos3 have to be >= 16 if not used! */
     .cursor_position = SETUP_SETUPFINISH_CURSOR_DEFAULT,
     .max_result = 1,
     .result = SETUP_SETUPFINISH_RESULT,    // 0 = NO, 1 = YES
@@ -223,16 +222,16 @@ menu_t ready =
     .opt1 = "<ABORT>",
     .pos1 = 4,
     .opt2 = "",
-    .pos2 = 16,
+    .pos2 = 16,    /*!< pos2 have to be >= 16 if not used! */
     .opt3 = "",
-    .pos3 = 16,    // pos3 have to be >= 16 if not used!
+    .pos3 = 16,    /*!< pos3 have to be >= 16 if not used! */
     .cursor_position = SETUP_READY_CURSOR_DEFAULT,
     .max_result = 1,
     .result = SETUP_READY_RESULT,    // 0 = NO, 1 = YES
     .confirmed = FALSE
 };
 
-/* statemachine */
+/* state machine */
 static menu_current_t current_menu;
 
 
@@ -246,7 +245,7 @@ void setConfigRoboSetup2Default();
 
 /**
  * \fn      initRoboSetupState
- * \brief   initialisation of the RoboSetupState
+ * \brief   initialization of the RoboSetupState
  *
  * \note    have to be called from the initSystem function
  */
@@ -265,12 +264,12 @@ void initRoboSetupState()
  * \fn      runRoboSetupState
  * \brief   run the runRoboSetupState
  *
- * \param[in]   tick    pointer to systick timer for absolut delays
+ * \param[in]   tick    pointer to systick timer for absolute delays
  * \todo    menu flow
  */
 void runRoboSetupState(portTickType* tick)
 {
-    /* statemaschine */
+    /* statemachine */
     switch(current_menu)
     {
         case TEAMCOLOR:
@@ -393,7 +392,7 @@ void runRoboSetupState(portTickType* tick)
     }
 
     /* state delay for button debouncing */
-    vTaskDelayUntil(tick, SETUP_BUTTOM_DELAY / portTICK_RATE_MS);
+    vTaskDelayUntil(tick, SETUP_BUTTON_DELAY / portTICK_RATE_MS);
 }
 
 
@@ -452,7 +451,7 @@ static void menu_handler(menu_t *current_menu, uint8_t res1, uint8_t res2, uint8
     static menu_t* last_menu = NULL;
 
 
-    /* check if display is necessary */
+    /* check if a change of the display is necessary */
     if(last_menu != current_menu)
     {
         write_current_menu(&current_menu);
@@ -493,7 +492,7 @@ static void menu_handler(menu_t *current_menu, uint8_t res1, uint8_t res2, uint8
                     /* set new cursor position and result if the cursor is not at pos3 */
                     if(current_menu->cursor_position <= current_menu->pos2)        // check pos1 & pos2
                     {
-                        if(current_menu->cursor_position == current_menu->pos1)    // check pos1
+                        if((current_menu->cursor_position == current_menu->pos1) && (current_menu->pos2 < MAX_NUMBER_COLUMN))    // check pos1 and if pos2 is used
                         {
                             current_menu->cursor_position = current_menu->pos2;
                             current_menu->result = res2;
@@ -512,8 +511,8 @@ static void menu_handler(menu_t *current_menu, uint8_t res1, uint8_t res2, uint8
                 /* TODO */
             case ADJUSTING_MENU:
 
-                /* check if button 1 is pushed and result > 0 */
-                if (getUserPanelButtonPosEdge_1(&button_left_state) && current_menu->result > 0)
+                /* check if button 1 (left) is pushed and result > 0 */
+                if (getUserPanelButtonPosEdge_1(&button_left_state) && (current_menu->result > 0))
                 {
                     current_menu->result--;    // decrease result
                     /* update display (option 2) */
@@ -523,8 +522,8 @@ static void menu_handler(menu_t *current_menu, uint8_t res1, uint8_t res2, uint8
                     LCD_write_string(MAX_NUMBER_ROW-1, current_menu->pos2, current_menu->opt2, FALSE);
                 }
 
-                /* check if button 3 is pushed and result < max_result */
-                if (getUserPanelButtonPosEdge_3(&button_right_state) && current_menu->result < current_menu->max_result)
+                /* check if button 3 (right) is pushed and result < max_result */
+                if (getUserPanelButtonPosEdge_3(&button_right_state) && (current_menu->result < current_menu->max_result))
                 {
                     current_menu->result++;    // increase result
 
@@ -539,7 +538,7 @@ static void menu_handler(menu_t *current_menu, uint8_t res1, uint8_t res2, uint8
                 break;
         }
     }
-    else
+    else    // button 2 (mid) pushed:
     {
         /* confirm chosen result to get into the next menu */
         current_menu->confirmed = TRUE;
