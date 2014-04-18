@@ -387,7 +387,6 @@ void runRoboSetupState(portTickType* tick)
                 current_menu = TEAMCOLOR;
                 ready.confirmed = FALSE;
             }
-
             break;
     }
 

@@ -51,7 +51,7 @@ void LCD_write_byte_instruction(uint8_t);
 
 
 /**=============================================================================
- * \fn      init_display
+ * \fn      LCD_init
  * \brief   initializes the display (within ~253ms)
  *
  * \param[in]   function-pointer to the RTOS-delay-function
@@ -150,8 +150,9 @@ void TIM2_IRQHandler(void)
     {
         /* CS low */
         case SPI_CS_LOW:
-            GPIO_WriteBit(DISPLAY_PORT_CS, DISPLAY_PIN_CS, RESET);
+            GPIO_WriteBit(DISPLAY_PORT_CS, DISPLAY_PIN_CS, RESET); /* reset CS */
             spi_state = SPI_SET_DATA;
+
             break;
 
         /* set data */
@@ -161,7 +162,7 @@ void TIM2_IRQHandler(void)
             /* set data bit */
             if((display_data << bit) & 0x80)
                 {GPIO_WriteBit(DISPLAY_PORT, DISPLAY_PIN_MOSI, SET);} /* set MOSI */
-            else {GPIO_WriteBit(DISPLAY_PORT, DISPLAY_PIN_MOSI, RESET);} /* set MOSI */
+            else {GPIO_WriteBit(DISPLAY_PORT, DISPLAY_PIN_MOSI, RESET);} /* reset MOSI */
 
             /* set RS pin if the command is type of SPI data */
             if(display_command == DISPLAY_DATA && bit == 7)
@@ -174,7 +175,7 @@ void TIM2_IRQHandler(void)
 
         /* write data */
         case SPI_WRITE_DATA:
-            GPIO_WriteBit(DISPLAY_PORT, DISPLAY_PIN_SCK, SET);
+            GPIO_WriteBit(DISPLAY_PORT, DISPLAY_PIN_SCK, SET); /* set SCK */
 
 
             /* goto CS high (last SPI state) */
@@ -193,7 +194,7 @@ void TIM2_IRQHandler(void)
 
         /* CS high + communication finished */
         case SPI_CS_HIGH:
-            GPIO_WriteBit(DISPLAY_PORT_CS, DISPLAY_PIN_CS, SET);
+            GPIO_WriteBit(DISPLAY_PORT_CS, DISPLAY_PIN_CS, SET); /* set CS */
             GPIO_WriteBit(DISPLAY_PORT, DISPLAY_PIN_RS, RESET); /* reset RS */
             display_command = DISPLAY_FINISH;
             spi_state = SPI_CS_LOW;
