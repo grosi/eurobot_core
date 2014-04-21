@@ -60,7 +60,7 @@ static node_t* node_task = NULL; /*!< pointer to the current running node */
 /* game and strategy */
 static node_t* nodes_red[NODE_QUANTITY] = {&node_mammoth_1}; /*!< node-set for the yellow teamcolor */
 static node_t* nodes_yellow[NODE_QUANTITY] = {&node_mammoth_1}; /*!< node-set for the red teamcolor */
-static node_t** nodes_game; /*!< node set of the current game-round */
+static node_t** nodes_game = NULL; /*!< node set of the current game-round */
 static node_t* next_node; /*!< pointer to the next node */
 static uint8_t remain_nodes; /*!< undone nodes */
 static uint8_t enemy_count; /*!< enemy quantity */
@@ -182,9 +182,12 @@ void setConfigRoboRunState2Default()
     uint8_t node_count;// y, x;
 
     /* set all nodes to state UNDONE */
-    for(node_count = 0; node_count < NODE_QUANTITY; node_count++)
+    if(nodes_game != NULL)
     {
-        ((*nodes_game)+node_count)->param.node_state = NODE_UNDONE;
+        for(node_count = 0; node_count < NODE_QUANTITY; node_count++)
+        {
+            ((*nodes_game)+node_count)->param.node_state = NODE_UNDONE;
+        }
     }
 
     /* node pools to default */
@@ -234,7 +237,7 @@ void runRoboRunState(portTickType* tick)
     float weight_next_node; /* the weight of the next node */
     uint8_t weight_arrive; /* additional weight for bad arrives */
     uint8_t remain_time;
-    uint8_t node_count;
+    uint8_t node_count; /* simple count variable */
     node_t* current_node;
 
 
