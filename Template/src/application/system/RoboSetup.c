@@ -233,6 +233,7 @@ menu_t ready =
 
 /* state machine */
 static menu_current_t current_menu;
+static menu_t* last_menu = NULL;
 
 
 /* Private function prototypes -----------------------------------------------*/
@@ -372,6 +373,7 @@ void runRoboSetupState(portTickType* tick)
         case READY:
             menu_handler(&ready, 0, 1, 1, SELECTION_MENU);
 
+#ifndef STANDALONE
             /* game starts if key sensor is activated */
             if(getSensor_Key())
             {
@@ -379,6 +381,7 @@ void runRoboSetupState(portTickType* tick)
                 startGameTimer(); /* start game-timer */
                 system_state = runRoboRunState;
             }
+#endif
 
             /* back to setup */
             if(ready.confirmed == TRUE)
@@ -447,7 +450,7 @@ static void menu_handler(menu_t *current_menu, uint8_t res1, uint8_t res2, uint8
     static uint8_t button_mode_state = 0;
     static uint8_t button_left_state = 0;
     static uint8_t button_right_state = 0;
-    static menu_t* last_menu = NULL;
+//    static menu_t* last_menu = NULL;
 
 
     /* check if a change of the display is necessary */
@@ -596,6 +599,7 @@ void setConfigRoboSetup2Default()
     ready.confirmed = FALSE;
 
     current_menu = TEAMCOLOR;
+    last_menu = NULL;
 }
 
 /**
