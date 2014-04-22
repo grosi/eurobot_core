@@ -75,7 +75,7 @@ typedef struct
 
 /* exported define ------------------------------------------------------------*/
 /* general */
-#define NODE_QUANTITY              11
+#define NODE_QUANTITY              1 //11
 #define NODE_POOL_QUANTITY         2
 #define NODE_NO_ENEMY              -1
 
@@ -114,6 +114,20 @@ typedef struct
 
 /* exported variables ---------------------------------------------------------*/
 extern node_t node_mammoth_1;
+extern node_t node_mammoth_2;
+extern node_t node_mammoth_3;
+extern node_t node_mammoth_4;
+extern node_t node_mammoth_5;
+extern node_t node_mammoth_6;
+extern node_t node_fresco_1;
+extern node_t node_fresco_2;
+extern node_t node_fire_1_red;
+extern node_t node_fire_2_red;
+extern node_t node_fire_3_red;
+extern node_t node_fire_1_yellow;
+extern node_t node_fire_2_yellow;
+extern node_t node_fire_3_yellow;
+
 extern xQueueHandle qGotoConfirm;
 extern xQueueHandle qGotoStateResp;
 

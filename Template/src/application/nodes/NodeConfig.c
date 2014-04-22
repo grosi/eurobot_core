@@ -44,7 +44,7 @@
 xQueueHandle qGotoConfirm;
 xQueueHandle qGotoStateResp;
 /* mammoth nodes configs */
-/* node 1 */
+/* node mammoth 1 */
 node_t node_mammoth_1 =
 {
     {
@@ -59,6 +59,227 @@ node_t node_mammoth_1 =
         .node_state = NODE_UNDONE,          /*!<node state */
     },
     doMammothNode
+};
+
+/* node mammoth 2 */
+node_t node_mammoth_2 =
+{
+    {
+        .id = 2,                            /*!<node id */
+        .points = 4,                        /*!<node points */
+        .percent = 0.19,                    /*!<percent of the total points [%]*/
+        .time = 5,                          /*!<estimated node time [s]*/
+        .x = 0.82,                          /*!<node x position [m]*/
+        .y = 0.49,                          /*!<node y position [m]*/
+        .pool_id = NODE_MAMMOTH_POOL_ID,    /*!<node pool id */
+        .angle = 180,                       /*!<node arrive direction */
+        .node_state = NODE_UNDONE,          /*!<node state */
+    },
+    doMammothNode
+};
+
+/* node mammoth 3 */
+node_t node_mammoth_3 =
+{
+    {
+        .id = 3,                            /*!<node id */
+        .points = 4,                        /*!<node points */
+        .percent = 0.19,                    /*!<percent of the total points [%]*/
+        .time = 5,                          /*!<estimated node time [s]*/
+        .x = 1.02,                          /*!<node x position [m]*/
+        .y = 0.49,                          /*!<node y position [m]*/
+        .pool_id = NODE_MAMMOTH_POOL_ID,    /*!<node pool id */
+        .angle = 180,                       /*!<node arrive direction */
+        .node_state = NODE_UNDONE,          /*!<node state */
+    },
+    doMammothNode
+};
+
+/* node mammoth 4 */
+node_t node_mammoth_4 =
+{
+    {
+        .id = 6,                            /*!<node id */
+        .points = 4,                        /*!<node points */
+        .percent = 0.19,                    /*!<percent of the total points [%]*/
+        .time = 5,                          /*!<estimated node time [s]*/
+        .x = 2.0,                           /*!<node x position [m]*/
+        .y = 0.49,                          /*!<node y position [m]*/
+        .pool_id = NODE_MAMMOTH_POOL_ID,    /*!<node pool id */
+        .angle = 180,                       /*!<node arrive direction */
+        .node_state = NODE_UNDONE,          /*!<node state */
+    },
+    doMammothNode
+};
+
+/* node mammoth 5 */
+node_t node_mammoth_5 =
+{
+    {
+        .id = 7,                            /*!<node id */
+        .points = 4,                        /*!<node points */
+        .percent = 0.19,                    /*!<percent of the total points [%]*/
+        .time = 5,                          /*!<estimated node time [s]*/
+        .x = 2.2,                           /*!<node x position [m]*/
+        .y = 0.49,                          /*!<node y position [m]*/
+        .pool_id = NODE_MAMMOTH_POOL_ID,    /*!<node pool id */
+        .angle = 180,                       /*!<node arrive direction */
+        .node_state = NODE_UNDONE,          /*!<node state */
+    },
+    doMammothNode
+};
+
+/* node mammoth 6 */
+node_t node_mammoth_6 =
+{
+    {
+        .id = 8,                            /*!<node id */
+        .points = 4,                        /*!<node points */
+        .percent = 0.19,                    /*!<percent of the total points [%]*/
+        .time = 5,                          /*!<estimated node time [s]*/
+        .x = 2.4,                           /*!<node x position [m]*/
+        .y = 0.49,                          /*!<node y position [m]*/
+        .pool_id = NODE_MAMMOTH_POOL_ID,    /*!<node pool id */
+        .angle = 180,                       /*!<node arrive direction */
+        .node_state = NODE_UNDONE,          /*!<node state */
+    },
+    doMammothNode
+};
+
+/* node fresco 1 */
+node_t node_fresco_1 =
+{
+    {
+        .id = 4,                            /*!<node id */
+        .points = 6,                        /*!<node points */
+        .percent = 0.28,                    /*!<percent of the total points [%]*/
+        .time = 10,                         /*!<estimated node time [s]*/
+        .x = 1.35,                          /*!<node x position [m]*/
+        .y = 0.2,                           /*!<node y position [m]*/
+        .pool_id = NODE_FRESCO_POOL_ID,     /*!<node pool id */
+        .angle = 270,                       /*!<node arrive direction */
+        .node_state = NODE_UNDONE,          /*!<node state */
+    },
+    doFrescoNode
+};
+
+/* node fresco 2 */
+node_t node_fresco_2 =
+{
+    {
+        .id = 4,                            /*!<node id */
+        .points = 6,                        /*!<node points */
+        .percent = 0.28,                    /*!<percent of the total points [%]*/
+        .time = 10,                         /*!<estimated node time [s]*/
+        .x = 1.65,                          /*!<node x position [m]*/
+        .y = 0.2,                           /*!<node y position [m]*/
+        .pool_id = NODE_FRESCO_POOL_ID,     /*!<node pool id */
+        .angle = 270,                       /*!<node arrive direction */
+        .node_state = NODE_UNDONE,          /*!<node state */
+    },
+    doFrescoNode
+};
+
+/* node fire 1 red*/
+node_t node_fire_1_red =
+{
+    {
+        .id = 9,                            /*!<node id */
+        .points = 1,                        /*!<node points */
+        .percent = 0.05,                    /*!<percent of the total points [%]*/
+        .time = 2,                          /*!<estimated node time [s]*/
+        .x = 2.10,                          /*!<node x position [m]*/
+        .y = 0.6,                           /*!<node y position [m]*/
+        .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
+        .angle = 180,                       /*!<node arrive direction */
+        .node_state = NODE_UNDONE,          /*!<node state */
+    },
+    doFireNode
+};
+
+/* node fire 2 red*/
+node_t node_fire_2_red =
+{
+    {
+        .id = 10,                            /*!<node id */
+        .points = 1,                        /*!<node points */
+        .percent = 0.05,                    /*!<percent of the total points [%]*/
+        .time = 2,                          /*!<estimated node time [s]*/
+        .x = 2.60,                          /*!<node x position [m]*/
+        .y = 1.1,                           /*!<node y position [m]*/
+        .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
+        .angle = 270,                       /*!<node arrive direction */
+        .node_state = NODE_UNDONE,          /*!<node state */
+    },
+    doFireNode
+};
+
+/* node fire 3 red*/
+node_t node_fire_3_red =
+{
+    {
+        .id = 11,                            /*!<node id */
+        .points = 1,                        /*!<node points */
+        .percent = 0.05,                    /*!<percent of the total points [%]*/
+        .time = 2,                          /*!<estimated node time [s]*/
+        .x = 2.10,                          /*!<node x position [m]*/
+        .y = 1.0,                           /*!<node y position [m]*/
+        .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
+        .angle = 0,                         /*!<node arrive direction */
+        .node_state = NODE_UNDONE,          /*!<node state */
+    },
+    doFireNode
+};
+
+/* node fire 1 yellow*/
+node_t node_fire_1_yellow =
+{
+    {
+        .id = 9,                            /*!<node id */
+        .points = 1,                        /*!<node points */
+        .percent = 0.05,                    /*!<percent of the total points [%]*/
+        .time = 2,                          /*!<estimated node time [s]*/
+        .x = 0.90,                          /*!<node x position [m]*/
+        .y = 0.6,                           /*!<node y position [m]*/
+        .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
+        .angle = 0,                         /*!<node arrive direction */
+        .node_state = NODE_UNDONE,          /*!<node state */
+    },
+    doFireNode
+};
+
+/* node fire 2 yellow*/
+node_t node_fire_2_yellow =
+{
+    {
+        .id = 10,                            /*!<node id */
+        .points = 1,                        /*!<node points */
+        .percent = 0.05,                    /*!<percent of the total points [%]*/
+        .time = 2,                          /*!<estimated node time [s]*/
+        .x = 0.40,                          /*!<node x position [m]*/
+        .y = 1.1,                           /*!<node y position [m]*/
+        .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
+        .angle = 270,                       /*!<node arrive direction */
+        .node_state = NODE_UNDONE,          /*!<node state */
+    },
+    doFireNode
+};
+
+/* node fire 3 yellow*/
+node_t node_fire_3_yellow =
+{
+    {
+        .id = 11,                            /*!<node id */
+        .points = 1,                        /*!<node points */
+        .percent = 0.05,                    /*!<percent of the total points [%]*/
+        .time = 2,                          /*!<estimated node time [s]*/
+        .x = 0.90,                          /*!<node x position [m]*/
+        .y = 1.0,                           /*!<node y position [m]*/
+        .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
+        .angle = 180,                       /*!<node arrive direction */
+        .node_state = NODE_UNDONE,          /*!<node state */
+    },
+    doFireNode
 };
 
 
