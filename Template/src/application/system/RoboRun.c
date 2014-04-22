@@ -58,8 +58,28 @@ xSemaphoreHandle sSyncRoboRunNodeTask; /*!< for RoboRun <-> node-task sync */
 static node_t* node_task = NULL; /*!< pointer to the current running node */
 
 /* game and strategy */
-static node_t* nodes_red[NODE_QUANTITY] = {&node_mammoth_1}; /*!< node-set for the yellow teamcolor */
-static node_t* nodes_yellow[NODE_QUANTITY] = {&node_mammoth_1}; /*!< node-set for the red teamcolor */
+static node_t* nodes_red[NODE_QUANTITY] = {&node_mammoth_1,
+                                           &node_mammoth_2,
+                                           &node_mammoth_3,
+                                           &node_mammoth_4,
+                                           &node_mammoth_5,
+                                           &node_mammoth_6,
+                                           &node_fresco_1,
+                                           &node_fresco_2,
+                                           &node_fire_1_red,
+                                           &node_fire_2_red,
+                                           &node_fire_3_red}; /*!< node-set for the yellow teamcolor */
+static node_t* nodes_yellow[NODE_QUANTITY] = {&node_mammoth_1,
+                                              &node_mammoth_2,
+                                              &node_mammoth_3,
+                                              &node_mammoth_4,
+                                              &node_mammoth_5,
+                                              &node_mammoth_6,
+                                              &node_fresco_1,
+                                              &node_fresco_2,
+                                              &node_fire_1_yellow,
+                                              &node_fire_2_yellow,
+                                              &node_fire_3_yellow}; /*!< node-set for the red teamcolor */
 static node_t** nodes_game = NULL; /*!< node set of the current game-round */
 static node_t* next_node; /*!< pointer to the next node */
 static uint8_t remain_nodes; /*!< undone nodes */
