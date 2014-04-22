@@ -16,6 +16,8 @@
 /* Includes ------------------------------------------------------------------*/
 /* application */
 #include "../AppConfig.h"
+#include "../CANGatekeeper.h"
+#include "NodeConfig.h"
 #include "FireNode.h"
 
 /* Private typedef -----------------------------------------------------------*/
@@ -35,6 +37,19 @@
 
 /* Private functions ---------------------------------------------------------*/
 
+
+/**
+ * \fn          doFireNode
+ * \brief       Tries to complete the fire node. Reports status.
+ *
+ * \param       param  node parameters
+ * \return      None
+ */
+void doFireNode(node_param_t* param)
+{
+
+
+}
 
 /**
  * @}

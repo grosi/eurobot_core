@@ -30,6 +30,7 @@
 
 
 /* exported function prototypes -----------------------------------------------*/
+extern void doFireNode(node_param_t*);
 
 
 #endif /* FIRE_NODE_H_ */
