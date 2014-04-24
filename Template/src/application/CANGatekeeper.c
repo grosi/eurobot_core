@@ -698,12 +698,12 @@ static inline CAN_data_t rxGotoXY(CanRxMsg* rx_message)
     CAN_data_t message_data;
 
     /* convert to GLP */
-    message_data.goto_x = ((rx_message->Data[0] | GOTO_X_RX_MASK_D0) << GOTO_X_OFFSET_D0) | ((rx_message->Data[1] | GOTO_X_RX_MASK_D1) >> GOTO_X_OFFSET_D1);
-    message_data.goto_y = ((rx_message->Data[1] | GOTO_Y_RX_MASK_D1) << GOTO_Y_OFFSET_D1) | ((rx_message->Data[2] | GOTO_Y_RX_MASK_D2) >> GOTO_Y_OFFSET_D2);
-    message_data.goto_angle = ((rx_message->Data[3] | GOTO_ANGLE_RX_MASK_D3) << GOTO_ANGLE_OFFSET_D3) | ((rx_message->Data[4] | GOTO_ANGLE_RX_MASK_D4) >> GOTO_ANGLE_OFFSET_D4);
-    message_data.goto_speed = ((rx_message->Data[4] | GOTO_SPEED_RX_MASK_D4) << GOTO_SPEED_OFFSET_D4) | ((rx_message->Data[5] | GOTO_SPEED_RX_MASK_D5) >> GOTO_SPEED_OFFSET_D5);
-    message_data.goto_barrier = ((rx_message->Data[5] | GOTO_BARRIER_RX_MASK_D5) << GOTO_BARRIER_OFFSET_D5) | ((rx_message->Data[6] | GOTO_BARRIER_RX_MASK_D6) << GOTO_BARRIER_OFFSET_D6);
-    message_data.goto_barrier |= ((rx_message->Data[7] | GOTO_BARRIER_RX_MASK_D7) >> GOTO_BARRIER_OFFSET_D7);
+    message_data.goto_x = ((rx_message->Data[0] & GOTO_X_RX_MASK_D0) << GOTO_X_OFFSET_D0) | ((rx_message->Data[1] & GOTO_X_RX_MASK_D1) >> GOTO_X_OFFSET_D1);
+    message_data.goto_y = ((rx_message->Data[1] & GOTO_Y_RX_MASK_D1) << GOTO_Y_OFFSET_D1) | ((rx_message->Data[2] & GOTO_Y_RX_MASK_D2) >> GOTO_Y_OFFSET_D2);
+    message_data.goto_angle = ((rx_message->Data[3] & GOTO_ANGLE_RX_MASK_D3) << GOTO_ANGLE_OFFSET_D3) | ((rx_message->Data[4] & GOTO_ANGLE_RX_MASK_D4) >> GOTO_ANGLE_OFFSET_D4);
+    message_data.goto_speed = ((rx_message->Data[4] & GOTO_SPEED_RX_MASK_D4) << GOTO_SPEED_OFFSET_D4) | ((rx_message->Data[5] & GOTO_SPEED_RX_MASK_D5) >> GOTO_SPEED_OFFSET_D5);
+    message_data.goto_barrier = ((rx_message->Data[5] & GOTO_BARRIER_RX_MASK_D5) << GOTO_BARRIER_OFFSET_D5) | ((rx_message->Data[6] & GOTO_BARRIER_RX_MASK_D6) << GOTO_BARRIER_OFFSET_D6);
+    message_data.goto_barrier |= ((rx_message->Data[7] & GOTO_BARRIER_RX_MASK_D7) >> GOTO_BARRIER_OFFSET_D7);
 
     return message_data;
 }
