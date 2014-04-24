@@ -305,7 +305,7 @@ void initNodeResources()
 	setServo_1(SERVO_POS_FRESCO_IN);
 	/* Initialise launcher servo and set start position */
 	initServo_2();
-	setServo_1(SERVO_POS_LAUNCHER_LOAD);
+	setServo_2(SERVO_POS_LAUNCHER_LOAD);
 	/* Initialise fresco sensors */
 	initSensor_Fresco_1();
 	initSensor_Fresco_Wall();
