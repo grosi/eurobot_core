@@ -100,6 +100,7 @@ void LCD_init(void (*delay)(long))
     GPIO_WriteBit(DISPLAY_PORT, DISPLAY_PIN_RS, RESET); /* set RS low */
 
     /* TIM2 init */
+    TIM_DeInit(TIM2);
     timer_init.TIM_CounterMode = TIM_CounterMode_Up;
     timer_init.TIM_Prescaler = 420 - 1; /* 42MHz / 420 = 100kHz */
     timer_init.TIM_ClockDivision = TIM_CKD_DIV1; /* 100KHz / 1 = 100KHz */
