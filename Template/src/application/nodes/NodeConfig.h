@@ -75,7 +75,7 @@ typedef struct
 
 /* exported define ------------------------------------------------------------*/
 /* general */
-#define NODE_QUANTITY              1 //11
+#define NODE_QUANTITY              11
 #define NODE_POOL_QUANTITY         2
 #define NODE_NO_ENEMY              -1
 
@@ -104,7 +104,7 @@ typedef struct
 /* Servo */
 #define SERVO_MOVING_DELAY         200  /* Delay in ms to wait while the servo moves the whole way */
 #define SERVO_POS_FRESCO_IN        2000 /* Servo position: Fresco panel all the way in */
-#define SERVO_POS_FRESCO_OUT       1600 /* Servo position: Fresco panel all the way out */
+#define SERVO_POS_FRESCO_OUT       900//1600 /* Servo position: Fresco panel all the way out */
 #define SERVO_POS_LAUNCHER_LOAD    1750 /* Servo position: Launcher all the way front */
 #define SERVO_POS_LAUNCHER_LAUNCH  1200 /* Servo position: Launcher all the way back */
 
