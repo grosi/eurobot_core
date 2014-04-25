@@ -29,9 +29,9 @@
 /* Pin and Port of the Servo-Interfaces */
 #define SERVO_1_PIN         GPIO_Pin_9 /*!< don't change -> roboboards-shield specific */
 #define SERVO_1_PIN_MODE    GPIO_Mode_AF
-#define SERVO_1_PIN_SPEED   GPIO_Speed_50MHz
+#define SERVO_1_PIN_SPEED   GPIO_Speed_100MHz
 #define SERVO_1_PIN_TYPE    GPIO_OType_PP
-#define SERVO_1_PIN_PUPD    GPIO_PuPd_UP
+#define SERVO_1_PIN_PUPD    GPIO_PuPd_NOPULL
 #define SERVO_1_PORT        GPIOE /*!< don't change -> roboboards-shield specific */
 #define SERVO_1_CHANNEL     TIM_Channel_1 /*!< don't change -> roboboards-shield specific */
 #define SERVO_1_TIMER       TIM1 /*!< don't change -> roboboards-shield specific */
@@ -41,9 +41,9 @@
 
 #define SERVO_2_PIN         GPIO_Pin_11 /*!< don't change -> roboboards-shield specific */
 #define SERVO_2_PIN_MODE    GPIO_Mode_AF
-#define SERVO_2_PIN_SPEED   GPIO_Speed_50MHz
+#define SERVO_2_PIN_SPEED   GPIO_Speed_100MHz
 #define SERVO_2_PIN_TYPE    GPIO_OType_PP
-#define SERVO_2_PIN_PUPD    GPIO_PuPd_UP
+#define SERVO_2_PIN_PUPD    GPIO_PuPd_NOPULL
 #define SERVO_2_PORT        GPIOE /*!< don't change -> roboboards-shield specific */
 #define SERVO_2_CHANNEL     TIM_Channel_2 /*!< don't change -> roboboards-shield specific */
 #define SERVO_2_TIMER       TIM1 /*!< don't change -> roboboards-shield specific */
@@ -53,9 +53,9 @@
 
 #define SERVO_3_PIN         GPIO_Pin_13 /*!< don't change -> roboboards-shield specific */
 #define SERVO_3_PIN_MODE    GPIO_Mode_AF
-#define SERVO_3_PIN_SPEED   GPIO_Speed_50MHz
+#define SERVO_3_PIN_SPEED   GPIO_Speed_100MHz
 #define SERVO_3_PIN_TYPE    GPIO_OType_PP
-#define SERVO_3_PIN_PUPD    GPIO_PuPd_UP
+#define SERVO_3_PIN_PUPD    GPIO_PuPd_NOPULL
 #define SERVO_3_PORT        GPIOE /*!< don't change -> roboboards-shield specific */
 #define SERVO_3_CHANNEL     TIM_Channel_3 /*!< don't change -> roboboards-shield specific */
 #define SERVO_3_TIMER       TIM1 /*!< don't change -> roboboards-shield specific */
@@ -65,9 +65,9 @@
 
 #define SERVO_4_PIN         GPIO_Pin_14 /*!< don't change -> roboboards-shield specific */
 #define SERVO_4_PIN_MODE    GPIO_Mode_AF
-#define SERVO_4_PIN_SPEED   GPIO_Speed_50MHz
+#define SERVO_4_PIN_SPEED   GPIO_Speed_100MHz
 #define SERVO_4_PIN_TYPE    GPIO_OType_PP
-#define SERVO_4_PIN_PUPD    GPIO_PuPd_UP
+#define SERVO_4_PIN_PUPD    GPIO_PuPd_NOPULL
 #define SERVO_4_PORT        GPIOE /*!< don't change -> roboboards-shield specific */
 #define SERVO_4_CHANNEL     TIM_Channel_4 /*!< don't change -> roboboards-shield specific */
 #define SERVO_4_TIMER       TIM1 /*!< don't change -> roboboards-shield specific */
