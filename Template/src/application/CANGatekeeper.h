@@ -38,9 +38,9 @@ typedef union
     /* ELP data-set */
     struct
     {
-        int16_t elp_x; /*!< x-position */
-        int16_t elp_y; /*!< y-position */
-        int16_t elp_angle; /*!< angle in degree */
+        uint16_t elp_x; /*!< x-position */
+        uint16_t elp_y; /*!< y-position */
+        uint16_t elp_angle; /*!< angle in degree */
         uint8_t elp_id; /*!< id of the information source */
     };
     /* GIP data-set */
@@ -61,7 +61,7 @@ typedef union
 /**
  * \brief function pointer for CAN-listeners
  */
-typedef void (*CAN_function_listener_t) (uint16_t, CAN_data_t*);
+typedef void (*CAN_function_listener_t) (uint16_t, CAN_data_t*); //TODO
 
 /**
  * \brief   type for listener-database
