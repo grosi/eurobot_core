@@ -827,7 +827,7 @@ static void vCANRx(void* pvParameters )
                         case ENEMEY_2_POSITION_RESPONSE:
                         case CONFEDERATE_POSITION_RESPONSE:
                             message_data = rxPositionResponse(&rx_message);
-
+                            break;
                         case START_CONFIGURATION_SET:
                             message_data = rxStartConfigurationSet(&rx_message);
                     }
@@ -840,7 +840,7 @@ static void vCANRx(void* pvParameters )
                     /* call the registered rx-function */
                     if(can_listener_buffer[i].function != 0)
                     {
-                        (can_listener_buffer[i].function)(can_listener_buffer[i].id, &message_data);
+                        (can_listener_buffer[i].function)(can_listener_buffer[i].id, &message_data);//TODO
                     }
                 }
             }
