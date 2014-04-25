@@ -102,7 +102,7 @@ typedef struct
 #define NODE_EAST_MAX_ANGLE        44  /*!< note, that the zero line is crossed */
 
 /* Servo */
-#define SERVO_MOVING_DELAY         200  /* Delay in ms to wait while the servo moves the whole way */
+#define SERVO_MOVING_DELAY         400  /* Delay in ms to wait while the servo moves the whole way */
 #define SERVO_POS_FRESCO_IN        2000 /* Servo position: Fresco panel all the way in */
 #define SERVO_POS_FRESCO_OUT       900//1600 /* Servo position: Fresco panel all the way out */
 #define SERVO_POS_LAUNCHER_LOAD    1750 /* Servo position: Launcher all the way front */
