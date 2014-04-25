@@ -530,6 +530,7 @@ void runRoboRunState(portTickType* tick)
             /* searching next node */
             if((weight_dest * weight_dec + weight_enemy * weight_dec + weight_src_dest * weight_inc) < weight_next_node)
             {
+                weight_next_node = weight_dest * weight_dec + weight_enemy * weight_dec + weight_src_dest * weight_inc;
                 next_node = ((*nodes_game)+node_count);
             }
         }
@@ -718,7 +719,7 @@ static void vNodeTask(void* pvParameters )
     for(;;)
     {
     	/* Give goto command */
-    	gotoNode(&node_task->param, &game_state);
+    	//gotoNode(&node_task->param, &game_state);
 
     	/* Only if there was no CAN error */
     	if(node_task->param.node_state != GOTO_CAN_ERROR) {
