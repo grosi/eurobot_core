@@ -461,7 +461,6 @@ void txKalmanPositionRequest()
  * \param[in]   x x-coordinate of the position [12bit]
  * \param[in]   y y-coordinate of the position [12bit]
  * \param[in]   angle angle of the end position [10bit]
- * \param[in]   speed robo-speed [8bit]
  * \param[in]   id
  * \return      None
  */
