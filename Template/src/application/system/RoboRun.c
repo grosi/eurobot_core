@@ -710,6 +710,34 @@ void gotoNode(node_param_t* param, volatile game_state_t* game_state)
 
 			/* Check rangefinder- and current robot state infos, and deside if a emergency break is needed */
 			//TODO (and don't forget to use critical to be sure game_state isn't changed in the meantime --> Issue #27)
+			/* Copy current game state, so it wont be changed during calculation */
+//			game_state_t g;
+//			taskENTER_CRITICAL();
+//				g = game_state;
+//			taskEXIT_CRITICAL();
+//
+//			/* Check first enemy  */
+//			float dx1, dy1, d1;
+//			if((g.enemy_1_x != -1) && (g.enemy_1_y != -1)) {
+//
+//				/* Calculate distances to first enemy */
+//				dx1 = g.enemy_1_x - g.x;
+//				dy1 = g.enemy_1_y - g.y;
+//				d1 = sqrt(dx1*dx1 + dy1*dy1);
+//
+//				/* Check if first enemy is within threshold range */
+//				if(ABS(d1) < RANGEFINDER_THRESHOLD_FW) {
+//
+//					/* Check if he is in front of us */
+//					//TODO:
+//					// gamma = atan(dx1/dx2) = asin(dx1/d1) = acos(dy1/d1)
+//					// beta = 90 + alpha - gamma; /* 180 = (90 - alpha) + beta + gamma */
+//					// if(ABS(beta) < RANGEFINDER_ANGLE_FW) {
+//					// 	stopDrive();
+//					// }
+//				}
+//			}
+			// TODO repeat for second enemy and friend
 
 			/* Semaphore is always only given by rangefinder task and always only taken by node task */
 		}
