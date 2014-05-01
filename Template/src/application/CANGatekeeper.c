@@ -383,7 +383,7 @@ void txGotoConfirm()
  */
 void txGotoStateRequest()
 {
-    createCANMessage(GOTO_CONFIRM,0,0);
+    createCANMessage(GOTO_STATE_REQUEST,0,0);
 }
 
 
