@@ -79,8 +79,8 @@ void vGameTimerCallback(xTimerHandle pxTimer)
         xTimerStop(xGameTimer,0);
         txStopDrive();
 
-        /** \todo Stop the strategy task */
-        SystemReset();
+        /* Stop the strategy task */
+        SystemStop();
     }
     else
     {
