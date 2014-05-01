@@ -103,8 +103,27 @@ static void vSystemTask(void* pvParameters )
     }
 }
 
+
 /**
- * \fn      SysteReset
+ * \fn      SystemStop
+ * \brief   stop the system if the game-timer runs out
+ */
+void SystemStop(void)
+{
+    /* stay in ErrorState if there */
+    if(system_state != runRoboErrorState)
+    {
+        /* set correct state in initialisation state */
+        setConfigRoboSetup2Default();
+        setConfigRoboRunState2Default();
+
+        system_state = runRoboSetupState;
+    }
+}
+
+
+/**
+ * \fn      SystemReset
  * \brief   reset the system
  */
 void SystemReset(void)
