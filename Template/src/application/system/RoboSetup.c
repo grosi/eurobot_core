@@ -382,7 +382,6 @@ void runRoboSetupState(portTickType* tick)
             if(getSensor_Key())
             {
 #endif
-                setConfigRoboSetup2Default();
                 startGameTimer(); /* start game-timer */
                 system_state = runRoboRunState;
 #ifndef STANDALONE
