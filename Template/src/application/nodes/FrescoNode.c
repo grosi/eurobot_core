@@ -35,7 +35,7 @@
 
 
 /* Private variables ---------------------------------------------------------*/
-volatile uint8_t frescoOnWall = 0;    /* Set by EXTI (TODO), value of sensor to check if panel touched wall */
+volatile uint8_t frescoOnWall = 0;    /* Set by EXTI, value of sensor to check if panel touched wall */
 
 
 /* Private function prototypes -----------------------------------------------*/
@@ -134,6 +134,28 @@ void doFrescoNode(node_param_t* param) {
 	default: /* 2 */
 		param->node_state = NODE_UNDONE;
 		break;
+	}
+}
+
+/**
+ * \fn
+ * \brief  This function is called by the external line 1 interrupt handler
+ *
+ * \param  None
+ * \retval None
+ */
+void SensorWall_IT(void) {
+
+	/* Check if rising or falling interrupt */
+	if(getSensor_Fresco_Wall()) {
+
+		/* Nothing detected */
+		frescoOnWall = 0;
+	}
+	else {
+
+		/* Fresco on wall */
+		frescoOnWall = 1;
 	}
 }
 

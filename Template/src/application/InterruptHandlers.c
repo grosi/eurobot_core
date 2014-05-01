@@ -26,6 +26,7 @@
 
 /* application */
 #include "Rangefinder.h"
+#include "nodes/FrescoNode.h"
 #include "System.h"
 #include "InterruptHandlers.h"
 
@@ -62,9 +63,8 @@ void EXTI0_IRQHandler(void) {
  */
 void EXTI1_IRQHandler(void) {
 
-	/*
-	 * Add YourFunction_IT() here
-	 */
+	/* Call fresco node function */
+	SensorWall_IT();
 
 	/* Clear the EXTI line pending bit */
 	EXTI_ClearITPendingBit(EXTI_Line1);
