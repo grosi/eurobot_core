@@ -6,6 +6,9 @@
  * \version 1.2
  *  - IR sensors in new arrangement
  *  - Added flag for separation blocked alarm
+ *  - Added option to only use forward rangefinder by defining RANGEFINDER_ONLY_FW
+ *  - Task is suspended at beginning, so ultrasonic only running when really used
+ *  - Software tested (01.05.2014)
  * \version 1.1
  *  - Changed implementation of IR detection to external interrupt
  *  - Implemented comparison of last three US measures
@@ -26,6 +29,7 @@
  *
  * @{
  */
+
 /* Define to prevent recursive inclusion --------------------------------------*/
 #ifndef RANGEFINDER_TASK_H_
 #define RANGEFINDER_TASK_H_
