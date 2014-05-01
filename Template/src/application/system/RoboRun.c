@@ -696,7 +696,7 @@ void gotoNode(node_param_t* param, volatile game_state_t* game_state)
 		}
 
 		/* Extract time */
-		estimated_GoTo_time = CAN_buffer.state_time && MASK_24BIT;  /* In ms */
+		estimated_GoTo_time = CAN_buffer.state_time;// && MASK_24BIT;  /* In ms */
 		if(estimated_GoTo_time == GOTO_TIME_UNKNOWN) {
 
 			/* Set to 1 second -> Retry in 1 second */
@@ -763,7 +763,7 @@ static void vNodeTask(void* pvParameters )
     for(;;)
     {
     	/* Give goto command */
-    	//gotoNode(&node_task->param, &game_state);
+    	gotoNode(&node_task->param, &game_state);
 
     	/* Only if there was no CAN error */
     	if(node_task->param.node_state != GOTO_CAN_ERROR) {
