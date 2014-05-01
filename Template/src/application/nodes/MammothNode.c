@@ -30,10 +30,11 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* Separation */
-#define SEPARATION_RETRY_DELAY   100  /* Time in ms to wait before rechecking if the separation is blocked */
-#define SEPARATION_MAX_RETRIES   10  /* Number of retries if the seperation is blocked */
-#define SERVO_MAMMOTH_STEP       10   /* Size of single step for the launch servo */ //TODO
-#define SERVO_MAMMOTH_STEP_DELAY 10  /* Delay in ms to wait between steps */ //TODO
+#define SEPARATION_RETRY_DELAY    100  /* Time in ms to wait before rechecking if the separation is blocked */
+#define SEPARATION_MAX_RETRIES    10   /* Number of retries if the seperation is blocked */
+#define SERVO_LAUNCHER_STEP       10   /* Size of single step for the launch servo */ //TODO
+#define SERVO_LAUNCHER_STEP_DELAY 10   /* Delay in ms to wait between steps */ //TODO
+#define SERVO_LAUNCHER_RELIEF     5    /* Servo position delta to relieve servo */
 
 
 /* Private variables ---------------------------------------------------------*/
@@ -91,9 +92,9 @@ uint8_t moveSeparationOutSavely(uint8_t retry_delay, uint8_t retry_count_max) {
  */
 void doMammothNode(node_param_t* param) {
 
-    /* local variables */
-    /* Variable to set the servo position step by step */
-    volatile uint16_t servo_pos;
+	/* local variables */
+	/* Variable to set the servo position step by step */
+	volatile uint16_t servo_pos;
 
 	/* Activate rangefinder (needed to check separation space) */
 	vTaskResume(xRangefinderTask_Handle);
@@ -114,67 +115,65 @@ void doMammothNode(node_param_t* param) {
 
 	/* Move the launcher servo all the way forward, in case it isn't already */
 	setServo_2(SERVO_POS_LAUNCHER_LOAD);
-
-	/* Wait some time while servos move */
-	//vTaskDelay(SERVO_MOVING_DELAY / portTICK_RATE_MS);
-	setServo_2(SERVO_POS_LAUNCHER_LOAD-SERVO_MAMMOTH_STEP); /* servo relieve */
+	/* Wait some time while servo moves */
+	vTaskDelay(SERVO_MOVING_DELAY / portTICK_RATE_MS);
 
 	/* Make sure the separation is all the way in */
 	setServo_1(SERVO_POS_FRESCO_IN);
 
-	/* Move the launcher servo all the way back back to launch the two loaded balls */
+	/* Move the launcher servo all the way back to launch the two loaded balls, step by step */
 	servo_pos = SERVO_POS_LAUNCHER_LOAD;
-    while(servo_pos > (SERVO_POS_LAUNCHER_LAUNCH))
-    {
-        /* Decrement servo position by step size */
-        servo_pos -= SERVO_MAMMOTH_STEP;
+	while(servo_pos > (SERVO_POS_LAUNCHER_LAUNCH+SERVO_LAUNCHER_STEP)) {
 
-        /* Check if it's the last step */
-        if(servo_pos < SERVO_POS_LAUNCHER_LAUNCH)
-        {
+		/* Decrement servo position by step size */
+		servo_pos -= SERVO_LAUNCHER_STEP;
 
-            /* Set the final servo position without over-rotating */
-            setServo_2(SERVO_POS_LAUNCHER_LAUNCH);
-        }
-        else
-        {
-            /* Set the new servo position */
-            setServo_2(servo_pos);
-        }
-        /* Wait some time while servo moves */
-        vTaskDelay(SERVO_MAMMOTH_STEP_DELAY / portTICK_RATE_MS);
-    }
+		/* Check if it's the last step */
+		if(servo_pos < SERVO_POS_LAUNCHER_LAUNCH) {
 
-	/* Wait some time while servo moves */
-	//vTaskDelay(SERVO_MOVING_DELAY / portTICK_RATE_MS);
+			/* Set the final servo position without over-rotating */
+			setServo_2(SERVO_POS_LAUNCHER_LAUNCH);
+		}
+		else {
 
-	/* Move the launcher servo all the way forward */
+			/* Set the new servo position */
+			setServo_2(servo_pos);
+		}
+		/* Wait some time while servo moves */
+		vTaskDelay(SERVO_LAUNCHER_STEP_DELAY / portTICK_RATE_MS);
+	}
+
+	/* Move the launcher servo all the way forward, step by step */
 	servo_pos = SERVO_POS_LAUNCHER_LAUNCH;
-    while(servo_pos < (SERVO_POS_LAUNCHER_LOAD))
-    {
-        /* Decrement servo position by step size */
-        servo_pos += SERVO_MAMMOTH_STEP;
+	while(servo_pos < (SERVO_POS_LAUNCHER_LOAD-SERVO_LAUNCHER_STEP)) {
+		/* Decrement servo position by step size */
+		servo_pos += SERVO_LAUNCHER_STEP;
 
-        /* Check if it's the last step */
-        if(servo_pos > SERVO_POS_LAUNCHER_LOAD)
-        {
+		/* Check if it's the last step */
+		if(servo_pos > SERVO_POS_LAUNCHER_LOAD) {
 
-            /* Set the final servo position without over-rotating */
-            setServo_2(SERVO_POS_LAUNCHER_LOAD);
-        }
-        else
-        {
-            /* Set the new servo position */
-            setServo_2(servo_pos);
-        }
-        /* Wait some time while servo moves */
-        vTaskDelay(SERVO_MAMMOTH_STEP_DELAY / portTICK_RATE_MS);
-    }
-    setServo_2(SERVO_POS_LAUNCHER_LOAD-SERVO_MAMMOTH_STEP); /* servo relieve */
+			/* Set the final servo position without over-rotating */
+			setServo_2(SERVO_POS_LAUNCHER_LOAD);
+		}
+		else {
+
+			/* Set the new servo position */
+			setServo_2(servo_pos);
+		}
+		/* Wait some time while servo moves */
+		vTaskDelay(SERVO_LAUNCHER_STEP_DELAY / portTICK_RATE_MS);
+	}
+	/* Launcher servo relief */
+	if(SERVO_POS_LAUNCHER_LOAD > SERVO_POS_LAUNCHER_LAUNCH) {
+		setServo_2(SERVO_POS_LAUNCHER_LOAD-SERVO_LAUNCHER_RELIEF);
+	}
+	else {
+		setServo_2(SERVO_POS_LAUNCHER_LOAD+SERVO_LAUNCHER_RELIEF);
+	}
 
 	/* Move the separation out if it's save to do so */
 	Mammoth_flag_SeparationDone = moveSeparationOutSavely(SEPARATION_RETRY_DELAY, SEPARATION_MAX_RETRIES);
-	/* Wait some time while servos move */
+	/* Wait some time while servo moves */
 	vTaskDelay(SERVO_MOVING_DELAY / portTICK_RATE_MS);
 
 	/* Make sure the separation is all the way in */
