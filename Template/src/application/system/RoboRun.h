@@ -34,11 +34,11 @@
 #define PLAYGROUND_HEIGH            2    /*!< [m] */
 #define ENEMY_GRID_SIZE_X           0.1  /*!< [m] */
 #define ENEMY_GRID_SIZE_Y           0.1  /*!< [m] */
-#define ENEMY_GRID_CENTER_WEIGHT    1
-#define ENEMY_GRID_FRAME_WEIGHT     0.5
+#define ENEMY_GRID_CENTER_WEIGHT    3
+#define ENEMY_GRID_FRAME_WEIGHT     2
 
 /* node weighting settings */
-#define NODE_ARRIVE_FRAME       150 /*!< [mm] */
+#define NODE_ARRIVE_FRAME       100 /*!< [mm] */
 #define NODE_WORST_ARRIVE       4
 #define NODE_BAD_ARRIVE         3
 #define NODE_WELL_ARRIVE        2

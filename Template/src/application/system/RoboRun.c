@@ -538,9 +538,7 @@ void runRoboRunState(portTickType* tick)
     /* game is finished */
     if(remain_nodes == 0)
     {
-    	setConfigRoboRunState2Default();
-
-    	system_state = runRoboSetupState;
+        SystemStop();
     }
 }
 
@@ -591,6 +589,7 @@ static void vTrackEnemy(uint16_t id, CAN_data_t* data)
 {
     /* local variable */
     uint8_t i;
+    uint8_t x_index, y_index;
 
     /* start tracking only if an enemy exist and game runs */
     if(enemy_count > 0 && getRemainingGameTime() < PLAY_TIME)
@@ -602,25 +601,27 @@ static void vTrackEnemy(uint16_t id, CAN_data_t* data)
                 (data->elp_x/(ENEMY_GRID_SIZE_X*1000)) < (PLAYGROUND_WIDTH/ENEMY_GRID_SIZE_X-1))
         {
             /* set center weight */
-            enemey_position[(int)(data->elp_y/(ENEMY_GRID_SIZE_Y*1000))][(int)(data->elp_x/(ENEMY_GRID_SIZE_X*1000))] += ENEMY_GRID_CENTER_WEIGHT;
+            y_index = (int)(data->elp_y/(ENEMY_GRID_SIZE_Y*1000));
+            x_index = (int)(data->elp_x/(ENEMY_GRID_SIZE_X*1000));
+            enemey_position[y_index][x_index] += ENEMY_GRID_CENTER_WEIGHT;
 
             /* set upper frame edge */
             for(i=0; i<3; i++)
             {
-                enemey_position[(int)(data->elp_y/(ENEMY_GRID_SIZE_Y*1000)-1)][(int)(data->elp_x/(ENEMY_GRID_SIZE_X*1000)-1+i)] += ENEMY_GRID_FRAME_WEIGHT;
+                enemey_position[y_index-1][x_index-1+i] += ENEMY_GRID_FRAME_WEIGHT;
             }
 
             /* set deeper frame edge */
             for(i=0; i<3; i++)
             {
-                enemey_position[(int)(data->elp_y/(ENEMY_GRID_SIZE_Y*1000)+1)][(int)(data->elp_x/(ENEMY_GRID_SIZE_X*1000)-1+i)] += ENEMY_GRID_FRAME_WEIGHT;
+                enemey_position[y_index+1][x_index-1+i] += ENEMY_GRID_FRAME_WEIGHT;
             }
 
             /* set left frame edge */
-            enemey_position[(int)(data->elp_y/(ENEMY_GRID_SIZE_Y*1000))][(int)(data->elp_x/(ENEMY_GRID_SIZE_X*1000)-1)] += ENEMY_GRID_FRAME_WEIGHT;
+            enemey_position[y_index][x_index-1] += ENEMY_GRID_FRAME_WEIGHT;
 
             /* set right frame edge */
-            enemey_position[(int)(data->elp_y/(ENEMY_GRID_SIZE_Y*1000))][(int)(data->elp_x/(ENEMY_GRID_SIZE_X*1000)+1)] += ENEMY_GRID_FRAME_WEIGHT;
+            enemey_position[y_index][x_index+1] += ENEMY_GRID_FRAME_WEIGHT;
         }
 
         /* set game data */
