@@ -23,7 +23,7 @@
 /* exported define ------------------------------------------------------------*/
 /* delays */
 #define SETUP_BUTTON_DELAY      100    // sampling delay of the buttons in ms
-#define SETUP_ELP_START_DELAY   1000
+#define SETUP_ELP_START_DELAY   2000
 
 
 /* cursor */

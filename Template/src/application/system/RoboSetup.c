@@ -355,8 +355,12 @@ void runRoboSetupState(portTickType* tick)
                     setConfigRoboRunState(startnode.result,teamcolor.result,enemy_quantity.result); /* run state */
                     resetGameTimer(); /* set game-timer to default */
 
-                    /* wait for 1 second -> gyro initialisation */
-                    vTaskDelayUntil(tick, SETUP_ELP_START_DELAY / portTICK_RATE_MS);    // wait 10s
+                    /* wait for 2 second -> gyro initialisation and show a message on screen*/
+                    LCD_set_cursor(0,0,0);
+                    LCD_write_string(0,0,(uint8_t*)"Gyro Setup", TRUE);
+                    LCD_set_cursor(MAX_NUMBER_ROW-1,0,0);
+                    LCD_write_string(0,0,(uint8_t*)"Please wait!", TRUE);
+                    vTaskDelayUntil(tick, SETUP_ELP_START_DELAY / portTICK_RATE_MS);    // wait 2s
                     startELP();
 
                     /* goto ready state */
