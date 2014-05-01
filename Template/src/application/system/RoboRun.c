@@ -592,7 +592,8 @@ static void vTrackEnemy(uint16_t id, CAN_data_t* data)
     /* local variable */
     uint8_t i;
 
-    if(enemy_count > 0)
+    /* start tracking only if an enemy exist and game runs */
+    if(enemy_count > 0 && getRemainingGameTime() < PLAY_TIME)
     {
         /* check if the position within the grid and not on the frame */
         if((data->elp_y/(ENEMY_GRID_SIZE_Y*1000)) < (PLAYGROUND_HEIGH/ENEMY_GRID_SIZE_Y-1) &&
