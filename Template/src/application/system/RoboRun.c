@@ -104,6 +104,7 @@ volatile static game_state_t game_state = {0,               /*!< x-position */
 /* Private function prototypes -----------------------------------------------*/
 static void vNodeTask(void*);
 static void vTrackEnemy(uint16_t, CAN_data_t*);
+static void vConfederatePosition(uint16_t, CAN_data_t*);
 static void vMyPosition(uint16_t, CAN_data_t*);
 
 /* Private functions ---------------------------------------------------------*/
@@ -123,16 +124,13 @@ void initRoboRunState()
     initNodeResources();
 #endif
 
-    /* suspend the node task until they will used */
-    //vTaskSuspend(xNodeTask_Handle);
-
     /* create sync-semaphore */
     vSemaphoreCreateBinary(sSyncRoboRunNodeTask); /* for RoboRun <-> node-task sync */
-    //xSemaphoreTake(sSyncRoboRunNodeTask,0); /* take semaphore here, because the node-task will empty at the beginning */
 
     /* set CAN listeners */
     setFunctionCANListener(vTrackEnemy,ENEMEY_1_POSITION_RESPONSE);
     setFunctionCANListener(vTrackEnemy,ENEMEY_2_POSITION_RESPONSE);
+    setFunctionCANListener(vConfederatePosition,CONFEDERATE_POSITION_RESPONSE);
     setFunctionCANListener(vMyPosition,KALMAN_POSITION_RESPONSE);
 }
 
@@ -561,6 +559,22 @@ static void vMyPosition(uint16_t id, CAN_data_t* data)
     game_state.x = data->elp_x;
     game_state.y = data->elp_y;
     game_state.angle = data->elp_angle;
+}
+
+
+/**
+ * \fn          vConfederatePosition
+ * \brief       save the current confederate position
+ * \note        read access has to be atomic!
+ *
+ * \param[in]   id      CAN message ID
+ * \param[in]   data    CAN message data (here, ELP)
+ * \return      None
+ */
+static void vConfederatePosition(uint16_t id, CAN_data_t* data)
+{
+    game_state.confederate_x = data->elp_x;
+    game_state.confederate_y = data->elp_y;
 }
 
 

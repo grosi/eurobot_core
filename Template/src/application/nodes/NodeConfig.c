@@ -55,7 +55,7 @@ node_t node_mammoth_1 =
         .x = 660,                          /*!<node x position [mm]*/
         .y = 1500,                          /*!<node y position [mm]*/
         .pool_id = NODE_MAMMOTH_POOL_ID,    /*!<node pool id */
-        .angle = 270,                       /*!<node arrive direction */
+        .angle = 0,                       /*!<node arrive direction */
         .node_state = NODE_UNDONE,          /*!<node state */
     },
     doMammothNode
