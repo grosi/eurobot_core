@@ -114,8 +114,7 @@ void runRoboInitialisationState(portTickType* tick)
             if(xQueueReceive(qStateResponse,&can_response,ROBOINIT_TIMEOUT / portTICK_RATE_MS) == pdTRUE)
             /* drive-node is okay -> goto to navi-node check */
             {
-                //state = NAVI_INIT;
-                system_state = runRoboSetupState;
+                state = NAVI_INIT;
             }
             /* drive-node is not alive -> goto RoboError state */
             else
