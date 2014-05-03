@@ -47,7 +47,6 @@
 #define GOTO_ACK_DELAY         10      /* Delay in ms to wait before checking goto confirmation */
 #define GOTO_NACK_MAX_RETRIES  5       /* Number of retries (incl. first try) if there's no confirmation from drive system (uint8_t) */
 #define GOTO_STATERESP_TIMEOUT (500 / portTICK_RATE_MS)    /* Timeout in ticks to wait for GoTo state response. (portMAX_DELAY, portTICK_RATE_MS) */
-#define MASK_24BIT             0xFFFFFF
 #define GOTO_TIME_UNKNOWN      0xFFFFFF
 
 
@@ -779,7 +778,7 @@ void gotoNode(node_param_t* param, volatile game_state_t* game_state)
 		}
 
 		/* Extract time */
-		estimated_GoTo_time = CAN_buffer.state_time;// && MASK_24BIT;  /* In ms */
+		estimated_GoTo_time = CAN_buffer.state_time;  /* In ms */
 		if(estimated_GoTo_time == GOTO_TIME_UNKNOWN) {
 
 			/* Set to 1 second -> Retry in 1 second */
@@ -795,10 +794,22 @@ void gotoNode(node_param_t* param, volatile game_state_t* game_state)
             taskEXIT_CRITICAL();
 
 			/* Semaphore received, this means an obstacle was detected! */
-		    if(enemy_count > 0)
-		    {
-		        delta_x = game_state_copy.enemy_1_x - game_state_copy.x;
-		        delta_y = game_state_copy.enemy_1_y - game_state_copy.y;
+			
+			/* Check 0, 1 or both enemies */
+			uint8_t current_enemy_check;
+			for(current_enemy_check = 1; current_enemy_check <= enemy_count; current_enemy_check++)
+			{
+				/* Get deltas and distance for current enemy */
+				if(current_enemy_check == 1)
+				{
+					delta_x = game_state_copy.enemy_1_x - game_state_copy.x;
+					delta_y = game_state_copy.enemy_1_y - game_state_copy.y;
+				}
+				else
+				{
+					delta_x = game_state_copy.enemy_2_x - game_state_copy.x;
+					delta_y = game_state_copy.enemy_2_y - game_state_copy.y;
+				}
 		        distance = sqrt(delta_x*delta_x + delta_y*delta_y);
 
 		        /* Check if a robo is within threshold range */
@@ -908,46 +919,8 @@ void gotoNode(node_param_t* param, volatile game_state_t* game_state)
                         }
 
                     }
-		            //if
-		            /* Check if he is in front of us */
-		            //                  //TODO:
-		            //                  // gamma = atan(dx1/dx2) = asin(dx1/d1) = acos(dy1/d1)
-		            //                  // beta = 90 + alpha - gamma; /* 180 = (90 - alpha) + beta + gamma */
-		            //                  // if(ABS(beta) < RANGEFINDER_ANGLE_FW) {
-		            //                  //  stopDrive();
-		            //                  // }
 		        }
 		    }
-			/* Check rangefinder- and current robot state infos, and deside if a emergency break is needed */
-			//TODO (and don't forget to use critical to be sure game_state isn't changed in the meantime --> Issue #27)
-
-//			game_state_t g;
-//			taskENTER_CRITICAL();
-//				g = game_state;
-//			taskEXIT_CRITICAL();
-//
-//			/* Check first enemy  */
-//			float dx1, dy1, d1;
-//			if((g.enemy_1_x != -1) && (g.enemy_1_y != -1)) {
-//
-//				/* Calculate distances to first enemy */
-//				dx1 = g.enemy_1_x - g.x;
-//				dy1 = g.enemy_1_y - g.y;
-//				d1 = sqrt(dx1*dx1 + dy1*dy1);
-//
-//				/* Check if first enemy is within threshold range */
-//				if(ABS(d1) < RANGEFINDER_THRESHOLD_FW) {
-//
-//					/* Check if he is in front of us */
-//					//TODO:
-//					// gamma = atan(dx1/dx2) = asin(dx1/d1) = acos(dy1/d1)
-//					// beta = 90 + alpha - gamma; /* 180 = (90 - alpha) + beta + gamma */
-//					// if(ABS(beta) < RANGEFINDER_ANGLE_FW) {
-//					// 	stopDrive();
-//					// }
-//				}
-//			}
-			// TODO repeat for second enemy and friend
 
 			/* Semaphore is always only given by rangefinder task and always only taken by node task */
 		}
