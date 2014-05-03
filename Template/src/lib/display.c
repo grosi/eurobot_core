@@ -48,6 +48,7 @@ static volatile uint8_t display_data;
 
 /* Private function prototypes -----------------------------------------------*/
 void LCD_write_byte_instruction(uint8_t);
+void LCD_set_cursor(uint8_t, uint8_t, uint8_t);
 
 
 /**=============================================================================
@@ -272,12 +273,17 @@ void LCD_write_byte_data(uint8_t data)
  *              lcd_column    Column in which the string shall appear (0...MAX_NUMBER_ROW-1)
  *              *string       ASCII-string
  *              clr_line      if TRUE (=1), the rest of the line will be cleared
+ *
+ * \todo        strlen()
  * \return  None
  =============================================================================*/
-void LCD_write_string(uint8_t lcd_row, uint8_t lcd_column, uint8_t* string, uint8_t clr_line)
+void LCD_write_string(uint8_t lcd_row, uint8_t lcd_column, char* string, uint8_t clr_line)
 {
 	uint8_t string_length;
 	uint8_t c = 1;    // initialize c unequal 0
+
+	/* set cursor for the next string */
+	LCD_set_cursor(lcd_row, lcd_column, DISPLAY_CURSOR_BLINK_OFF);
 
 	/* count the bytes (characters) */
 	for(string_length = 0; c != '\0'; string_length++)

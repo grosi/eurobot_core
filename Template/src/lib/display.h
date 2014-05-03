@@ -23,15 +23,20 @@
 /* exported typedef ----------------------------------------------------------*/
 
 /* exported define -----------------------------------------------------------*/
-#define DISPLAY_PIN_SCK     GPIO_Pin_5
-#define DISPLAY_PIN_MOSI    GPIO_Pin_7
-#define DISPLAY_PIN_RS      GPIO_Pin_6
-#define DISPLAY_PORT        GPIOA        // enable related clock in display.c
-#define DISPLAY_PIN_CS      GPIO_Pin_2
-#define DISPLAY_PORT_CS     GPIOB
+#define DISPLAY_PIN_SCK             GPIO_Pin_5
+#define DISPLAY_PIN_MOSI            GPIO_Pin_7
+#define DISPLAY_PIN_RS              GPIO_Pin_6
+#define DISPLAY_PORT                GPIOA        // enable related clock in display.c
+#define DISPLAY_PIN_CS              GPIO_Pin_2
+#define DISPLAY_PORT_CS             GPIOB
 
-#define MAX_NUMBER_ROW      2            // the display has 2 rows
-#define MAX_NUMBER_COLUMN   16           // and 16 columns
+#define MAX_NUMBER_ROW              2            // the display has 2 rows
+#define MAX_NUMBER_COLUMN           16           // and 16 columns
+
+#define DISPLAY_CURSOR_BLINK_OFF    0
+#define DISPLAY_CURSOR_ON           1
+#define DISPLAY_BLINK_ON            2
+#define DISPLAY_CURSOR_BLINK_ON     3
 
 /* exported types ------------------------------------------------------------*/
 /* exported constants --------------------------------------------------------*/
@@ -41,7 +46,7 @@
 extern void LCD_init(void (*delay)(long tick));
 extern void LCD_clear();
 extern void LCD_write_byte_data(uint8_t);
-extern void LCD_write_string(uint8_t, uint8_t, uint8_t*, uint8_t);
+extern void LCD_write_string(uint8_t, uint8_t, char*, uint8_t);
 extern void LCD_set_cursor(uint8_t, uint8_t, uint8_t);
 extern void LCD_set_contrast(uint8_t);
 
