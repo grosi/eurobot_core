@@ -84,11 +84,11 @@ void doFireNode(node_param_t* param)
     /* check CAN response */
     if(CAN_ok != pdTRUE)
     {
-        /* Suspend rangefinder safely */
-        suspendRangefinderTask();
-
-        param->node_state = GOTO_CAN_ERROR;
-        return;
+//        /* Suspend rangefinder safely */
+//        suspendRangefinderTask();
+//
+//        param->node_state = GOTO_CAN_ERROR;
+//        return;
     }
 
     /* Try to take semaphore from rangefinder task */

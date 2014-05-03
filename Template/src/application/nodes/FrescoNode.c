@@ -128,11 +128,12 @@ void doFrescoNode(node_param_t* param) {
 		break;
 
 	case 1:
-		param->node_state = NODE_FINISH_ERROR;
-		break;
+		//param->node_state = NODE_FINISH_ERROR;
+		//break;
 
 	default: /* 2 */
-		param->node_state = NODE_UNDONE;
+	    param->node_state = NODE_FINISH_ERROR;
+		//param->node_state = NODE_UNDONE;
 		break;
 	}
 }

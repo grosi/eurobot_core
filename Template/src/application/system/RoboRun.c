@@ -44,7 +44,7 @@
 /* CAN */
 #define ROBO_SPEED             100     /* Speed in percent */
 #define ROBO_BARRIER_FLAGS     0x0000
-#define GOTO_ACK_DELAY         10      /* Delay in ms to wait before checking goto confirmation */
+#define GOTO_ACK_DELAY         20      /* Delay in ms to wait before checking goto confirmation */
 #define GOTO_NACK_MAX_RETRIES  5       /* Number of retries (incl. first try) if there's no confirmation from drive system (uint8_t) */
 #define GOTO_STATERESP_TIMEOUT (500 / portTICK_RATE_MS)    /* Timeout in ticks to wait for GoTo state response. (portMAX_DELAY, portTICK_RATE_MS) */
 #define GOTO_TIME_UNKNOWN      0xFFFFFF
@@ -60,17 +60,6 @@ xSemaphoreHandle sSyncRoboRunNodeTask; /*!< for RoboRun <-> node-task sync */
 static node_t* node_task = NULL; /*!< pointer to the current running node */
 
 /* game and strategy */
-static node_t* nodes_red[NODE_QUANTITY] = {&node_mammoth_1,
-                                           &node_mammoth_2,
-                                           &node_mammoth_3,
-                                           &node_mammoth_4,
-                                           &node_mammoth_5,
-                                           &node_mammoth_6,
-                                           &node_fresco_1,
-                                           &node_fresco_2,
-                                           &node_fire_1_red,
-                                           &node_fire_2_red,
-                                           &node_fire_3_red}; /*!< node-set for the yellow teamcolor */
 static node_t* nodes_yellow[NODE_QUANTITY] = {&node_mammoth_1,
                                               &node_mammoth_2,
                                               &node_mammoth_3,
@@ -82,6 +71,18 @@ static node_t* nodes_yellow[NODE_QUANTITY] = {&node_mammoth_1,
                                               &node_fire_1_yellow,
                                               &node_fire_2_yellow,
                                               &node_fire_3_yellow}; /*!< node-set for the red teamcolor */
+static node_t* nodes_red[NODE_QUANTITY] = {&node_fresco_1,
+                                           &node_mammoth_2,
+                                           &node_mammoth_3,
+                                           &node_mammoth_4,
+                                           &node_mammoth_5,
+                                           &node_mammoth_6,
+                                           &node_mammoth_1,
+                                           &node_fresco_2,
+                                           &node_fire_1_red,
+                                           &node_fire_2_red,
+                                           &node_fire_3_red}; /*!< node-set for the yellow teamcolor */
+
 static node_t** nodes_game = NULL; /*!< node set of the current game-round */
 static node_t* next_node; /*!< pointer to the next node */
 static uint8_t remain_nodes; /*!< undone nodes */
@@ -155,15 +156,21 @@ uint8_t setConfigRoboRunState(uint8_t start_node_id, uint8_t teamcolor, uint8_t 
     /* local variables */
     uint8_t node_count;
     uint8_t success = 0;
+    int16_t test;
 
     /* load correct node-set */
     if(teamcolor == GIP_TEAMCOLOR_YELLOW)
     {
+//        test = &nodes_yellow[0];
+//        test = &nodes_yellow;
         nodes_game = nodes_yellow;
+        test =((*nodes_yellow)+10)->param.x;
+//        nodes_game = nodes_yellow;
     }
     else
     {
         nodes_game = nodes_red;
+
     }
     remain_nodes = NODE_QUANTITY; /* set counter to max. */
 
@@ -259,6 +266,7 @@ void runRoboRunState(portTickType* tick)
     float weight_enemy; /* enemy tracking weight */
     float weight_src_dest; /* way-time weight (estimated) */
     float weight_next_node; /* the weight of the next node */
+    float weight_dummy;
     uint8_t weight_arrive; /* additional weight for bad arrives */
     uint8_t remain_time;
     uint8_t node_count; /* simple count variable */
@@ -576,6 +584,10 @@ void runRoboRunState(portTickType* tick)
 //                    break;
 //            }
             //TODO
+//            weight_const = ((((*nodes_game)+node_count)->param.points/((*nodes_game)+node_count)->param.time)
+//                    * (1/((*nodes_game)+node_count)->param.percent));
+//            weight_const_2 = weight_arrive * (((*nodes_game)+node_count)->param.node_tries);
+//            weight_dest = weight_const * weight_const_2;
             weight_dest =((((*nodes_game)+node_count)->param.points/((*nodes_game)+node_count)->param.time)
                     * (1/((*nodes_game)+node_count)->param.percent)) * weight_arrive * (((*nodes_game)+node_count)->param.node_tries);
 
@@ -589,10 +601,11 @@ void runRoboRunState(portTickType* tick)
 //            weight_src_dest = sqrtf((fabsf(current_node->param.x - ((*nodes_game)+node_count)->param.x) * fabsf(current_node->param.x - ((*nodes_game)+node_count)->param.x)) +
 //                    (fabsf(current_node->param.y - ((*nodes_game)+node_count)->param.y) * fabsf(current_node->param.y - ((*nodes_game)+node_count)->param.y))) / ROBO_AVERAGE_SPEED;
             //TODO
-            weight_src_dest = sqrtf(((current_node->param.x - ((*nodes_game)+node_count)->param.x) * (current_node->param.x - ((*nodes_game)+node_count)->param.x)) +
-                    ((current_node->param.y - ((*nodes_game)+node_count)->param.y) * (current_node->param.y - ((*nodes_game)+node_count)->param.y))) / ROBO_AVERAGE_SPEED;
+            weight_src_dest = (sqrtf(((current_node->param.x - ((*nodes_game)+node_count)->param.x) * (current_node->param.x - ((*nodes_game)+node_count)->param.x)) +
+                    ((current_node->param.y - ((*nodes_game)+node_count)->param.y) * (current_node->param.y - ((*nodes_game)+node_count)->param.y)))/1000) / ROBO_AVERAGE_SPEED;
 
             /* searching next node */
+            weight_dummy = (weight_dest * weight_dec + weight_enemy * weight_dec + weight_src_dest * weight_inc);
             if((weight_dest * weight_dec + weight_enemy * weight_dec + weight_src_dest * weight_inc) < weight_next_node)
             {
                 weight_next_node = weight_dest * weight_dec + weight_enemy * weight_dec + weight_src_dest * weight_inc;
@@ -662,36 +675,39 @@ static void vTrackEnemy(uint16_t id, CAN_data_t* data)
     uint8_t x_index, y_index;
 
     /* start tracking only if an enemy exist and game runs */
-    if(enemy_count > 0 && getRemainingGameTime() < PLAY_TIME)
+    if(enemy_count > 0 )
     {
-        /* check if the position within the grid and not on the frame */
-        if((data->elp_y/(ENEMY_GRID_SIZE_Y*1000)) < (PLAYGROUND_HEIGH/ENEMY_GRID_SIZE_Y-1) &&
-                (data->elp_y/(ENEMY_GRID_SIZE_Y*1000)) > 0 &&
-                (data->elp_x/(ENEMY_GRID_SIZE_X*1000)) > 0 &&
-                (data->elp_x/(ENEMY_GRID_SIZE_X*1000)) < (PLAYGROUND_WIDTH/ENEMY_GRID_SIZE_X-1))
+        if(getRemainingGameTime() < PLAY_TIME)
         {
-            /* set center weight */
-            y_index = (int)(data->elp_y/(ENEMY_GRID_SIZE_Y*1000));
-            x_index = (int)(data->elp_x/(ENEMY_GRID_SIZE_X*1000));
-            enemey_position[y_index][x_index] += ENEMY_GRID_CENTER_WEIGHT;
-
-            /* set upper frame edge */
-            for(i=0; i<3; i++)
+            /* check if the position within the grid and not on the frame */
+            if((data->elp_y/(ENEMY_GRID_SIZE_Y*1000)) < (PLAYGROUND_HEIGH/ENEMY_GRID_SIZE_Y-1) &&
+                    (data->elp_y/(ENEMY_GRID_SIZE_Y*1000)) > 0 &&
+                    (data->elp_x/(ENEMY_GRID_SIZE_X*1000)) > 0 &&
+                    (data->elp_x/(ENEMY_GRID_SIZE_X*1000)) < (PLAYGROUND_WIDTH/ENEMY_GRID_SIZE_X-1))
             {
-                enemey_position[y_index-1][x_index-1+i] += ENEMY_GRID_FRAME_WEIGHT;
+                /* set center weight */
+                y_index = (int)(data->elp_y/(ENEMY_GRID_SIZE_Y*1000));
+                x_index = (int)(data->elp_x/(ENEMY_GRID_SIZE_X*1000));
+                enemey_position[y_index][x_index] += ENEMY_GRID_CENTER_WEIGHT;
+
+                /* set upper frame edge */
+                for(i=0; i<3; i++)
+                {
+                    enemey_position[y_index-1][x_index-1+i] += ENEMY_GRID_FRAME_WEIGHT;
+                }
+
+                /* set deeper frame edge */
+                for(i=0; i<3; i++)
+                {
+                    enemey_position[y_index+1][x_index-1+i] += ENEMY_GRID_FRAME_WEIGHT;
+                }
+
+                /* set left frame edge */
+                enemey_position[y_index][x_index-1] += ENEMY_GRID_FRAME_WEIGHT;
+
+                /* set right frame edge */
+                enemey_position[y_index][x_index+1] += ENEMY_GRID_FRAME_WEIGHT;
             }
-
-            /* set deeper frame edge */
-            for(i=0; i<3; i++)
-            {
-                enemey_position[y_index+1][x_index-1+i] += ENEMY_GRID_FRAME_WEIGHT;
-            }
-
-            /* set left frame edge */
-            enemey_position[y_index][x_index-1] += ENEMY_GRID_FRAME_WEIGHT;
-
-            /* set right frame edge */
-            enemey_position[y_index][x_index+1] += ENEMY_GRID_FRAME_WEIGHT;
         }
 
         /* set game data */
@@ -753,28 +769,29 @@ void gotoNode(node_param_t* param, volatile game_state_t* game_state)
 
 	/* If still no GoTo confirmation was received, report error */
 	if(CAN_ok != pdTRUE) {
-	    /* Suspend rangefinder safely */
-        suspendRangefinderTask();
-
-		/* No confirmation was received from drive system! */
-		param->node_state = GOTO_CAN_ERROR;
-		return;
+//	    /* Suspend rangefinder safely */
+//        suspendRangefinderTask();
+//
+//		/* No confirmation was received from drive system! */
+//		param->node_state = GOTO_CAN_ERROR;
+//		return;
 	}
 
 	do {
-
+	    /* wait before asking */
+	    vTaskDelay(GOTO_STATERESP_TIMEOUT); //TODO anpassen
 		/* Ask drive system for GoTo state */
 		txGotoStateRequest();
 		/* Receive the GoTo state response */
 		CAN_ok = xQueueReceive(qGotoStateResp, &CAN_buffer, GOTO_STATERESP_TIMEOUT);
 		/* Check if time out */
 		if(CAN_ok != pdTRUE) {
-		    /* Suspend rangefinder safely */
-            suspendRangefinderTask();
-
-			/* Drive system didn't answer within specified time, report */
-			param->node_state =  GOTO_CAN_ERROR;
-			return;
+//		    /* Suspend rangefinder safely */
+//            suspendRangefinderTask();
+//
+//			/* Drive system didn't answer within specified time, report */
+//			param->node_state =  GOTO_CAN_ERROR;
+//			return;
 		}
 
 		/* Extract time */
@@ -815,7 +832,7 @@ void gotoNode(node_param_t* param, volatile game_state_t* game_state)
 		        /* Check if a robo is within threshold range */
 		        if(distance < RANGEFINDER_THRESHOLD_FW*10)
 		        {
-		            phi = acosf(fabs(delta_x)/distance)/MATH_PI*180;
+		            phi = acosf(fabs(delta_x)/distance)/M_PI*180;
 
 		            /* left angle-range border */
 		            if(game_state_copy.angle + RANGEFINDER_ANGLE < 360)
