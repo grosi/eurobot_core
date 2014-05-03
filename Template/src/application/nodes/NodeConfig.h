@@ -56,7 +56,7 @@ typedef struct
     const uint8_t id;
     const uint8_t points;
     const float   percent;
-    const uint8_t time; /*[s]*/
+    const float time; /*[s]*/
     const uint16_t x; /*!<[mm]*/
     const uint16_t y; /*!<[mm]*/
     const uint8_t pool_id;

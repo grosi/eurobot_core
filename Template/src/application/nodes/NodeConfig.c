@@ -161,7 +161,7 @@ node_t node_fresco_1 =
         .percent = 0.28,                    /*!<percent of the total points [%]*/
         .time = 10,                         /*!<estimated node time [s]*/
         .x = 1350,                          /*!<node x position [mm]*/
-        .y = 1815,                           /*!<node y position [mm]*/
+        .y = 1850,                           /*!<node y position [mm]*/
         .pool_id = NODE_FRESCO_POOL_ID,     /*!<node pool id */
         .angle = 90,                       /*!<node arrive direction */
         .node_tries = 1,                     /*!< node repeats (1 = default)*/
@@ -179,7 +179,7 @@ node_t node_fresco_2 =
         .percent = 0.28,                    /*!<percent of the total points [%]*/
         .time = 10,                         /*!<estimated node time [s]*/
         .x = 1650,                          /*!<node x position [mm]*/
-        .y = 1815,                           /*!<node y position [mm]*/
+        .y = 1850,                           /*!<node y position [mm]*/
         .pool_id = NODE_FRESCO_POOL_ID,     /*!<node pool id */
         .angle = 90,                       /*!<node arrive direction */
         .node_tries = 1,                     /*!< node repeats (1 = default)*/
@@ -197,7 +197,7 @@ node_t node_fire_1_red =
         .percent = 0.05,                    /*!<percent of the total points [%]*/
         .time = 2,                          /*!<estimated node time [s]*/
         .x = 2100,                          /*!<node x position [mm]*/
-        .y = 600,                           /*!<node y position [mm]*/
+        .y = 1400,                           /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
         .angle = 0,                       /*!<node arrive direction */
         .node_tries = 1,                     /*!< node repeats (1 = default)*/
@@ -215,7 +215,7 @@ node_t node_fire_2_red =
         .percent = 0.05,                    /*!<percent of the total points [%]*/
         .time = 2,                          /*!<estimated node time [s]*/
         .x = 2600,                          /*!<node x position [mm]*/
-        .y = 1100,                          /*!<node y position [mm]*/
+        .y = 900,                          /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
         .angle = 90,                       /*!<node arrive direction */
         .node_tries = 1,                     /*!< node repeats (1 = default)*/
@@ -233,7 +233,7 @@ node_t node_fire_3_red =
         .percent = 0.05,                    /*!<percent of the total points [%]*/
         .time = 2,                          /*!<estimated node time [s]*/
         .x = 2100,                          /*!<node x position [mm]*/
-        .y = 1000,                           /*!<node y position [mm]*/
+        .y = 400,                           /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
         .angle = 180,                         /*!<node arrive direction */
         .node_tries = 1,                     /*!< node repeats (1 = default)*/
@@ -251,7 +251,7 @@ node_t node_fire_1_yellow =
         .percent = 0.05,                    /*!<percent of the total points [%]*/
         .time = 2,                          /*!<estimated node time [s]*/
         .x = 900,                           /*!<node x position [mm]*/
-        .y = 600,                           /*!<node y position [mm]*/
+        .y = 1400,                           /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
         .angle = 0,                         /*!<node arrive direction */
         .node_tries = 1,                     /*!< node repeats (1 = default)*/
@@ -269,9 +269,9 @@ node_t node_fire_2_yellow =
         .percent = 0.05,                    /*!<percent of the total points [%]*/
         .time = 2,                          /*!<estimated node time [s]*/
         .x =  400,                          /*!<node x position [mm]*/
-        .y = 1100,                          /*!<node y position [mm]*/
+        .y = 900,                          /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
-        .angle = 270,                       /*!<node arrive direction */
+        .angle = 90,                       /*!<node arrive direction */
         .node_tries = 1,                     /*!< node repeats (1 = default)*/
         .node_state = NODE_UNDONE,          /*!<node state */
     },
@@ -287,7 +287,7 @@ node_t node_fire_3_yellow =
         .percent = 0.05,                    /*!<percent of the total points [%]*/
         .time = 2,                          /*!<estimated node time [s]*/
         .x = 900,                           /*!<node x position [mm]*/
-        .y = 1000,                          /*!<node y position [mm]*/
+        .y = 400,                          /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
         .angle = 180,                       /*!<node arrive direction */
         .node_tries = 1,                     /*!< node repeats (1 = default)*/
@@ -323,6 +323,7 @@ void initNodeResources()
 	setServo_2(SERVO_POS_LAUNCHER_LOAD-10);
 	/* Initialise fresco sensors */
 	initSensor_Fresco_1();
+	initSensor_Fresco_2();
 	initSensor_Fresco_Wall();
 	/* Set external interrupt for fresco wall sensor */
 	initSensorEXTI_Wall();
