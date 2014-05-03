@@ -366,21 +366,27 @@ void runRoboRunState(portTickType* tick)
         if(((*nodes_game)+node_count)->param.node_state == NODE_UNDONE)
         {
             /* destination weight depends on the current robo-position and the arrive-direction */
-            /* NORTH */
-            if(((*nodes_game)+node_count)->param.angle >= NODE_NORTH_MIN_ANGLE &&
-                    ((*nodes_game)+node_count)->param.angle <= NODE_NORTH_MAX_ANGLE)
+            /* SOUTH */
+            if(((*nodes_game)+node_count)->param.angle >= NODE_SOUTH_MIN_ANGLE &&
+                    ((*nodes_game)+node_count)->param.angle <= NODE_SOUTH_MAX_ANGLE)
             {
                 /* opposite arrive */
-                if(((*nodes_game)+node_count)->param.y > current_node->param.y)
+                //if(((*nodes_game)+node_count)->param.y > current_node->param.y)
+                if(((*nodes_game)+node_count)->param.y < current_node->param.y)
                 {
                     weight_arrive = NODE_WORST_ARRIVE;
                 /* too close */
-                }else if(((*nodes_game)+node_count)->param.y <= current_node->param.y &&
-                        ((*nodes_game)+node_count)->param.y + NODE_ARRIVE_FRAME > current_node->param.y)
+                }//else if(((*nodes_game)+node_count)->param.y <= current_node->param.y &&
+                        //((*nodes_game)+node_count)->param.y + NODE_ARRIVE_FRAME > current_node->param.y)
+                 else if(((*nodes_game)+node_count)->param.y >= current_node->param.y &&
+                        ((*nodes_game)+node_count)->param.y - NODE_ARRIVE_FRAME < current_node->param.y)
                 {
                     weight_arrive = NODE_BAD_ARRIVE;
                 /* not bad, but not perfect as well */
-                }else if(((*nodes_game)+node_count)->param.y + NODE_ARRIVE_FRAME <= current_node->param.y &&
+                }//else if(((*nodes_game)+node_count)->param.y + NODE_ARRIVE_FRAME <= current_node->param.y &&
+                     //   (((*nodes_game)+node_count)->param.x - NODE_ARRIVE_FRAME >= current_node->param.x ||
+                     //   ((*nodes_game)+node_count)->param.x + NODE_ARRIVE_FRAME <= current_node->param.x))
+                 else if(((*nodes_game)+node_count)->param.y - NODE_ARRIVE_FRAME >= current_node->param.y &&
                         (((*nodes_game)+node_count)->param.x - NODE_ARRIVE_FRAME >= current_node->param.x ||
                         ((*nodes_game)+node_count)->param.x + NODE_ARRIVE_FRAME <= current_node->param.x))
                 {
@@ -392,8 +398,8 @@ void runRoboRunState(portTickType* tick)
                 }
 
             /* EAST */
-            } else if(((*nodes_game)+node_count)->param.angle >= NODE_WEST_MIN_ANGLE &&
-                    ((*nodes_game)+node_count)->param.angle <= NODE_WEST_MAX_ANGLE)
+            } else if(((*nodes_game)+node_count)->param.angle >= NODE_EAST_MIN_ANGLE &&
+                    ((*nodes_game)+node_count)->param.angle <= NODE_EAST_MAX_ANGLE)
             {
                 /* opposite arrive */
                 if(((*nodes_game)+node_count)->param.x > current_node->param.x)
@@ -416,23 +422,29 @@ void runRoboRunState(portTickType* tick)
                     weight_arrive = NODE_PERFECT_ARRIVE;
                 }
 
-            /* SOUTH */
-            } else if(((*nodes_game)+node_count)->param.angle >= NODE_SOUTH_MIN_ANGLE &&
-                    ((*nodes_game)+node_count)->param.angle <= NODE_SOUTH_MAX_ANGLE)
+            /* NORTH */
+            } else if(((*nodes_game)+node_count)->param.angle >= NODE_NORTH_MIN_ANGLE &&
+                    ((*nodes_game)+node_count)->param.angle <= NODE_NORTH_MAX_ANGLE)
             {
                 /* opposite arrive */
-                if(((*nodes_game)+node_count)->param.y < current_node->param.y)
+                //if(((*nodes_game)+node_count)->param.y < current_node->param.y)
+                if(((*nodes_game)+node_count)->param.y > current_node->param.y)
                 {
                     weight_arrive = NODE_WORST_ARRIVE;
                 /* too close */
-                }else if(((*nodes_game)+node_count)->param.y >= current_node->param.y &&
-                        ((*nodes_game)+node_count)->param.y - NODE_ARRIVE_FRAME < current_node->param.y)
+                }//else if(((*nodes_game)+node_count)->param.y >= current_node->param.y &&
+                        //((*nodes_game)+node_count)->param.y - NODE_ARRIVE_FRAME < current_node->param.y)
+                 else if(((*nodes_game)+node_count)->param.y <= current_node->param.y &&
+                        ((*nodes_game)+node_count)->param.y + NODE_ARRIVE_FRAME > current_node->param.y)
                 {
                     weight_arrive = NODE_BAD_ARRIVE;
                 /* not bad, but not perfect as well */
-                }else if(((*nodes_game)+node_count)->param.y - NODE_ARRIVE_FRAME >= current_node->param.y &&
-                        (((*nodes_game)+node_count)->param.x - NODE_ARRIVE_FRAME >= current_node->param.x ||
-                        ((*nodes_game)+node_count)->param.x + NODE_ARRIVE_FRAME <= current_node->param.x))
+                }//else if(((*nodes_game)+node_count)->param.y - NODE_ARRIVE_FRAME >= current_node->param.y &&
+                      //  (((*nodes_game)+node_count)->param.x - NODE_ARRIVE_FRAME >= current_node->param.x ||
+                      //  ((*nodes_game)+node_count)->param.x + NODE_ARRIVE_FRAME <= current_node->param.x))
+                else if(((*nodes_game)+node_count)->param.y + NODE_ARRIVE_FRAME <= current_node->param.y &&
+                    (((*nodes_game)+node_count)->param.x - NODE_ARRIVE_FRAME >= current_node->param.x ||
+                    ((*nodes_game)+node_count)->param.x + NODE_ARRIVE_FRAME <= current_node->param.x))
                 {
                     weight_arrive = NODE_WELL_ARRIVE;
                 /* best possible arrive */
@@ -727,6 +739,8 @@ void gotoNode(node_param_t* param, volatile game_state_t* game_state)
 
 	/* If still no GoTo confirmation was received, report error */
 	if(CAN_ok != pdTRUE) {
+	    /* Suspend rangefinder safely */
+        suspendRangefinderTask();
 
 		/* No confirmation was received from drive system! */
 		param->node_state = GOTO_CAN_ERROR;
@@ -741,6 +755,8 @@ void gotoNode(node_param_t* param, volatile game_state_t* game_state)
 		CAN_ok = xQueueReceive(qGotoStateResp, &CAN_buffer, GOTO_STATERESP_TIMEOUT);
 		/* Check if time out */
 		if(CAN_ok != pdTRUE) {
+		    /* Suspend rangefinder safely */
+            suspendRangefinderTask();
 
 			/* Drive system didn't answer within specified time, report */
 			param->node_state =  GOTO_CAN_ERROR;
