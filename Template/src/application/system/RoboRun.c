@@ -87,6 +87,7 @@ static node_t** nodes_game = NULL; /*!< node set of the current game-round */
 static node_t* next_node; /*!< pointer to the next node */
 static uint8_t remain_nodes; /*!< undone nodes */
 static uint8_t enemy_count; /*!< enemy quantity */
+static uint8_t confederate_quantity; /*!< confederate quantity */
 static uint8_t node_pools[NODE_POOL_QUANTITY][3] = {{NODE_MAMMOTH_POOL_ID,
                                                      NODE_MAMMOTH_POOL_SIZE,
                                                      NODE_MAMMOTH_POOL_LEVEL},
@@ -150,7 +151,7 @@ void initRoboRunState()
  * \retval      1   set start configuration was successful
  * \retval      0   set start configuration was not possible
  */
-uint8_t setConfigRoboRunState(uint8_t start_node_id, uint8_t teamcolor, uint8_t enemies)
+uint8_t setConfigRoboRunState(uint8_t start_node_id, uint8_t teamcolor, uint8_t enemies, uint8_t confederate)
 {
     /* local variables */
     uint8_t node_count;
@@ -180,6 +181,9 @@ uint8_t setConfigRoboRunState(uint8_t start_node_id, uint8_t teamcolor, uint8_t 
 
     /* set enemy count */
     enemy_count = enemies;
+
+    /* set confederate count */
+    confederate_quantity = confederate;
 
     /* create the node-task */
     xTaskCreate(vNodeTask, ( signed char * ) SYSTEM_NODE_TASK_NAME,
@@ -635,8 +639,11 @@ static void vMyPosition(uint16_t id, CAN_data_t* data)
  */
 static void vConfederatePosition(uint16_t id, CAN_data_t* data)
 {
-    game_state.confederate_x = data->elp_x;
-    game_state.confederate_y = data->elp_y;
+    if(confederate_quantity > 0)
+    {
+        game_state.confederate_x = data->elp_x;
+        game_state.confederate_y = data->elp_y;
+    }
 }
 
 
@@ -713,15 +720,23 @@ static void vTrackEnemy(uint16_t id, CAN_data_t* data)
  */
 void gotoNode(node_param_t* param, volatile game_state_t* game_state)
 {
-	/* Activate rangefinder */
+    /* local variables */
+    game_state_t game_state_copy;
+    //uint8_t robo_count;
+    int16_t delta_x, delta_y;
+    uint16_t left_border, right_border;
+    float distance;
+    float phi;
+
+    /* Variable for CAN RX */
+    CAN_data_t CAN_buffer;
+    uint8_t CAN_ok = pdFALSE;
+
+    /* Variable to store estimated GoTo time received from drive system (24 Bit, 1 Bit ca. 1 ms) */
+    uint32_t estimated_GoTo_time;
+
+    /* Activate rangefinder */
 	vTaskResume(xRangefinderTask_Handle);
-
-	/* Variable for CAN RX */
-	CAN_data_t CAN_buffer;
-	uint8_t CAN_ok = pdFALSE;
-
-	/* Variable to store estimated GoTo time received from drive system (24 Bit, 1 Bit ca. 1 ms) */
-	uint32_t estimated_GoTo_time;
 
 	uint8_t i=0;
 	do {
@@ -772,13 +787,140 @@ void gotoNode(node_param_t* param, volatile game_state_t* game_state)
 		}
 
 		/* Try to take semaphore from rangefinder task, use estimated time from drive system as timeout */
-		if(estimated_GoTo_time != 0 && xSemaphoreTake(sSyncNodeTask, estimated_GoTo_time / portTICK_RATE_MS) == pdTRUE) {
+		if(estimated_GoTo_time != 0 && xSemaphoreTake(sSyncNodeTask, estimated_GoTo_time / portTICK_RATE_MS) == pdTRUE)
+		{
+		    /* Copy current game state, so it wont be changed during calculation */
+            taskENTER_CRITICAL();
+            game_state_copy = *game_state;
+            taskEXIT_CRITICAL();
 
 			/* Semaphore received, this means an obstacle was detected! */
+		    if(enemy_count > 0)
+		    {
+		        delta_x = game_state_copy.enemy_1_x - game_state_copy.x;
+		        delta_y = game_state_copy.enemy_1_y - game_state_copy.y;
+		        distance = sqrt(delta_x*delta_x + delta_y*delta_y);
 
+		        /* Check if a robo is within threshold range */
+		        if(distance < RANGEFINDER_THRESHOLD_FW*10)
+		        {
+		            phi = acosf(fabs(delta_x)/distance)/MATH_PI*180;
+
+		            /* left angle-range border */
+		            if(game_state_copy.angle + RANGEFINDER_ANGLE < 360)
+		            {
+		                left_border = game_state_copy.angle + RANGEFINDER_ANGLE;
+		            }
+		            else
+		            {
+		                left_border = game_state_copy.angle + RANGEFINDER_ANGLE - 360;
+		            }
+
+		            /* right angle-range border */
+                    if(game_state_copy.angle - RANGEFINDER_ANGLE >= 0)
+                    {
+                        right_border = game_state_copy.angle - RANGEFINDER_ANGLE;
+                    }
+                    else
+                    {
+                        right_border = game_state_copy.angle - RANGEFINDER_ANGLE + 360;
+                    }
+
+
+		            /* 1. quadrant */
+		            if(delta_x > 0 && delta_y > 0)
+		            {
+		                if(left_border > right_border)
+		                {
+                            if(phi <= left_border && phi >= right_border)
+                            {
+                                //STOPP
+                                txStopDrive();
+                            }
+		                }
+		                else
+		                {
+		                    if((phi <= left_border && phi >= 0) || (phi < 360 && phi >= right_border))
+		                    {
+		                        //STOPP
+		                        txStopDrive();
+		                    }
+		                }
+		            }
+		            /* 2. quadrant */
+		            else if(delta_x <= 0 && delta_y > 0)
+		            {
+		                if(left_border > right_border)
+                        {
+                            if(180-phi <= left_border && 180-phi >= right_border)
+                            {
+                                //STOPP
+                                txStopDrive();
+                            }
+                        }
+		                else
+		                {
+		                    if((180-phi <= left_border && 180-phi >= 0) || (180-phi < 360 && 180-phi >= right_border))
+                            {
+                                //STOPP
+		                        txStopDrive();
+                            }
+		                }
+		            }
+		            /* 3. quadrant */
+                    else if(delta_x <= 0 && delta_y <= 0)
+                    {
+                        if(left_border > right_border)
+                        {
+                            if(180+phi <= left_border && 180+phi >= right_border)
+                            {
+                                //STOPP
+                                txStopDrive();
+                            }
+                        }
+                        else
+                        {
+                            if((180+phi <= left_border && 180+phi >= 0) || (180+phi < 360 && 180+phi >= right_border))
+                            {
+                                //STOPP
+                                txStopDrive();
+                            }
+                        }
+                    }
+		            /* 4. quadrant */
+                    else
+                    {
+                        if(left_border > right_border)
+                        {
+                            if(360-phi <= left_border && 360-phi >= right_border)
+                            {
+                                //STOPP
+                                txStopDrive();
+                            }
+                        }
+                        else
+                        {
+                            if((360-phi <= left_border && 360-phi >= 0) || (360-phi < 360 && 360-phi >= right_border))
+                            {
+                                //STOPP
+                                txStopDrive();
+                            }
+                        }
+
+                    }
+		            //if
+		            /* Check if he is in front of us */
+		            //                  //TODO:
+		            //                  // gamma = atan(dx1/dx2) = asin(dx1/d1) = acos(dy1/d1)
+		            //                  // beta = 90 + alpha - gamma; /* 180 = (90 - alpha) + beta + gamma */
+		            //                  // if(ABS(beta) < RANGEFINDER_ANGLE_FW) {
+		            //                  //  stopDrive();
+		            //                  // }
+		        }
+		    }
 			/* Check rangefinder- and current robot state infos, and deside if a emergency break is needed */
 			//TODO (and don't forget to use critical to be sure game_state isn't changed in the meantime --> Issue #27)
-			/* Copy current game state, so it wont be changed during calculation */
+
 //			game_state_t g;
 //			taskENTER_CRITICAL();
 //				g = game_state;

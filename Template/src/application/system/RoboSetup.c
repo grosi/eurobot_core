@@ -352,7 +352,7 @@ void runRoboSetupState(portTickType* tick)
                     /* send the results and prepare for game*/
                     txStartConfigurationSet(teamcolor.result,enemy_quantity.result,
                             friend_quantity.result,enemy_size1.result,enemy_size2.result); /* CAN */
-                    setConfigRoboRunState(startnode.result,teamcolor.result,enemy_quantity.result); /* run state */
+                    setConfigRoboRunState(startnode.result,teamcolor.result,enemy_quantity.result,friend_quantity.result); /* run state */
                     resetGameTimer(); /* set game-timer to default */
 
                     /* wait for 2 second -> gyro initialisation and show a message on screen*/

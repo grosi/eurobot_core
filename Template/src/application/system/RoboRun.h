@@ -52,7 +52,7 @@
 
 /* exported function prototypes -----------------------------------------------*/
 extern void initRoboRunState();
-extern uint8_t setConfigRoboRunState(uint8_t, uint8_t, uint8_t);
+extern uint8_t setConfigRoboRunState(uint8_t, uint8_t, uint8_t, uint8_t);
 extern void setConfigRoboRunState2Default();
 extern void runRoboRunState(portTickType*);
 
