@@ -25,6 +25,7 @@
 #include "System.h"
 
 /* lib */
+#include "../lib/display.h"
 #include "../lib/sensor.h"
 #include "../lib/exti_sensor.h"
 
@@ -124,13 +125,17 @@ void SystemStop(void)
 
 /**
  * \fn      SystemReset
- * \brief   reset the system
+ * \brief   reset the system by emergency stop
  */
 void SystemReset(void)
 {
     /* stay in ErrorState if there */
     if(system_state != runRoboErrorState)
     {
+        /* message */
+        LCD_write_string(MESSAGE_EMERGENCY_ROW,MESSAGE_EMERGENCY_COLUMN,MESSAGE_EMERGENCY,TRUE);
+        LCD_write_string(MESSAGE_CHECK_ROW,MESSAGE_CHECK_COLUMN,MESSAGE_CHECK,TRUE);
+
         /* set correct state in initialisation state */
         setConfigRoboInitialisationState2Emergency();
         setConfigRoboSetup2Default();
