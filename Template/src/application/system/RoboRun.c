@@ -30,6 +30,9 @@
 #include "RoboError.h" /* next state if this one is completed with errors */
 #include "RoboRun.h"
 
+/* lib */
+#include "lib/display.h"
+
 /* Private typedef -----------------------------------------------------------*/
 
 
@@ -272,35 +275,81 @@ void runRoboRunState(portTickType* tick)
     /*********************/
     /* check node result */
     /*********************/
-    if(current_node->param.node_state == NODE_FINISH_SUCCESS)
+    //TODO testen
+    switch(current_node->param.node_state)
     {
-        remain_nodes--;
+        case NODE_FINISH_SUCCESS:
+            remain_nodes--;
 
-        if(current_node->param.pool_id != NODE_NO_POOL_ID)
-        {
-            node_pools[current_node->param.pool_id-1][NODE_POOL_SIZE_INFO]--;
-
-            /* all necessary nodes within the pool are done */
-            if(node_pools[current_node->param.pool_id-1][NODE_POOL_SIZE_INFO] ==
-                    node_pools[current_node->param.pool_id-1][NODE_POOL_LEVEL_INFO])
+            if(current_node->param.pool_id != NODE_NO_POOL_ID)
             {
-                remain_nodes -= node_pools[current_node->param.pool_id-1][NODE_POOL_LEVEL_INFO];
+                node_pools[current_node->param.pool_id-1][NODE_POOL_SIZE_INFO]--;
 
-                /* set all remaining nodes of the pool to FINISH_SUCCESS */
-                for(node_count = 0; node_count < NODE_QUANTITY; node_count++)
+                /* all necessary nodes within the pool are done */
+                if(node_pools[current_node->param.pool_id-1][NODE_POOL_SIZE_INFO] ==
+                        node_pools[current_node->param.pool_id-1][NODE_POOL_LEVEL_INFO])
                 {
-                    if(((*nodes_game)+node_count)->param.pool_id == current_node->param.pool_id)
+                    remain_nodes -= node_pools[current_node->param.pool_id-1][NODE_POOL_LEVEL_INFO];
+
+                    /* set all remaining nodes of the pool to FINISH_SUCCESS */
+                    for(node_count = 0; node_count < NODE_QUANTITY; node_count++)
                     {
-                        ((*nodes_game)+node_count)->param.node_state = NODE_FINISH_SUCCESS;
+                        if(((*nodes_game)+node_count)->param.pool_id == current_node->param.pool_id)
+                        {
+                            ((*nodes_game)+node_count)->param.node_state = NODE_FINISH_SUCCESS;
+                        }
                     }
                 }
             }
-        }
+            break;
+
+
+        /* Node not complete -> try again later */
+        case NODE_FINISH_ERROR:
+            current_node->param.node_tries++;
+            current_node->param.node_state = NODE_UNDONE;
+            break;
+
+
+        /* no CAN communication */
+        case GOTO_CAN_ERROR:
+        default:
+            /* error message and state change */
+            LCD_write_string(MESSAGE_ERROR_ROW, MESSAGE_ERROR_COLUMN, MESSAGE_ERROR, TRUE);
+            LCD_write_string(MESSAGE_RESTART_ROW, MESSAGE_RESTART_COLUMN, MESSAGE_RESTART, TRUE);
+
+            system_state = runRoboErrorState;
     }
-    else
-    {
-        remain_nodes--;
-    }
+
+//    if(current_node->param.node_state == NODE_FINISH_SUCCESS)
+//    {
+//        remain_nodes--;
+//
+//        if(current_node->param.pool_id != NODE_NO_POOL_ID)
+//        {
+//            node_pools[current_node->param.pool_id-1][NODE_POOL_SIZE_INFO]--;
+//
+//            /* all necessary nodes within the pool are done */
+//            if(node_pools[current_node->param.pool_id-1][NODE_POOL_SIZE_INFO] ==
+//                    node_pools[current_node->param.pool_id-1][NODE_POOL_LEVEL_INFO])
+//            {
+//                remain_nodes -= node_pools[current_node->param.pool_id-1][NODE_POOL_LEVEL_INFO];
+//
+//                /* set all remaining nodes of the pool to FINISH_SUCCESS */
+//                for(node_count = 0; node_count < NODE_QUANTITY; node_count++)
+//                {
+//                    if(((*nodes_game)+node_count)->param.pool_id == current_node->param.pool_id)
+//                    {
+//                        ((*nodes_game)+node_count)->param.node_state = NODE_FINISH_SUCCESS;
+//                    }
+//                }
+//            }
+//        }
+//    }
+//    else
+//    {
+//        remain_nodes--;
+//    }
 
 
     /******************/
@@ -511,8 +560,9 @@ void runRoboRunState(portTickType* tick)
 //                    }
 //                    break;
 //            }
+            //TODO
             weight_dest =((((*nodes_game)+node_count)->param.points/((*nodes_game)+node_count)->param.time)
-                    * (1/((*nodes_game)+node_count)->param.percent)) * weight_arrive;
+                    * (1/((*nodes_game)+node_count)->param.percent)) * weight_arrive * (((*nodes_game)+node_count)->param.node_tries);
 
             /* read out the enemy track-position for the node location */
             taskENTER_CRITICAL();
@@ -521,9 +571,11 @@ void runRoboRunState(portTickType* tick)
             taskEXIT_CRITICAL();
 
             /* source -> destination node distance-time weight */
-            weight_src_dest = sqrtf((fabsf(current_node->param.x - ((*nodes_game)+node_count)->param.x) * fabsf(current_node->param.x - ((*nodes_game)+node_count)->param.x)) +
-                    (fabsf(current_node->param.y - ((*nodes_game)+node_count)->param.y) * fabsf(current_node->param.y - ((*nodes_game)+node_count)->param.y))) / ROBO_AVERAGE_SPEED;
-
+//            weight_src_dest = sqrtf((fabsf(current_node->param.x - ((*nodes_game)+node_count)->param.x) * fabsf(current_node->param.x - ((*nodes_game)+node_count)->param.x)) +
+//                    (fabsf(current_node->param.y - ((*nodes_game)+node_count)->param.y) * fabsf(current_node->param.y - ((*nodes_game)+node_count)->param.y))) / ROBO_AVERAGE_SPEED;
+            //TODO
+            weight_src_dest = sqrtf(((current_node->param.x - ((*nodes_game)+node_count)->param.x) * (current_node->param.x - ((*nodes_game)+node_count)->param.x)) +
+                    ((current_node->param.y - ((*nodes_game)+node_count)->param.y) * (current_node->param.y - ((*nodes_game)+node_count)->param.y))) / ROBO_AVERAGE_SPEED;
 
             /* searching next node */
             if((weight_dest * weight_dec + weight_enemy * weight_dec + weight_src_dest * weight_inc) < weight_next_node)

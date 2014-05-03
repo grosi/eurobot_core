@@ -56,6 +56,7 @@ node_t node_mammoth_1 =
         .y = 1500,                          /*!<node y position [mm]*/
         .pool_id = NODE_MAMMOTH_POOL_ID,    /*!<node pool id */
         .angle = 0,                       /*!<node arrive direction */
+        .node_tries = 1,                     /*!< node repeats (1 = default)*/
         .node_state = NODE_UNDONE,          /*!<node state */
     },
     doMammothNode
@@ -73,6 +74,7 @@ node_t node_mammoth_2 =
         .y = 1500,                          /*!<node y position [mm]*/
         .pool_id = NODE_MAMMOTH_POOL_ID,    /*!<node pool id */
         .angle = 0,                       /*!<node arrive direction */
+        .node_tries = 1,                     /*!< node repeats (1 = default)*/
         .node_state = NODE_UNDONE,          /*!<node state */
     },
     doMammothNode
@@ -90,6 +92,7 @@ node_t node_mammoth_3 =
         .y = 1500,                           /*!<node y position [mm]*/
         .pool_id = NODE_MAMMOTH_POOL_ID,    /*!<node pool id */
         .angle = 0,                       /*!<node arrive direction */
+        .node_tries = 1,                     /*!< node repeats (1 = default)*/
         .node_state = NODE_UNDONE,          /*!<node state */
     },
     doMammothNode
@@ -107,6 +110,7 @@ node_t node_mammoth_4 =
         .y = 1510,                           /*!<node y position [mm]*/
         .pool_id = NODE_MAMMOTH_POOL_ID,    /*!<node pool id */
         .angle = 0,                       /*!<node arrive direction */
+        .node_tries = 1,                     /*!< node repeats (1 = default)*/
         .node_state = NODE_UNDONE,          /*!<node state */
     },
     doMammothNode
@@ -124,6 +128,7 @@ node_t node_mammoth_5 =
         .y = 1500,                           /*!<node y position [mm]*/
         .pool_id = NODE_MAMMOTH_POOL_ID,    /*!<node pool id */
         .angle = 0,                       /*!<node arrive direction */
+        .node_tries = 1,                     /*!< node repeats (1 = default)*/
         .node_state = NODE_UNDONE,          /*!<node state */
     },
     doMammothNode
@@ -141,6 +146,7 @@ node_t node_mammoth_6 =
         .y = 1500,                           /*!<node y position [mm]*/
         .pool_id = NODE_MAMMOTH_POOL_ID,    /*!<node pool id */
         .angle = 0,                       /*!<node arrive direction */
+        .node_tries = 1,                     /*!< node repeats (1 = default)*/
         .node_state = NODE_UNDONE,          /*!<node state */
     },
     doMammothNode
@@ -158,6 +164,7 @@ node_t node_fresco_1 =
         .y = 1815,                           /*!<node y position [mm]*/
         .pool_id = NODE_FRESCO_POOL_ID,     /*!<node pool id */
         .angle = 90,                       /*!<node arrive direction */
+        .node_tries = 1,                     /*!< node repeats (1 = default)*/
         .node_state = NODE_UNDONE,          /*!<node state */
     },
     doFrescoNode
@@ -175,6 +182,7 @@ node_t node_fresco_2 =
         .y = 1815,                           /*!<node y position [mm]*/
         .pool_id = NODE_FRESCO_POOL_ID,     /*!<node pool id */
         .angle = 90,                       /*!<node arrive direction */
+        .node_tries = 1,                     /*!< node repeats (1 = default)*/
         .node_state = NODE_UNDONE,          /*!<node state */
     },
     doFrescoNode
@@ -192,6 +200,7 @@ node_t node_fire_1_red =
         .y = 600,                           /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
         .angle = 0,                       /*!<node arrive direction */
+        .node_tries = 1,                     /*!< node repeats (1 = default)*/
         .node_state = NODE_UNDONE,          /*!<node state */
     },
     doFireNode
@@ -209,6 +218,7 @@ node_t node_fire_2_red =
         .y = 1100,                          /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
         .angle = 90,                       /*!<node arrive direction */
+        .node_tries = 1,                     /*!< node repeats (1 = default)*/
         .node_state = NODE_UNDONE,          /*!<node state */
     },
     doFireNode
@@ -226,6 +236,7 @@ node_t node_fire_3_red =
         .y = 1000,                           /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
         .angle = 180,                         /*!<node arrive direction */
+        .node_tries = 1,                     /*!< node repeats (1 = default)*/
         .node_state = NODE_UNDONE,          /*!<node state */
     },
     doFireNode
@@ -243,6 +254,7 @@ node_t node_fire_1_yellow =
         .y = 600,                           /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
         .angle = 0,                         /*!<node arrive direction */
+        .node_tries = 1,                     /*!< node repeats (1 = default)*/
         .node_state = NODE_UNDONE,          /*!<node state */
     },
     doFireNode
@@ -260,6 +272,7 @@ node_t node_fire_2_yellow =
         .y = 1100,                          /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
         .angle = 270,                       /*!<node arrive direction */
+        .node_tries = 1,                     /*!< node repeats (1 = default)*/
         .node_state = NODE_UNDONE,          /*!<node state */
     },
     doFireNode
@@ -277,6 +290,7 @@ node_t node_fire_3_yellow =
         .y = 1000,                          /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
         .angle = 180,                       /*!<node arrive direction */
+        .node_tries = 1,                     /*!< node repeats (1 = default)*/
         .node_state = NODE_UNDONE,          /*!<node state */
     },
     doFireNode

@@ -61,6 +61,7 @@ typedef struct
     const uint16_t y; /*!<[mm]*/
     const uint8_t pool_id;
     const uint16_t angle; /*10 bit, 1 bit =ca. 1°*/
+    uint8_t node_tries; /*!< how many times the node was the current node*/
     node_state_t node_state;
 }node_param_t;
 
