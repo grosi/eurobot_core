@@ -64,6 +64,35 @@
 #define SETUP_READY_CURSOR_DEFAULT 5
 #define SETUP_READY_RESULT 0 // 0 = No, 1 = YES
 
+/* info messages */
+#define MESSAGE_WAIT "Please wait!"
+#define MESSAGE_WAIT_COLUMN 0
+#define MESSAGE_WAIT_ROW 1
+#define MESSAGE_RESTART "Please restart!"
+#define MESSAGE_RESTART_COLUMN 0
+#define MESSAGE_RESTART_ROW 1
+#define MESSAGE_CHECK "Please check!"
+#define MESSAGE_CHECK_COLUMN 0
+#define MESSAGE_CHECK_ROW 1
+#define MESSAGE_EMERGENCY "Emergency"
+#define MESSAGE_EMERGENCY_COLUMN 0
+#define MESSAGE_EMERGENCY_ROW 0
+#define MESSAGE_RUN "RUN"
+#define MESSAGE_RUN_COLUMN 0
+#define MESSAGE_RUN_ROW 0
+#define MESSAGE_AWAY "GO AWAY!"
+#define MESSAGE_AWAY_COLUMN 0
+#define MESSAGE_AWAY_ROW 1
+#define MESSAGE_INIT "Robo Init"
+#define MESSAGE_INIT_COLUMN 0
+#define MESSAGE_INIT_ROW 0
+#define MESSAGE_GYRO "Gyro Setup"
+#define MESSAGE_GYRO_COLUMN 0
+#define MESSAGE_GYRO_ROW 0
+#define MESSAGE_ERROR "Error"
+#define MESSAGE_ERROR_COLUMN 0
+#define MESSAGE_ERROR_ROW 0
+
 
 /* exported macro -------------------------------------------------------------*/
 

@@ -36,14 +36,14 @@
  */
 typedef struct
 {
-    uint8_t title[MAX_NUMBER_COLUMN+1];   // configuration title
-    uint8_t byte0[2];                     // byte0 for "<" or "-"
-    uint8_t byte15[2];                    // byte15 for ">" or "+"
-    uint8_t opt1[MAX_NUMBER_COLUMN+1];    // option 1
+    char title[MAX_NUMBER_COLUMN+1];   // configuration title
+    char byte0[2];                     // byte0 for "<" or "-"
+    char byte15[2];                    // byte15 for ">" or "+"
+    char opt1[MAX_NUMBER_COLUMN+1];    // option 1
     const uint8_t pos1;                   // position of option 1 (0... (MAX_NUMBER_COLUMN-1))
-    uint8_t opt2[MAX_NUMBER_COLUMN+1];    // option 2 (could change in an adjusting menu)
+    char opt2[MAX_NUMBER_COLUMN+1];    // option 2 (could change in an adjusting menu)
     const uint8_t pos2;                   // position of option 2 (0... (MAX_NUMBER_COLUMN-1))
-    uint8_t opt3[MAX_NUMBER_COLUMN+1];    // option 3
+    char opt3[MAX_NUMBER_COLUMN+1];    // option 3
     const uint8_t pos3;                   // position of option 3 (0... (MAX_NUMBER_COLUMN-1))
     uint8_t cursor_position;              // current position of the cursor
     uint8_t max_result;                   // max. possible result
@@ -356,11 +356,12 @@ void runRoboSetupState(portTickType* tick)
                     resetGameTimer(); /* set game-timer to default */
 
                     /* wait for 2 second -> gyro initialisation and show a message on screen*/
-                    LCD_set_cursor(0,0,0);
-                    LCD_write_string(0,0,(uint8_t*)"Gyro Setup", TRUE);
-                    LCD_set_cursor(MAX_NUMBER_ROW-1,0,0);
-                    LCD_write_string(0,0,(uint8_t*)"Please wait!", TRUE);
-                    vTaskDelayUntil(tick, SETUP_ELP_START_DELAY / portTICK_RATE_MS);    // wait 2s
+                    /* message */
+                    LCD_write_string(MESSAGE_GYRO_ROW,MESSAGE_GYRO_COLUMN,MESSAGE_GYRO, TRUE);
+                    LCD_write_string(MESSAGE_WAIT_ROW,MESSAGE_WAIT_COLUMN,MESSAGE_WAIT, TRUE);
+
+                    vTaskDelay(SETUP_ELP_START_DELAY / portTICK_RATE_MS);    // wait 2s
+
                     startELP();
 
                     /* goto ready state */
@@ -382,6 +383,10 @@ void runRoboSetupState(portTickType* tick)
             if(getSensor_Key())
             {
 #endif
+                /* message */
+                LCD_write_string(MESSAGE_RUN_ROW,MESSAGE_RUN_COLUMN,MESSAGE_RUN,TRUE);
+                LCD_write_string(MESSAGE_AWAY_ROW,MESSAGE_AWAY_COLUMN,MESSAGE_AWAY,TRUE);
+
                 startGameTimer(); /* start game-timer */
                 system_state = runRoboRunState;
 #ifndef STANDALONE
@@ -413,23 +418,17 @@ void runRoboSetupState(portTickType* tick)
 static void write_current_menu(menu_t **current_menu)
 {
     /* write title */
-    LCD_set_cursor(0,0,0);
     LCD_write_string(0, 0, (*current_menu)->title, TRUE);
 
     /* write byte0 */
-    LCD_set_cursor(MAX_NUMBER_ROW-1,0,0);
     LCD_write_string(MAX_NUMBER_ROW-1, 0, (*current_menu)->byte0, TRUE);
 
     /* write options */
-    LCD_set_cursor(MAX_NUMBER_ROW-1,(*current_menu)->pos1,0);
     LCD_write_string(MAX_NUMBER_ROW-1, (*current_menu)->pos1, (*current_menu)->opt1, TRUE);
-    LCD_set_cursor(MAX_NUMBER_ROW-1,(*current_menu)->pos2,0);
     LCD_write_string(MAX_NUMBER_ROW-1, (*current_menu)->pos2, (*current_menu)->opt2, TRUE);
-    LCD_set_cursor(MAX_NUMBER_ROW-1,(*current_menu)->pos3,0);
     LCD_write_string(MAX_NUMBER_ROW-1, (*current_menu)->pos3, (*current_menu)->opt3, TRUE);
 
     /* write byte15 */
-    LCD_set_cursor(MAX_NUMBER_ROW-1,MAX_NUMBER_COLUMN-1,0);
     LCD_write_string(MAX_NUMBER_ROW-1, MAX_NUMBER_COLUMN-1, (*current_menu)->byte15, TRUE);
 
     /* set cursor */
