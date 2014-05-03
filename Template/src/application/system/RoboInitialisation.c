@@ -99,15 +99,21 @@ void runRoboInitialisationState(portTickType* tick)
     /* small statemachine */
     switch(state)
     {
+        /* first init state */
         case DISPLAY_INIT:
             LCD_init((void(*)(long))vTaskDelay);
+
+            /* plot message */
+            LCD_write_string(MESSAGE_INIT_ROW, MESSAGE_INIT_COLUMN, MESSAGE_INIT, TRUE);
+            LCD_write_string(MESSAGE_WAIT_ROW, MESSAGE_WAIT_COLUMN, MESSAGE_WAIT, TRUE);
 
             state = DRIVE_INIT;
 
             break;
 
         case DRIVE_INIT:
-            /* request a sign of live from the drive-node */
+            /* request a sign of live from the drive-node (wait 1s before) */
+            vTaskDelay(ROBOINIT_TIMEOUT);
             txCheckDriveRequest();
 
             /* wait for max 1s */
@@ -119,6 +125,10 @@ void runRoboInitialisationState(portTickType* tick)
             /* drive-node is not alive -> goto RoboError state */
             else
             {
+                /* error message */
+                LCD_write_string(MESSAGE_ERROR_ROW, MESSAGE_ERROR_COLUMN, MESSAGE_ERROR, TRUE);
+                LCD_write_string(MESSAGE_RESTART_ROW, MESSAGE_RESTART_COLUMN, MESSAGE_RESTART, TRUE);
+
                 system_state = runRoboErrorState;
             }
             break;
@@ -136,6 +146,10 @@ void runRoboInitialisationState(portTickType* tick)
             /* navi-node is not alive -> goto RoboError state */
             else
             {
+                /* error message */
+                LCD_write_string(MESSAGE_ERROR_ROW, MESSAGE_ERROR_COLUMN, MESSAGE_ERROR, TRUE);
+                LCD_write_string(MESSAGE_RESTART_ROW, MESSAGE_RESTART_COLUMN, MESSAGE_RESTART, TRUE);
+
                 system_state = runRoboErrorState;
             }
             break;
