@@ -108,7 +108,7 @@ void doMammothNode(node_param_t* param) {
 		if(!Mammoth_flag_SeparationDone) {
 
 			/* Report status */
-			param->node_state = NODE_UNDONE;
+			param->node_state = NODE_FINISH_ERROR;
 			return;
 		}
 	}

@@ -121,20 +121,11 @@ void doFrescoNode(node_param_t* param) {
 	} while(n_frescos_present && (n_fresco_attempts <= FRESCO_MAX_RETRIES));
 
 	/* Report status */
-	switch(n_frescos_present) {
-
-	case 0:
+	if(n_frescos_present > 0) {
+		param->node_state = NODE_FINISH_ERROR;
+	}
+	else {
 		param->node_state = NODE_FINISH_SUCCESS;
-		break;
-
-	case 1:
-		//param->node_state = NODE_FINISH_ERROR;
-		//break;
-
-	default: /* 2 */
-	    param->node_state = NODE_FINISH_ERROR;
-		//param->node_state = NODE_UNDONE;
-		break;
 	}
 }
 
