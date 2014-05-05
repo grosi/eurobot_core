@@ -73,6 +73,7 @@ void doFrescoNode(node_param_t* param) {
 
 				/* Set the final servo position without over-rotating */
 				setServo_1(SERVO_POS_FRESCO_OUT);
+				servo_pos = SERVO_POS_FRESCO_OUT;
 			}
 			else {
 
@@ -84,7 +85,6 @@ void doFrescoNode(node_param_t* param) {
 		}
 
 		/* Move fresco panel in, step by step */
-		servo_pos = SERVO_POS_FRESCO_OUT;  /* Current position */
 		while(servo_pos < (SERVO_POS_FRESCO_IN-SERVO_FRESCO_STEP)) {
 
 			/* Increment servo position by step size */
