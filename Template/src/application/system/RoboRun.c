@@ -739,9 +739,8 @@ void gotoNode(node_param_t* param, volatile game_state_t* game_state)
     game_state_t game_state_copy;
     //uint8_t robo_count;
     int16_t delta_x, delta_y;
-    uint16_t left_border, right_border;
-    float distance;
-    float phi;
+    uint16_t distance;
+    int16_t alpha, phi;
 
     /* Variable for CAN RX */
     CAN_data_t CAN_buffer;
@@ -805,141 +804,54 @@ void gotoNode(node_param_t* param, volatile game_state_t* game_state)
 		/* Try to take semaphore from rangefinder task, use estimated time from drive system as timeout */
 		if(estimated_GoTo_time != 0 && xSemaphoreTake(sSyncNodeTask, estimated_GoTo_time / portTICK_RATE_MS) == pdTRUE)
 		{
-		    /* Copy current game state, so it wont be changed during calculation */
-            taskENTER_CRITICAL();
-            game_state_copy = *game_state;
-            taskEXIT_CRITICAL();
-
 			/* Semaphore received, this means an obstacle was detected! */
 			
-			/* Check 0, 1 or both enemies */
+			/* Copy current game state, so it wont be changed during calculation */
+			taskENTER_CRITICAL();
+			game_state_copy = *game_state;
+			taskEXIT_CRITICAL();
+
+			/* Check 0, 1 or both enemies */ //TODO: Check friend?
 			uint8_t current_enemy_check;
 			for(current_enemy_check = 1; current_enemy_check <= enemy_count; current_enemy_check++)
 			{
 				/* Get deltas and distance for current enemy */
-				if(current_enemy_check == 1)
-				{
+				if(current_enemy_check == 1) {
+
 					delta_x = game_state_copy.enemy_1_x - game_state_copy.x;
 					delta_y = game_state_copy.enemy_1_y - game_state_copy.y;
 				}
-				else
-				{
+				else {
+
 					delta_x = game_state_copy.enemy_2_x - game_state_copy.x;
 					delta_y = game_state_copy.enemy_2_y - game_state_copy.y;
 				}
-		        distance = sqrt(delta_x*delta_x + delta_y*delta_y);
+				/* Calculate distance to the enemy */
+				distance = round(sqrt(delta_x*delta_x + delta_y*delta_y));
 
-		        /* Check if a robo is within threshold range */
-		        if(distance < RANGEFINDER_THRESHOLD_FW*10)
-		        {
-		            phi = acosf(fabs(delta_x)/distance)/M_PI*180;
+				/* Check if a robo is within threshold range (mm) */
+				if(distance < RANGEFINDER_THRESHOLD_FW*10) {
 
-		            /* left angle-range border */
-		            if(game_state_copy.angle + RANGEFINDER_ANGLE < 360)
-		            {
-		                left_border = game_state_copy.angle + RANGEFINDER_ANGLE;
-		            }
-		            else
-		            {
-		                left_border = game_state_copy.angle + RANGEFINDER_ANGLE - 360;
-		            }
+					/* Convert angle to -180 <= alpha < 180 */
+					if(game_state_copy.angle < 180) {
+						alpha = game_state_copy.angle;
+					}
+					else {
+						alpha = game_state_copy.angle - 360;
+					}
+					/* Calculate the angle to the enemy (relative the map grid, -180 <= alpha < 180) */
+					phi = -round(atan2f(delta_y, delta_x)/M_PI*180);
+					/* Check if the angle to the enemy (relative to our angle, -180 <= alpha < 180) is within range */
+					if(phi-alpha <= RANGEFINDER_ANGLE) {
 
-		            /* right angle-range border */
-                    if(game_state_copy.angle - RANGEFINDER_ANGLE >= 0)
-                    {
-                        right_border = game_state_copy.angle - RANGEFINDER_ANGLE;
-                    }
-                    else
-                    {
-                        right_border = game_state_copy.angle - RANGEFINDER_ANGLE + 360;
-                    }
+						/* STOPP */
+						txStopDrive();
+					}
+				}
+			}
 
-
-		            /* 1. quadrant */
-		            if(delta_x > 0 && delta_y > 0)
-		            {
-		                if(left_border > right_border)
-		                {
-                            if(phi <= left_border && phi >= right_border)
-                            {
-                                //STOPP
-                                txStopDrive();
-                            }
-		                }
-		                else
-		                {
-		                    if((phi <= left_border && phi >= 0) || (phi < 360 && phi >= right_border))
-		                    {
-		                        //STOPP
-		                        txStopDrive();
-		                    }
-		                }
-		            }
-		            /* 2. quadrant */
-		            else if(delta_x <= 0 && delta_y > 0)
-		            {
-		                if(left_border > right_border)
-                        {
-                            if(180-phi <= left_border && 180-phi >= right_border)
-                            {
-                                //STOPP
-                                txStopDrive();
-                            }
-                        }
-		                else
-		                {
-		                    if((180-phi <= left_border && 180-phi >= 0) || (180-phi < 360 && 180-phi >= right_border))
-                            {
-                                //STOPP
-		                        txStopDrive();
-                            }
-		                }
-		            }
-		            /* 3. quadrant */
-                    else if(delta_x <= 0 && delta_y <= 0)
-                    {
-                        if(left_border > right_border)
-                        {
-                            if(180+phi <= left_border && 180+phi >= right_border)
-                            {
-                                //STOPP
-                                txStopDrive();
-                            }
-                        }
-                        else
-                        {
-                            if((180+phi <= left_border && 180+phi >= 0) || (180+phi < 360 && 180+phi >= right_border))
-                            {
-                                //STOPP
-                                txStopDrive();
-                            }
-                        }
-                    }
-		            /* 4. quadrant */
-                    else
-                    {
-                        if(left_border > right_border)
-                        {
-                            if(360-phi <= left_border && 360-phi >= right_border)
-                            {
-                                //STOPP
-                                txStopDrive();
-                            }
-                        }
-                        else
-                        {
-                            if((360-phi <= left_border && 360-phi >= 0) || (360-phi < 360 && 360-phi >= right_border))
-                            {
-                                //STOPP
-                                txStopDrive();
-                            }
-                        }
-
-                    }
-		        }
-		    }
-
-			/* Semaphore is always only given by rangefinder task and always only taken by node task */
+			/* Semaphore is always only given by rangefinder task and always only taken by node task,
+			 * so we don't have to give it back here */
 		}
 
 	/* Repeat while not at target destination */
