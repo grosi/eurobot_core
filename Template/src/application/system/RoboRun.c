@@ -51,7 +51,7 @@
 
 
 /* Private macro -------------------------------------------------------------*/
-
+#define ABS(a) (((a)<0) ? (-(a)) : (a))  /* Absolute value */
 
 /* Private variables ---------------------------------------------------------*/
 /* RTOS */
@@ -839,10 +839,13 @@ void gotoNode(node_param_t* param, volatile game_state_t* game_state)
 					else {
 						alpha = game_state_copy.angle - 360;
 					}
-					/* Calculate the angle to the enemy (relative the map grid, -180 <= alpha < 180) */
+					/* Calculate the angle to the enemy (relative the map grid, -180 <= phi < 180) */
 					phi = -round(atan2f(delta_y, delta_x)/M_PI*180);
-					/* Check if the angle to the enemy (relative to our angle, -180 <= alpha < 180) is within range */
-					if(phi-alpha <= RANGEFINDER_ANGLE) {
+					/* Calculate the angle to the enemy (relative to our angle, -180 <= phi < 180) */
+					phi = phi-alpha;
+
+					/* Check if the enemy is within our angle */
+					if(ABS(phi) <= RANGEFINDER_ANGLE) {
 
 						/* STOPP */
 						txStopDrive();
