@@ -122,7 +122,7 @@ void doMammothNode(node_param_t* param) {
 	setServo_1(SERVO_POS_FRESCO_IN);
 
 	/* Move the launcher servo all the way back to launch the two loaded balls, step by step */
-	servo_pos = SERVO_POS_LAUNCHER_LOAD;
+	servo_pos = SERVO_POS_LAUNCHER_LOAD;  /* Current position */
 	while(servo_pos > (SERVO_POS_LAUNCHER_LAUNCH+SERVO_LAUNCHER_STEP)) {
 
 		/* Decrement servo position by step size */
@@ -144,7 +144,7 @@ void doMammothNode(node_param_t* param) {
 	}
 
 	/* Move the launcher servo all the way forward, step by step */
-	servo_pos = SERVO_POS_LAUNCHER_LAUNCH;
+	servo_pos = SERVO_POS_LAUNCHER_LAUNCH;  /* Current position */
 	while(servo_pos < (SERVO_POS_LAUNCHER_LOAD-SERVO_LAUNCHER_STEP)) {
 		/* Decrement servo position by step size */
 		servo_pos += SERVO_LAUNCHER_STEP;

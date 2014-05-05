@@ -63,8 +63,9 @@ void EXTI0_IRQHandler(void) {
  */
 void EXTI1_IRQHandler(void) {
 
-	/* Call fresco node function */
-	SensorWall_IT();
+	/*
+	 * Add YourFunction_IT() here
+	 */
 
 	/* Clear the EXTI line pending bit */
 	EXTI_ClearITPendingBit(EXTI_Line1);

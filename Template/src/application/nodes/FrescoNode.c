@@ -35,7 +35,6 @@
 
 
 /* Private variables ---------------------------------------------------------*/
-volatile uint8_t frescoOnWall = 0;    /* Set by EXTI, value of sensor to check if panel touched wall */
 
 
 /* Private function prototypes -----------------------------------------------*/
@@ -63,8 +62,8 @@ void doFrescoNode(node_param_t* param) {
 	do {
 
 		/* Move fresco panel out, step by step, but stop if on the wall */
-		servo_pos = SERVO_POS_FRESCO_IN;
-		while(servo_pos > (SERVO_POS_FRESCO_OUT+SERVO_FRESCO_STEP) && !frescoOnWall) {
+		servo_pos = SERVO_POS_FRESCO_IN;  /* Current position */
+		while(servo_pos > (SERVO_POS_FRESCO_OUT+SERVO_FRESCO_STEP) && !getSensor_Fresco_Wall()) {
 
 			/* Decrement servo position by step size */
 			servo_pos -= SERVO_FRESCO_STEP;
@@ -85,7 +84,7 @@ void doFrescoNode(node_param_t* param) {
 		}
 
 		/* Move fresco panel in, step by step */
-		servo_pos = SERVO_POS_FRESCO_OUT;
+		servo_pos = SERVO_POS_FRESCO_OUT;  /* Current position */
 		while(servo_pos < (SERVO_POS_FRESCO_IN-SERVO_FRESCO_STEP)) {
 
 			/* Increment servo position by step size */
@@ -126,28 +125,6 @@ void doFrescoNode(node_param_t* param) {
 	}
 	else {
 		param->node_state = NODE_FINISH_SUCCESS;
-	}
-}
-
-/**
- * \fn
- * \brief  This function is called by the external line 1 interrupt handler
- *
- * \param  None
- * \retval None
- */
-void SensorWall_IT(void) {
-
-	/* Check if rising or falling interrupt */
-	if(getSensor_Fresco_Wall()) {
-
-		/* Nothing detected */
-		frescoOnWall = 0;
-	}
-	else {
-
-		/* Fresco on wall */
-		frescoOnWall = 1;
 	}
 }
 

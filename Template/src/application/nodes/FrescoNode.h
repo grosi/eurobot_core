@@ -35,7 +35,6 @@
 
 /* exported function prototypes -----------------------------------------------*/
 extern void doFrescoNode(node_param_t*);
-extern void SensorWall_IT(void);
 
 
 #endif /* FRESCONODE_H_ */

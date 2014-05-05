@@ -325,8 +325,6 @@ void initNodeResources()
 	initSensor_Fresco_1();
 	initSensor_Fresco_2();
 	initSensor_Fresco_Wall();
-	/* Set external interrupt for fresco wall sensor */
-	initSensorEXTI_Wall();
 
 	/* Create a queue and set CAN listener for GoTo ACK */
     qGotoConfirm = xQueueCreate(GOTOCONFIRM_QUEUE_LENGTH, sizeof(CAN_data_t));
