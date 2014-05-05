@@ -17,8 +17,10 @@
 /* Includes ------------------------------------------------------------------*/
 /* RTOS */
 #include <memPoolService.h>         /* Memory pool manager service */
+#include <math.h>
 
 /* HW-library */
+#include "../lib/usart.h"
 #include "../lib/servo.h"
 #include "../lib/button.h"
 #include "../lib/led.h"
@@ -36,12 +38,12 @@
 
 /* Private macro -------------------------------------------------------------*/
 
-
 /* Private variables ---------------------------------------------------------*/
 
 
 /* Private function prototypes -----------------------------------------------*/
 static void vDefaultTask(void*);
+char* itoa(int, char*, int);
 
 
 /* Private functions ---------------------------------------------------------*/
@@ -82,6 +84,14 @@ void initDefaultTask(void){
     xTaskCreate( vDefaultTask, ( signed char * ) DEFAULT_TASK_NAME, DEFAULT_STACK_SIZE, NULL, DEFAULT_TASK_PRIORITY, NULL );
 }
 
+void sendValUSART(char* string, int val, int base) {
+	char buffer[32+1];
+	sendStringUSART(string);
+	itoa(val, buffer, base);
+	sendStringUSART(buffer);
+	sendCharacterUSART('\n');
+}
+
 /*******************************************************************************
  * \fn          vDefaultTask
  * \brief       test and dummy task
@@ -91,10 +101,19 @@ void initDefaultTask(void){
  ******************************************************************************/
 static void vDefaultTask(void* pvParameters ) {
 
-	setServo_1(2000);
-
 	int btn_alt = 0;
 	int btn;
+
+	int delta_x, delta_y, phi, beta, gamma, alpha;
+	short distance;
+	short x = 50;
+	short y = 50;
+	short enemy_1_x[] = {80, 20, 20, 80};
+	short enemy_1_y[] = {30, 30, 70, 70};
+	short angle = 30;
+	if(angle > 180) angle -= 360;
+
+	sendCharacterUSART('\n');
 
     /* endless loop */
     for(;;)
@@ -102,9 +121,44 @@ static void vDefaultTask(void* pvParameters ) {
         /* system delay of 25ms */
         vTaskDelay(50 / portTICK_RATE_MS);
 
-        btn=getButton_S1();
+        btn=getBoardButton_Blue();
         if(btn && !btn_alt) {
-        	doFrescoNode();
+
+        	int i;
+        	for(i=0; i<4; i++) {
+				if(angle < 180) {
+					alpha = angle;
+				}
+				else {
+					alpha = angle - 360;
+				}
+				delta_x = enemy_1_x[i] - x;
+				delta_y = enemy_1_y[i] - y;
+				distance = round(sqrt(delta_x*delta_x + delta_y*delta_y));
+				sendValUSART("delta_x:   ", delta_x, 10);
+				sendValUSART("delta_y:   ", delta_y, 10);
+				phi = -round(atan2f(delta_y, delta_x)/M_PI*180);
+				sendValUSART("phi:       ", phi, 10);
+				sendValUSART("delta_phi: ", phi-alpha, 10);
+				sendCharacterUSART('\n');
+        	}
+
+//        	phi = round(atanf(delta_y/delta_x)/M_PI*180);
+//        	sendValUSART("phi(atanf): ", phi, 10);
+//        	sendCharacterUSART('\n');
+//        	phi = round(acosf(delta_x/distance)/M_PI*180);
+//        	sendValUSART("phi(acosf): ", phi, 10);
+//        	sendCharacterUSART('\n');
+//        	phi = round(asinf(delta_y/distance)/M_PI*180);
+//        	sendValUSART("phi(asinf): ", phi, 10);
+//        	sendCharacterUSART('\n');
+
+//        	phi = round(acosf(delta_y/distance)/M_PI*180);
+//        	sendValUSART("phi: ", phi, 10);
+//        	gamma = atan2f(delta_y,delta_y)/M_PI*180;
+//        	sendValUSART("gamma: ", gamma, 10);
+//        	beta = 90-gamma+angle;
+//        	sendValUSART("beta: ", beta, 10);
         }
         btn_alt=btn;
     }
