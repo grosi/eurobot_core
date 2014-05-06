@@ -738,7 +738,7 @@ void gotoNode(node_param_t* param, volatile game_state_t* game_state)
     game_state_t game_state_copy;
     //uint8_t robo_count;
     int16_t delta_x, delta_y;
-    uint16_t distance;
+    uint16_t distance, distance_treshold;
     int16_t alpha, phi;
 
     /* Variable for CAN RX */
@@ -819,17 +819,19 @@ void gotoNode(node_param_t* param, volatile game_state_t* game_state)
 
 					delta_x = game_state_copy.enemy_1_x - game_state_copy.x;
 					delta_y = game_state_copy.enemy_1_y - game_state_copy.y;
+					distance_treshold = /* TODO: enemy_1_ratius + */ ROBOT_BALLERINA_RADIUS + RANGEFINDER_THRESHOLD_FW*10;
 				}
 				else {
 
 					delta_x = game_state_copy.enemy_2_x - game_state_copy.x;
 					delta_y = game_state_copy.enemy_2_y - game_state_copy.y;
+					distance_treshold = /* TODO: enemy_2_ratius + */ ROBOT_BALLERINA_RADIUS + RANGEFINDER_THRESHOLD_FW*10;
 				}
-				/* Calculate distance to the enemy */
+				/* Calculate distance to the enemy (mm) */
 				distance = round(sqrt(delta_x*delta_x + delta_y*delta_y));
 
 				/* Check if a robo is within threshold range (mm) TODO: Add radius of self and enemy */
-				if(distance < RANGEFINDER_THRESHOLD_FW*10) {
+				if(distance <= distance_treshold) {
 
 					/* Convert angle to -180 <= alpha < 180 */
 					if(game_state_copy.angle < 180) {
