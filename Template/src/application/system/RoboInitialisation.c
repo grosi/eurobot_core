@@ -155,6 +155,10 @@ void runRoboInitialisationState(portTickType* tick)
             break;
 
         case EMERGENCY_ACTIVE:
+            /* message */
+//            LCD_write_string(MESSAGE_EMERGENCY_ROW,MESSAGE_EMERGENCY_COLUMN,MESSAGE_EMERGENCY,TRUE);
+//            LCD_write_string(MESSAGE_CHECK_ROW,MESSAGE_CHECK_COLUMN,MESSAGE_CHECK,TRUE);
+
             /* wait until the notstop-switch is released */
             if(getSensor_EmergencyStop())
             {

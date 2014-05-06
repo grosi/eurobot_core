@@ -37,6 +37,8 @@
 
 
 /* Private define ------------------------------------------------------------*/
+/* System */
+#define BINARY_SEMAPHORE_LENGTH 1
 /* Node */
 #define NODE_POOL_ID_INFO      0
 #define NODE_POOL_SIZE_INFO    1
@@ -58,9 +60,10 @@
 /* RTOS */
 static xTaskHandle xNodeTask_Handle = NULL;
 xSemaphoreHandle sSyncRoboRunNodeTask; /*!< for RoboRun <-> node-task sync */
-static node_t* node_task = NULL; /*!< pointer to the current running node */
+static xQueueSetHandle xQueueSet;
 
 /* game and strategy */
+static node_t* node_task = NULL; /*!< pointer to the current running node */
 static node_t* nodes_red[NODE_QUANTITY] = {&node_mammoth_1,
                                            &node_mammoth_2,
                                            &node_mammoth_3,
@@ -123,16 +126,17 @@ static void vMyPosition(uint16_t, CAN_data_t*);
  */
 void initRoboRunState()
 {
-    /* create the task */
-    //xTaskCreate( vNodeTask, ( signed char * ) SYSTEM_NODE_TASK_NAME, SYSTEM_NODE_STACK_SIZE, NULL, SYSTEM_NODE_TASK_PRIORITY, &xNodeTask_Handle );
-
 #ifndef STANDALONE
     /* init node resources */
     initNodeResources();
 #endif
 
-    /* create sync-semaphore */
+    /* create sync-semaphore and queue-set*/
+    xQueueSet = xQueueCreateSet(2 * BINARY_SEMAPHORE_LENGTH);
     vSemaphoreCreateBinary(sSyncRoboRunNodeTask); /* for RoboRun <-> node-task sync */
+
+    xQueueAddToSet(sSyncRoboRunNodeTask,xQueueSet);
+    xQueueAddToSet(sSyncEmergencyStopRoboState,xQueueSet);
 
     /* set CAN listeners */
     setFunctionCANListener(vTrackEnemy,ENEMEY_1_POSITION_RESPONSE);
@@ -209,6 +213,7 @@ uint8_t setConfigRoboRunState(uint8_t start_node_id, uint8_t teamcolor, uint8_t 
 /**
  * \fn      setConfigRoboRunState2Default
  * \brief   set all necessary values to default
+ * \note    do not call this function from a ISR!
  */
 void setConfigRoboRunState2Default()
 {
@@ -233,13 +238,7 @@ void setConfigRoboRunState2Default()
     /* TODO enemy-field to default */
     memset(enemey_position,0,sizeof(enemey_position[0][0]) * ((int)(PLAYGROUND_WIDTH/ENEMY_GRID_SIZE_X))
             * ((int)(PLAYGROUND_HEIGH/ENEMY_GRID_SIZE_Y)));
-//    for(y=0; y < ((int)(PLAYGROUND_HEIGH/ENEMY_GRID_SIZE_Y)); y++)
-//    {
-//        for(x=0; x < ((int)(PLAYGROUND_WIDTH/ENEMY_GRID_SIZE_X)); x++)
-//        {
-//            enemey_position[y][x] =
-//        }
-//    }
+
     /* give the node-task semaphore free */
     xSemaphoreGive(sSyncRoboRunNodeTask);
 
@@ -264,12 +263,12 @@ void setConfigRoboRunState2Default()
 void runRoboRunState(portTickType* tick)
 {
     /* local variables */
+    xQueueSetMemberHandle xActivatedMember;
     float weight_dec, weight_inc; /* game overall weights, depends on time */
     float weight_dest; /* costs of the destination node */
     float weight_enemy; /* enemy tracking weight */
     float weight_src_dest; /* way-time weight (estimated) */
     float weight_next_node; /* the weight of the next node */
-    float weight_dummy;
     uint8_t weight_arrive; /* additional weight for bad arrives */
     uint8_t remain_time;
     uint8_t node_count; /* simple count variable */
@@ -282,8 +281,23 @@ void runRoboRunState(portTickType* tick)
 
     vTaskResume(xNodeTask_Handle);
 
-    /* wait until current node is done */
-    xSemaphoreTake(sSyncRoboRunNodeTask,portMAX_DELAY);
+    /* wait until current node is done or an emergencystop was occursed*/
+    xActivatedMember = xQueueSelectFromSet(xQueueSet,portMAX_DELAY);
+
+    /* emergencystop */
+    if(xActivatedMember = sSyncEmergencyStopRoboState)
+    {
+        xSemaphoreTake(sSyncEmergencyStopRoboState,0);
+        setConfigRoboRunState2Default();
+        return;
+    }
+
+    /* node is finished */
+    if(xActivatedMember = sSyncRoboRunNodeTask)
+    {
+        xSemaphoreTake(sSyncRoboRunNodeTask,0);
+    }
+
 
 
     /*********************/
@@ -333,6 +347,7 @@ void runRoboRunState(portTickType* tick)
             LCD_write_string(MESSAGE_RESTART_ROW, MESSAGE_RESTART_COLUMN, MESSAGE_RESTART, TRUE);
 
             system_state = runRoboErrorState;
+            return;
     }
 
 //    if(current_node->param.node_state == NODE_FINISH_SUCCESS)
@@ -491,106 +506,9 @@ void runRoboRunState(portTickType* tick)
                     weight_arrive = NODE_PERFECT_ARRIVE;
                 }
             }
-//            /* destination weight depends on the current robo-position and the arrive-direction */
-//            switch(((*nodes_game)+node_count)->param.arrive)
-//            {
-//                case NORTH:
-//                    /* opposite arrive */
-//                    if(((*nodes_game)+node_count)->param.y > current_node->param.y)
-//                    {
-//                        weight_arrive = NODE_WORST_ARRIVE;
-//                    /* too close */
-//                    }else if(((*nodes_game)+node_count)->param.y <= current_node->param.y &&
-//                            ((*nodes_game)+node_count)->param.y + NODE_ARRIVE_FRAME > current_node->param.y)
-//                    {
-//                        weight_arrive = NODE_BAD_ARRIVE;
-//                    /* not bad, but not perfect as well */
-//                    }else if(((*nodes_game)+node_count)->param.y + NODE_ARRIVE_FRAME <= current_node->param.y &&
-//                            (((*nodes_game)+node_count)->param.x - NODE_ARRIVE_FRAME >= current_node->param.x ||
-//                            ((*nodes_game)+node_count)->param.x + NODE_ARRIVE_FRAME <= current_node->param.x))
-//                    {
-//                        weight_arrive = NODE_WELL_ARRIVE;
-//                    /* best possible arrive */
-//                    }else
-//                    {
-//                        weight_arrive = NODE_PERFECT_ARRIVE;
-//                    }
-//                    break;
-//
-//                case EAST:
-//                    /* opposite arrive */
-//                    if(((*nodes_game)+node_count)->param.x > current_node->param.x)
-//                    {
-//                        weight_arrive = NODE_WORST_ARRIVE;
-//                    /* too close */
-//                    }else if(((*nodes_game)+node_count)->param.x <= current_node->param.x &&
-//                            ((*nodes_game)+node_count)->param.x + NODE_ARRIVE_FRAME > current_node->param.x)
-//                    {
-//                        weight_arrive = NODE_BAD_ARRIVE;
-//                    /* not bad, but not perfect as well */
-//                    }else if(((*nodes_game)+node_count)->param.x + NODE_ARRIVE_FRAME <= current_node->param.x &&
-//                            (((*nodes_game)+node_count)->param.y - NODE_ARRIVE_FRAME >= current_node->param.y ||
-//                            ((*nodes_game)+node_count)->param.y + NODE_ARRIVE_FRAME <= current_node->param.y))
-//                    {
-//                        weight_arrive = NODE_WELL_ARRIVE;
-//                    /* best possible arrive */
-//                    }else
-//                    {
-//                        weight_arrive = NODE_PERFECT_ARRIVE;
-//                    }
-//                    break;
-//
-//                case SOUTH:
-//                    /* opposite arrive */
-//                    if(((*nodes_game)+node_count)->param.y < current_node->param.y)
-//                    {
-//                        weight_arrive = NODE_WORST_ARRIVE;
-//                    /* too close */
-//                    }else if(((*nodes_game)+node_count)->param.y >= current_node->param.y &&
-//                            ((*nodes_game)+node_count)->param.y - NODE_ARRIVE_FRAME < current_node->param.y)
-//                    {
-//                        weight_arrive = NODE_BAD_ARRIVE;
-//                    /* not bad, but not perfect as well */
-//                    }else if(((*nodes_game)+node_count)->param.y - NODE_ARRIVE_FRAME >= current_node->param.y &&
-//                            (((*nodes_game)+node_count)->param.x - NODE_ARRIVE_FRAME >= current_node->param.x ||
-//                            ((*nodes_game)+node_count)->param.x + NODE_ARRIVE_FRAME <= current_node->param.x))
-//                    {
-//                        weight_arrive = NODE_WELL_ARRIVE;
-//                    /* best possible arrive */
-//                    }else
-//                    {
-//                        weight_arrive = NODE_PERFECT_ARRIVE;
-//                    }
-//                    break;
-//
-//                case WEST:
-//                    /* opposite arrive */
-//                    if(((*nodes_game)+node_count)->param.x < current_node->param.x)
-//                    {
-//                        weight_arrive = NODE_WORST_ARRIVE;
-//                    /* too close */
-//                    }else if(((*nodes_game)+node_count)->param.x >= current_node->param.x &&
-//                            ((*nodes_game)+node_count)->param.x - NODE_ARRIVE_FRAME < current_node->param.x)
-//                    {
-//                        weight_arrive = NODE_BAD_ARRIVE;
-//                    /* not bad, but not perfect as well */
-//                    }else if(((*nodes_game)+node_count)->param.x - NODE_ARRIVE_FRAME >= current_node->param.x &&
-//                            (((*nodes_game)+node_count)->param.y - NODE_ARRIVE_FRAME >= current_node->param.y ||
-//                            ((*nodes_game)+node_count)->param.y + NODE_ARRIVE_FRAME <= current_node->param.y))
-//                    {
-//                        weight_arrive = NODE_WELL_ARRIVE;
-//                    /* best possible arrive */
-//                    }else
-//                    {
-//                        weight_arrive = NODE_PERFECT_ARRIVE;
-//                    }
-//                    break;
-//            }
-            //TODO
-//            weight_const = ((((*nodes_game)+node_count)->param.points/((*nodes_game)+node_count)->param.time)
-//                    * (1/((*nodes_game)+node_count)->param.percent));
-//            weight_const_2 = weight_arrive * (((*nodes_game)+node_count)->param.node_tries);
-//            weight_dest = weight_const * weight_const_2;
+
+
+            /* cost of destination */
             weight_dest =((((*nodes_game)+node_count)->param.points/((*nodes_game)+node_count)->param.time)
                     * (1/((*nodes_game)+node_count)->param.percent)) * weight_arrive * (((*nodes_game)+node_count)->param.node_tries);
 
@@ -601,14 +519,10 @@ void runRoboRunState(portTickType* tick)
             taskEXIT_CRITICAL();
 
             /* source -> destination node distance-time weight */
-//            weight_src_dest = sqrtf((fabsf(current_node->param.x - ((*nodes_game)+node_count)->param.x) * fabsf(current_node->param.x - ((*nodes_game)+node_count)->param.x)) +
-//                    (fabsf(current_node->param.y - ((*nodes_game)+node_count)->param.y) * fabsf(current_node->param.y - ((*nodes_game)+node_count)->param.y))) / ROBO_AVERAGE_SPEED;
-            //TODO
             weight_src_dest = (sqrtf(((current_node->param.x - ((*nodes_game)+node_count)->param.x) * (current_node->param.x - ((*nodes_game)+node_count)->param.x)) +
                     ((current_node->param.y - ((*nodes_game)+node_count)->param.y) * (current_node->param.y - ((*nodes_game)+node_count)->param.y)))/1000) / ROBO_AVERAGE_SPEED;
 
             /* searching next node */
-            weight_dummy = (weight_dest * weight_dec + weight_enemy * weight_dec + weight_src_dest * weight_inc);
             if((weight_dest * weight_dec + weight_enemy * weight_dec + weight_src_dest * weight_inc) < weight_next_node)
             {
                 weight_next_node = weight_dest * weight_dec + weight_enemy * weight_dec + weight_src_dest * weight_inc;

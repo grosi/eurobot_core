@@ -41,6 +41,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 void (*system_state)(portTickType*); /* functionpointer to the current system-state */
+xSemaphoreHandle sSyncEmergencyStopRoboState; /* semaphore for emergencystop sync */
 
 
 /* Private function prototypes -----------------------------------------------*/
@@ -61,6 +62,10 @@ void initSystemTask(void){
 
     /* create the task */
     xTaskCreate( vSystemTask, ( signed char * ) SYSTEM_TASK_NAME, SYSTEM_STACK_SIZE, NULL, SYSTEM_TASK_PRIORITY, NULL );
+
+    /* create sync semaphore */
+    vSemaphoreCreateBinary(sSyncEmergencyStopRoboState);
+    xSemaphoreTake(sSyncEmergencyStopRoboState, 0);
 
     /* init system states */
     initRoboInitialisationState();
@@ -126,20 +131,16 @@ void SystemStop(void)
 /**
  * \fn      SystemReset
  * \brief   reset the system by emergency stop
+ * \note    could call asynchronous from ISR
  */
 void SystemReset(void)
 {
     /* stay in ErrorState if there */
     if(system_state != runRoboErrorState)
     {
-        /* message */
-        LCD_write_string(MESSAGE_EMERGENCY_ROW,MESSAGE_EMERGENCY_COLUMN,MESSAGE_EMERGENCY,TRUE);
-        LCD_write_string(MESSAGE_CHECK_ROW,MESSAGE_CHECK_COLUMN,MESSAGE_CHECK,TRUE);
-
         /* set correct state in initialisation state */
         setConfigRoboInitialisationState2Emergency();
         setConfigRoboSetup2Default();
-        setConfigRoboRunState2Default();
 
         system_state = runRoboInitialisationState;
     }
@@ -151,7 +152,12 @@ void SystemReset(void)
  */
 void EmergencyStop_Handler(void)
 {
+    static signed portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
+
+    xSemaphoreGiveFromISR(sSyncEmergencyStopRoboState, &xHigherPriorityTaskWoken);
     SystemReset();
+
+    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
 
 /**

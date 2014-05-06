@@ -386,6 +386,9 @@ void runRoboSetupState(portTickType* tick)
             if(getSensor_Key())
             {
 #endif
+                /* set current to default */
+                setConfigRoboSetup2Default();
+
                 /* message */
                 LCD_write_string(MESSAGE_RUN_ROW,MESSAGE_RUN_COLUMN,MESSAGE_RUN,TRUE);
                 LCD_write_string(MESSAGE_AWAY_ROW,MESSAGE_AWAY_COLUMN,MESSAGE_AWAY,TRUE);
@@ -457,7 +460,6 @@ static void menu_handler(menu_t *current_menu, uint8_t res1, uint8_t res2, uint8
     static uint8_t button_mode_state = 0;
     static uint8_t button_left_state = 0;
     static uint8_t button_right_state = 0;
-//    static menu_t* last_menu = NULL;
 
 
     /* check if a change of the display is necessary */

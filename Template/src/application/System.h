@@ -33,6 +33,7 @@
 
 /* exported variables ---------------------------------------------------------*/
 extern void (*system_state)(portTickType*);
+extern xSemaphoreHandle sSyncEmergencyStopRoboState;
 
 
 /* exported function prototypes -----------------------------------------------*/
