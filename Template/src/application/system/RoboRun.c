@@ -46,8 +46,10 @@
 #define ROBO_BARRIER_FLAGS     0x0000
 #define GOTO_ACK_DELAY         20      /* Delay in ms to wait before checking goto confirmation */
 #define GOTO_NACK_MAX_RETRIES  5       /* Number of retries (incl. first try) if there's no confirmation from drive system (uint8_t) */
-#define GOTO_STATERESP_TIMEOUT (500 / portTICK_RATE_MS)    /* Timeout in ticks to wait for GoTo state response. (portMAX_DELAY, portTICK_RATE_MS) */
+#define GOTO_STATERESP_DELAY   450     /* Delay in ms to wait for GoTo state response. Drive system needs 400 ms (worst case) */
+#define GOTO_STATERESP_TIMEOUT 400     /* Time in ms to wait for the GoTo state response */
 #define GOTO_TIME_UNKNOWN      0xFFFFFF
+#define GOTO_DEFAULT_TIME      1000    /* Time in ms to use if no time was received from drive system */
 
 
 /* Private macro -------------------------------------------------------------*/
@@ -748,7 +750,7 @@ void gotoNode(node_param_t* param, volatile game_state_t* game_state)
     uint8_t CAN_ok = pdFALSE;
 
     /* Variable to store estimated GoTo time received from drive system (24 Bit, 1 Bit ca. 1 ms) */
-    uint32_t estimated_GoTo_time;
+    uint32_t estimated_GoTo_time = 0;
 
     /* Activate rangefinder */
 	vTaskResume(xRangefinderTask_Handle);
@@ -777,29 +779,33 @@ void gotoNode(node_param_t* param, volatile game_state_t* game_state)
 //		return;
 	}
 
+	estimated_GoTo_time = 0;
 	do {
-	    /* wait before asking */
-	    vTaskDelay(GOTO_STATERESP_TIMEOUT); //TODO anpassen
+		/* Wait at least GOTO_STATERESP_DELAY before asking for goto time for the first time,
+		 * else we may get the old time */
+		if(estimated_GoTo_time < GOTO_STATERESP_DELAY) {
+			vTaskDelay(GOTO_STATERESP_DELAY / portTICK_RATE_MS);
+		}
 		/* Ask drive system for GoTo state */
 		txGotoStateRequest();
 		/* Receive the GoTo state response */
-		CAN_ok = xQueueReceive(qGotoStateResp, &CAN_buffer, GOTO_STATERESP_TIMEOUT);
+		CAN_ok = xQueueReceive(qGotoStateResp, &CAN_buffer, GOTO_STATERESP_TIMEOUT / portTICK_RATE_MS);
 		/* Check if time out */
 		if(CAN_ok != pdTRUE) {
-//		    /* Suspend rangefinder safely */
-//            suspendRangefinderTask();
-//
-//			/* Drive system didn't answer within specified time, report */
-//			param->node_state =  GOTO_CAN_ERROR;
-//			return;
+
+			/* Drive system didn't answer within specified time, use to default time */
+			estimated_GoTo_time = GOTO_DEFAULT_TIME;
 		}
+		else {
 
-		/* Extract time */
-		estimated_GoTo_time = CAN_buffer.state_time;  /* In ms */
-		if(estimated_GoTo_time == GOTO_TIME_UNKNOWN) {
+			/* Extract time */
+			estimated_GoTo_time = CAN_buffer.state_time;  /* In ms */
+			/* Handle "time unknown" message */
+			if(estimated_GoTo_time == GOTO_TIME_UNKNOWN) {
 
-			/* Set to 1 second -> Retry in 1 second */
-			estimated_GoTo_time = 1000;
+				/* Use to default time */
+				estimated_GoTo_time = GOTO_DEFAULT_TIME;
+			}
 		}
 
 		/* Try to take semaphore from rangefinder task, use estimated time from drive system as timeout */
@@ -832,7 +838,7 @@ void gotoNode(node_param_t* param, volatile game_state_t* game_state)
 				/* Calculate distance to the enemy (mm) */
 				distance = round(sqrt(delta_x*delta_x + delta_y*delta_y));
 
-				/* Check if a robo is within threshold range (mm) TODO: Add radius of self and enemy */
+				/* Check if a robot is within threshold range (mm) */
 				if(distance <= distance_treshold) {
 
 					/* Convert angle to -180 <= alpha < 180 */
@@ -852,6 +858,11 @@ void gotoNode(node_param_t* param, volatile game_state_t* game_state)
 
 						/* STOPP */
 						txStopDrive();
+
+						/* Suspend rangefinder safely */
+						suspendRangefinderTask();
+
+						return;
 					}
 				}
 			}
@@ -880,8 +891,10 @@ static void vNodeTask(void* pvParameters )
     /* endless */
     for(;;)
     {
-    	/* Give goto command */
-    	gotoNode(&node_task->param, &game_state);
+    	/* Give goto command. Repeat if emergency brake was done on previous run (node still undone) */
+    	while(node_task->param.node_state == NODE_UNDONE) {
+    		gotoNode(&node_task->param, &game_state);
+    	}
 
     	/* Only if there was no CAN error */
     	if(node_task->param.node_state != GOTO_CAN_ERROR) {
