@@ -39,14 +39,14 @@ typedef struct
     uint16_t x;
     uint16_t y;
     uint16_t angle;
-    uint16_t enemy_1_x; /*!< 0xFFFF = no enemy 1 or error */
-    uint16_t enemy_1_y; /*!< 0xFFFF = no enemy 1 or error */
-    uint8_t enemy_1_aperture; /*!< 0 = no enemy 1 [cm]*/
-    uint16_t enemy_2_x; /*!< 0xFFFF = no enemy 2 or error */
-    uint16_t enemy_2_y; /*!< 0xFFFF = no enemy 2 or error */
-    uint8_t enemy_2_aperture; /*!< 0 = no enemy 2 [cm]*/
-    uint16_t confederate_x; /*!< 0xFFFF = no enemy 2 or error */
-    uint16_t confederate_y; /*!< 0xFFFF = no enemy 2 or error */
+    uint16_t enemy_1_x;       /*!< 0xFFFF = no enemy 1 or error */
+    uint16_t enemy_1_y;       /*!< 0xFFFF = no enemy 1 or error */
+    uint8_t enemy_1_diameter; /*!< 0 = no enemy 1 [cm] */
+    uint16_t enemy_2_x;       /*!< 0xFFFF = no enemy 2 or error */
+    uint16_t enemy_2_y;       /*!< 0xFFFF = no enemy 2 or error */
+    uint8_t enemy_2_diameter; /*!< 0 = no enemy 2 [cm] */
+    uint16_t confederate_x;   /*!< 0xFFFF = no enemy 2 or error */
+    uint16_t confederate_y;   /*!< 0xFFFF = no enemy 2 or error */
 }game_state_t;
 
 

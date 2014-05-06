@@ -102,10 +102,10 @@ volatile static game_state_t game_state = { .x = 0,               /*!< x-positio
                                             .angle = 0,              /*!< angle */
                                             .enemy_1_x = NODE_NO_ENEMY,  /*!< x-position enemy 1 */
                                             .enemy_1_y = NODE_NO_ENEMY,  /*!< y-position enemy 1 */
-                                            .enemy_1_aperture = NODE_NO_ENEMY_APERTURE, /*!< aperture of enemy 1 [cm] */
+                                            .enemy_1_diameter = NODE_NO_ENEMY_APERTURE, /*!< aperture of enemy 1 [cm] */
                                             .enemy_2_x = NODE_NO_ENEMY,  /*!< x-position enemy 2 */
                                             .enemy_2_y = NODE_NO_ENEMY,  /*!< y-position enemy 2 */
-                                            .enemy_2_aperture = NODE_NO_ENEMY_APERTURE}; /*!< aperture of enemy 2 [cm] */
+                                            .enemy_2_diameter = NODE_NO_ENEMY_APERTURE}; /*!< aperture of enemy 2 [cm] */
 
 
 /* Private function prototypes -----------------------------------------------*/
@@ -188,8 +188,8 @@ uint8_t setConfigRoboRunState(uint8_t start_node_id, uint8_t teamcolor, uint8_t 
 
     /* set enemy count */
     enemy_count = enemies;
-    game_state.enemy_1_aperture = enemy_size_1; /* aperture in centimeter */
-    game_state.enemy_2_aperture = enemy_size_2; /* aperture in centimeter */
+    game_state.enemy_1_diameter = enemy_size_1; /* aperture in centimeter */
+    game_state.enemy_2_diameter = enemy_size_2; /* aperture in centimeter */
 
     /* set confederate count */
     confederate_quantity = confederate;
@@ -827,13 +827,13 @@ void gotoNode(node_param_t* param, volatile game_state_t* game_state)
 
 					delta_x = game_state_copy.enemy_1_x - game_state_copy.x;
 					delta_y = game_state_copy.enemy_1_y - game_state_copy.y;
-					distance_treshold = /* TODO: enemy_1_ratius + */ ROBOT_BALLERINA_RADIUS + RANGEFINDER_THRESHOLD_FW*10;
+					distance_treshold = game_state_copy.enemy_1_diameter/2 + ROBOT_BALLERINA_RADIUS + RANGEFINDER_THRESHOLD_FW*10;
 				}
 				else {
 
 					delta_x = game_state_copy.enemy_2_x - game_state_copy.x;
 					delta_y = game_state_copy.enemy_2_y - game_state_copy.y;
-					distance_treshold = /* TODO: enemy_2_ratius + */ ROBOT_BALLERINA_RADIUS + RANGEFINDER_THRESHOLD_FW*10;
+					distance_treshold = game_state_copy.enemy_2_diameter/2 + ROBOT_BALLERINA_RADIUS + RANGEFINDER_THRESHOLD_FW*10;
 				}
 				/* Calculate distance to the enemy (mm) */
 				distance = round(sqrt(delta_x*delta_x + delta_y*delta_y));
