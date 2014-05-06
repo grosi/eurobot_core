@@ -109,7 +109,7 @@ static void vDefaultTask(void* pvParameters ) {
 	short x = 50;
 	short y = 50;
 	short enemy_1_x[] = {80, 20, 20, 80};
-	short enemy_1_y[] = {30, 30, 70, 70};
+	short enemy_1_y[] = {70, 70, 30, 30};
 	short angle = 30;
 	if(angle > 180) angle -= 360;
 
@@ -137,7 +137,8 @@ static void vDefaultTask(void* pvParameters ) {
 				distance = round(sqrt(delta_x*delta_x + delta_y*delta_y));
 				sendValUSART("delta_x:   ", delta_x, 10);
 				sendValUSART("delta_y:   ", delta_y, 10);
-				phi = -round(atan2f(delta_y, delta_x)/M_PI*180);
+				sendValUSART("distance:  ", distance, 10);
+				phi = round(atan2f(delta_y, delta_x)/M_PI*180);
 				sendValUSART("phi:       ", phi, 10);
 				sendValUSART("delta_phi: ", phi-alpha, 10);
 				sendCharacterUSART('\n');
