@@ -41,8 +41,10 @@ typedef struct
     uint16_t angle;
     uint16_t enemy_1_x; /*!< 0xFFFF = no enemy 1 or error */
     uint16_t enemy_1_y; /*!< 0xFFFF = no enemy 1 or error */
+    uint8_t enemy_1_aperture; /*!< 0 = no enemy 1 [cm]*/
     uint16_t enemy_2_x; /*!< 0xFFFF = no enemy 2 or error */
     uint16_t enemy_2_y; /*!< 0xFFFF = no enemy 2 or error */
+    uint8_t enemy_2_aperture; /*!< 0 = no enemy 2 [cm]*/
     uint16_t confederate_x; /*!< 0xFFFF = no enemy 2 or error */
     uint16_t confederate_y; /*!< 0xFFFF = no enemy 2 or error */
 }game_state_t;
@@ -80,7 +82,8 @@ typedef struct
 /* general */
 #define NODE_QUANTITY              11
 #define NODE_POOL_QUANTITY         2
-#define NODE_NO_ENEMY              -1
+#define NODE_NO_ENEMY              0xFFFF
+#define NODE_NO_ENEMY_APERTURE     0
 
 /* nodes pools */
 #define NODE_NO_POOL_ID            0

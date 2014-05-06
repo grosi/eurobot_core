@@ -59,6 +59,17 @@ xSemaphoreHandle sSyncRoboRunNodeTask; /*!< for RoboRun <-> node-task sync */
 static node_t* node_task = NULL; /*!< pointer to the current running node */
 
 /* game and strategy */
+static node_t* nodes_red[NODE_QUANTITY] = {&node_mammoth_1,
+                                           &node_mammoth_2,
+                                           &node_mammoth_3,
+                                           &node_mammoth_4,
+                                           &node_mammoth_5,
+                                           &node_mammoth_6,
+                                           &node_fresco_1,
+                                           &node_fresco_2,
+                                           &node_fire_1_red,
+                                           &node_fire_2_red,
+                                           &node_fire_3_red}; /*!< node-set for the yellow teamcolor */
 static node_t* nodes_yellow[NODE_QUANTITY] = {&node_mammoth_1,
                                               &node_mammoth_2,
                                               &node_mammoth_3,
@@ -70,17 +81,6 @@ static node_t* nodes_yellow[NODE_QUANTITY] = {&node_mammoth_1,
                                               &node_fire_1_yellow,
                                               &node_fire_2_yellow,
                                               &node_fire_3_yellow}; /*!< node-set for the red teamcolor */
-static node_t* nodes_red[NODE_QUANTITY] = {&node_fresco_1,
-                                           &node_mammoth_2,
-                                           &node_mammoth_3,
-                                           &node_mammoth_4,
-                                           &node_mammoth_5,
-                                           &node_mammoth_6,
-                                           &node_mammoth_1,
-                                           &node_fresco_2,
-                                           &node_fire_1_red,
-                                           &node_fire_2_red,
-                                           &node_fire_3_red}; /*!< node-set for the yellow teamcolor */
 
 static node_t** nodes_game = NULL; /*!< node set of the current game-round */
 static node_t* next_node; /*!< pointer to the next node */
@@ -95,13 +95,15 @@ static uint8_t node_pools[NODE_POOL_QUANTITY][3] = {{NODE_MAMMOTH_POOL_ID,
                                                      NODE_FRESCO_POOL_LEVEL}}; /*!< pool settings -> have to set to default values after game round */
 volatile static uint16_t enemey_position[20][30] = {{0}}; /*!< enemy-tracking grid TODO*/
 //volatile static uint16_t enemey_position[((int)(PLAYGROUND_HEIGH/ENEMY_GRID_SIZE_Y))][((int)(PLAYGROUND_WIDTH/ENEMY_GRID_SIZE_X))] = {{0.0}}; /*!< enemy-tracking grid */
-volatile static game_state_t game_state = {0,               /*!< x-position */
-                                            0,              /*!< y-position */
-                                            0,              /*!< angle */
-                                            NODE_NO_ENEMY,  /*!< x-position enemy 1 */
-                                            NODE_NO_ENEMY,  /*!< y-position enemy 1 */
-                                            NODE_NO_ENEMY,  /*!< x-position enemy 2 */
-                                            NODE_NO_ENEMY}; /*!< y-position enemy 2 */
+volatile static game_state_t game_state = { .x = 0,               /*!< x-position */
+                                            .x = 0,              /*!< y-position */
+                                            .angle = 0,              /*!< angle */
+                                            .enemy_1_x = NODE_NO_ENEMY,  /*!< x-position enemy 1 */
+                                            .enemy_1_y = NODE_NO_ENEMY,  /*!< y-position enemy 1 */
+                                            .enemy_1_aperture = NODE_NO_ENEMY_APERTURE, /*!< aperture of enemy 1 [cm] */
+                                            .enemy_2_x = NODE_NO_ENEMY,  /*!< x-position enemy 2 */
+                                            .enemy_2_y = NODE_NO_ENEMY,  /*!< y-position enemy 2 */
+                                            .enemy_2_aperture = NODE_NO_ENEMY_APERTURE}; /*!< aperture of enemy 2 [cm] */
 
 
 /* Private function prototypes -----------------------------------------------*/
@@ -146,25 +148,23 @@ void initRoboRunState()
  * \param[in]   start_node_id   number of the first node
  * \param[in]   teamcolor       red or yellow
  * \param[in]   enemies         enemy quantity
+ * \param[in]   confederate     confederate quantity
+ * \param[in]   enemy_size_1    aperture of enemy 1
+ * \param[in]   enemy_size_2    aperture of enemy 2
  *
  * \retval      1   set start configuration was successful
  * \retval      0   set start configuration was not possible
  */
-uint8_t setConfigRoboRunState(uint8_t start_node_id, uint8_t teamcolor, uint8_t enemies, uint8_t confederate)
+uint8_t setConfigRoboRunState(uint8_t start_node_id, uint8_t teamcolor, uint8_t enemies, uint8_t confederate, uint8_t enemy_size_1, uint8_t enemy_size_2)
 {
     /* local variables */
     uint8_t node_count;
     uint8_t success = 0;
-    int16_t test;
 
     /* load correct node-set */
     if(teamcolor == GIP_TEAMCOLOR_YELLOW)
     {
-//        test = &nodes_yellow[0];
-//        test = &nodes_yellow;
         nodes_game = nodes_yellow;
-        test =((*nodes_yellow)+10)->param.x;
-//        nodes_game = nodes_yellow;
     }
     else
     {
@@ -186,6 +186,8 @@ uint8_t setConfigRoboRunState(uint8_t start_node_id, uint8_t teamcolor, uint8_t 
 
     /* set enemy count */
     enemy_count = enemies;
+    game_state.enemy_1_aperture = enemy_size_1; /* aperture in centimeter */
+    game_state.enemy_2_aperture = enemy_size_2; /* aperture in centimeter */
 
     /* set confederate count */
     confederate_quantity = confederate;
