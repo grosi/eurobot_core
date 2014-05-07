@@ -113,7 +113,7 @@ extern uint32_t SystemCoreClock;
 #define configUSE_APPLICATION_TASK_TAG	0
 #define configUSE_COUNTING_SEMAPHORES	1 //TODO
 #define configGENERATE_RUN_TIME_STATS	0
-#define configUSE_QUEUE_SETS			0 /* allowing queue sets */
+#define configUSE_QUEUE_SETS			1 /* allowing queue sets */
 
 /* Co-routine definitions. */
 #define configUSE_CO_ROUTINES 		0
