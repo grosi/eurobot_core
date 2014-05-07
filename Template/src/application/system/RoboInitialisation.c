@@ -33,6 +33,7 @@ typedef enum
     DISPLAY_INIT = 0,
     DRIVE_INIT,
     NAVI_INIT,
+    EMERGENCY_ACTIVE_MESSAGE,
     EMERGENCY_ACTIVE
 }robot_init_t;
 
@@ -79,7 +80,7 @@ void initRoboInitialisationState()
  */
 void setConfigRoboInitialisationState2Emergency()
 {
-    state = EMERGENCY_ACTIVE;
+    state = EMERGENCY_ACTIVE_MESSAGE;
 }
 
 
@@ -154,10 +155,12 @@ void runRoboInitialisationState(portTickType* tick)
             }
             break;
 
-        case EMERGENCY_ACTIVE:
+        case EMERGENCY_ACTIVE_MESSAGE:
             /* message */
-//            LCD_write_string(MESSAGE_EMERGENCY_ROW,MESSAGE_EMERGENCY_COLUMN,MESSAGE_EMERGENCY,TRUE);
-//            LCD_write_string(MESSAGE_CHECK_ROW,MESSAGE_CHECK_COLUMN,MESSAGE_CHECK,TRUE);
+            LCD_write_string(MESSAGE_EMERGENCY_ROW,MESSAGE_EMERGENCY_COLUMN,MESSAGE_EMERGENCY,TRUE);
+            LCD_write_string(MESSAGE_CHECK_ROW,MESSAGE_CHECK_COLUMN,MESSAGE_CHECK,TRUE);
+            state = EMERGENCY_ACTIVE;
+        case EMERGENCY_ACTIVE:
 
             /* wait until the notstop-switch is released */
             if(getSensor_EmergencyStop())
