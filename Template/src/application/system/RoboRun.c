@@ -771,6 +771,7 @@ func_report_t gotoNode(node_param_t* param, volatile game_state_t* game_state)
 
 	/* If still no GoTo confirmation was received, report error */
 	if(CAN_ok != pdTRUE) {
+//TODO
 //	    /* Suspend rangefinder safely */
 //        suspendRangefinderTask();
 //
@@ -818,23 +819,36 @@ func_report_t gotoNode(node_param_t* param, volatile game_state_t* game_state)
 			game_state_copy = *game_state;
 			taskEXIT_CRITICAL();
 
-			/* Check 0, 1 or both enemies */ //TODO: Check friend?
-			uint8_t current_enemy_check;
-			for(current_enemy_check = 1; current_enemy_check <= enemy_count; current_enemy_check++)
+			/* Check 0, 1 or both enemies */
+			int8_t current_robot_check;  /* Signed, so in worst case it starts on negative numbers and thus still does the loop */
+			for(current_robot_check = 1-confederate_quantity;  /* Start on 0 if we have a confederate robot */
+					current_robot_check <= enemy_count; current_robot_check++)
 			{
-				/* Get deltas and distance for current enemy */
-				if(current_enemy_check == 1) {
+				/* Get deltas and distance for current robot */
+				/* If we have a confederate robot, the counting starts with 0 */
+				if(current_robot_check == 0) {
+
+					delta_x = game_state_copy.confederate_x - game_state_copy.x;
+					delta_y = game_state_copy.confederate_y - game_state_copy.y;
+					distance_treshold = ROBOT_B52_RADIUS + ROBOT_BALLERINA_RADIUS + RANGEFINDER_THRESHOLD_FW*10;
+				}
+				/* Enemies always start with 1 */
+				else if(current_robot_check == 1) {
 
 					delta_x = game_state_copy.enemy_1_x - game_state_copy.x;
 					delta_y = game_state_copy.enemy_1_y - game_state_copy.y;
 					distance_treshold = game_state_copy.enemy_1_diameter/2 + ROBOT_BALLERINA_RADIUS + RANGEFINDER_THRESHOLD_FW*10;
 				}
-				else {
+				else if(current_robot_check == 2) {
 
 					delta_x = game_state_copy.enemy_2_x - game_state_copy.x;
 					delta_y = game_state_copy.enemy_2_y - game_state_copy.y;
 					distance_treshold = game_state_copy.enemy_2_diameter/2 + ROBOT_BALLERINA_RADIUS + RANGEFINDER_THRESHOLD_FW*10;
 				}
+				/* Else:
+				 *  current_robot_check > 2: (More than 2 enemies)      Not possible in eurobot 2014 scenario
+				 *  current_robot_check < 0: (More than 1 confederate)  Not possible in eurobot 2014 scenario */
+
 				/* Calculate distance to the enemy (mm) */
 				distance = round(sqrt(delta_x*delta_x + delta_y*delta_y));
 
