@@ -30,8 +30,6 @@
 /* Servo */
 #define SERVO_FRESCO_STEP       (5)   /* Size of single step for the fresco servo */
 #define SERVO_FRESCO_STEP_DELAY (10)  /* Delay in ms to wait between steps */
-/* Goto */
-#define FRESCO_APPROACH_SPEED   (50)  /* Speed in percent to drive from node point to wall */
 
 /* Private macro -------------------------------------------------------------*/
 
@@ -63,6 +61,7 @@ void doFrescoNode(node_param_t* param) {
 
 	/* Drive closer to the wall */
 	txGotoXY(param->x, param->y + FRESCO_APPROACH_DISTANCE, param->angle, FRESCO_APPROACH_SPEED, 0x00);
+	vTaskDelay(FRESCO_APPROACH_TIME / portTICK_RATE_MS);
 
 	do {
 
