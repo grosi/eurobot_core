@@ -16,9 +16,9 @@
 /* Includes ------------------------------------------------------------------*/
 /* application */
 #include "../AppConfig.h"
+#include "../CANGatekeeper.h"
 #include "NodeConfig.h"
 #include "FrescoNode.h"
-#include "../CANGatekeeper.h"
 /* lib */
 #include "lib/servo.h"
 #include "lib/sensor.h"
@@ -28,8 +28,10 @@
 
 /* Private define ------------------------------------------------------------*/
 /* Servo */
-#define SERVO_FRESCO_STEP       (5)   /* Size of single step for the fresco servo */ //TODO
-#define SERVO_FRESCO_STEP_DELAY (10)  /* Delay in ms to wait between steps */ //TODO
+#define SERVO_FRESCO_STEP       (5)   /* Size of single step for the fresco servo */
+#define SERVO_FRESCO_STEP_DELAY (10)  /* Delay in ms to wait between steps */
+/* Goto */
+#define FRESCO_APPROACH_SPEED   (50)  /* Speed in percent to drive from node point to wall */
 
 /* Private macro -------------------------------------------------------------*/
 
@@ -59,8 +61,8 @@ void doFrescoNode(node_param_t* param) {
 	/* Variable to set the servo position step by step */
 	volatile uint16_t servo_pos;
 
-	/* drive 10 cm closer to the wall */
-	txGotoXY(param->x, param->y + 100, param->angle, 100, 0);
+	/* Drive closer to the wall */
+	txGotoXY(param->x, param->y + FRESCO_APPROACH_DISTANCE, param->angle, FRESCO_APPROACH_SPEED, 0x00);
 
 	do {
 

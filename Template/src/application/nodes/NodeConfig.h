@@ -114,6 +114,9 @@ typedef struct
 #define SERVO_POS_LAUNCHER_LOAD    1750 /* Servo position: Launcher all the way front */
 #define SERVO_POS_LAUNCHER_LAUNCH  1200 /* Servo position: Launcher all the way back */
 
+/* Fresco node */
+#define FRESCO_APPROACH_DISTANCE   100  /* Distance in mm to drive from the fresco node point to the wall */
+
 
 /* exported macro -------------------------------------------------------------*/
 
