@@ -21,7 +21,7 @@
 
 
 /* exported define ------------------------------------------------------------*/
-#define FIRE_NODE_DELTA_GO 100 /*!< [mm] */
+#define FIRE_NODE_DELTA_GO 250 /*!< [mm] */
 #define FIRE_NODE_SPEED 100 /*!< [%] */
 #define FIRE_NODE_BARRIER 0
 #define FIRE_NODE_ACK_DELAY 20

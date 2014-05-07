@@ -20,12 +20,13 @@
 #include "../CANGatekeeper.h"
 #include "NodeConfig.h"
 #include "FireNode.h"
+/* lib */
+#include "lib/servo.h"
 
 /* Private typedef -----------------------------------------------------------*/
 
 
 /* Private define ------------------------------------------------------------*/
-
 
 /* Private macro -------------------------------------------------------------*/
 
@@ -56,23 +57,29 @@ void doFireNode(node_param_t* param)
     /* Activate rangefinder */
     vTaskResume(xRangefinderTask_Handle);
 
-    /* NORTH */
+	/* Move the separation all the way out */
+	setServo_1(SERVO_POS_FRESCO_OUT);
+
+	/* Wait some time while servo moves */
+	vTaskDelay(SERVO_MOVING_DELAY / portTICK_RATE_MS);
+
+    /* Drive through fire from NORTH */
     if(param->angle >= NODE_NORTH_MIN_ANGLE && param->angle <= NODE_NORTH_MAX_ANGLE)
     {
-        txGotoXY(param->x, param->y+FIRE_NODE_DELTA_GO, param->angle, FIRE_NODE_SPEED, FIRE_NODE_BARRIER);
+        txGotoXY(param->x, param->y-FIRE_NODE_DELTA_GO, param->angle, FIRE_NODE_SPEED, FIRE_NODE_BARRIER);
 
     }
-    /* EAST */
+    /* Drive through fire from EAST */
     else if(param->angle >= NODE_EAST_MIN_ANGLE && param->angle <= NODE_EAST_MAX_ANGLE)
     {
         txGotoXY(param->x-FIRE_NODE_DELTA_GO, param->y, param->angle, FIRE_NODE_SPEED, FIRE_NODE_BARRIER);
     }
-    /* SOUTH */
+    /* Drive through fire from SOUTH */
     else if(param->angle >= NODE_SOUTH_MIN_ANGLE && param->angle <= NODE_SOUTH_MAX_ANGLE)
     {
-        txGotoXY(param->x, param->y-FIRE_NODE_DELTA_GO, param->angle, FIRE_NODE_SPEED, FIRE_NODE_BARRIER);
+        txGotoXY(param->x, param->y+FIRE_NODE_DELTA_GO, param->angle, FIRE_NODE_SPEED, FIRE_NODE_BARRIER);
     }
-    /* WEST */
+    /* Drive through fire from WEST */
     else
     {
         txGotoXY(param->x+FIRE_NODE_DELTA_GO, param->y, param->angle, FIRE_NODE_SPEED, FIRE_NODE_BARRIER);
@@ -91,14 +98,19 @@ void doFireNode(node_param_t* param)
 //        return;
     }
 
-    /* Try to take semaphore from rangefinder task */
-    if(xSemaphoreTake(sSyncNodeTask, FIRE_NODE_DRIVE_DELAY / portTICK_RATE_MS) == pdTRUE)
-    {
-        /* Semaphore received, this means an obstacle was detected! */
-        //TODO
-    }
+    //TODO add function to chek if there is any enemy or friend in my way while driving
 
-    param->node_state = NODE_FINISH_SUCCESS;
+    /* Put seperation in after driving through the fire */
+	setServo_1(SERVO_POS_FRESCO_IN);
+
+	/* Wait some time while servo moves */
+	vTaskDelay(SERVO_MOVING_DELAY / portTICK_RATE_MS);
+
+    /* Fire has fallen */
+    if(Rangefinder_flag_SeAlarmUS == 0){
+
+    	param->node_state = NODE_FINISH_SUCCESS;
+    }
 
     /* Suspend rangefinder safely */
     suspendRangefinderTask();

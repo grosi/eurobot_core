@@ -196,7 +196,7 @@ node_t node_fire_1_red =
         .points = 1,                        /*!<node points */
         .percent = 0.05,                    /*!<percent of the total points [%]*/
         .time = 2,                          /*!<estimated node time [s]*/
-        .x = 2100,                          /*!<node x position [mm]*/
+        .x = 1950,                          /*!<node x position [mm]*/
         .y = 1400,                          /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
         .angle = 0,                         /*!<node arrive direction */
@@ -215,7 +215,7 @@ node_t node_fire_2_red =
         .percent = 0.05,                    /*!<percent of the total points [%]*/
         .time = 2,                          /*!<estimated node time [s]*/
         .x = 2600,                          /*!<node x position [mm]*/
-        .y = 900,                           /*!<node y position [mm]*/
+        .y = 750,                           /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
         .angle = 90,                        /*!<node arrive direction */
         .node_tries = 1,                    /*!< node repeats (1 = default)*/
@@ -232,7 +232,7 @@ node_t node_fire_3_red =
         .points = 1,                        /*!<node points */
         .percent = 0.05,                    /*!<percent of the total points [%]*/
         .time = 2,                          /*!<estimated node time [s]*/
-        .x = 2100,                          /*!<node x position [mm]*/
+        .x = 2250,                          /*!<node x position [mm]*/
         .y = 400,                           /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
         .angle = 180,                       /*!<node arrive direction */
@@ -250,10 +250,10 @@ node_t node_fire_1_yellow =
         .points = 1,                        /*!<node points */
         .percent = 0.05,                    /*!<percent of the total points [%]*/
         .time = 2,                          /*!<estimated node time [s]*/
-        .x = 900,                           /*!<node x position [mm]*/
+        .x = 1050,                           /*!<node x position [mm]*/
         .y = 1400,                          /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
-        .angle = 0,                         /*!<node arrive direction */
+        .angle = 180,                         /*!<node arrive direction */
         .node_tries = 1,                    /*!< node repeats (1 = default)*/
         .node_state = NODE_UNDONE,          /*!<node state */
     },
@@ -269,7 +269,7 @@ node_t node_fire_2_yellow =
         .percent = 0.05,                    /*!<percent of the total points [%]*/
         .time = 2,                          /*!<estimated node time [s]*/
         .x =  400,                          /*!<node x position [mm]*/
-        .y = 900,                           /*!<node y position [mm]*/
+        .y = 750,                           /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
         .angle = 90,                        /*!<node arrive direction */
         .node_tries = 1,                    /*!< node repeats (1 = default)*/
@@ -286,10 +286,10 @@ node_t node_fire_3_yellow =
         .points = 1,                        /*!<node points */
         .percent = 0.05,                    /*!<percent of the total points [%]*/
         .time = 2,                          /*!<estimated node time [s]*/
-        .x = 900,                           /*!<node x position [mm]*/
+        .x = 750,                           /*!<node x position [mm]*/
         .y = 400,                           /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
-        .angle = 180,                       /*!<node arrive direction */
+        .angle = 0,                       /*!<node arrive direction */
         .node_tries = 1,                    /*!< node repeats (1 = default)*/
         .node_state = NODE_UNDONE,          /*!<node state */
     },
