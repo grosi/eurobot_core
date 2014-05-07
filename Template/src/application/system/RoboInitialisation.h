@@ -25,6 +25,13 @@
 #define ROBOINIT_QUEUE_LENGTH   1
 #define ROBOINIT_TIMEOUT        1000 /*!< wait for max. 1s */
 
+/* sensors */
+#define SENSOR_EMERGENCY_INIT   0
+#define SENSOR_FRESCO_1_INIT    1
+#define SENSOR_FRESCO_2_INIT    1
+#define SENSOR_WALL_INIT        0
+#define SENSOR_KEY_INIT         1
+
 /* exported macro -------------------------------------------------------------*/
 
 

@@ -31,6 +31,7 @@
 typedef enum
 {
     DISPLAY_INIT = 0,
+    SENSOR_TEST,
     DRIVE_INIT,
     NAVI_INIT,
     EMERGENCY_ACTIVE_MESSAGE,
@@ -95,6 +96,7 @@ void runRoboInitialisationState(portTickType* tick)
 {
     /* local variable */
     CAN_data_t can_response;
+    boolean sensor_done = TRUE;
 
 
     /* small statemachine */
@@ -108,7 +110,50 @@ void runRoboInitialisationState(portTickType* tick)
             LCD_write_string(MESSAGE_INIT_ROW, MESSAGE_INIT_COLUMN, MESSAGE_INIT, TRUE);
             LCD_write_string(MESSAGE_WAIT_ROW, MESSAGE_WAIT_COLUMN, MESSAGE_WAIT, TRUE);
 
-            state = DRIVE_INIT;
+            state = SENSOR_TEST;
+
+            break;
+
+        case SENSOR_TEST:
+
+            /* test every sensor input */
+            if(getSensor_Fresco_1() != SENSOR_FRESCO_1_INIT)
+            {
+                /* error message */
+                LCD_write_string(MESSAGE_FRESCO_1_ROW, MESSAGE_FRESCO_1_COLUMN, MESSAGE_FRESCO_1, TRUE);
+                LCD_write_string(MESSAGE_CHECK_ROW, MESSAGE_CHECK_COLUMN, MESSAGE_CHECK, TRUE);
+                sensor_done = FALSE;
+            }
+            if(getSensor_Fresco_2() != SENSOR_FRESCO_2_INIT)
+            {
+                LCD_write_string(MESSAGE_FRESCO_2_ROW, MESSAGE_FRESCO_2_COLUMN, MESSAGE_FRESCO_2, TRUE);
+                LCD_write_string(MESSAGE_CHECK_ROW, MESSAGE_CHECK_COLUMN, MESSAGE_CHECK, TRUE);
+                sensor_done = FALSE;
+            }
+            if(getSensor_Fresco_Wall() != SENSOR_WALL_INIT)
+            {
+                LCD_write_string(MESSAGE_WALL_ROW, MESSAGE_WALL_COLUMN, MESSAGE_WALL, TRUE);
+                LCD_write_string(MESSAGE_CHECK_ROW, MESSAGE_CHECK_COLUMN, MESSAGE_CHECK, TRUE);
+                sensor_done = FALSE;
+            }
+            if(getSensor_EmergencyStop() != SENSOR_EMERGENCY_INIT)
+            {
+                LCD_write_string(MESSAGE_EMERGENCY_ROW, MESSAGE_EMERGENCY_COLUMN, MESSAGE_EMERGENCY, TRUE);
+                LCD_write_string(MESSAGE_CHECK_ROW, MESSAGE_CHECK_COLUMN, MESSAGE_CHECK, TRUE);
+                sensor_done = FALSE;
+            }
+            if(getSensor_Key() != SENSOR_KEY_INIT)
+            {
+                LCD_write_string(MESSAGE_KEY_ROW, MESSAGE_KEY_COLUMN, MESSAGE_KEY, TRUE);
+                LCD_write_string(MESSAGE_CHECK_ROW, MESSAGE_CHECK_COLUMN, MESSAGE_CHECK, TRUE);
+                sensor_done = FALSE;
+            }
+
+            /* every sensor was okay */
+            if(sensor_done == TRUE)
+            {
+                state = DRIVE_INIT;
+            }
 
             break;
 

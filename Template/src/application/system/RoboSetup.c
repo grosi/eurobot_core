@@ -1,6 +1,6 @@
 /**
  * \file    RoboSetup.c
- * \author  haldj3
+ * \author  haldj3, gross10
  * \date    2014-03-21
  *
  * \version 1.0
@@ -46,6 +46,7 @@ typedef struct
     char opt3[MAX_NUMBER_COLUMN+1];    // option 3
     const uint8_t pos3;                   // position of option 3 (0... (MAX_NUMBER_COLUMN-1))
     uint8_t cursor_position;              // current position of the cursor
+    uint8_t min_result;                   // min. possible result
     uint8_t max_result;                   // max. possible result
     uint8_t result;                       // current result
     uint8_t confirmed;                    /*!< FALSE = not yet confirmed, TRUE = confirmed */
@@ -100,6 +101,7 @@ menu_t teamcolor =
     .opt3 = "",
     .pos3 = 16, /*!< pos3 have to be >= 16 if not used! */
     .cursor_position = SETUP_TEAMCOLOR_CURSOR_DEFAULT,
+    .min_result = 0,
     .max_result = 1,
     .result = SETUP_TEAMCOLOR_RESULT_DEFAULT, // TODO RED = 1, YELLOW = 0 GIP_TEAMCOLOR_RED
     .confirmed = FALSE
@@ -118,6 +120,7 @@ menu_t friend_quantity =
     .opt3 = "",
     .pos3 =  16, /*!< pos3 have to be >= 16 if not used! */
     .cursor_position = SETUP_FRIEND_CURSOR_DEFAULT,
+    .min_result = 0,
     .max_result = 1,
     .result = SETUP_FRIEND_RESULT_DEFAULT, // TODO 0, 1
     .confirmed = FALSE
@@ -136,6 +139,7 @@ menu_t enemy_quantity =
     .opt3 = "2",
     .pos3 = 11,
     .cursor_position = SETUP_ENEMY_CURSOR_DEFAULT,
+    .min_result = 0,
     .max_result = 2,
     .result = SETUP_ENEMY_RESULT_DEFAULT,    // 0, 1, 2
     .confirmed = FALSE
@@ -147,13 +151,14 @@ menu_t enemy_size1 =
     .title = "ENEMY SIZE1 [cm]",
     .byte0 = "-",
     .byte15 = "+",
-    .opt1 = "0...",
+    .opt1 = "10..",
     .pos1 =1,
     .opt2 = SETUP_ENEMY_1_OPTION,
     .pos2 = 7,
     .opt3 = "..50",
     .pos3 = 11,
     .cursor_position = SETUP_ENEMY_1_CURSOR_DEFAULT,
+    .min_result = 10,
     .max_result = 50,
     .result = SETUP_ENEMY_1_RESULT_DEFAULT,    // 0... 50
     .confirmed = FALSE
@@ -165,13 +170,14 @@ menu_t enemy_size2 =
     .title = "ENEMY SIZE1 [cm]",
     .byte0 = "-",
     .byte15 = "+",
-    .opt1 = "0...",
+    .opt1 = "10..",
     .pos1 =1,
     .opt2 = SETUP_ENEMY_2_OPTION,
     .pos2 = 7,
     .opt3 = "..50",
     .pos3 = 11,
     .cursor_position = SETUP_ENEMY_2_CURSOR_DEFAULT,
+    .min_result = 10,
     .max_result = 50,
     .result = SETUP_ENEMY_2_RESULT_DEFAULT,    // 0... 50
     .confirmed = FALSE
@@ -190,6 +196,7 @@ menu_t startnode =
     .opt3 = "..11",
     .pos3 = 11,
     .cursor_position = SETUP_STARTNODE_CURSOR_DEFAULT,
+    .min_result = 1,
     .max_result = 11,
     .result = SETUP_STARTNODE_RESULT_DEFAULT,    // 0... 11
     .confirmed = FALSE
@@ -208,6 +215,7 @@ menu_t setup_finished =
     .opt3 = "",
     .pos3 = 16,    /*!< pos3 have to be >= 16 if not used! */
     .cursor_position = SETUP_SETUPFINISH_CURSOR_DEFAULT,
+    .min_result = 1,
     .max_result = 1,
     .result = SETUP_SETUPFINISH_RESULT,    // 0 = NO, 1 = YES
     .confirmed = FALSE
@@ -254,7 +262,6 @@ void initRoboSetupState()
 {
     /* hw modules */
     initUserPanelButtons();
-    //initSensor_Key();
 
     /* set first state */
     current_menu = TEAMCOLOR;
@@ -519,11 +526,10 @@ static void menu_handler(menu_t *current_menu, uint8_t res1, uint8_t res2, uint8
                 }
                 break;
 
-                /* TODO */
             case ADJUSTING_MENU:
 
                 /* check if button 1 (left) is pushed and result > 0 */
-                if (getUserPanelButtonPosEdge_1(&button_left_state) && (current_menu->result > 0))
+                if (getUserPanelButtonPosEdge_1(&button_left_state) && (current_menu->result > current_menu->min_result))
                 {
                     current_menu->result--;    // decrease result
                     /* update display (option 2) */
