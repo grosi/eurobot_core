@@ -730,21 +730,95 @@ static void vTrackEnemy(uint16_t id, CAN_data_t* data)
 
 
 /**
- * \fn          gotoNode
- * \brief       Function to give the GoTo command and monitor the rangefinder whle moving.
+ * \fn          isRobotInFront
+ * \brief       Function to check if an enemy/confederate is in front of robot within range
  *
- * \param[in]   None
- * \return      func_report (FUNC_SUCCESS, FUNC_INCOMPLETE or FUNC_ERROR)
+ * \param[in]   game_state_t* game_state Game infos (navi)
+ * \return      boolean
+ *
+ * \todo: Maybe move to another file
  */
-func_report_t gotoNode(node_param_t* param, volatile game_state_t* game_state)
-{
+boolean isRobotInFront(volatile game_state_t* game_state) {
+
     /* local variables */
-    game_state_t game_state_copy;
-    //uint8_t robo_count;
     int16_t delta_x, delta_y;
     uint16_t distance, distance_treshold;
     int16_t alpha, phi;
 
+	/* Copy current game state, so it wont be changed during calculation */
+	taskENTER_CRITICAL();
+	game_state_t game_state_copy = *game_state;
+	taskEXIT_CRITICAL();
+
+	/* Check 0, 1 or both enemies */
+	int8_t current_robot_check;  /* Signed, so in worst case it starts on negative numbers and thus still does the loop */
+	for(current_robot_check = 1-confederate_quantity;  /* Start on 0 if we have a confederate robot */
+			current_robot_check <= enemy_count; current_robot_check++)
+	{
+		/* Get deltas and distance for current robot */
+		/* If we have a confederate robot, the counting starts with 0 */
+		if(current_robot_check == 0) {
+
+			delta_x = game_state_copy.confederate_x - game_state_copy.x;
+			delta_y = game_state_copy.confederate_y - game_state_copy.y;
+			distance_treshold = ROBOT_B52_RADIUS + ROBOT_BALLERINA_RADIUS + RANGEFINDER_THRESHOLD_FW*10;
+		}
+		/* Enemies always start with 1 */
+		else if(current_robot_check == 1) {
+
+			delta_x = game_state_copy.enemy_1_x - game_state_copy.x;
+			delta_y = game_state_copy.enemy_1_y - game_state_copy.y;
+			distance_treshold = game_state_copy.enemy_1_diameter/2 + ROBOT_BALLERINA_RADIUS + RANGEFINDER_THRESHOLD_FW*10;
+		}
+		else if(current_robot_check == 2) {
+
+			delta_x = game_state_copy.enemy_2_x - game_state_copy.x;
+			delta_y = game_state_copy.enemy_2_y - game_state_copy.y;
+			distance_treshold = game_state_copy.enemy_2_diameter/2 + ROBOT_BALLERINA_RADIUS + RANGEFINDER_THRESHOLD_FW*10;
+		}
+		/* Else:
+		 *  current_robot_check > 2: (More than 2 enemies)      Not possible in eurobot 2014 scenario
+		 *  current_robot_check < 0: (More than 1 confederate)  Not possible in eurobot 2014 scenario */
+
+		/* Calculate distance to the enemy (mm) */
+		distance = round(sqrt(delta_x*delta_x + delta_y*delta_y));
+
+		/* Check if a robot is within threshold range (mm) */
+		if(distance <= distance_treshold) {
+
+			/* Convert angle to -180 <= alpha < 180 */
+			if(game_state_copy.angle < 180) {
+				alpha = game_state_copy.angle;
+			}
+			else {
+				alpha = game_state_copy.angle - 360;
+			}
+			/* Calculate the angle to the enemy (relative the map grid, -180 <= phi < 180) */
+			phi = round(atan2f(delta_y, delta_x)/M_PI*180);
+			/* Calculate the angle to the enemy (relative to our angle, -180 <= phi < 180) */
+			phi = phi-alpha;
+
+			/* Check if the enemy is within our angle */
+			if(fabs(phi) <= RANGEFINDER_ANGLE) {
+				return TRUE;
+			}
+		}
+	}
+
+	return FALSE;
+}
+
+
+/**
+ * \fn          gotoNode
+ * \brief       Function to give the GoTo command and monitor the rangefinder whle moving.
+ *
+ * \param[in]   node_param_t* param Node infos
+ * \param[in]   game_state_t* game_state Game infos (navi)
+ * \return      func_report (FUNC_SUCCESS, FUNC_INCOMPLETE or FUNC_ERROR)
+ */
+func_report_t gotoNode(node_param_t* param, volatile game_state_t* game_state)
+{
     /* Variable for CAN RX */
     CAN_data_t CAN_buffer;
     uint8_t CAN_ok = pdFALSE;
@@ -814,71 +888,16 @@ func_report_t gotoNode(node_param_t* param, volatile game_state_t* game_state)
 		{
 			/* Semaphore received, this means an obstacle was detected! */
 			
-			/* Copy current game state, so it wont be changed during calculation */
-			taskENTER_CRITICAL();
-			game_state_copy = *game_state;
-			taskEXIT_CRITICAL();
+			/* Check if an enemy/confederate is within range in front of the robot */
+			if(isRobotInFront(game_state)) {
 
-			/* Check 0, 1 or both enemies */
-			int8_t current_robot_check;  /* Signed, so in worst case it starts on negative numbers and thus still does the loop */
-			for(current_robot_check = 1-confederate_quantity;  /* Start on 0 if we have a confederate robot */
-					current_robot_check <= enemy_count; current_robot_check++)
-			{
-				/* Get deltas and distance for current robot */
-				/* If we have a confederate robot, the counting starts with 0 */
-				if(current_robot_check == 0) {
+				/* STOPP */
+				txStopDrive();
 
-					delta_x = game_state_copy.confederate_x - game_state_copy.x;
-					delta_y = game_state_copy.confederate_y - game_state_copy.y;
-					distance_treshold = ROBOT_B52_RADIUS + ROBOT_BALLERINA_RADIUS + RANGEFINDER_THRESHOLD_FW*10;
-				}
-				/* Enemies always start with 1 */
-				else if(current_robot_check == 1) {
+				/* Suspend rangefinder safely */
+				suspendRangefinderTask();
 
-					delta_x = game_state_copy.enemy_1_x - game_state_copy.x;
-					delta_y = game_state_copy.enemy_1_y - game_state_copy.y;
-					distance_treshold = game_state_copy.enemy_1_diameter/2 + ROBOT_BALLERINA_RADIUS + RANGEFINDER_THRESHOLD_FW*10;
-				}
-				else if(current_robot_check == 2) {
-
-					delta_x = game_state_copy.enemy_2_x - game_state_copy.x;
-					delta_y = game_state_copy.enemy_2_y - game_state_copy.y;
-					distance_treshold = game_state_copy.enemy_2_diameter/2 + ROBOT_BALLERINA_RADIUS + RANGEFINDER_THRESHOLD_FW*10;
-				}
-				/* Else:
-				 *  current_robot_check > 2: (More than 2 enemies)      Not possible in eurobot 2014 scenario
-				 *  current_robot_check < 0: (More than 1 confederate)  Not possible in eurobot 2014 scenario */
-
-				/* Calculate distance to the enemy (mm) */
-				distance = round(sqrt(delta_x*delta_x + delta_y*delta_y));
-
-				/* Check if a robot is within threshold range (mm) */
-				if(distance <= distance_treshold) {
-
-					/* Convert angle to -180 <= alpha < 180 */
-					if(game_state_copy.angle < 180) {
-						alpha = game_state_copy.angle;
-					}
-					else {
-						alpha = game_state_copy.angle - 360;
-					}
-					/* Calculate the angle to the enemy (relative the map grid, -180 <= phi < 180) */
-					phi = round(atan2f(delta_y, delta_x)/M_PI*180);
-					/* Calculate the angle to the enemy (relative to our angle, -180 <= phi < 180) */
-					phi = phi-alpha;
-
-					/* Check if the enemy is within our angle */
-					if(fabs(phi) <= RANGEFINDER_ANGLE) {
-
-						/* STOPP */
-						txStopDrive();
-
-						/* Suspend rangefinder safely */
-						suspendRangefinderTask();
-
-						return FUNC_INCOMPLETE;
-					}
-				}
+				return FUNC_INCOMPLETE;
 			}
 
 			/* Semaphore is always only given by rangefinder task and always only taken by node task,
