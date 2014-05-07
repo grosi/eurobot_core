@@ -116,8 +116,8 @@ void doFrescoNode(node_param_t* param) {
 		/* Get number of frescos still in robot */
 		n_frescos_present = getSensor_Fresco_1() + getSensor_Fresco_2();
 
-	/* Retry if there are still frescos in the robot and another retry is allowed (max. not reached). */
-	} while(n_frescos_present && (n_fresco_attempts < FRESCO_MAX_RETRIES));
+	/* Retry if there are still both frescos in the robot and another retry is allowed (max. not reached). */
+	} while((n_frescos_present >= 2) && (n_fresco_attempts < FRESCO_MAX_RETRIES));
 
 	/* Report status */
 	if(n_frescos_present > 0) {
