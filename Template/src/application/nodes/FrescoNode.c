@@ -56,6 +56,8 @@ void doFrescoNode(node_param_t* param) {
 	uint8_t n_fresco_attempts = 0;
 	/* Variable to count number of frescos in robot */
 	uint8_t n_frescos_present = 0;
+	/* Number of frescos at the beginning of doing the node */
+	const uint8_t max_frescos_present = getSensor_Fresco_1() + getSensor_Fresco_2();
 	/* Variable to set the servo position step by step */
 	volatile uint16_t servo_pos;
 
@@ -120,8 +122,8 @@ void doFrescoNode(node_param_t* param) {
 		/* Get number of frescos still in robot */
 		n_frescos_present = getSensor_Fresco_1() + getSensor_Fresco_2();
 
-	/* Retry if there are still both frescos in the robot and another retry is allowed (max. not reached). */
-	} while((n_frescos_present >= 2) && (n_fresco_attempts < FRESCO_MAX_RETRIES));
+	/* Retry if there are still all frescos in the robot and another retry is allowed (max. not reached). */
+	} while((n_frescos_present >= max_frescos_present) && (n_fresco_attempts < FRESCO_MAX_RETRIES));
 
 	/* Report status */
 	if(n_frescos_present > 0) {
