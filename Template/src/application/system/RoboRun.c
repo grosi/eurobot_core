@@ -102,10 +102,10 @@ volatile static game_state_t game_state = { .x = 0,               /*!< x-positio
                                             .angle = 0,              /*!< angle */
                                             .enemy_1_x = NODE_NO_ENEMY,  /*!< x-position enemy 1 */
                                             .enemy_1_y = NODE_NO_ENEMY,  /*!< y-position enemy 1 */
-                                            .enemy_1_diameter = NODE_NO_ENEMY_APERTURE, /*!< aperture of enemy 1 [cm] */
+                                            .enemy_1_diameter = NODE_NO_ENEMY_DIAMETER, /*!< diameter of enemy 1 [cm] */
                                             .enemy_2_x = NODE_NO_ENEMY,  /*!< x-position enemy 2 */
                                             .enemy_2_y = NODE_NO_ENEMY,  /*!< y-position enemy 2 */
-                                            .enemy_2_diameter = NODE_NO_ENEMY_APERTURE}; /*!< aperture of enemy 2 [cm] */
+                                            .enemy_2_diameter = NODE_NO_ENEMY_DIAMETER}; /*!< diameter of enemy 2 [cm] */
 
 
 /* Private function prototypes -----------------------------------------------*/
@@ -151,8 +151,8 @@ void initRoboRunState()
  * \param[in]   teamcolor       red or yellow
  * \param[in]   enemies         enemy quantity
  * \param[in]   confederate     confederate quantity
- * \param[in]   enemy_size_1    aperture of enemy 1
- * \param[in]   enemy_size_2    aperture of enemy 2
+ * \param[in]   enemy_size_1    diameter of enemy 1
+ * \param[in]   enemy_size_2    diameter of enemy 2
  *
  * \retval      1   set start configuration was successful
  * \retval      0   set start configuration was not possible
@@ -188,8 +188,8 @@ uint8_t setConfigRoboRunState(uint8_t start_node_id, uint8_t teamcolor, uint8_t 
 
     /* set enemy count */
     enemy_count = enemies;
-    game_state.enemy_1_diameter = enemy_size_1; /* aperture in centimeter */
-    game_state.enemy_2_diameter = enemy_size_2; /* aperture in centimeter */
+    game_state.enemy_1_diameter = enemy_size_1; /* diameter in centimeter */
+    game_state.enemy_2_diameter = enemy_size_2; /* diameter in centimeter */
 
     /* set confederate count */
     confederate_quantity = confederate;

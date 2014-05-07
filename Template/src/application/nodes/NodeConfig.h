@@ -83,7 +83,7 @@ typedef struct
 #define NODE_QUANTITY              11
 #define NODE_POOL_QUANTITY         2
 #define NODE_NO_ENEMY              0xFFFF
-#define NODE_NO_ENEMY_APERTURE     0
+#define NODE_NO_ENEMY_DIAMETER     0
 
 /* nodes pools */
 #define NODE_NO_POOL_ID            0
