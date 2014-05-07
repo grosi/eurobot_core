@@ -111,11 +111,6 @@ void doFrescoNode(node_param_t* param) {
 			vTaskDelay(SERVO_FRESCO_STEP_DELAY / portTICK_RATE_MS);
 		}
 
-//			/* Move fresco panel in, not step by step */
-//			setServo_1(SERVO_POS_FRESCO_IN);
-//			/* Wait some time while servo moves */
-//			vTaskDelay(SERVO_MOVING_DELAY / portTICK_RATE_MS);
-
 		/* Increment number of performed attempts */
 		n_fresco_attempts++;
 
