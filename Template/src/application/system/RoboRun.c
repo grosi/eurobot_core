@@ -926,17 +926,8 @@ static void vNodeTask(void* pvParameters )
     /* endless */
     for(;;)
     {
-    	/* Variable to store return value of gotoNode function */
-    	func_report_t gotoNode_report;
-
-    	/* Give goto command */
-    	do {
-    		gotoNode_report = gotoNode(&node_task->param, &game_state);
-    	/* Repeat if emergency brake was done on previous run */
-    	} while(gotoNode_report == FUNC_INCOMPLETE);
-
-    	/* Only if goto was successful */
-    	if(gotoNode_report == FUNC_SUCCESS) {
+    	/* Give goto command and do node if goto was successful */
+    	if(gotoNode(&node_task->param, &game_state) == FUNC_SUCCESS) {
     		/* Do node action */
     		node_task->node_function(&node_task->param);
     	}
