@@ -36,6 +36,7 @@
 
 /* typedefs */
 typedef enum { FALSE = 0, TRUE } boolean;
+typedef enum { FUNC_SUCCESS = 0, FUNC_INCOMPLETE, FUNC_ERROR } func_report_t;  /* Typedef enum for function return status */
 
 
 #endif

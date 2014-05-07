@@ -734,9 +734,9 @@ static void vTrackEnemy(uint16_t id, CAN_data_t* data)
  * \brief       Function to give the GoTo command and monitor the rangefinder whle moving.
  *
  * \param[in]   None
- * \return      None
+ * \return      func_report (FUNC_SUCCESS, FUNC_INCOMPLETE or FUNC_ERROR)
  */
-void gotoNode(node_param_t* param, volatile game_state_t* game_state)
+func_report_t gotoNode(node_param_t* param, volatile game_state_t* game_state)
 {
     /* local variables */
     game_state_t game_state_copy;
@@ -776,7 +776,7 @@ void gotoNode(node_param_t* param, volatile game_state_t* game_state)
 //
 //		/* No confirmation was received from drive system! */
 //		param->node_state = GOTO_CAN_ERROR;
-//		return;
+//		return FUNC_ERROR;
 	}
 
 	estimated_GoTo_time = 0;
@@ -862,7 +862,7 @@ void gotoNode(node_param_t* param, volatile game_state_t* game_state)
 						/* Suspend rangefinder safely */
 						suspendRangefinderTask();
 
-						return;
+						return FUNC_INCOMPLETE;
 					}
 				}
 			}
@@ -876,6 +876,8 @@ void gotoNode(node_param_t* param, volatile game_state_t* game_state)
 
 	/* Suspend rangefinder safely */
 	suspendRangefinderTask();
+
+	return FUNC_SUCCESS;
 }
 
 
@@ -891,13 +893,17 @@ static void vNodeTask(void* pvParameters )
     /* endless */
     for(;;)
     {
-    	/* Give goto command. Repeat if emergency brake was done on previous run (node still undone) */
-    	while(node_task->param.node_state == NODE_UNDONE) {
-    		gotoNode(&node_task->param, &game_state);
-    	}
+    	/* Variable to store return value of gotoNode function */
+    	func_report_t gotoNode_report;
 
-    	/* Only if there was no CAN error */
-    	if(node_task->param.node_state != GOTO_CAN_ERROR) {
+    	/* Give goto command */
+    	do {
+    		gotoNode_report = gotoNode(&node_task->param, &game_state);
+    	/* Repeat if emergency brake was done on previous run */
+    	} while(gotoNode_report == FUNC_INCOMPLETE);
+
+    	/* Only if goto was successful */
+    	if(gotoNode_report == FUNC_SUCCESS) {
     		/* Do node action */
     		node_task->node_function(&node_task->param);
     	}
