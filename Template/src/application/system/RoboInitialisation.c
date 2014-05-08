@@ -85,6 +85,7 @@ void setConfigRoboInitialisationState2Emergency()
 }
 
 
+
 /**
  * \fn      runRoboInitialisationState
  * \brief   run the RoboInitialisationState
@@ -97,6 +98,8 @@ void runRoboInitialisationState(portTickType* tick)
     /* local variable */
     CAN_data_t can_response;
     boolean sensor_done = TRUE;
+    static uint8_t sensor_error = 0;
+    static uint8_t sensor_old;
 
 
     /* small statemachine */
@@ -120,34 +123,99 @@ void runRoboInitialisationState(portTickType* tick)
             if(getSensor_Fresco_1() != SENSOR_FRESCO_1_INIT)
             {
                 /* error message */
-                LCD_write_string(MESSAGE_FRESCO_1_ROW, MESSAGE_FRESCO_1_COLUMN, MESSAGE_FRESCO_1, TRUE);
-                LCD_write_string(MESSAGE_CHECK_ROW, MESSAGE_CHECK_COLUMN, MESSAGE_CHECK, TRUE);
+                if(!(sensor_error & 1<<0))
+                {
+                    LCD_write_string(MESSAGE_FRESCO_1_ROW, MESSAGE_FRESCO_1_COLUMN, MESSAGE_FRESCO_1, TRUE);
+                    LCD_write_string(MESSAGE_CHECK_ROW, MESSAGE_CHECK_COLUMN, MESSAGE_CHECK, TRUE);
+                    sensor_old = sensor_error |= 1<<0;
+                }
                 sensor_done = FALSE;
             }
+            else
+            {
+                sensor_error &= ~(1<<0);
+                if(sensor_old ^ sensor_error)
+                {
+                    sensor_old = sensor_error = 0;
+                }
+            }
+
             if(getSensor_Fresco_2() != SENSOR_FRESCO_2_INIT)
             {
-                LCD_write_string(MESSAGE_FRESCO_2_ROW, MESSAGE_FRESCO_2_COLUMN, MESSAGE_FRESCO_2, TRUE);
-                LCD_write_string(MESSAGE_CHECK_ROW, MESSAGE_CHECK_COLUMN, MESSAGE_CHECK, TRUE);
+                if(!(sensor_error & 1<<1))
+                {
+                    LCD_write_string(MESSAGE_FRESCO_2_ROW, MESSAGE_FRESCO_2_COLUMN, MESSAGE_FRESCO_2, TRUE);
+                    LCD_write_string(MESSAGE_CHECK_ROW, MESSAGE_CHECK_COLUMN, MESSAGE_CHECK, TRUE);
+                    sensor_old = sensor_error |= 1<<1;
+                }
                 sensor_done = FALSE;
             }
+            else
+            {
+                sensor_error &= ~(1<<1);
+                if(sensor_old ^ sensor_error)
+                {
+                    sensor_old = sensor_error = 0;
+                }
+            }
+
             if(getSensor_Fresco_Wall() != SENSOR_WALL_INIT)
             {
-                LCD_write_string(MESSAGE_WALL_ROW, MESSAGE_WALL_COLUMN, MESSAGE_WALL, TRUE);
-                LCD_write_string(MESSAGE_CHECK_ROW, MESSAGE_CHECK_COLUMN, MESSAGE_CHECK, TRUE);
+                if(!(sensor_error & 1<<2))
+                {
+                    LCD_write_string(MESSAGE_WALL_ROW, MESSAGE_WALL_COLUMN, MESSAGE_WALL, TRUE);
+                    LCD_write_string(MESSAGE_CHECK_ROW, MESSAGE_CHECK_COLUMN, MESSAGE_CHECK, TRUE);
+                    sensor_old = sensor_error |= 1<<2;
+                }
                 sensor_done = FALSE;
             }
+            else
+            {
+                sensor_error &= ~(1<<2);
+                if(sensor_old ^ sensor_error)
+                {
+                    sensor_old = sensor_error = 0;
+                }
+            }
+
             if(getSensor_EmergencyStop() != SENSOR_EMERGENCY_INIT)
             {
-                LCD_write_string(MESSAGE_EMERGENCY_ROW, MESSAGE_EMERGENCY_COLUMN, MESSAGE_EMERGENCY, TRUE);
-                LCD_write_string(MESSAGE_CHECK_ROW, MESSAGE_CHECK_COLUMN, MESSAGE_CHECK, TRUE);
+                if(!(sensor_error & 1<<3))
+                {
+                    LCD_write_string(MESSAGE_EMERGENCY_ROW, MESSAGE_EMERGENCY_COLUMN, MESSAGE_EMERGENCY, TRUE);
+                    LCD_write_string(MESSAGE_CHECK_ROW, MESSAGE_CHECK_COLUMN, MESSAGE_CHECK, TRUE);
+                    sensor_old = sensor_error |= 1<<3;
+                }
                 sensor_done = FALSE;
             }
+            else
+            {
+                sensor_error &= ~(1<<3);
+                if(sensor_old ^ sensor_error)
+                {
+                    sensor_old = sensor_error = 0;
+                }
+            }
+
             if(getSensor_Key() != SENSOR_KEY_INIT)
             {
-                LCD_write_string(MESSAGE_KEY_ROW, MESSAGE_KEY_COLUMN, MESSAGE_KEY, TRUE);
-                LCD_write_string(MESSAGE_CHECK_ROW, MESSAGE_CHECK_COLUMN, MESSAGE_CHECK, TRUE);
+                if(!(sensor_error & 1<<4))
+                {
+                    LCD_write_string(MESSAGE_KEY_ROW, MESSAGE_KEY_COLUMN, MESSAGE_KEY, TRUE);
+                    LCD_write_string(MESSAGE_CHECK_ROW, MESSAGE_CHECK_COLUMN, MESSAGE_CHECK, TRUE);
+                    sensor_old = sensor_error |= 1<<4;
+                }
                 sensor_done = FALSE;
             }
+            else
+            {
+                sensor_error &= ~(1<<4);
+                if(sensor_old ^ sensor_error)
+                {
+                    sensor_old = sensor_error = 0;
+                }
+            }
+
 
             /* every sensor was okay */
             if(sensor_done == TRUE)
@@ -204,6 +272,10 @@ void runRoboInitialisationState(portTickType* tick)
             /* message */
             LCD_write_string(MESSAGE_EMERGENCY_ROW,MESSAGE_EMERGENCY_COLUMN,MESSAGE_EMERGENCY,TRUE);
             LCD_write_string(MESSAGE_CHECK_ROW,MESSAGE_CHECK_COLUMN,MESSAGE_CHECK,TRUE);
+
+            /* send message over CAN for better break-enhancement */
+            txEmergencyStop(0);
+
             state = EMERGENCY_ACTIVE;
         case EMERGENCY_ACTIVE:
 

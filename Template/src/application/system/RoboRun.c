@@ -61,7 +61,6 @@
 /* RTOS */
 static xTaskHandle xNodeTask_Handle = NULL;
 xSemaphoreHandle sSyncRoboRunNodeTask; /*!< for RoboRun <-> node-task sync */
-static xQueueSetHandle xQueueSet;
 
 /* game and strategy */
 static volatile node_t* nodes_red[NODE_QUANTITY] = {&node_mammoth_1,
@@ -131,15 +130,13 @@ void initRoboRunState()
     initNodeResources();
 #endif
 
-    /* create sync-semaphore and queue-set*/
-    xQueueSet = xQueueCreateSet(2 * BINARY_SEMAPHORE_LENGTH);
+    /* create sync-semaphore*/
     vSemaphoreCreateBinary(sSyncRoboRunNodeTask); /* for RoboRun <-> node-task sync */
 
-    xQueueAddToSet(sSyncRoboRunNodeTask,xQueueSet);
-    xQueueAddToSet(sSyncEmergencyStopRoboState,xQueueSet);
-
+#ifdef DEBUGGING
     vQueueAddToRegistry(sSyncRoboRunNodeTask, (signed char*) "sSyncRoboRun");
     vQueueAddToRegistry(sSyncEmergencyStopRoboState, (signed char*) "sSyncEmergency");
+#endif
 
     /* set CAN listeners */
     setFunctionCANListener(vTrackEnemy,ENEMEY_1_POSITION_RESPONSE);
@@ -184,8 +181,6 @@ uint8_t setConfigRoboRunState(uint8_t start_node_id, uint8_t teamcolor, uint8_t 
     /* search start-node address */
     for(node_count = 0; node_count < NODE_QUANTITY; node_count++)
     {
-
-        //if(((*nodes_game)+node_count)->param.id == start_node_id)
         if(nodes_game[node_count]->param.id == start_node_id)
         {
             next_node = nodes_game[node_count];
@@ -839,8 +834,6 @@ static void vNodeTask(void* pvParameters )
     		/* Do node action */
     		node_task->node_function(&node_task->param);
     	}
-
-    	node_task->param.node_state = NODE_FINISH_SUCCESS;
 
     	/* unblock system task */
         xSemaphoreGive(sSyncRoboRunNodeTask);
