@@ -69,16 +69,15 @@ void initServo_1()
     /* Initialize the pwm-signal */
     TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
     TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
-    TIM_OCInitStructure.TIM_OutputNState = TIM_OutputNState_Enable;
+    TIM_OCInitStructure.TIM_OutputNState = TIM_OutputNState_Disable;
     TIM_OCInitStructure.TIM_Pulse = SERVO_1_DUTY_CYCLE;
     TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
-    TIM_OCInitStructure.TIM_OCNPolarity = TIM_OCPolarity_High;
     TIM_OCInitStructure.TIM_OCIdleState = TIM_OCIdleState_Reset;
     TIM_OCInitStructure.TIM_OCNIdleState = TIM_OCNIdleState_Reset;
 
     /* enable clock and get AF*/
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1, ENABLE);
     RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1, ENABLE);
 
     /* enables port, pin and alternate function */
     GPIO_Init(SERVO_1_PORT,&servo_gpio);
@@ -112,12 +111,6 @@ void initServo_1()
  */
 void setServo_1(uint16_t new_position)
 {
-    /* pointer to the pwm-register */
-    uint32_t* current_position;
-
-    /* get pointer to timer-register */
-    current_position = (uint32_t*)&SERVO_1_TIMER->CCR1;
-
     /* catch overflow */
     if(new_position > SERVO_1_RESOLUTION / 10)
     {
@@ -125,7 +118,7 @@ void setServo_1(uint16_t new_position)
     }
 
     /* set the dutycycle */
-    *current_position = new_position;
+    SERVO_1_TIMER->CCR1 = new_position;
 }
 
 
@@ -159,16 +152,15 @@ void initServo_2()
     /* Initialize the pwm-signal */
     TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
     TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
-    TIM_OCInitStructure.TIM_OutputNState = TIM_OutputNState_Enable;
+    TIM_OCInitStructure.TIM_OutputNState = TIM_OutputNState_Disable;
     TIM_OCInitStructure.TIM_Pulse = SERVO_2_DUTY_CYCLE;
     TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
-    TIM_OCInitStructure.TIM_OCNPolarity = TIM_OCPolarity_High;
     TIM_OCInitStructure.TIM_OCIdleState = TIM_OCIdleState_Reset;
     TIM_OCInitStructure.TIM_OCNIdleState = TIM_OCNIdleState_Reset;
 
     /* enable clock and get AF*/
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1, ENABLE);
     RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1, ENABLE);
 
     /* enables port, pin and alternate function */
     GPIO_Init(SERVO_2_PORT,&servo_gpio);
@@ -202,20 +194,13 @@ void initServo_2()
  */
 void setServo_2(uint16_t new_position)
 {
-    /* pointer to the pwm-register */
-    uint32_t* current_position;
-
-    /* get pointer to timer-register */
-    current_position = (uint32_t*)&SERVO_2_TIMER->CCR2;
-
     /* catch overflow */
     if(new_position > SERVO_2_RESOLUTION / 10)
     {
         new_position = SERVO_2_RESOLUTION / 10;
     }
 
-    /* set the dutycycle */
-    *current_position = new_position;
+    SERVO_2_TIMER->CCR2 = new_position;
 }
 
 
@@ -249,16 +234,15 @@ void initServo_3()
     /* Initialize the pwm-signal */
     TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
     TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
-    TIM_OCInitStructure.TIM_OutputNState = TIM_OutputNState_Enable;
+    TIM_OCInitStructure.TIM_OutputNState = TIM_OutputNState_Disable;
     TIM_OCInitStructure.TIM_Pulse = SERVO_3_DUTY_CYCLE;
     TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
-    TIM_OCInitStructure.TIM_OCNPolarity = TIM_OCPolarity_High;
     TIM_OCInitStructure.TIM_OCIdleState = TIM_OCIdleState_Reset;
     TIM_OCInitStructure.TIM_OCNIdleState = TIM_OCNIdleState_Reset;
 
     /* enable clock and get AF*/
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1, ENABLE);
     RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1, ENABLE);
 
     /* enables port, pin and alternate function */
     GPIO_Init(SERVO_3_PORT,&servo_gpio);
@@ -292,12 +276,6 @@ void initServo_3()
  */
 void setServo_3(uint16_t new_position)
 {
-    /* pointer to the pwm-register */
-    uint32_t* current_position;
-
-    /* get pointer to timer-register */
-    current_position = (uint32_t*)&SERVO_3_TIMER->CCR3;
-
     /* catch overflow */
     if(new_position > SERVO_3_RESOLUTION / 10)
     {
@@ -305,7 +283,7 @@ void setServo_3(uint16_t new_position)
     }
 
     /* set the dutycycle */
-    *current_position = new_position;
+    SERVO_3_TIMER->CCR3 = new_position;
 }
 
 
@@ -342,13 +320,12 @@ void initServo_4()
     TIM_OCInitStructure.TIM_OutputNState = TIM_OutputNState_Enable;
     TIM_OCInitStructure.TIM_Pulse = SERVO_4_DUTY_CYCLE;
     TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
-    TIM_OCInitStructure.TIM_OCNPolarity = TIM_OCPolarity_High;
     TIM_OCInitStructure.TIM_OCIdleState = TIM_OCIdleState_Reset;
     TIM_OCInitStructure.TIM_OCNIdleState = TIM_OCNIdleState_Reset;
 
     /* enable clock and get AF*/
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1, ENABLE);
     RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1, ENABLE);
 
     /* enables port, pin and alternate function */
     GPIO_Init(SERVO_4_PORT,&servo_gpio);
@@ -382,12 +359,6 @@ void initServo_4()
  */
 void setServo_4(uint16_t new_position)
 {
-    /* pointer to the pwm-register */
-    uint32_t* current_position;
-
-    /* get pointer to timer-register */
-    current_position = (uint32_t*)&SERVO_4_TIMER->CCR4;
-
     /* catch overflow */
     if(new_position > SERVO_4_RESOLUTION / 10)
     {
@@ -395,7 +366,7 @@ void setServo_4(uint16_t new_position)
     }
 
     /* set the dutycycle */
-    *current_position = new_position;
+    SERVO_4_TIMER->CCR4 = new_position;
 }
 
 /**

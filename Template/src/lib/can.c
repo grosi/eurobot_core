@@ -314,7 +314,7 @@ void initCAN(CANRxCatch_t app_rx_funktion)
     CAN_InitStructure.CAN_TTCM = DISABLE; /* Time Triggered Communication Mode */
     CAN_InitStructure.CAN_ABOM = DISABLE; /* Automatic Bus-Off Management */
     CAN_InitStructure.CAN_AWUM = DISABLE; /* Automatic Wakeup Mode */
-    CAN_InitStructure.CAN_NART = DISABLE; /* No Automatic Retransmission */
+    CAN_InitStructure.CAN_NART = ENABLE; /* No Automatic Retransmission */
     CAN_InitStructure.CAN_RFLM = DISABLE; /* Receive FIFO Locked Mode  */
     CAN_InitStructure.CAN_TXFP = DISABLE; /* Transmit FIFO Priority */
     CAN_InitStructure.CAN_Mode = CAN_Mode_Normal;
@@ -416,7 +416,7 @@ static inline void initCANInterrupt(void)
 
     /* config the interrupt channel */
     NVIC_InitStructure.NVIC_IRQChannel = CAN_NVIC_CHANNEL;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x0;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = CAN_NVIC_PRIORITY;
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x0;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);

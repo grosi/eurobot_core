@@ -15,36 +15,48 @@
  * @{
  */
 /* Includes ------------------------------------------------------------------*/
-/* RTOS */
-#include <memPoolService.h>         /*!< Memory pool manager service */
-
-/* HW-library */
-#include "..\lib\SWD.h" /** \todo remove if LED are not used */
-
 /* application */
-#include "app_config.h"
+#include "AppConfig.h"
 #include "CANGatekeeper.h"
+#include "system/RoboSetup.h"
 #include "ELP.h"
 
 /* Private typedef -----------------------------------------------------------*/
+/**
+ * \brief struct describing a table entry for cyclical OS
+ */
+typedef struct
+{
+    uint8_t first_activation;   /* Cycle when action is called first time */
+    uint8_t cyle_activation;    /* Periodic cycle */
+    void (*elp_function)(void); /* Function pointer to action */
+}cycle_table_t;
 
 
 /* Private define ------------------------------------------------------------*/
-//#define ELP_CAN_ON
+#define ELP_CAN_ON
+#define LAST_ENTRY   0  /* Last entry for table_entry table[]         */
+#define CYCLE_RESET  14  /* Number of cycles until cycle-counter reset */
 
 /* Private macro -------------------------------------------------------------*/
 
 
 /* Private variables ---------------------------------------------------------*/
-static uint8_t laserRateCounter;
-static uint8_t ultrasonicRateCounter;
-static uint8_t kalmanRateCounter;
-static uint8_t enemy1RateCounter;
-static uint8_t enemy2RateCounter;
-static uint8_t confederateRateCounter;
+static const cycle_table_t cycle_table[] =
+{
+    {ELP_NAVI_POSITION_REQUEST_START,ELP_NAVI_POSITION_REQUEST_RATE,txNaviPositionRequest},
+    {ELP_KALMAN_POSITION_REQUEST_START,ELP_KALMAN_POSITION_REQUEST_RATE,txKalmanPositionRequest},
+    {ELP_CONFEDERATE_POSITION_REQUEST_START,ELP_CONFEDERATE_POSITION_REQUEST_RATE,txConfederatePositionRequest},
+    {ELP_ENEMY1_POSITION_REQUEST_START,ELP_ENEMY1_POSITION_REQUEST_RATE,txEnemey1PositionRequest},
+    {ELP_ENEMY2_POSITION_REQUEST_START,ELP_ENEMY2_POSITION_REQUEST_RATE,txEnemey2PositionRequest},
+
+    {0,0,LAST_ENTRY}
+};
+
+static xTimerHandle xELPTimer;
 
 /* Private function prototypes -----------------------------------------------*/
-static void vELPTask(void*);
+static void vELPTimerCallback(xTimerHandle);
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -56,136 +68,83 @@ static void vELPTask(void*);
  * \param[in]   None
  * \return      None
  */
-void initELPTask(void){
-
-    /* Set the counters to 0*/
-    laserRateCounter = 1;
-    ultrasonicRateCounter = 1;
-    kalmanRateCounter = 1;
-    enemy1RateCounter = 1;
-    enemy2RateCounter = 1;
-    confederateRateCounter = 1;
-
-    /* create the task */
-    xTaskCreate( vELPTask, ( signed char * ) ELP_TASK_NAME, ELP_STACK_SIZE, NULL, ELP_TASK_PRIORITY, NULL );
-
+void initELPTimer(void)
+{
+    /* create sw-timer */
+    xELPTimer = xTimerCreate(( signed char * )ELP_NAME,
+            ELP_PERIODE / portTICK_RATE_MS,
+            pdTRUE,
+            NULL,
+            vELPTimerCallback);
 }
 
-/*
- * \fn          vELPTask
- * \brief       Task to pull the ELP-MSG's
+
+/**
+ * \fn          vELPTimerCallback
+ * \brief       Time base for the cycle ELP tasks
  *
  * \param[in]   None
  * \return      None
  */
-static void vELPTask(void* pvParameters ) {
+static void vELPTimerCallback(xTimerHandle pxTimer)
+{
+    /* locale variable */
+    static uint8_t cyle_count = 0;
+    uint8_t table_entry = 0; /* Start with first table entry */
 
-    portTickType xLastFlashTime;
 
-    /* We need to initialise xLastFlashTime prior to the first call to
-    vTaskDelayUntil(). */
-    xLastFlashTime = xTaskGetTickCount();
-
-    /* wait */
-    vTaskDelayUntil( &xLastFlashTime, 10 / portTICK_RATE_MS);
-
-    for(;;)
+    /* Process table and call task if necessary */
+    /* Still task in table?                     */
+    while (cycle_table[table_entry].elp_function != LAST_ENTRY)
     {
-        /* wait */
-        vTaskDelayUntil( &xLastFlashTime, ELP_TASK_SPEED / portTICK_RATE_MS);
-
-        /* Request the laser's ELP */
-        if(laserRateCounter == ELP_LASER_POSITION_REQUEST_RATE)
+        /* Modulo 0 yields undefined result! Prevent this */
+        if(cycle_table[table_entry].cyle_activation != 0)
         {
+            /* Call  task? */
+            if (((cyle_count % cycle_table[table_entry].cyle_activation) -
+                    (cycle_table[table_entry].first_activation)) == 0)
+            {
 #ifdef ELP_CAN_ON
-            txLaserPostionRequest();
+                (*cycle_table[table_entry].elp_function)();
 #endif
-            /* Reset the laserRateCounter */
-            laserRateCounter = 1;
+            }
         }
-        else
-        {
-            /* Increase the counter */
-            laserRateCounter++;
-        }
-
-        /* Request the ultrasonic's ELP */
-        if(ultrasonicRateCounter == ELP_ULTRASONIC_POSITION_REQUEST_RATE)
-        {
-#ifdef ELP_CAN_ON
-            txUltrasonicPositionRequest();
-#endif
-            /* Reset the laserRateCounter */
-            ultrasonicRateCounter = 1;
-        }
-        else
-        {
-            /* Increase the counter */
-            ultrasonicRateCounter++;
-        }
-
-        /* Request the Kalman's ELP */
-        if(kalmanRateCounter == ELP_KALMAN_POSITION_REQUEST_RATE)
-        {
-#ifdef ELP_CAN_ON
-            txKalmanPositionRequest();
-#endif
-            /* Reset the laserRateCounter */
-            kalmanRateCounter = 1;
-        }
-        else
-        {
-            /* Increase the counter */
-            kalmanRateCounter++;
-        }
-
-        /* Request the first enemy's ELP */
-        if(enemy1RateCounter == ELP_ENEMY1_POSITION_REQUEST_RATE)
-        {
-#ifdef ELP_CAN_ON
-            txEnemey1PositionRequest();
-#endif
-            /* Reset the laserRateCounter */
-            enemy1RateCounter = 1;
-        }
-        else
-        {
-            /* Increase the counter */
-            enemy1RateCounter++;
-        }
-
-        /* Request the second enemy's ELP */
-        if(enemy2RateCounter == ELP_ENEMY2_POSITION_REQUEST_RATE)
-        {
-#ifdef ELP_CAN_ON
-            txEnemey2PositionRequest();
-#endif
-            /* Reset the laserRateCounter */
-            enemy2RateCounter = 1;
-        }
-        else
-        {
-            /* Increase the counter */
-            enemy2RateCounter++;
-        }
-
-        /* Request the confederate's ELP */
-        if(confederateRateCounter == ELP_CONFEDERATE_POSITION_REQUEST_RATE)
-        {
-#ifdef ELP_CAN_ON
-            txConfederatePositionRequest();
-#endif
-            /* Reset the laserRateCounter */
-            confederateRateCounter = 1;
-        }
-        else
-        {
-            /* Increase the counter */
-            confederateRateCounter++;
-        }
-
-
+        table_entry++;  /* Prepare next task */
     }
+
+    /* Prepare next cycle and check if counter has to be reset */
+    cyle_count++;
+    if (cyle_count >= CYCLE_RESET) {
+        cyle_count = 0;
+    }
+}
+
+
+/**
+ * \fn          startELP
+ * \brief       starts the elp-timer
+ *
+ * \param[in]   None
+ * \return      None
+ */
+inline void startELP(void)
+{
+    /* Start the timer */
+    xTimerStart(xELPTimer,0);
+}
+
+
+/**
+ * \fn          stopELP
+ * \brief       stops the elp-timer
+ *
+ * \param[in]   None
+ * \return      None
+ */
+inline void stopELP(void)
+{
+    /* Stop the timer */
+    xTimerStop(xELPTimer,0);
 }
 
 /**

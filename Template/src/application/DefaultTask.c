@@ -1,5 +1,5 @@
 /**
- * \file    default_task.c
+ * \file    DefaultTask.c
  * \author  gross10
  * \date    2013--11-15
  *
@@ -15,15 +15,12 @@
  * @{
  */
 /* Includes ------------------------------------------------------------------*/
-/* RTOS */
-#include <memPoolService.h>         /* Memory pool manager service */
+/* application */
+#include "AppConfig.h"
+#include "DefaultTask.h"
 
 /* HW-library */
 #include "../lib/led.h"
-
-/* application */
-#include "app_config.h"
-#include "default_task.h"
 
 
 /* Private typedef -----------------------------------------------------------*/
@@ -37,6 +34,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 typedef void (*led_t)(uint8_t);
+static xTaskHandle xDefaultTask_Handle;
 
 
 /* Private function prototypes -----------------------------------------------*/
@@ -46,14 +44,15 @@ static void vDefaultTask(void*);
 /* Private functions ---------------------------------------------------------*/
 
 
-/*******************************************************************************
+/**
  * \fn          initDefaultTask
  * \brief       Initialisation the test and dummy task
  *
  * \param[in]   None
  * \return      None
- ******************************************************************************/
-void initDefaultTask(void){
+ */
+void initDefaultTask(void)
+{
 
     /* module initialisation */
     /* leds */
@@ -63,17 +62,29 @@ void initDefaultTask(void){
     initBoardLED_orange();
 
     /* create the task */
-    xTaskCreate( vDefaultTask, ( signed char * ) DEFAULT_TASK_NAME, DEFAULT_STACK_SIZE, NULL, DEFAULT_TASK_PRIORITY, NULL );
+    xTaskCreate( vDefaultTask, ( signed char * ) DEFAULT_TASK_NAME, DEFAULT_STACK_SIZE, NULL, DEFAULT_TASK_PRIORITY, xDefaultTask_Handle );
 }
 
-/*******************************************************************************
+
+/**
+ * \fn      deleteDefaultTask
+ * \brief   delete the Default Task -> only for debugging informations (LED loop will stop)
+ */
+inline void deleteDefaultTask(void)
+{
+    vTaskDelete(xDefaultTask_Handle);
+}
+
+
+/**
  * \fn          vDefaultTask
  * \brief       test and dummy task
  *
  * \param[in]   None
  * \return      None
- ******************************************************************************/
-static void vDefaultTask(void* pvParameters ) {
+ */
+static void vDefaultTask(void* pvParameters )
+{
 
     /* local variables */
     portTickType xLastFlashTime;

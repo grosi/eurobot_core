@@ -1,6 +1,6 @@
 /**
  * \file    led.h
- * \author  gross10
+ * \author  gross10, kasen1
  * \date    2014-02-06
  *
  * \version 1.0
@@ -41,7 +41,7 @@ void initLED(uint32_t pin, GPIOMode_TypeDef mode, GPIOOType_TypeDef type,
  * \fn      initLED_1
  * \brief   led 1 initialisation
  */
-inline void initLED_1()
+void initLED_1()
 {
     initLED(LED_1_PIN, LED_1_PIN_MODE, LED_1_PIN_TYPE, LED_1_PIN_PUPD, LED_1_PIN_SPEED,
             LED_1_PORT, LED_1_PORT_CLK);
@@ -53,7 +53,7 @@ inline void initLED_1()
  * \brief   set the current pin value
  * \param   value   1=LED on; 0=LED off
  */
-inline void setLED_1(uint8_t value)
+void setLED_1(uint8_t value)
 {
     setLED(LED_1_PIN, LED_1_PORT, value);
 }
@@ -63,7 +63,7 @@ inline void setLED_1(uint8_t value)
  * \fn      initLED_2
  * \brief   led 2 initialisation
  */
-inline void initLED_2()
+void initLED_2()
 {
     initLED(LED_2_PIN, LED_2_PIN_MODE, LED_2_PIN_TYPE, LED_2_PIN_PUPD, LED_2_PIN_SPEED,
                 LED_2_PORT, LED_2_PORT_CLK);
@@ -75,7 +75,7 @@ inline void initLED_2()
  * \brief   set the current pin value
  * \param   value   1=LED on; 0=LED off
  */
-inline void setLED_2(uint8_t value)
+void setLED_2(uint8_t value)
 {
     setLED(LED_2_PIN, LED_2_PORT, value);
 }
@@ -85,7 +85,7 @@ inline void setLED_2(uint8_t value)
  * \fn      initLED_3
  * \brief   led 3 initialisation
  */
-inline void initLED_3()
+void initLED_3()
 {
     initLED(LED_3_PIN, LED_3_PIN_MODE, LED_3_PIN_TYPE, LED_3_PIN_PUPD, LED_3_PIN_SPEED,
                 LED_3_PORT, LED_3_PORT_CLK);
@@ -97,7 +97,7 @@ inline void initLED_3()
  * \brief   set the current pin value
  * \param   value   1=LED on; 0=LED off
  */
-inline void setLED_3(uint8_t value)
+void setLED_3(uint8_t value)
 {
     setLED(LED_3_PIN, LED_3_PORT, value);
 }
@@ -107,7 +107,7 @@ inline void setLED_3(uint8_t value)
  * \fn      initLED_4
  * \brief   led 4 initialisation
  */
-inline void initLED_4()
+void initLED_4()
 {
     initLED(LED_4_PIN, LED_4_PIN_MODE, LED_4_PIN_TYPE, LED_4_PIN_PUPD, LED_4_PIN_SPEED,
                 LED_4_PORT, LED_4_PORT_CLK);
@@ -119,7 +119,7 @@ inline void initLED_4()
  * \brief   set the current pin value
  * \param   value   1=LED on; 0=LED off
  */
-inline void setLED_4(uint8_t value)
+void setLED_4(uint8_t value)
 {
     setLED(LED_4_PIN, LED_4_PORT, value);
 }
@@ -129,7 +129,7 @@ inline void setLED_4(uint8_t value)
  * \fn      initLED_5
  * \brief   led 5 initialisation
  */
-inline void initLED_5()
+void initLED_5()
 {
     initLED(LED_5_PIN, LED_5_PIN_MODE, LED_5_PIN_TYPE, LED_5_PIN_PUPD, LED_5_PIN_SPEED,
                 LED_5_PORT, LED_5_PORT_CLK);
@@ -141,7 +141,7 @@ inline void initLED_5()
  * \brief   set the current pin value
  * \param   value   1=LED on; 0=LED off
  */
-inline void setLED_5(uint8_t value)
+void setLED_5(uint8_t value)
 {
     setLED(LED_5_PIN, LED_5_PORT, value);
 }
@@ -151,7 +151,7 @@ inline void setLED_5(uint8_t value)
  * \fn      initLED_6
  * \brief   led 6 initialisation
  */
-inline void initLED_6()
+void initLED_6()
 {
     initLED(LED_6_PIN, LED_6_PIN_MODE, LED_6_PIN_TYPE, LED_6_PIN_PUPD, LED_6_PIN_SPEED,
                 LED_6_PORT, LED_6_PORT_CLK);
@@ -163,17 +163,48 @@ inline void initLED_6()
  * \brief   set the current pin value
  * \param   value   1=LED on; 0=LED off
  */
-inline void setLED_6(uint8_t value)
+void setLED_6(uint8_t value)
 {
     setLED(LED_6_PIN, LED_6_PORT, value);
 }
 
 
 /**
- * \fn      initLED_Color
- * \brief   led 6 initialisation
+ * \fn      initLED_all
+ * \brief   all leds initialisation
  */
-inline void initLED_Color()
+void initLED_all()
+{
+	initLED_1();
+	initLED_2();
+	initLED_3();
+	initLED_4();
+	initLED_5();
+	initLED_6();
+}
+
+
+/**
+ * \fn      setLEDs_bin
+ * \brief   set the leds to binary value
+ * \param   value   0x00 - 0x3F (6 bit); 1=LED on; 0=LED off
+ */
+void setLEDs_bin(uint8_t value)
+{
+	setLED_1(0x1 & (value));
+	setLED_2(0x1 & (value>>1));
+	setLED_3(0x1 & (value>>2));
+	setLED_4(0x1 & (value>>3));
+	setLED_5(0x1 & (value>>4));
+	setLED_6(0x1 & (value>>5));
+}
+
+
+/**
+ * \fn      initLED_Color
+ * \brief   led color initialisation
+ */
+void initLED_Color()
 {
     initLED(LED_COLOR_PIN, LED_COLOR_PIN_MODE, LED_COLOR_PIN_TYPE, LED_COLOR_PIN_PUPD, LED_COLOR_PIN_SPEED,
             LED_COLOR_PORT, LED_COLOR_PORT_CLK);
@@ -185,7 +216,7 @@ inline void initLED_Color()
  * \brief   set the current pin value
  * \param   value   1=LED on; 0=LED off
  */
-inline void setLED_Color(uint8_t value)
+void setLED_Color(uint8_t value)
 {
     setLED(LED_COLOR_PIN, LED_COLOR_PORT, value);
 }
@@ -195,7 +226,7 @@ inline void setLED_Color(uint8_t value)
  * \fn      initBoardLED_red
  * \brief   led red of the descovery initialisation
  */
-inline void initBoardLED_red()
+void initBoardLED_red()
 {
     initLED(BOARD_LED_RED_PIN, BOARD_LED_RED_PIN_MODE, BOARD_LED_RED_PIN_TYPE, BOARD_LED_RED_PIN_PUPD, BOARD_LED_RED_PIN_SPEED,
                     BOARD_LED_RED_PORT, BOARD_LED_RED_PORT_CLK);
@@ -217,7 +248,7 @@ inline void setBoardLED_red(uint8_t value)
  * \fn      initBoardLED_orange
  * \brief   led orange of the descovery initialisation
  */
-inline void initBoardLED_orange()
+void initBoardLED_orange()
 {
     initLED(BOARD_LED_ORANGE_PIN, BOARD_LED_ORANGE_PIN_MODE, BOARD_LED_ORANGE_PIN_TYPE, BOARD_LED_ORANGE_PIN_PUPD, BOARD_LED_ORANGE_PIN_SPEED,
                 BOARD_LED_ORANGE_PORT, BOARD_LED_ORANGE_PORT_CLK);
@@ -239,7 +270,7 @@ inline void setBoardLED_orange(uint8_t value)
  * \fn      initBoardLED_blue
  * \brief   led blue of the descovery initialisation
  */
-inline void initBoardLED_blue()
+void initBoardLED_blue()
 {
 
     initLED(BOARD_LED_BLUE_PIN, BOARD_LED_BLUE_PIN_MODE, BOARD_LED_BLUE_PIN_TYPE, BOARD_LED_BLUE_PIN_PUPD, BOARD_LED_BLUE_PIN_SPEED,
@@ -252,7 +283,7 @@ inline void initBoardLED_blue()
  * \brief   set the current pin value
  * \param   value   1=LED on; 0=LED off
  */
-inline void setBoardLED_blue(uint8_t value)
+void setBoardLED_blue(uint8_t value)
 {
     setLED(BOARD_LED_BLUE_PIN, BOARD_LED_BLUE_PORT, value);
 
@@ -263,7 +294,7 @@ inline void setBoardLED_blue(uint8_t value)
  * \fn      initBoardLED_green
  * \brief   led green of the descovery initialisation
  */
-inline void initBoardLED_green()
+void initBoardLED_green()
 {
     initLED(BOARD_LED_GREEN_PIN, BOARD_LED_GREEN_PIN_MODE, BOARD_LED_GREEN_PIN_TYPE, BOARD_LED_GREEN_PIN_PUPD, BOARD_LED_GREEN_PIN_SPEED,
                 BOARD_LED_GREEN_PORT, BOARD_LED_GREEN_PORT_CLK);
@@ -275,7 +306,7 @@ inline void initBoardLED_green()
  * \brief   set the current pin value
  * \param   value   1=LED on; 0=LED off
  */
-inline void setBoardLED_green(uint8_t value)
+void setBoardLED_green(uint8_t value)
 {
     setLED(BOARD_LED_GREEN_PIN, BOARD_LED_GREEN_PORT, value);
 }

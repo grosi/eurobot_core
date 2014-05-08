@@ -1,5 +1,5 @@
 /**
- * \file    default_task.c
+ * \file    DefaultTask.c
  * \author  gross10
  * \date    2013--11-15
  *
@@ -16,8 +16,8 @@
  */
 
 /* Define to prevent recursive inclusion --------------------------------------*/
-#ifndef DEFAULT_TASK_H_
-#define DEFAULT_TASK_H_
+#ifndef DEFAULTTASK_H_
+#define DEFAULTTASK_H_
 
 /* exported typedef -----------------------------------------------------------*/
 
@@ -27,7 +27,7 @@
 #define DEFAULT_TASK_NAME           "Default Task"
 #define TEST_QUEUE_LENGTH           20 /* Size of the message queues */
 #define DEFAULT_STACK_SIZE          configMINIMAL_STACK_SIZE /* size of the receive and transmit task */
-#define DEFAULT_TASK_PRIORITY       (configMAX_PRIORITIES - 1UL) /* priority of default task -> 5 = low */
+#define DEFAULT_TASK_PRIORITY       (configMAX_PRIORITIES - 6UL) /* priority of default task -> 1 = low */
 
 
 
@@ -39,9 +39,10 @@
 
 /* exported function prototypes -----------------------------------------------*/
 extern void initDefaultTask(void);
+extern inline void deleteDefaultTask(void);
 
 
-#endif /* DEFAULT_TASK_H_ */
+#endif /* DEFAULTTASK_H_ */
 
 /**
  * @}

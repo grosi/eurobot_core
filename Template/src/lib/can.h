@@ -51,6 +51,7 @@ typedef void (*CANRxCatch_t)(CanRxMsg);
 #define CAN_INTERFACE_NUMBER    1 /*!< 1 or 2 */
 #define CAN_BAUD                500 /*!< kBit/s Baudrate */
 #define CAN_FILTER              14 /*!< Amount of filter banks -> max. 14 */
+#define CAN_NVIC_PRIORITY       5 /*!< see FreeRTOS.config configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY for max level */
 
 #if CAN_INTERFACE_NUMBER == 1
     #ifndef CAN_INTERFACE
