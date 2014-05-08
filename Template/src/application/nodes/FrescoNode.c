@@ -28,8 +28,10 @@
 
 /* Private define ------------------------------------------------------------*/
 /* Servo */
-#define SERVO_FRESCO_STEP       (5)   /* Size of single step for the fresco servo */
-#define SERVO_FRESCO_STEP_DELAY (10)  /* Delay in ms to wait between steps */
+#define FRESCO_SERVO_STEP       5   /* Size of single step for the fresco servo */
+#define FRESCO_SERVO_STEP_DELAY 10  /* Delay in ms to wait between steps */
+/* Drive */
+#define FRESCO_DRIVECHECK_DELAY 10  /* Delay in ms to wait between checking if robot hit wall */
 
 /* Private macro -------------------------------------------------------------*/
 
@@ -52,49 +54,34 @@
  */
 void doFrescoNode(node_param_t* param) {
 
-	/* Variable to count number of performed attempts to complete fresco action */
-	uint8_t n_fresco_attempts = 0;
-	/* Variable to count number of frescos in robot */
-	uint8_t n_frescos_present = 0;
-	/* Number of frescos at the beginning of doing the node */
-	const uint8_t max_frescos_present = getSensor_Fresco_1() + getSensor_Fresco_2();
-	/* Variable to set the servo position step by step */
-	volatile uint16_t servo_pos;
+	/* Move panel all the way out TODO: Maybe move panel only half out */
+	setServo_1(SERVO_POS_FRESCO_OUT);
 
 	/* Drive closer to the wall */
-	txGotoXY(param->x, param->y + FRESCO_APPROACH_DISTANCE, param->angle, FRESCO_APPROACH_SPEED, 0x00);
-	vTaskDelay(FRESCO_APPROACH_TIME / portTICK_RATE_MS);
+	txGotoXY(param->x, param->y + FRESCO_APPROACH_DISTANCE + FRESCO_APPROACH_OVERHEAD, param->angle, FRESCO_APPROACH_SPEED, 0x00);
 
-	do {
+	volatile uint16_t approach_counter = 0;
+	while(!getSensor_Fresco_Wall() && approach_counter < FRESCO_APPROACH_TIME) {
 
-		/* Move fresco panel out, step by step, but stop if on the wall */
-		servo_pos = SERVO_POS_FRESCO_IN;  /* Current position */
-		while(servo_pos > (SERVO_POS_FRESCO_OUT+SERVO_FRESCO_STEP) && !getSensor_Fresco_Wall()) {
+		/* Wait some time before next check */
+		vTaskDelay(FRESCO_DRIVECHECK_DELAY / portTICK_RATE_MS);
+		approach_counter += FRESCO_DRIVECHECK_DELAY;
+	}
 
-			/* Decrement servo position by step size */
-			servo_pos -= SERVO_FRESCO_STEP;
+	/* Check if we are on the wall, else the space is blocked */
+	if(getSensor_Fresco_Wall()) {
 
-			/* Check if it's the last step */
-			if(servo_pos < SERVO_POS_FRESCO_OUT) {
+		/* Stop driving further */
+		txStopDrive();
 
-				/* Set the final servo position without over-rotating */
-				setServo_1(SERVO_POS_FRESCO_OUT);
-				servo_pos = SERVO_POS_FRESCO_OUT;
-			}
-			else {
+		/* TODO: Maybe move panel all the way out now (slowly) */
 
-				/* Set the new servo position */
-				setServo_1(servo_pos);
-			}
-			/* Wait some time while servo moves */
-			vTaskDelay(SERVO_FRESCO_STEP_DELAY / portTICK_RATE_MS);
-		}
-
-		/* Move fresco panel in, step by step */
-		while(servo_pos < (SERVO_POS_FRESCO_IN-SERVO_FRESCO_STEP)) {
+		/* Move fresco panel in slowly (step by step) */
+		volatile uint16_t servo_pos = SERVO_POS_FRESCO_OUT;  /* Current position */
+		while(servo_pos < (SERVO_POS_FRESCO_IN-FRESCO_SERVO_STEP)) {
 
 			/* Increment servo position by step size */
-			servo_pos += SERVO_FRESCO_STEP;
+			servo_pos += FRESCO_SERVO_STEP;
 
 			/* Check if it's the last step */
 			if(servo_pos > SERVO_POS_FRESCO_IN) {
@@ -108,17 +95,17 @@ void doFrescoNode(node_param_t* param) {
 				setServo_1(servo_pos);
 			}
 			/* Wait some time while servo moves */
-			vTaskDelay(SERVO_FRESCO_STEP_DELAY / portTICK_RATE_MS);
+			vTaskDelay(FRESCO_SERVO_STEP_DELAY / portTICK_RATE_MS);
 		}
+	}
+	else {  /* Not on wall */
 
-		/* Increment number of performed attempts */
-		n_fresco_attempts++;
+		/* Move panel all the way in, we don't need to do that slowly here because we're not pasting frescos */
+		setServo_1(SERVO_POS_FRESCO_IN);
+	}
 
-		/* Get number of frescos still in robot */
-		n_frescos_present = getSensor_Fresco_1() + getSensor_Fresco_2();
-
-	/* Retry if there are still all frescos in the robot and another retry is allowed (max. not reached). */
-	} while((n_frescos_present >= max_frescos_present) && (n_fresco_attempts < FRESCO_MAX_RETRIES));
+	/* Get number of frescos still in robot */
+	uint8_t n_frescos_present = getSensor_Fresco_1() + getSensor_Fresco_2();
 
 	/* Report status */
 	if(n_frescos_present > 0) {
