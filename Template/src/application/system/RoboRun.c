@@ -45,8 +45,9 @@
 #define NODE_POOL_SIZE_INFO    1
 #define NODE_POOL_LEVEL_INFO   2
 /* CAN */
-#define ROBO_SPEED             100      /* Speed in percent */
-#define ROBO_BARRIER_FLAGS     0x0000
+#define GOTO_DEFAULT_SPEED     100      /* Speed in percent */
+#define GOTO_DEFAULT_BARRIER_R GOTO_FIRE_2|GOTO_FIRE_3|GOTO_FIRE_6  /* Barrier flags for red team */
+#define GOTO_DEFAULT_BARRIER_Y GOTO_FIRE_1|GOTO_FIRE_3|GOTO_FIRE_5  /* Barrier flags for yellow team */
 #define GOTO_ACK_DELAY         20       /* Delay in ms to wait before checking goto confirmation */
 #define GOTO_NACK_MAX_RETRIES  5        /* Number of retries (incl. first try) if there's no confirmation from drive system (uint8_t) */
 #define GOTO_STATERESP_DELAY   100      /* Delay in ms to wait for GoTo state response. Drive system needs 400 ms (worst case) */
@@ -657,8 +658,16 @@ func_report_t gotoNode(node_param_t* param, volatile game_state_t* game_state)
 
 		i++;
 
-		/* Send GoTo command through CAN to drive system */
-		txGotoXY(param->x, param->y, param->angle, ROBO_SPEED, ROBO_BARRIER_FLAGS, GOTO_DRIVE_FORWARD);
+		/* Send GoTo command with correct barrier flags through CAN to drive system */
+//TODO:
+//		if(teamcolor == red) {
+//			txGotoXY(param->x, param->y, param->angle, GOTO_DEFAULT_SPEED, GOTO_DEFAULT_BARRIER_R, GOTO_DRIVE_FORWARD);
+//		}
+//		else {
+//
+//			txGotoXY(param->x, param->y, param->angle, GOTO_DEFAULT_SPEED, GOTO_DEFAULT_BARRIER_Y, GOTO_DRIVE_FORWARD);
+//		}
+		txGotoXY(param->x, param->y, param->angle, GOTO_DEFAULT_SPEED, GOTO_NO_BARRIER, GOTO_DRIVE_FORWARD);
 
 		/* Receive GoTo confirmation */
 		CAN_ok = xQueueReceive(qGotoConfirm, &CAN_buffer, GOTO_ACK_DELAY / portTICK_RATE_MS);
