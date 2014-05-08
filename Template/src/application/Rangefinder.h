@@ -3,11 +3,14 @@
  * \author  kasen1
  * \date    2014-01-14
  *
+ * \version 1.3
+ *  - Added function isRobotInFront to compare rangefinder with navigation informations
  * \version 1.2
  *  - IR sensors in new arrangement
  *  - Added flag for separation blocked alarm
  *  - Added option to only use forward rangefinder by defining RANGEFINDER_ONLY_FW
  *  - Task is suspended at beginning, so ultrasonic only running when really used
+ *  - Semaphore for synchronising with node task added (not in test protocol, but is tested)
  *  - Software tested (01.05.2014)
  * \version 1.1
  *  - Changed implementation of IR detection to external interrupt
@@ -36,6 +39,7 @@
 
 /* Includes -------------------------------------------------------------------*/
 #include "AppConfig.h"
+#include "nodes/NodeConfig.h"  /* For game_state_t */
 
 /* exported typedef -----------------------------------------------------------*/
 
@@ -78,6 +82,7 @@ extern void IRSensorFwLeft_IT(void);
 extern void IRSensorFwRight_IT(void);
 extern void IRSensorBwLeft_IT(void);
 extern void IRSensorBwRight_IT(void);
+extern boolean isRobotInFront(volatile game_state_t* game_state, uint8_t n_enemies, uint8_t n_friends);
 
 #endif /* RANGEFINDER_TASK_H_ */
 

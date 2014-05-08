@@ -44,10 +44,6 @@
 #define NODE_WELL_ARRIVE        2
 #define NODE_PERFECT_ARRIVE     1
 
-/* Robot information */
-#define ROBOT_BALLERINA_RADIUS  120  /* Distance from nose to center (navigation) in mm */
-#define ROBOT_B52_RADIUS        230  /* Distance from nose to center (navigation) in mm */
-
 /* exported macro -------------------------------------------------------------*/
 
 
