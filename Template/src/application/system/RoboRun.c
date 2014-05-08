@@ -738,7 +738,7 @@ func_report_t gotoNode(node_param_t* param, volatile game_state_t* game_state)
 		i++;
 
 		/* Send GoTo command through CAN to drive system */
-		txGotoXY(param->x, param->y, param->angle, ROBO_SPEED, ROBO_BARRIER_FLAGS);
+		txGotoXY(param->x, param->y, param->angle, ROBO_SPEED, ROBO_BARRIER_FLAGS, GOTO_DRIVE_FORWARD);
 
 		/* Receive GoTo confirmation */
 		CAN_ok = xQueueReceive(qGotoConfirm, &CAN_buffer, GOTO_ACK_DELAY / portTICK_RATE_MS);

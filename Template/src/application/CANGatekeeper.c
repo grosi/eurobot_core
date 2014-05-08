@@ -67,6 +67,9 @@
 #define GOTO_BARRIER_RX_MASK_D5         0x3F
 #define GOTO_BARRIER_RX_MASK_D6         0xFF
 #define GOTO_BARRIER_RX_MASK_D7         0xC0
+#define GOTO_DIRECTION_OFFSET_D7        5
+#define GOTO_DIRECTION_TX_MASK_D7       0x01
+#define GOTO_DIRECTION_RX_MASK_D7       0x20
 
 #define GOTO_POINT_1_X_OFFSET_D4        4
 #define GOTO_POINT_1_X_OFFSET_D5        4
@@ -271,17 +274,11 @@ void createCANMessage(uint16_t id, uint8_t dlc, uint8_t data[8])
     /* send the message to the queue depenced to the ID priority*/
     if(tx_message.StdId <= ID_HIGH_LEVEL_PRIORITY)
     {
-        if(xQueueSendToFront(qCANTx, &tx_message,0)==pdFALSE)
-        {
-            dlc++; //TODO
-        }
+        xQueueSendToFront(qCANTx, &tx_message,0);
     }
     else
     {
-        if(xQueueSendToBack(qCANTx, &tx_message,0)==pdFALSE)
-            {
-            dlc++; //TODO;
-            }
+        xQueueSendToBack(qCANTx, &tx_message,0);
     }
 }
 
@@ -339,9 +336,10 @@ void txStopDrive()
  * \param[in]   angle angle of the end position [10bit]
  * \param[in]   speed robo-speed [8bit]
  * \param[in]   barrier flag-set of different barriers
+ * \param[in]   drive_direction    0:=robo drives forward; 1:=robo drives backward
  * \return      None
  */
-void txGotoXY(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, uint16_t barrier)
+void txGotoXY(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, uint16_t barrier, uint8_t drive_direction)
 {
     uint8_t data[8];
 
@@ -352,7 +350,7 @@ void txGotoXY(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, uint16_t ba
     data[4] = ((angle & GOTO_ANGLE_TX_MASK_D4) << GOTO_ANGLE_OFFSET_D4) | ((speed & GOTO_SPEED_TX_MASK_D4) >> GOTO_SPEED_OFFSET_D4);
     data[5] = ((speed & GOTO_SPEED_TX_MASK_D5) << GOTO_SPEED_OFFSET_D5) | ((barrier & GOTO_BARRIER_TX_MASK_D5) >> GOTO_BARRIER_OFFSET_D5);
     data[6] = ((barrier & GOTO_BARRIER_TX_MASK_D6) >> GOTO_BARRIER_OFFSET_D6);
-    data[7] = ((barrier & GOTO_BARRIER_TX_MASK_D7) << GOTO_BARRIER_OFFSET_D7);
+    data[7] = ((barrier & GOTO_BARRIER_TX_MASK_D7) << GOTO_BARRIER_OFFSET_D7) | ((drive_direction & GOTO_DIRECTION_TX_MASK_D7) << GOTO_DIRECTION_OFFSET_D7);
 
     /* send the Goto-command to the queue */
     createCANMessage(GOTO_XY,8,data);
@@ -703,6 +701,7 @@ static inline CAN_data_t rxGotoXY(CanRxMsg* rx_message)
     message_data.goto_speed = ((rx_message->Data[4] & GOTO_SPEED_RX_MASK_D4) << GOTO_SPEED_OFFSET_D4) | ((rx_message->Data[5] & GOTO_SPEED_RX_MASK_D5) >> GOTO_SPEED_OFFSET_D5);
     message_data.goto_barrier = ((rx_message->Data[5] & GOTO_BARRIER_RX_MASK_D5) << GOTO_BARRIER_OFFSET_D5) | ((rx_message->Data[6] & GOTO_BARRIER_RX_MASK_D6) << GOTO_BARRIER_OFFSET_D6);
     message_data.goto_barrier |= ((rx_message->Data[7] & GOTO_BARRIER_RX_MASK_D7) >> GOTO_BARRIER_OFFSET_D7);
+    message_data.goto_direction = ((rx_message->Data[7] & GOTO_DIRECTION_RX_MASK_D7) >> GOTO_DIRECTION_OFFSET_D7);
 
     return message_data;
 }

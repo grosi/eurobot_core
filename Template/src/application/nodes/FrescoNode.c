@@ -58,7 +58,7 @@ void doFrescoNode(node_param_t* param) {
 	setServo_1(SERVO_POS_FRESCO_OUT);
 
 	/* Drive closer to the wall */
-	txGotoXY(param->x, param->y + FRESCO_APPROACH_DISTANCE + FRESCO_APPROACH_OVERHEAD, param->angle, FRESCO_APPROACH_SPEED, 0x00);
+	txGotoXY(param->x, param->y + FRESCO_APPROACH_DISTANCE + FRESCO_APPROACH_OVERHEAD, param->angle, FRESCO_APPROACH_SPEED, GOTO_NO_BARRIER, GOTO_DRIVE_FORWARD);
 
 	volatile uint16_t approach_counter = 0;
 	while(!getSensor_Fresco_Wall() && approach_counter < FRESCO_APPROACH_TIME) {

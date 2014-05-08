@@ -33,6 +33,7 @@ typedef union
         uint16_t goto_y; /*!< y-position */
         uint16_t goto_angle; /*!< angle in degree */
         uint8_t goto_speed; /*!< speed in % */
+        uint8_t goto_direction; /*!< drive direction */
         uint16_t goto_barrier; /*!< barrier-flags */
     };
     /* ELP data-set */
@@ -142,6 +143,12 @@ typedef struct
 #define GOTO_FIRE_POOL_2        0x4000
 #define GOTO_FIRE_POOL_2_FORCE  0x8000
 
+/**
+ * \brief   drive direction
+ */
+#define GOTO_DRIVE_FORWARD      0
+#define GOTO_DRIVE_BACKWARD     1
+
 
 /**
  * \brief   Possible ELP-response id's
@@ -176,7 +183,7 @@ extern void setFunctionCANListener(CAN_function_listener_t, uint16_t);
 extern void txEmergencyShutdown();
 extern void txEmergencyStop(uint8_t);
 extern void txStopDrive();
-extern void txGotoXY(uint16_t, uint16_t, uint16_t, uint8_t, uint16_t);
+extern void txGotoXY(uint16_t, uint16_t, uint16_t, uint8_t, uint16_t, uint8_t);
 extern void txGotoConfirm();
 extern void txGotoStateRequest();
 extern void txGotoStateResponse(uint32_t time);
