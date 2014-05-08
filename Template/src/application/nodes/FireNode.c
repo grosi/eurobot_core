@@ -49,11 +49,6 @@
  */
 void doFireNode(node_param_t* param)
 {
-    /* local variables */
-    /* Variable for CAN RX */
-    CAN_data_t CAN_buffer;
-    uint8_t CAN_ok = pdFALSE;
-
     /* Activate rangefinder */
     vTaskResume(xRangefinderTask_Handle);
 
@@ -66,39 +61,27 @@ void doFireNode(node_param_t* param)
     /* Drive through fire from NORTH */
     if(param->angle >= NODE_NORTH_MIN_ANGLE && param->angle <= NODE_NORTH_MAX_ANGLE)
     {
-        txGotoXY(param->x, param->y-FIRE_NODE_DELTA_GO, param->angle, FIRE_NODE_SPEED, FIRE_NODE_BARRIER, GOTO_DRIVE_FORWARD);
+        txGotoXY(param->x, param->y-FIRE_NODE_DELTA_GO, param->angle, FIRE_NODE_SPEED, GOTO_NO_BARRIER, GOTO_DRIVE_FORWARD);
 
     }
     /* Drive through fire from EAST */
     else if(param->angle >= NODE_EAST_MIN_ANGLE && param->angle <= NODE_EAST_MAX_ANGLE)
     {
-        txGotoXY(param->x-FIRE_NODE_DELTA_GO, param->y, param->angle, FIRE_NODE_SPEED, FIRE_NODE_BARRIER, GOTO_DRIVE_FORWARD);
+        txGotoXY(param->x-FIRE_NODE_DELTA_GO, param->y, param->angle, FIRE_NODE_SPEED, GOTO_NO_BARRIER, GOTO_DRIVE_FORWARD);
     }
     /* Drive through fire from SOUTH */
     else if(param->angle >= NODE_SOUTH_MIN_ANGLE && param->angle <= NODE_SOUTH_MAX_ANGLE)
     {
-        txGotoXY(param->x, param->y+FIRE_NODE_DELTA_GO, param->angle, FIRE_NODE_SPEED, FIRE_NODE_BARRIER, GOTO_DRIVE_FORWARD);
+        txGotoXY(param->x, param->y+FIRE_NODE_DELTA_GO, param->angle, FIRE_NODE_SPEED, GOTO_NO_BARRIER, GOTO_DRIVE_FORWARD);
     }
     /* Drive through fire from WEST */
     else
     {
-        txGotoXY(param->x+FIRE_NODE_DELTA_GO, param->y, param->angle, FIRE_NODE_SPEED, FIRE_NODE_BARRIER, GOTO_DRIVE_FORWARD);
+        txGotoXY(param->x+FIRE_NODE_DELTA_GO, param->y, param->angle, FIRE_NODE_SPEED, GOTO_NO_BARRIER, GOTO_DRIVE_FORWARD);
     }
 
-    /* Receive GoTo confirmation */
-    CAN_ok = xQueueReceive(qGotoConfirm, &CAN_buffer, FIRE_NODE_ACK_DELAY / portTICK_RATE_MS);
-
-    /* check CAN response */
-    if(CAN_ok != pdTRUE)
-    {
-//        /* Suspend rangefinder safely */
-//        suspendRangefinderTask();
-//
-//        param->node_state = GOTO_CAN_ERROR;
-//        return;
-    }
-
-    //TODO add function to chek if there is any enemy or friend in my way while driving
+    /* Wait while driving */
+	vTaskDelay(FIRE_NODE_DRIVE_DELAY / portTICK_RATE_MS);
 
     /* Put seperation in after driving through the fire */
 	setServo_1(SERVO_POS_FRESCO_IN);
@@ -111,10 +94,13 @@ void doFireNode(node_param_t* param)
 
     	param->node_state = NODE_FINISH_SUCCESS;
     }
+    else {
+
+    	param->node_state = NODE_FINISH_ERROR;
+    }
 
     /* Suspend rangefinder safely */
     suspendRangefinderTask();
-
 }
 
 /**
