@@ -45,14 +45,14 @@
 #define NODE_POOL_SIZE_INFO    1
 #define NODE_POOL_LEVEL_INFO   2
 /* CAN */
-#define ROBO_SPEED             100     /* Speed in percent */
+#define ROBO_SPEED             100      /* Speed in percent */
 #define ROBO_BARRIER_FLAGS     0x0000
-#define GOTO_ACK_DELAY         20      /* Delay in ms to wait before checking goto confirmation */
-#define GOTO_NACK_MAX_RETRIES  5       /* Number of retries (incl. first try) if there's no confirmation from drive system (uint8_t) */
-#define GOTO_STATERESP_DELAY   450     /* Delay in ms to wait for GoTo state response. Drive system needs 400 ms (worst case) */
-#define GOTO_STATERESP_TIMEOUT 400     /* Time in ms to wait for the GoTo state response */
-#define GOTO_TIME_UNKNOWN      0xFFFFFF
-#define GOTO_DEFAULT_TIME      1000    /* Time in ms to use if no time was received from drive system */
+#define GOTO_ACK_DELAY         20       /* Delay in ms to wait before checking goto confirmation */
+#define GOTO_NACK_MAX_RETRIES  5        /* Number of retries (incl. first try) if there's no confirmation from drive system (uint8_t) */
+#define GOTO_STATERESP_DELAY   100      /* Delay in ms to wait for GoTo state response. Drive system needs 400 ms (worst case) */
+#define GOTO_STATERESP_TIMEOUT 400      /* Time in ms to wait for the GoTo state response */
+#define GOTO_NOT_POSSIBLE_ATM  0xFFFFFF /* Message: It's not possible to go to that position at the moment */
+#define GOTO_DEFAULT_TIME      1000     /* Time in ms to use if no time was received from drive system */
 
 
 /* Private macro -------------------------------------------------------------*/
@@ -779,10 +779,16 @@ func_report_t gotoNode(node_param_t* param, volatile game_state_t* game_state)
 			/* Extract time */
 			estimated_GoTo_time = CAN_buffer.state_time;  /* In ms */
 			/* Handle "time unknown" message */
-			if(estimated_GoTo_time == GOTO_TIME_UNKNOWN) {
+			if(estimated_GoTo_time == GOTO_NOT_POSSIBLE_ATM) {
 
-				/* Use to default time */
-				estimated_GoTo_time = GOTO_DEFAULT_TIME;
+				/* Suspend rangefinder safely */
+				suspendRangefinderTask();
+
+				/* Finish node with error,
+				 * this way the current node will be retried if it's more attractive again */
+				param->node_state = NODE_FINISH_ERROR;
+
+				return FUNC_INCOMPLETE;
 			}
 		}
 
