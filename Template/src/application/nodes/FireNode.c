@@ -58,7 +58,7 @@ void doFireNode(node_param_t* param)
     vTaskResume(xRangefinderTask_Handle);
 
 	/* Move the separation all the way out */
-	setServo_1(SERVO_POS_FRESCO_OUT);
+	//setServo_1(SERVO_POS_FRESCO_OUT);
 
 	/* Wait some time while servo moves */
 	vTaskDelay(SERVO_MOVING_DELAY / portTICK_RATE_MS);
@@ -101,7 +101,7 @@ void doFireNode(node_param_t* param)
     //TODO add function to chek if there is any enemy or friend in my way while driving
 
     /* Put seperation in after driving through the fire */
-	setServo_1(SERVO_POS_FRESCO_IN);
+	//setServo_1(SERVO_POS_FRESCO_IN);
 
 	/* Wait some time while servo moves */
 	vTaskDelay(SERVO_MOVING_DELAY / portTICK_RATE_MS);

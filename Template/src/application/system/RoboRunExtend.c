@@ -39,6 +39,25 @@
 
 /* Private functions ---------------------------------------------------------*/
 
+void initRoboRunExtendState()
+{
+
+}
+
+void runRoboRunExtendState(portTickType* tick)
+{
+    /* check if the 90s are over */
+    if(getRemainingGameTime() == 0)
+    {
+        //TODO Netz
+    }
+    /* wait until the game is finished */
+    else
+    {
+        vTaskDelay(getRemainingGameTime()*1000);
+    }
+}
+
 
 /**
  * @}

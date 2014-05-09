@@ -21,6 +21,7 @@
 #include "system/RoboInitialisation.h"
 #include "system/RoboSetup.h"
 #include "system/RoboRun.h"
+#include "system/RoboRunExtend.h"
 #include "system/RoboError.h"
 #include "System.h"
 
@@ -71,6 +72,7 @@ void initSystemTask(void){
     initRoboInitialisationState();
     initRoboSetupState();
     initRoboRunState();
+    initRoboRunExtendState();
     initRoboErrorState();
 
 #ifndef STANDALONE

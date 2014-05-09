@@ -120,12 +120,12 @@ void runRoboInitialisationState(portTickType* tick)
         case SENSOR_TEST:
 
             /* test every sensor input */
-            if(getSensor_Fresco_1() != SENSOR_FRESCO_1_INIT)
+            if(getSensor_Air() != SENSOR_AIR_INIT)
             {
                 /* error message */
                 if(!(sensor_error & 1<<0))
                 {
-                    LCD_write_string(MESSAGE_FRESCO_1_ROW, MESSAGE_FRESCO_1_COLUMN, MESSAGE_FRESCO_1, TRUE);
+                    LCD_write_string(MESSAGE_AIR_ROW, MESSAGE_AIR_COLUMN, MESSAGE_AIR, TRUE);
                     LCD_write_string(MESSAGE_CHECK_ROW, MESSAGE_CHECK_COLUMN, MESSAGE_CHECK, TRUE);
                     sensor_old = sensor_error |= 1<<0;
                 }
@@ -140,11 +140,11 @@ void runRoboInitialisationState(portTickType* tick)
                 }
             }
 
-            if(getSensor_Fresco_2() != SENSOR_FRESCO_2_INIT)
+            if(getSensor_Fire_Pool() != SENSOR_FIRE_POOL_INIT)
             {
                 if(!(sensor_error & 1<<1))
                 {
-                    LCD_write_string(MESSAGE_FRESCO_2_ROW, MESSAGE_FRESCO_2_COLUMN, MESSAGE_FRESCO_2, TRUE);
+                    LCD_write_string(MESSAGE_FIRE_POOL_ROW, MESSAGE_FIRE_POOL_COLUMN, MESSAGE_FIRE_POOL, TRUE);
                     LCD_write_string(MESSAGE_CHECK_ROW, MESSAGE_CHECK_COLUMN, MESSAGE_CHECK, TRUE);
                     sensor_old = sensor_error |= 1<<1;
                 }
@@ -153,25 +153,6 @@ void runRoboInitialisationState(portTickType* tick)
             else
             {
                 sensor_error &= ~(1<<1);
-                if(sensor_old ^ sensor_error)
-                {
-                    sensor_old = sensor_error = 0;
-                }
-            }
-
-            if(getSensor_Fresco_Wall() != SENSOR_WALL_INIT)
-            {
-                if(!(sensor_error & 1<<2))
-                {
-                    LCD_write_string(MESSAGE_WALL_ROW, MESSAGE_WALL_COLUMN, MESSAGE_WALL, TRUE);
-                    LCD_write_string(MESSAGE_CHECK_ROW, MESSAGE_CHECK_COLUMN, MESSAGE_CHECK, TRUE);
-                    sensor_old = sensor_error |= 1<<2;
-                }
-                sensor_done = FALSE;
-            }
-            else
-            {
-                sensor_error &= ~(1<<2);
                 if(sensor_old ^ sensor_error)
                 {
                     sensor_old = sensor_error = 0;
@@ -222,6 +203,9 @@ void runRoboInitialisationState(portTickType* tick)
             {
                 state = DRIVE_INIT;
             }
+
+            /* state delay for sensor debouncing */
+            vTaskDelayUntil(tick, SETUP_BUTTON_DELAY / portTICK_RATE_MS);
 
             break;
 

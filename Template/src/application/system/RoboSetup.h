@@ -92,15 +92,12 @@
 #define MESSAGE_ERROR "Error"
 #define MESSAGE_ERROR_COLUMN 0
 #define MESSAGE_ERROR_ROW 0
-#define MESSAGE_FRESCO_1 "Error Fresco 1"
-#define MESSAGE_FRESCO_1_COLUMN 0
-#define MESSAGE_FRESCO_1_ROW 0
-#define MESSAGE_FRESCO_2 "Error Fresco 2"
-#define MESSAGE_FRESCO_2_COLUMN 0
-#define MESSAGE_FRESCO_2_ROW 0
-#define MESSAGE_WALL "Error Wall"
-#define MESSAGE_WALL_COLUMN 0
-#define MESSAGE_WALL_ROW 0
+#define MESSAGE_AIR "Error Air"
+#define MESSAGE_AIR_COLUMN 0
+#define MESSAGE_AIR_ROW 0
+#define MESSAGE_FIRE_POOL "Error Fire Pool"
+#define MESSAGE_FIRE_POOL_COLUMN 0
+#define MESSAGE_FIRE_POOL_ROW 0
 #define MESSAGE_KEY "Error Key"
 #define MESSAGE_KEY_COLUMN 0
 #define MESSAGE_KEY_ROW 0

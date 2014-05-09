@@ -80,22 +80,16 @@ typedef struct
 
 /* exported define ------------------------------------------------------------*/
 /* general */
-#define NODE_QUANTITY              11
-#define NODE_POOL_QUANTITY         2
+#define NODE_QUANTITY              11 //TODO
+#define NODE_POOL_QUANTITY         1
 #define NODE_NO_ENEMY              0xFFFF
 #define NODE_NO_ENEMY_DIAMETER     0
 
 /* nodes pools */
 #define NODE_NO_POOL_ID            0
-#define NODE_MAMMOTH_POOL_ID       1
-#define NODE_MAMMOTH_POOL_SIZE     6
-#define NODE_MAMMOTH_POOL_LEVEL    3
-#define NODE_FRESCO_POOL_ID        2
-#define NODE_FRESCO_POOL_SIZE      2
-#define NODE_FRESCO_POOL_LEVEL     1
-#define NODE_FIRE_POOL_ID          3
-#define NODE_FIRE_POOL_SIZE        0
-#define NODE_FIRE_POOL_LEVEL       0
+#define NODE_NET_POOL_ID           1
+#define NODE_NET_POOL_SIZE         3
+#define NODE_NET_POOL_LEVEL        1
 
 /* nodes arrive direction ranges */
 #define NODE_SOUTH_MIN_ANGLE       45
@@ -109,16 +103,10 @@ typedef struct
 
 /* Servo */
 #define SERVO_MOVING_DELAY         400  /* Delay in ms to wait while the servo moves the whole way */
-#define SERVO_POS_FRESCO_IN        2000 /* Servo position: Fresco panel all the way in */
-#define SERVO_POS_FRESCO_OUT       900//1600 /* Servo position: Fresco panel all the way out */
-#define SERVO_POS_LAUNCHER_LOAD    1750 /* Servo position: Launcher all the way front */
-#define SERVO_POS_LAUNCHER_LAUNCH  1200 /* Servo position: Launcher all the way back */
-
-/* Fresco node */
-#define FRESCO_APPROACH_DISTANCE   100  /* Distance in mm to drive from the fresco node point to the wall */
-#define FRESCO_APPROACH_OVERHEAD   30   /* Additional Distance in mm to drive to the wall to make sure we are there */
-#define FRESCO_APPROACH_SPEED      50   /* Speed in percent to drive from node point to wall */
-#define FRESCO_APPROACH_TIME       500  /* Time in ms to wait while driving to wall */  //TODO
+#define SERVO_POS_AIR_IN           2000 /* Servo position: Fresco panel all the way in */
+#define SERVO_POS_AIR_OUT          900//1600 /* Servo position: Fresco panel all the way out */
+#define SERVO_POS_NET_LOAD         1750 /* Servo position: Launcher all the way front */
+#define SERVO_POS_NET_LAUNCH       1200 /* Servo position: Launcher all the way back */
 
 
 /* exported macro -------------------------------------------------------------*/

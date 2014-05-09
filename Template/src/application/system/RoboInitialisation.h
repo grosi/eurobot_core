@@ -27,9 +27,8 @@
 
 /* sensors */
 #define SENSOR_EMERGENCY_INIT   1
-#define SENSOR_FRESCO_1_INIT    1
-#define SENSOR_FRESCO_2_INIT    1
-#define SENSOR_WALL_INIT        0
+#define SENSOR_AIR_INIT         0
+#define SENSOR_FIRE_POOL_INIT   1
 #define SENSOR_KEY_INIT         0
 
 /* exported macro -------------------------------------------------------------*/

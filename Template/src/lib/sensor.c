@@ -44,155 +44,155 @@ uint8_t getSensorNegEdge(GPIO_TypeDef*, uint16_t, uint8_t** );
 
 
 /**
- * \fn      initSensor_Fresco_1
- * \brief   sensor fresco 1 initialisation
+ * \fn      initSensor_Air
+ * \brief   sensor air initialisation
  */
-void initSensor_Fresco_1()
+void initSensor_Air()
 {
-    initSensor(SENSOR_FRESCO_1_PIN, SENSOR_FRESCO_1_PIN_MODE, SENSOR_FRESCO_1_PIN_TYPE, SENSOR_FRESCO_1_PIN_PUPD, SENSOR_FRESCO_1_PIN_SPEED,
-            SENSOR_FRESCO_1_PORT, SENSOR_FRESCO_1_PORT_CLK);
+    initSensor(SENSOR_AIR_PIN, SENSOR_AIR_PIN_MODE, SENSOR_AIR_PIN_TYPE, SENSOR_AIR_PIN_PUPD, SENSOR_AIR_PIN_SPEED,
+            SENSOR_AIR_PORT, SENSOR_AIR_PORT_CLK);
 }
 
 
 /**
- * \fn      getSensor_Fresco_1
+ * \fn      getSensor_Air
  * \brief   get the current pin value
  * \note    the pin is not debounced
  * \return  current button value
  */
-uint8_t getSensor_Fresco_1()
+uint8_t getSensor_Air()
 {
-    return !GPIO_ReadInputDataBit(SENSOR_FRESCO_1_PORT, SENSOR_FRESCO_1_PIN);
+    return !GPIO_ReadInputDataBit(SENSOR_AIR_PORT, SENSOR_AIR_PIN);
 }
 
 
 /**
- * \fn      getSensorPosEdge_Fresco_1
+ * \fn      getSensorPosEdge_Air
  * \brief   get the positive edge
  * \note    this function have to call every programm loop
  *
  * \param   sensor_state    pointer to a temporary button state memory
  * \return  the positive edge, if there
  */
-uint8_t getSensorPosEdge_Fresco_1(uint8_t* sensor_state)
+uint8_t getSensorPosEdge_Air(uint8_t* sensor_state)
 {
-    return getSensorPosEdge(SENSOR_FRESCO_1_PORT,SENSOR_FRESCO_1_PIN, &sensor_state);
+    return getSensorPosEdge(SENSOR_AIR_PORT,SENSOR_AIR_PIN, &sensor_state);
 }
 
 
 /**
- * \fn      getSensorNegEdge_Fresco_1
+ * \fn      getSensorNegEdge_Air
  * \brief   get the negative edge
  * \note    this function have to call every programm loop
  *
  * \param   button_state    pointer to a temporary button state memory
  * \return  the neagtive edge, if there
  */
-uint8_t getSensorNegEdge_Fresco_1(uint8_t* sensor_state)
+uint8_t getSensorNegEdge_Air(uint8_t* sensor_state)
 {
-    return getSensorNegEdge(SENSOR_FRESCO_1_PORT,SENSOR_FRESCO_1_PIN, &sensor_state);
+    return getSensorNegEdge(SENSOR_AIR_PORT,SENSOR_AIR_PIN, &sensor_state);
 }
 
 
 /**
- * \fn      initSensor_Fresco_2
- * \brief   sensor fresco 2 initialisation
+ * \fn      initSensor_Fire_Pool
+ * \brief   sensor fire-pool initialisation
  */
-void initSensor_Fresco_2()
+void initSensor_Fire_Pool()
 {
-    initSensor(SENSOR_FRESCO_2_PIN, SENSOR_FRESCO_2_PIN_MODE, SENSOR_FRESCO_2_PIN_TYPE, SENSOR_FRESCO_2_PIN_PUPD, SENSOR_FRESCO_2_PIN_SPEED,
-            SENSOR_FRESCO_2_PORT, SENSOR_FRESCO_2_PORT_CLK);
+    initSensor(SENSOR_FIRE_POOL_PIN, SENSOR_FIRE_POOL_PIN_MODE, SENSOR_FIRE_POOL_PIN_TYPE, SENSOR_FIRE_POOL_PIN_PUPD, SENSOR_FIRE_POOL_PIN_SPEED,
+            SENSOR_FIRE_POOL_PORT, SENSOR_FIRE_POOL_PORT_CLK);
 }
 
 
 /**
- * \fn      getSensor_Fresco_2
+ * \fn      getSensor_Fire_Pool
  * \brief   get the current pin value
  * \note    the pin is not debounced
  * \return  current button value
  */
-uint8_t getSensor_Fresco_2()
+uint8_t getSensor_Fire_Pool()
 {
-    return !GPIO_ReadInputDataBit(SENSOR_FRESCO_2_PORT, SENSOR_FRESCO_2_PIN);
+    return !GPIO_ReadInputDataBit(SENSOR_FIRE_POOL_PORT, SENSOR_FIRE_POOL_PIN);
 }
 
 
 /**
- * \fn      getSensorPosEdge_Fresco_2
+ * \fn      getSensorPosEdge_Fire_Pool
  * \brief   get the positive edge
  * \note    this function have to call every programm loop
  *
  * \param   sensor_state    pointer to a temporary button state memory
  * \return  the positive edge, if there
  */
-uint8_t getSensorPosEdge_Fresco_2(uint8_t* sensor_state)
+uint8_t getSensorPosEdge_Fire_Pool(uint8_t* sensor_state)
 {
-    return getSensorPosEdge(SENSOR_FRESCO_2_PORT,SENSOR_FRESCO_2_PIN, &sensor_state);
+    return getSensorPosEdge(SENSOR_FIRE_POOL_PORT,SENSOR_FIRE_POOL_PIN, &sensor_state);
 }
 
 
 /**
- * \fn      getSensorNegEdge_Fresco_2
+ * \fn      getSensorNegEdge_Fire_Pool
  * \brief   get the negative edge
  * \note    this function have to call every programm loop
  *
  * \param   button_state    pointer to a temporary button state memory
  * \return  the neagtive edge, if there
  */
-uint8_t getSensorNegEdge_Fresco_2(uint8_t* sensor_state)
+uint8_t getSensorNegEdge_Fire_Pool(uint8_t* sensor_state)
 {
-    return getSensorNegEdge(SENSOR_FRESCO_2_PORT,SENSOR_FRESCO_2_PIN, &sensor_state);
+    return getSensorNegEdge(SENSOR_FIRE_POOL_PORT,SENSOR_FIRE_POOL_PIN, &sensor_state);
 }
 
 
 /**
- * \fn      initSensor_Fresco_Wall
- * \brief   sensor fresco 1 initialisation
+ * \fn      initSensor_1
+ * \brief   sensor 1 initialisation
  */
-void initSensor_Fresco_Wall()
+void initSensor_1()
 {
-    initSensor(SENSOR_FRESCO_WALL_PIN, SENSOR_FRESCO_WALL_PIN_MODE, SENSOR_FRESCO_WALL_PIN_TYPE, SENSOR_FRESCO_WALL_PIN_PUPD, SENSOR_FRESCO_WALL_PIN_SPEED,
-            SENSOR_FRESCO_WALL_PORT, SENSOR_FRESCO_WALL_PORT_CLK);
+    initSensor(SENSOR_1_PIN, SENSOR_1_PIN_MODE, SENSOR_1_PIN_TYPE, SENSOR_1_PIN_PUPD, SENSOR_1_PIN_SPEED,
+            SENSOR_1_PORT, SENSOR_1_PORT_CLK);
 }
 
 
 /**
- * \fn      getSensor_Fresco_Wall
+ * \fn      getSensor_1
  * \brief   get the current pin value
  * \note    the pin is not debounced
  * \return  current button value
  */
-uint8_t getSensor_Fresco_Wall()
+uint8_t getSensor_1()
 {
-    return !GPIO_ReadInputDataBit(SENSOR_FRESCO_WALL_PORT, SENSOR_FRESCO_WALL_PIN);
+    return !GPIO_ReadInputDataBit(SENSOR_1_PORT, SENSOR_1_PIN);
 }
 
 
 /**
- * \fn      getSensorPosEdge_Fresco_Wall
+ * \fn      getSensorPosEdge_1
  * \brief   get the positive edge
  * \note    this function have to call every programm loop
  *
  * \param   sensor_state    pointer to a temporary button state memory
  * \return  the positive edge, if there
  */
-uint8_t getSensorPosEdge_Fresco_Wall(uint8_t* sensor_state)
+uint8_t getSensorPosEdge_1(uint8_t* sensor_state)
 {
-    return getSensorPosEdge(SENSOR_FRESCO_WALL_PORT,SENSOR_FRESCO_WALL_PIN, &sensor_state);
+    return getSensorPosEdge(SENSOR_1_PORT,SENSOR_1_PIN, &sensor_state);
 }
 
 
 /**
- * \fn      getSensorNegEdge_Fresco_Wall
+ * \fn      getSensorNegEdge_1
  * \brief   get the negative edge
  * \note    this function have to call every programm loop
  *
  * \param   button_state    pointer to a temporary button state memory
  * \return  the neagtive edge, if there
  */
-uint8_t getSensorNegEdge_Fresco_Wall(uint8_t* sensor_state)
+uint8_t getSensorNegEdge_1(uint8_t* sensor_state)
 {
-    return getSensorNegEdge(SENSOR_FRESCO_WALL_PORT,SENSOR_FRESCO_WALL_PIN, &sensor_state);
+    return getSensorNegEdge(SENSOR_1_PORT,SENSOR_1_PIN, &sensor_state);
 }
 
 

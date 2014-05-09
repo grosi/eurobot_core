@@ -26,7 +26,6 @@
 
 /* application */
 #include "Rangefinder.h"
-#include "nodes/FrescoNode.h"
 #include "System.h"
 #include "InterruptHandlers.h"
 

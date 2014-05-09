@@ -26,7 +26,8 @@
 #include "../System.h"
 #include "../nodes/NodeConfig.h"
 #include "../Rangefinder.h"
-#include "RoboSetup.h" /* next state if this one is completed successfully */
+#include "RoboSetup.h" /* previous state */
+#include "RoboRunExtend.h" /* next state if this one is completed successfully */
 #include "RoboError.h" /* next state if this one is completed with errors */
 #include "RoboRun.h"
 
@@ -63,26 +64,10 @@ static xTaskHandle xNodeTask_Handle = NULL;
 xSemaphoreHandle sSyncRoboRunNodeTask; /*!< for RoboRun <-> node-task sync */
 
 /* game and strategy */
-static volatile node_t* nodes_red[NODE_QUANTITY] = {&node_mammoth_1,
-                                           &node_mammoth_2,
-                                           &node_mammoth_3,
-                                           &node_mammoth_4,
-                                           &node_mammoth_5,
-                                           &node_mammoth_6,
-                                           &node_fresco_1,
-                                           &node_fresco_2,
-                                           &node_fire_1_red,
+static volatile node_t* nodes_red[NODE_QUANTITY] = {&node_fire_1_red,
                                            &node_fire_2_red,
                                            &node_fire_3_red}; /*!< node-set for the yellow teamcolor */
-static node_t* nodes_yellow[NODE_QUANTITY] = {&node_mammoth_1,
-                                              &node_mammoth_2,
-                                              &node_mammoth_3,
-                                              &node_mammoth_4,
-                                              &node_mammoth_5,
-                                              &node_mammoth_6,
-                                              &node_fresco_1,
-                                              &node_fresco_2,
-                                              &node_fire_1_yellow,
+static volatile node_t* nodes_yellow[NODE_QUANTITY] = {&node_fire_1_yellow,
                                               &node_fire_2_yellow,
                                               &node_fire_3_yellow}; /*!< node-set for the red teamcolor */
 static node_t* nodes_game[NODE_QUANTITY];
@@ -91,12 +76,9 @@ static node_t* next_node; /*!< pointer to the next node */
 static uint8_t remain_nodes; /*!< undone nodes */
 static uint8_t enemy_count; /*!< enemy quantity */
 static uint8_t confederate_quantity; /*!< confederate quantity */
-static uint8_t node_pools[NODE_POOL_QUANTITY][3] = {{NODE_MAMMOTH_POOL_ID,
-                                                     NODE_MAMMOTH_POOL_SIZE,
-                                                     NODE_MAMMOTH_POOL_LEVEL},
-                                                    {NODE_FRESCO_POOL_ID,
-                                                     NODE_FRESCO_POOL_SIZE,
-                                                     NODE_FRESCO_POOL_LEVEL}}; /*!< pool settings -> have to set to default values after game round */
+static uint8_t node_pools[NODE_POOL_QUANTITY][3] = {{NODE_NET_POOL_ID,
+                                                     NODE_NET_POOL_SIZE,
+                                                     NODE_NET_POOL_LEVEL}};/*!< pool settings -> have to set to default values after game round */
 volatile static uint16_t enemey_position[20][30] = {{0}}; /*!< enemy-tracking grid TODO*/
 //volatile static uint16_t enemey_position[((int)(PLAYGROUND_HEIGH/ENEMY_GRID_SIZE_Y))][((int)(PLAYGROUND_WIDTH/ENEMY_GRID_SIZE_X))] = {{0.0}}; /*!< enemy-tracking grid */
 volatile static game_state_t game_state = { .x = 0,               /*!< x-position */
@@ -168,6 +150,7 @@ uint8_t setConfigRoboRunState(uint8_t start_node_id, uint8_t teamcolor, uint8_t 
     uint8_t success = 0;
 
     /* load correct node-set */
+    taskENTER_CRITICAL();
     if(teamcolor == GIP_TEAMCOLOR_YELLOW)
     {
         memcpy(&nodes_game,nodes_yellow,sizeof(node_t*[NODE_QUANTITY]));
@@ -177,6 +160,7 @@ uint8_t setConfigRoboRunState(uint8_t start_node_id, uint8_t teamcolor, uint8_t 
         memcpy(&nodes_game,nodes_red,sizeof(node_t*[NODE_QUANTITY]));
     }
     remain_nodes = NODE_QUANTITY; /* set counter to max. */
+    taskEXIT_CRITICAL();
 
     /* search start-node address */
     for(node_count = 0; node_count < NODE_QUANTITY; node_count++)
@@ -229,10 +213,8 @@ void setConfigRoboRunState2Default()
     }
 
     /* node pools to default */
-    node_pools[NODE_MAMMOTH_POOL_ID-1][NODE_POOL_SIZE_INFO] = NODE_MAMMOTH_POOL_SIZE;
-    node_pools[NODE_MAMMOTH_POOL_ID-1][NODE_POOL_LEVEL_INFO] = NODE_MAMMOTH_POOL_LEVEL;
-    node_pools[NODE_FRESCO_POOL_ID-1][NODE_POOL_SIZE_INFO] = NODE_FRESCO_POOL_SIZE;
-    node_pools[NODE_FRESCO_POOL_ID-1][NODE_POOL_LEVEL_INFO] = NODE_FRESCO_POOL_LEVEL;
+    node_pools[NODE_NET_POOL_ID-1][NODE_POOL_SIZE_INFO] = NODE_NET_POOL_SIZE;
+    node_pools[NODE_NET_POOL_ID-1][NODE_POOL_LEVEL_INFO] = NODE_NET_POOL_LEVEL;
 
     /* enemy-field to default */
     memset(enemey_position,0,sizeof(enemey_position[0][0]) * ((int)(PLAYGROUND_WIDTH/ENEMY_GRID_SIZE_X))
