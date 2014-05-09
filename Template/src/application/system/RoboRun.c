@@ -173,6 +173,7 @@ uint8_t setConfigRoboRunState(uint8_t start_node_id, uint8_t teamcolor, uint8_t 
     game_state.teamcolor = teamcolor;
 
     /* load correct node-set */
+    taskENTER_CRITICAL();
     if(teamcolor == GIP_TEAMCOLOR_YELLOW)
     {
         memcpy(&nodes_game,nodes_yellow,sizeof(node_t*[NODE_QUANTITY]));
@@ -182,6 +183,7 @@ uint8_t setConfigRoboRunState(uint8_t start_node_id, uint8_t teamcolor, uint8_t 
         memcpy(&nodes_game,nodes_red,sizeof(node_t*[NODE_QUANTITY]));
     }
     remain_nodes = NODE_QUANTITY; /* set counter to max. */
+    taskEXIT_CRITICAL();
 
     /* search start-node address */
     for(node_count = 0; node_count < NODE_QUANTITY; node_count++)

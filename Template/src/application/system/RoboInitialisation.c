@@ -226,6 +226,9 @@ void runRoboInitialisationState(portTickType* tick)
                 state = DRIVE_INIT;
             }
 
+            /* state delay for sensor debouncing */
+            vTaskDelayUntil(tick, SETUP_BUTTON_DELAY / portTICK_RATE_MS);
+
             break;
 
         case DRIVE_INIT:
