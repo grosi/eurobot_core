@@ -57,6 +57,9 @@ void doFrescoNode(node_param_t* param) {
 	/* Move panel all the way out TODO: Maybe move panel only half out */
 	setServo_1(SERVO_POS_FRESCO_OUT);
 
+	/* Wait some time while servo moves */
+	vTaskDelay(SERVO_MOVING_DELAY / portTICK_RATE_MS);
+
 	/* Drive closer to the wall */
 	txGotoXY(param->x, param->y + FRESCO_APPROACH_DISTANCE + FRESCO_APPROACH_OVERHEAD, param->angle, FRESCO_APPROACH_SPEED, GOTO_NO_BARRIER, GOTO_DRIVE_FORWARD);
 

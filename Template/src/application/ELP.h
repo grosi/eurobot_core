@@ -28,16 +28,16 @@
 #define ELP_PERIODE             100 /*!< Time between to interruptions in ms */
 
 /* Define the request rates of the ELP's. Rate = Taskspeed * Requestrate */
-#define ELP_NAVI_POSITION_REQUEST_RATE              5   /*!< Request the Navis's ELP every 5th time -> 500ms */
+#define ELP_NAVI_POSITION_REQUEST_RATE              6   /*!< Request the Navis's ELP every 5th time -> 500ms */
 #define ELP_NAVI_POSITION_REQUEST_START             0
-#define ELP_KALMAN_POSITION_REQUEST_RATE            5   /*!< Request the Kalman's ELP every 5th time -> 500ms */
-#define ELP_KALMAN_POSITION_REQUEST_START           1
-#define ELP_CONFEDERATE_POSITION_REQUEST_RATE       5   /*!< Request the Confederate's ELP every 5th time -> 500ms */
-#define ELP_CONFEDERATE_POSITION_REQUEST_START      2
-#define ELP_ENEMY1_POSITION_REQUEST_RATE            5   /*!< Request the Enemy1's ELP every 5th time -> 500ms */
-#define ELP_ENEMY1_POSITION_REQUEST_START           3
-#define ELP_ENEMY2_POSITION_REQUEST_RATE            5   /*!< Request the Enemy2's ELP every 5th time -> 500ms*/
-#define ELP_ENEMY2_POSITION_REQUEST_START           4
+#define ELP_KALMAN_POSITION_REQUEST_RATE            6   /*!< Request the Kalman's ELP every 5th time -> 500ms */
+#define ELP_KALMAN_POSITION_REQUEST_START           2
+#define ELP_CONFEDERATE_POSITION_REQUEST_RATE       6   /*!< Request the Confederate's ELP every 5th time -> 500ms */
+#define ELP_CONFEDERATE_POSITION_REQUEST_START      4
+#define ELP_ENEMY1_POSITION_REQUEST_RATE            6   /*!< Request the Enemy1's ELP every 5th time -> 500ms */
+#define ELP_ENEMY1_POSITION_REQUEST_START           6
+#define ELP_ENEMY2_POSITION_REQUEST_RATE            6   /*!< Request the Enemy2's ELP every 5th time -> 500ms*/
+#define ELP_ENEMY2_POSITION_REQUEST_START           8
 
 /* exported macro -------------------------------------------------------------*/
 

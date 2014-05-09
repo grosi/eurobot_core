@@ -118,8 +118,8 @@ typedef struct
 /* Fresco node */
 #define FRESCO_APPROACH_DISTANCE   100  /* Distance in mm to drive from the fresco node point to the wall */
 #define FRESCO_APPROACH_OVERHEAD   30   /* Additional Distance in mm to drive to the wall to make sure we are there */
-#define FRESCO_APPROACH_SPEED      50   /* Speed in percent to drive from node point to wall */
-#define FRESCO_APPROACH_TIME       500  /* Time in ms to wait while driving to wall */  //TODO
+#define FRESCO_APPROACH_SPEED      30   /* Speed in percent to drive from node point to wall */
+#define FRESCO_APPROACH_TIME       5000  /* Time in ms to wait while driving to wall */  //TODO
 
 /* Fresco node */
 #define FIRE_APPROACH_DISTANCE     150  /* Distance in mm to drive into the fire */  //TODO: Evaluate good value (as short as possible)
