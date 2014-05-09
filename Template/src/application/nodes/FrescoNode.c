@@ -52,7 +52,7 @@
  * \param       param  node parameters
  * \return      None
  */
-void doFrescoNode(node_param_t* param) {
+void doFrescoNode(node_param_t* param, volatile game_state_t* game_state) {
 
 	/* Move panel all the way out TODO: Maybe move panel only half out */
 	setServo_1(SERVO_POS_FRESCO_OUT);

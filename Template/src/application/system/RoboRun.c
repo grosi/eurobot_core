@@ -776,7 +776,7 @@ static void vNodeTask(void* pvParameters )
     	/* Give goto command and do node if goto was successful */
     	if(gotoNode(&node_task->param, &game_state) == FUNC_SUCCESS) {
     		/* Do node action */
-    		node_task->node_function(&node_task->param);
+    		node_task->node_function(&node_task->param, &game_state);
     	}
 
     	/* unblock system task */

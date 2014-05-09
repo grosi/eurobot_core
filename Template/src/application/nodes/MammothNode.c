@@ -90,7 +90,7 @@ uint8_t moveSeparationOutSavely(uint8_t retry_delay, uint8_t retry_count_max) {
  * \param       param  node parameters
  * \return      None
  */
-void doMammothNode(node_param_t* param) {
+void doMammothNode(node_param_t* param, volatile game_state_t* game_state) {
 
 	/* local variables */
 	/* Variable to set the servo position step by step */

@@ -32,7 +32,7 @@
 
 
 /* exported function prototypes -----------------------------------------------*/
-extern void doFireNode(node_param_t*);
+extern void doFireNode(node_param_t*, volatile game_state_t*);
 
 
 #endif /* FIRE_NODE_H_ */

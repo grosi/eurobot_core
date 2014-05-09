@@ -47,7 +47,7 @@
  * \param       param  node parameters
  * \return      None
  */
-void doFireNode(node_param_t* param)
+void doFireNode(node_param_t* param, volatile game_state_t* game_state)
 {
     /* Activate rangefinder */
     vTaskResume(xRangefinderTask_Handle);

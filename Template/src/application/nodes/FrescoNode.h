@@ -34,7 +34,7 @@
 
 
 /* exported function prototypes -----------------------------------------------*/
-extern void doFrescoNode(node_param_t*);
+extern void doFrescoNode(node_param_t*, volatile game_state_t*);
 
 
 #endif /* FRESCONODE_H_ */

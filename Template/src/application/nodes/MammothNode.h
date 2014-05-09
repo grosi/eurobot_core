@@ -30,7 +30,7 @@
 
 
 /* exported function prototypes -----------------------------------------------*/
-extern void doMammothNode(node_param_t*);
+extern void doMammothNode(node_param_t*, volatile game_state_t*);
 
 
 #endif /* MAMMOTHNODE_H_ */
