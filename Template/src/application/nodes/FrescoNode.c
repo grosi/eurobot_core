@@ -54,7 +54,7 @@
  */
 void doFrescoNode(node_param_t* param, volatile game_state_t* game_state) {
 
-	/* Move panel all the way out TODO: Maybe move panel only half out */
+	/* Move panel all the way out */
 	setServo_1(SERVO_POS_FRESCO_OUT);
 
 	/* Wait some time while servo moves */
@@ -71,13 +71,11 @@ void doFrescoNode(node_param_t* param, volatile game_state_t* game_state) {
 		approach_counter += FRESCO_DRIVECHECK_DELAY;
 	}
 
+	/* Stop driving further */
+	txStopDrive();
+
 	/* Check if we are on the wall, else the space is blocked */
 	if(getSensor_Fresco_Wall()) {
-
-		/* Stop driving further */
-		txStopDrive();
-
-		/* TODO: Maybe move panel all the way out now (slowly) */
 
 		/* Move fresco panel in slowly (step by step) */
 		volatile uint16_t servo_pos = SERVO_POS_FRESCO_OUT;  /* Current position */
