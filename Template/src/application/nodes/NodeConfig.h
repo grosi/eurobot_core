@@ -39,15 +39,19 @@ typedef struct
     uint16_t x;
     uint16_t y;
     uint16_t angle;
-    uint16_t enemy_1_x;       /*!< 0xFFFF = no enemy 1 or error */
-    uint16_t enemy_1_y;       /*!< 0xFFFF = no enemy 1 or error */
-    uint8_t enemy_1_diameter; /*!< 0 = no enemy 1 [cm] */
-    uint16_t enemy_2_x;       /*!< 0xFFFF = no enemy 2 or error */
-    uint16_t enemy_2_y;       /*!< 0xFFFF = no enemy 2 or error */
-    uint8_t enemy_2_diameter; /*!< 0 = no enemy 2 [cm] */
-    uint16_t confederate_x;   /*!< 0xFFFF = no enemy 2 or error */
-    uint16_t confederate_y;   /*!< 0xFFFF = no enemy 2 or error */
-    uint8_t teamcolor;        /*!< GIP_TEAMCOLOR_YELLOW or GIP_TEAMCOLOR_RED */
+    team_color_t teamcolor;
+
+    uint8_t  enemy_count;       /*!< Number of enemies: 0, 1 or 2 */
+    uint16_t enemy_1_x;         /*!< 0xFFFF = no enemy 1 or error */
+    uint16_t enemy_1_y;         /*!< 0xFFFF = no enemy 1 or error */
+    uint8_t  enemy_1_diameter;  /*!< 0 = no enemy 1 [cm] */
+    uint16_t enemy_2_x;         /*!< 0xFFFF = no enemy 2 or error */
+    uint16_t enemy_2_y;         /*!< 0xFFFF = no enemy 2 or error */
+    uint8_t  enemy_2_diameter;  /*!< 0 = no enemy 2 [cm] */
+
+    uint8_t  confederate_count; /*!< Number of confederate: 0, 1 or 2 */
+    uint16_t confederate_x;     /*!< 0xFFFF = no confederate or error */
+    uint16_t confederate_y;     /*!< 0xFFFF = no confederate or error */
 }game_state_t;
 
 
@@ -83,6 +87,7 @@ typedef struct
 /* general */
 #define NODE_QUANTITY              11
 #define NODE_POOL_QUANTITY         2
+#define NODE_NO_CONFEDERATE        0xFFFF
 #define NODE_NO_ENEMY              0xFFFF
 #define NODE_NO_ENEMY_DIAMETER     0
 

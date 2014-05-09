@@ -100,16 +100,21 @@ static uint8_t node_pools[NODE_POOL_QUANTITY][3] = {{NODE_MAMMOTH_POOL_ID,
                                                      NODE_FRESCO_POOL_LEVEL}}; /*!< pool settings -> have to set to default values after game round */
 volatile static uint16_t enemey_position[20][30] = {{0}}; /*!< enemy-tracking grid TODO*/
 //volatile static uint16_t enemey_position[((int)(PLAYGROUND_HEIGH/ENEMY_GRID_SIZE_Y))][((int)(PLAYGROUND_WIDTH/ENEMY_GRID_SIZE_X))] = {{0.0}}; /*!< enemy-tracking grid */
-volatile static game_state_t game_state = { .x = 0,               /*!< x-position */
-                                            .x = 0,              /*!< y-position */
-                                            .angle = 0,              /*!< angle */
+volatile static game_state_t game_state = { .x = 0,                      /*!< x-position */
+                                            .x = 0,                      /*!< y-position */
+                                            .angle = 0,                  /*!< angle */
+                                            .teamcolor = TEAM_YELLOW,    /*!< color of our team */
+                                            .enemy_count = 0,            /*!< number of enemies */
                                             .enemy_1_x = NODE_NO_ENEMY,  /*!< x-position enemy 1 */
                                             .enemy_1_y = NODE_NO_ENEMY,  /*!< y-position enemy 1 */
                                             .enemy_1_diameter = NODE_NO_ENEMY_DIAMETER, /*!< diameter of enemy 1 [cm] */
                                             .enemy_2_x = NODE_NO_ENEMY,  /*!< x-position enemy 2 */
                                             .enemy_2_y = NODE_NO_ENEMY,  /*!< y-position enemy 2 */
                                             .enemy_2_diameter = NODE_NO_ENEMY_DIAMETER,  /*!< diameter of enemy 2 [cm] */
-                                            .teamcolor = GIP_TEAMCOLOR_YELLOW};  /*!< color of our team */
+                                            .confederate_count = 0,      /*!< number of enemies */
+                                            .confederate_x = NODE_NO_CONFEDERATE,  /*!< x-position enemy 1 */
+                                            .confederate_y = NODE_NO_CONFEDERATE  /*!< y-position enemy 1 */
+                                           };
 
 
 /* Private function prototypes -----------------------------------------------*/
@@ -665,7 +670,7 @@ func_report_t gotoNode(node_param_t* param, volatile game_state_t* game_state)
 		i++;
 
 		/* Send GoTo command with correct barrier flags through CAN to drive system */
-		if(game_state->teamcolor == GIP_TEAMCOLOR_YELLOW) {
+		if(game_state->teamcolor == TEAM_YELLOW) {
 			txGotoXY(param->x, param->y, param->angle, GOTO_DEFAULT_SPEED, GOTO_DEFAULT_BARRIER_Y, GOTO_DRIVE_FORWARD);
 		}
 		else {
