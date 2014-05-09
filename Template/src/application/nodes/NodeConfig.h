@@ -47,6 +47,7 @@ typedef struct
     uint8_t enemy_2_diameter; /*!< 0 = no enemy 2 [cm] */
     uint16_t confederate_x;   /*!< 0xFFFF = no enemy 2 or error */
     uint16_t confederate_y;   /*!< 0xFFFF = no enemy 2 or error */
+    uint8_t teamcolor;        /*!< GIP_TEAMCOLOR_YELLOW or GIP_TEAMCOLOR_RED */
 }game_state_t;
 
 

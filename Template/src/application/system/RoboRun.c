@@ -108,7 +108,8 @@ volatile static game_state_t game_state = { .x = 0,               /*!< x-positio
                                             .enemy_1_diameter = NODE_NO_ENEMY_DIAMETER, /*!< diameter of enemy 1 [cm] */
                                             .enemy_2_x = NODE_NO_ENEMY,  /*!< x-position enemy 2 */
                                             .enemy_2_y = NODE_NO_ENEMY,  /*!< y-position enemy 2 */
-                                            .enemy_2_diameter = NODE_NO_ENEMY_DIAMETER}; /*!< diameter of enemy 2 [cm] */
+                                            .enemy_2_diameter = NODE_NO_ENEMY_DIAMETER,  /*!< diameter of enemy 2 [cm] */
+                                            .teamcolor = GIP_TEAMCOLOR_YELLOW};  /*!< color of our team */
 
 
 /* Private function prototypes -----------------------------------------------*/
@@ -167,6 +168,9 @@ uint8_t setConfigRoboRunState(uint8_t start_node_id, uint8_t teamcolor, uint8_t 
     /* local variables */
     uint8_t node_count;
     uint8_t success = 0;
+
+    /* save color in game_state */
+    game_state.teamcolor = teamcolor;
 
     /* load correct node-set */
     if(teamcolor == GIP_TEAMCOLOR_YELLOW)
@@ -659,15 +663,13 @@ func_report_t gotoNode(node_param_t* param, volatile game_state_t* game_state)
 		i++;
 
 		/* Send GoTo command with correct barrier flags through CAN to drive system */
-//TODO:
-//		if(teamcolor == red) {
-//			txGotoXY(param->x, param->y, param->angle, GOTO_DEFAULT_SPEED, GOTO_DEFAULT_BARRIER_R, GOTO_DRIVE_FORWARD);
-//		}
-//		else {
-//
-//			txGotoXY(param->x, param->y, param->angle, GOTO_DEFAULT_SPEED, GOTO_DEFAULT_BARRIER_Y, GOTO_DRIVE_FORWARD);
-//		}
-		txGotoXY(param->x, param->y, param->angle, GOTO_DEFAULT_SPEED, GOTO_NO_BARRIER, GOTO_DRIVE_FORWARD);
+		if(game_state->teamcolor == GIP_TEAMCOLOR_YELLOW) {
+			txGotoXY(param->x, param->y, param->angle, GOTO_DEFAULT_SPEED, GOTO_DEFAULT_BARRIER_Y, GOTO_DRIVE_FORWARD);
+		}
+		else {
+
+			txGotoXY(param->x, param->y, param->angle, GOTO_DEFAULT_SPEED, GOTO_DEFAULT_BARRIER_R, GOTO_DRIVE_FORWARD);
+		}
 
 		/* Receive GoTo confirmation */
 		CAN_ok = xQueueReceive(qGotoConfirm, &CAN_buffer, GOTO_ACK_DELAY / portTICK_RATE_MS);
