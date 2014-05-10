@@ -80,7 +80,7 @@ typedef struct
 
 /* exported define ------------------------------------------------------------*/
 /* general */
-#define NODE_QUANTITY              11 //TODO
+#define NODE_QUANTITY              10 //TODO
 #define NODE_POOL_QUANTITY         1
 #define NODE_NO_ENEMY              0xFFFF
 #define NODE_NO_ENEMY_DIAMETER     0
@@ -103,30 +103,40 @@ typedef struct
 
 /* Servo */
 #define SERVO_MOVING_DELAY         400  /* Delay in ms to wait while the servo moves the whole way */
-#define SERVO_POS_AIR_IN           2000 /* Servo position: Fresco panel all the way in */
-#define SERVO_POS_AIR_OUT          900//1600 /* Servo position: Fresco panel all the way out */
-#define SERVO_POS_NET_LOAD         1750 /* Servo position: Launcher all the way front */
-#define SERVO_POS_NET_LAUNCH       1200 /* Servo position: Launcher all the way back */
+#define SERVO_POS_AIR_UP           1990//2000 /* Servo position: Fresco panel all the way in */
+#define SERVO_POS_AIR_DOWN         1112 //1600 /* Servo position: Fresco panel all the way out */
+#define SERVO_POS_AIR_FIRST_FIRE   1800 //1600 /* Servo position: Fresco panel all the way out */
+#define SERVO_POS_AIR_SECOND_FIRE 1600 //1600 /* Servo position: Fresco panel all the way out */
+#define SERVO_POS_AIR_THIRD_FIRE  1200 //1600 /* Servo position: Fresco panel all the way out */
+#define SERVO_POS_NET_LOAD         1400//1340 /* Servo position: Launcher all the way front */
+#define SERVO_POS_NET_LAUNCH       1700 /* Servo position: Launcher all the way back */
 
 
 /* exported macro -------------------------------------------------------------*/
 
 
 /* exported variables ---------------------------------------------------------*/
-extern node_t node_mammoth_1;
-extern node_t node_mammoth_2;
-extern node_t node_mammoth_3;
-extern node_t node_mammoth_4;
-extern node_t node_mammoth_5;
-extern node_t node_mammoth_6;
-extern node_t node_fresco_1;
-extern node_t node_fresco_2;
 extern node_t node_fire_1_red;
 extern node_t node_fire_2_red;
 extern node_t node_fire_3_red;
+extern node_t node_fire_pool_red;
+extern node_t node_fire_wall_normal_1_red;
+extern node_t node_fire_wall_normal_2_red;
+extern node_t node_fire_wall_invers_red;
+extern node_t node_net_1_red;
+extern node_t node_net_2_red;
+extern node_t node_net_3_red;
+
 extern node_t node_fire_1_yellow;
 extern node_t node_fire_2_yellow;
 extern node_t node_fire_3_yellow;
+extern node_t node_fire_pool_yellow;
+extern node_t node_fire_wall_normal_1_yellow;
+extern node_t node_fire_wall_normal_2_yellow;
+extern node_t node_fire_wall_invers_yellow;
+extern node_t node_net_1_yellow;
+extern node_t node_net_2_yellow;
+extern node_t node_net_3_yellow;
 
 extern xQueueHandle qGotoConfirm;
 extern xQueueHandle qGotoStateResp;

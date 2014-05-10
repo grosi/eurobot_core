@@ -32,7 +32,7 @@
 //#define DEBUGGING
 
 /* uncomment this define if your core node is not connect to all  */
-//#define STANDALONE
+#define STANDALONE
 
 /* typedefs */
 typedef enum { FALSE = 0, TRUE } boolean;
