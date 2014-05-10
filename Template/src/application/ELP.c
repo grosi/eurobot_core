@@ -36,7 +36,7 @@ typedef struct
 /* Private define ------------------------------------------------------------*/
 #define ELP_CAN_ON
 #define LAST_ENTRY   0  /* Last entry for table_entry table[]         */
-#define CYCLE_RESET  5
+#define CYCLE_RESET  6
 /* Number of cycles until cycle-counter reset */
 
 /* Private macro -------------------------------------------------------------*/
