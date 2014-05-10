@@ -57,7 +57,7 @@ void doFireNode(node_param_t* param, volatile game_state_t* game_state)
 	}
 
     /* Activate rangefinder */
-    vTaskResume(xRangefinderTask_Handle);
+//    vTaskResume(xRangefinderTask_Handle);
 
 	/* Move the separation all the way out */
 	setServo_1(SERVO_POS_FRESCO_OUT);
@@ -95,18 +95,20 @@ void doFireNode(node_param_t* param, volatile game_state_t* game_state)
 	/* Wait some time while servo moves */
 	vTaskDelay(SERVO_MOVING_DELAY / portTICK_RATE_MS);
 
+	param->node_state = NODE_FINISH_SUCCESS;
+
     /* Fire has fallen */
-    if(Rangefinder_flag_SeAlarmUS == 0){
-
-    	param->node_state = NODE_FINISH_SUCCESS;
-    }
-    else {
-
-    	param->node_state = NODE_FINISH_ERROR;
-    }
+//    if(Rangefinder_flag_SeAlarmUS == 0){
+//
+//
+//    }
+//    else {
+//
+//    	param->node_state = NODE_FINISH_ERROR;
+//    }
 
     /* Suspend rangefinder safely */
-    suspendRangefinderTask();
+    //suspendRangefinderTask();
 }
 
 /**
