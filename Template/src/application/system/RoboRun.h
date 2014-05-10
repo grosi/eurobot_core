@@ -34,8 +34,8 @@
 #define PLAYGROUND_HEIGH            2    /*!< [m] */
 #define ENEMY_GRID_SIZE_X           0.1  /*!< [m] */
 #define ENEMY_GRID_SIZE_Y           0.1  /*!< [m] */
-#define ENEMY_GRID_CENTER_WEIGHT    3
-#define ENEMY_GRID_FRAME_WEIGHT     2
+#define ENEMY_GRID_CENTER_WEIGHT    5
+#define ENEMY_GRID_FRAME_WEIGHT     3
 
 /* node weighting settings */
 #define NODE_ARRIVE_FRAME       100 /*!< [mm] */

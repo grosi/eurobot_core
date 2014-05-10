@@ -182,10 +182,12 @@ uint8_t setConfigRoboRunState(uint8_t start_node_id, uint8_t teamcolor, uint8_t 
     if(teamcolor == GIP_TEAMCOLOR_YELLOW)
     {
         memcpy(&nodes_game,nodes_yellow,sizeof(node_t*[NODE_QUANTITY]));
+        game_state.teamcolor = TEAM_YELLOW;
     }
     else
     {
         memcpy(&nodes_game,nodes_red,sizeof(node_t*[NODE_QUANTITY]));
+        game_state.teamcolor = TEAM_RED;
     }
     remain_nodes = NODE_QUANTITY; /* set counter to max. */
     taskEXIT_CRITICAL();
@@ -246,6 +248,8 @@ void setConfigRoboRunState2Default()
     node_pools[NODE_FRESCO_POOL_ID-1][NODE_POOL_SIZE_INFO] = NODE_FRESCO_POOL_SIZE;
     node_pools[NODE_FRESCO_POOL_ID-1][NODE_POOL_LEVEL_INFO] = NODE_FRESCO_POOL_LEVEL;
 
+    taskENTER_CRITICAL(); /* for more safety */
+
     /* enemy-field to default */
     memset(enemey_position,0,sizeof(enemey_position[0][0]) * ((int)(PLAYGROUND_WIDTH/ENEMY_GRID_SIZE_X))
             * ((int)(PLAYGROUND_HEIGH/ENEMY_GRID_SIZE_Y)));
@@ -262,6 +266,8 @@ void setConfigRoboRunState2Default()
     /* stop timers */
     stopGameTimer();
     stopELP();
+
+    taskEXIT_CRITICAL();
 }
 
 
@@ -358,36 +364,6 @@ void runRoboRunState(portTickType* tick)
             system_state = runRoboErrorState;
             return;
     }
-
-//    if(current_node->param.node_state == NODE_FINISH_SUCCESS)
-//    {
-//        remain_nodes--;
-//
-//        if(current_node->param.pool_id != NODE_NO_POOL_ID)
-//        {
-//            node_pools[current_node->param.pool_id-1][NODE_POOL_SIZE_INFO]--;
-//
-//            /* all necessary nodes within the pool are done */
-//            if(node_pools[current_node->param.pool_id-1][NODE_POOL_SIZE_INFO] ==
-//                    node_pools[current_node->param.pool_id-1][NODE_POOL_LEVEL_INFO])
-//            {
-//                remain_nodes -= node_pools[current_node->param.pool_id-1][NODE_POOL_LEVEL_INFO];
-//
-//                /* set all remaining nodes of the pool to FINISH_SUCCESS */
-//                for(node_count = 0; node_count < NODE_QUANTITY; node_count++)
-//                {
-//                    if(((*nodes_game)+node_count)->param.pool_id == current_node->param.pool_id)
-//                    {
-//                        ((*nodes_game)+node_count)->param.node_state = NODE_FINISH_SUCCESS;
-//                    }
-//                }
-//            }
-//        }
-//    }
-//    else
-//    {
-//        remain_nodes--;
-//    }
 
 
     /******************/
@@ -510,7 +486,7 @@ void runRoboRunState(portTickType* tick)
 
 
             /* cost of destination */
-            weight_dest =((nodes_game[node_count]->param.points/nodes_game[node_count]->param.time)
+            weight_dest =((nodes_game[node_count]->param.time/nodes_game[node_count]->param.points)
                     * (1/nodes_game[node_count]->param.percent)) * weight_arrive * (nodes_game[node_count]->param.node_tries);
 
             /* read out the enemy track-position for the node location */
