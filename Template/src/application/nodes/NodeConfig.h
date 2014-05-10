@@ -52,6 +52,8 @@ typedef struct
     uint8_t  confederate_count; /*!< Number of confederate: 0, 1 or 2 */
     uint16_t confederate_x;     /*!< 0xFFFF = no confederate or error */
     uint16_t confederate_y;     /*!< 0xFFFF = no confederate or error */
+
+    uint16_t barrier;           /*!< barriers flags */
 }game_state_t;
 
 

@@ -183,11 +183,13 @@ uint8_t setConfigRoboRunState(uint8_t start_node_id, uint8_t teamcolor, uint8_t 
     {
         memcpy(&nodes_game,nodes_yellow,sizeof(node_t*[NODE_QUANTITY]));
         game_state.teamcolor = TEAM_YELLOW;
+        game_state.barrier = GOTO_DEFAULT_BARRIER_Y;
     }
     else
     {
         memcpy(&nodes_game,nodes_red,sizeof(node_t*[NODE_QUANTITY]));
         game_state.teamcolor = TEAM_RED;
+        game_state.barrier = GOTO_DEFAULT_BARRIER_R;
     }
     remain_nodes = NODE_QUANTITY; /* set counter to max. */
     taskEXIT_CRITICAL();
@@ -645,14 +647,7 @@ func_report_t gotoNode(node_param_t* param, volatile game_state_t* game_state)
 
 		i++;
 
-		/* Send GoTo command with correct barrier flags through CAN to drive system */
-		if(game_state->teamcolor == TEAM_YELLOW) {
-			txGotoXY(param->x, param->y, param->angle, GOTO_DEFAULT_SPEED, GOTO_DEFAULT_BARRIER_Y, GOTO_DRIVE_FORWARD);
-		}
-		else {
-
-			txGotoXY(param->x, param->y, param->angle, GOTO_DEFAULT_SPEED, GOTO_DEFAULT_BARRIER_R, GOTO_DRIVE_FORWARD);
-		}
+        txGotoXY(param->x, param->y, param->angle, GOTO_DEFAULT_SPEED, game_state->barrier, GOTO_DRIVE_FORWARD);
 
 		/* Receive GoTo confirmation */
 		CAN_ok = xQueueReceive(qGotoConfirm, &CAN_buffer, GOTO_ACK_DELAY / portTICK_RATE_MS);

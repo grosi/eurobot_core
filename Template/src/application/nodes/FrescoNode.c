@@ -61,7 +61,7 @@ void doFrescoNode(node_param_t* param, volatile game_state_t* game_state) {
 	vTaskDelay(SERVO_MOVING_DELAY / portTICK_RATE_MS);
 
 	/* Drive closer to the wall */
-	txGotoXY(param->x, param->y + FRESCO_APPROACH_DISTANCE + FRESCO_APPROACH_OVERHEAD, param->angle, FRESCO_APPROACH_SPEED, GOTO_NO_BARRIER, GOTO_DRIVE_FORWARD);
+	txGotoXY(param->x, param->y + FRESCO_APPROACH_DISTANCE + FRESCO_APPROACH_OVERHEAD, param->angle, FRESCO_APPROACH_SPEED, game_state->barrier, GOTO_DRIVE_FORWARD);
 
 	volatile uint16_t approach_counter = 0;
 	while(!getSensor_Fresco_Wall() && approach_counter < FRESCO_APPROACH_TIME) {
