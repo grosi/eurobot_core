@@ -61,21 +61,21 @@ uint8_t moveSeparationOutSavely(uint8_t retry_delay, uint8_t retry_count_max) {
 	/* Variable to count number of retries */
 	uint8_t i = 0;
 
-	/* Check the rangefinder */
-	while(Rangefinder_flag_SeAlarmUS) {
-
-		/* Separation (fresco panel) space is blocked, wait or return */
-		if(i < retry_count_max) {
-
-			vTaskDelay(retry_delay / portTICK_RATE_MS);
-			i++;
-		}
-		else {
-
-			/* Max retries reached */
-			return 0;
-		}
-	}
+//	/* Check the rangefinder */
+//	while(Rangefinder_flag_SeAlarmUS) {
+//
+//		/* Separation (fresco panel) space is blocked, wait or return */
+//		if(i < retry_count_max) {
+//
+//			vTaskDelay(retry_delay / portTICK_RATE_MS);
+//			i++;
+//		}
+//		else {
+//
+//			/* Max retries reached */
+//			return 0;
+//		}
+//	}
 
 	/* Move the separation all the way out */
 	setServo_1(SERVO_POS_FRESCO_OUT);
