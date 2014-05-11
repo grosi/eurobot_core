@@ -291,6 +291,7 @@ void runRoboRunState(portTickType* tick)
     uint8_t node_count; /* simple count variable */
     volatile node_t* current_node;
     uint8_t x_index, y_index;
+    game_state_t game_state_copy;
 
 
     /* load next node in node task */
@@ -315,6 +316,10 @@ void runRoboRunState(portTickType* tick)
         }
     }
 
+    /* Copy current game state, so it wont be changed during calculation */
+    taskENTER_CRITICAL();
+    game_state_copy = game_state;
+    taskEXIT_CRITICAL();
 
     /*********************/
     /* check node result */
@@ -389,20 +394,20 @@ void runRoboRunState(portTickType* tick)
                     nodes_game[node_count]->param.angle <= NODE_SOUTH_MAX_ANGLE)
             {
                 /* opposite arrive */
-                if(nodes_game[node_count]->param.y < current_node->param.y)
+                if(nodes_game[node_count]->param.y < game_state_copy.y)
                 {
                     weight_arrive = NODE_WORST_ARRIVE;
                 /* too close */
                 }
-                else if(nodes_game[node_count]->param.y >= current_node->param.y &&
-                        nodes_game[node_count]->param.y - NODE_ARRIVE_FRAME < current_node->param.y)
+                else if(nodes_game[node_count]->param.y >= game_state_copy.y &&
+                        nodes_game[node_count]->param.y - NODE_ARRIVE_FRAME < game_state_copy.y)
                 {
                     weight_arrive = NODE_BAD_ARRIVE;
                 /* not bad, but not perfect as well */
                 }
-                else if(nodes_game[node_count]->param.y - NODE_ARRIVE_FRAME >= current_node->param.y &&
-                        (nodes_game[node_count]->param.x - NODE_ARRIVE_FRAME >= current_node->param.x ||
-                         nodes_game[node_count]->param.x + NODE_ARRIVE_FRAME <= current_node->param.x))
+                else if(nodes_game[node_count]->param.y - NODE_ARRIVE_FRAME >= game_state_copy.y &&
+                        (nodes_game[node_count]->param.x - NODE_ARRIVE_FRAME >= game_state_copy.x ||
+                         nodes_game[node_count]->param.x + NODE_ARRIVE_FRAME <= game_state_copy.x))
                 {
                     weight_arrive = NODE_WELL_ARRIVE;
                 /* best possible arrive */
@@ -416,18 +421,18 @@ void runRoboRunState(portTickType* tick)
                       nodes_game[node_count]->param.angle <= NODE_EAST_MAX_ANGLE)
             {
                 /* opposite arrive */
-                if(nodes_game[node_count]->param.x > current_node->param.x)
+                if(nodes_game[node_count]->param.x > game_state_copy.x)
                 {
                     weight_arrive = NODE_WORST_ARRIVE;
                 /* too close */
-                }else if(nodes_game[node_count]->param.x <= current_node->param.x &&
-                         nodes_game[node_count]->param.x + NODE_ARRIVE_FRAME > current_node->param.x)
+                }else if(nodes_game[node_count]->param.x <= game_state_copy.x &&
+                         nodes_game[node_count]->param.x + NODE_ARRIVE_FRAME > game_state_copy.x)
                 {
                     weight_arrive = NODE_BAD_ARRIVE;
                 /* not bad, but not perfect as well */
-                }else if(nodes_game[node_count]->param.x + NODE_ARRIVE_FRAME <= current_node->param.x &&
-                        (nodes_game[node_count]->param.y - NODE_ARRIVE_FRAME >= current_node->param.y ||
-                         nodes_game[node_count]->param.y + NODE_ARRIVE_FRAME <= current_node->param.y))
+                }else if(nodes_game[node_count]->param.x + NODE_ARRIVE_FRAME <= game_state_copy.x &&
+                        (nodes_game[node_count]->param.y - NODE_ARRIVE_FRAME >= game_state_copy.y ||
+                         nodes_game[node_count]->param.y + NODE_ARRIVE_FRAME <= game_state_copy.y))
                 {
                     weight_arrive = NODE_WELL_ARRIVE;
                 /* best possible arrive */
@@ -446,15 +451,15 @@ void runRoboRunState(portTickType* tick)
                     weight_arrive = NODE_WORST_ARRIVE;
                 /* too close */
                 }
-                else if(nodes_game[node_count]->param.y <= current_node->param.y &&
-                         nodes_game[node_count]->param.y + NODE_ARRIVE_FRAME > current_node->param.y)
+                else if(nodes_game[node_count]->param.y <= game_state_copy.y &&
+                         nodes_game[node_count]->param.y + NODE_ARRIVE_FRAME > game_state_copy.y)
                 {
                     weight_arrive = NODE_BAD_ARRIVE;
                 /* not bad, but not perfect as well */
                 }
-                else if(nodes_game[node_count]->param.y + NODE_ARRIVE_FRAME <= current_node->param.y &&
-                    (nodes_game[node_count]->param.x - NODE_ARRIVE_FRAME >= current_node->param.x ||
-                     nodes_game[node_count]->param.x + NODE_ARRIVE_FRAME <= current_node->param.x))
+                else if(nodes_game[node_count]->param.y + NODE_ARRIVE_FRAME <= game_state_copy.y &&
+                    (nodes_game[node_count]->param.x - NODE_ARRIVE_FRAME >= game_state_copy.x ||
+                     nodes_game[node_count]->param.x + NODE_ARRIVE_FRAME <= game_state_copy.x))
                 {
                     weight_arrive = NODE_WELL_ARRIVE;
                 /* best possible arrive */
@@ -467,18 +472,18 @@ void runRoboRunState(portTickType* tick)
             } else
             {
                 /* opposite arrive */
-                if(nodes_game[node_count]->param.x < current_node->param.x)
+                if(nodes_game[node_count]->param.x < game_state_copy.x)
                 {
                     weight_arrive = NODE_WORST_ARRIVE;
                 /* too close */
-                }else if(nodes_game[node_count]->param.x >= current_node->param.x &&
-                         nodes_game[node_count]->param.x - NODE_ARRIVE_FRAME < current_node->param.x)
+                }else if(nodes_game[node_count]->param.x >= game_state_copy.x &&
+                         nodes_game[node_count]->param.x - NODE_ARRIVE_FRAME < game_state_copy.x)
                 {
                     weight_arrive = NODE_BAD_ARRIVE;
                 /* not bad, but not perfect as well */
-                }else if(nodes_game[node_count]->param.x - NODE_ARRIVE_FRAME >= current_node->param.x &&
-                        (nodes_game[node_count]->param.y - NODE_ARRIVE_FRAME >= current_node->param.y ||
-                         nodes_game[node_count]->param.y + NODE_ARRIVE_FRAME <= current_node->param.y))
+                }else if(nodes_game[node_count]->param.x - NODE_ARRIVE_FRAME >= game_state_copy.x &&
+                        (nodes_game[node_count]->param.y - NODE_ARRIVE_FRAME >= game_state_copy.y ||
+                         nodes_game[node_count]->param.y + NODE_ARRIVE_FRAME <= game_state_copy.y))
                 {
                     weight_arrive = NODE_WELL_ARRIVE;
                 /* best possible arrive */
@@ -501,8 +506,8 @@ void runRoboRunState(portTickType* tick)
             taskENABLE_INTERRUPTS();
 
             /* source -> destination node distance-time weight */
-            weight_src_dest = (sqrtf(((current_node->param.x - nodes_game[node_count]->param.x) * (current_node->param.x - nodes_game[node_count]->param.x)) +
-                    ((current_node->param.y - nodes_game[node_count]->param.y) * (current_node->param.y - nodes_game[node_count]->param.y)))/1000) / ROBO_AVERAGE_SPEED;
+            weight_src_dest = (sqrtf(((game_state_copy.x - nodes_game[node_count]->param.x) * (game_state_copy.x - nodes_game[node_count]->param.x)) +
+                    ((game_state_copy.y - nodes_game[node_count]->param.y) * (game_state_copy.y - nodes_game[node_count]->param.y)))/1000) / ROBO_AVERAGE_SPEED;
 
             /* searching next node */
             if((weight_dest * weight_dec + weight_enemy * weight_dec + weight_src_dest * weight_inc) < weight_next_node)
