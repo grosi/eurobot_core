@@ -49,8 +49,13 @@
  */
 void doFireNode(node_param_t* param, volatile game_state_t* game_state)
 {
+    /* Copy current game state, so it wont be changed during calculation */
+    taskENTER_CRITICAL();
+    game_state_t game_state_copy = *game_state;
+    taskEXIT_CRITICAL();
+
 	/* Don't continue if an other robot is in front */
-	if(isRobotInFront(game_state)) {
+	if(isRobotInFront(&game_state_copy)) {
 
 		param->node_state = NODE_FINISH_ERROR;
 		return;
@@ -60,16 +65,16 @@ void doFireNode(node_param_t* param, volatile game_state_t* game_state)
 //    vTaskResume(xRangefinderTask_Handle);
 
 	/* reset current barrier flag */
-	switch(param->pool_id)
+	switch(param->id)
 	{
 	    case 9:
-	        game_state->barrier &= ~(GOTO_FIRE_1_FORCE | GOTO_FIRE_1 | GOTO_FIRE_2_FORCE | GOTO_FIRE_2);
+	        game_state_copy.barrier &= ~(GOTO_FIRE_1_FORCE | GOTO_FIRE_1 | GOTO_FIRE_2_FORCE | GOTO_FIRE_2);;
 	        break;
 	    case 10:
-	        game_state->barrier &= ~(GOTO_FIRE_3_FORCE | GOTO_FIRE_3 | GOTO_FIRE_4_FORCE | GOTO_FIRE_4);
+	        game_state_copy.barrier &= ~(GOTO_FIRE_3_FORCE | GOTO_FIRE_3 | GOTO_FIRE_4_FORCE | GOTO_FIRE_4);
             break;
 	    case 11:
-	        game_state->barrier &= ~(GOTO_FIRE_5_FORCE | GOTO_FIRE_5 | GOTO_FIRE_6_FORCE | GOTO_FIRE_6);
+	        game_state_copy.barrier &= ~(GOTO_FIRE_5_FORCE | GOTO_FIRE_5 | GOTO_FIRE_6_FORCE | GOTO_FIRE_6);
 	        break;
 	}
 
@@ -82,22 +87,22 @@ void doFireNode(node_param_t* param, volatile game_state_t* game_state)
     /* Drive through fire from NORTH */
     if(param->angle >= NODE_NORTH_MIN_ANGLE && param->angle <= NODE_NORTH_MAX_ANGLE)
     {
-        txGotoXY(param->x, param->y-FIRE_NODE_DELTA_GO, param->angle, FIRE_NODE_SPEED, game_state->barrier, GOTO_DRIVE_FORWARD);
+        txGotoXY(param->x, param->y-FIRE_NODE_DELTA_GO, param->angle, FIRE_NODE_SPEED, game_state_copy.barrier, GOTO_DRIVE_FORWARD);
     }
     /* Drive through fire from EAST */
     else if(param->angle >= NODE_EAST_MIN_ANGLE && param->angle <= NODE_EAST_MAX_ANGLE)
     {
-        txGotoXY(param->x-FIRE_NODE_DELTA_GO, param->y, param->angle, FIRE_NODE_SPEED, game_state->barrier, GOTO_DRIVE_FORWARD);
+        txGotoXY(param->x-FIRE_NODE_DELTA_GO, param->y, param->angle, FIRE_NODE_SPEED, game_state_copy.barrier, GOTO_DRIVE_FORWARD);
     }
     /* Drive through fire from SOUTH */
     else if(param->angle >= NODE_SOUTH_MIN_ANGLE && param->angle <= NODE_SOUTH_MAX_ANGLE)
     {
-        txGotoXY(param->x, param->y+FIRE_NODE_DELTA_GO, param->angle, FIRE_NODE_SPEED, game_state->barrier, GOTO_DRIVE_FORWARD);
+        txGotoXY(param->x, param->y+FIRE_NODE_DELTA_GO, param->angle, FIRE_NODE_SPEED, game_state_copy.barrier, GOTO_DRIVE_FORWARD);
     }
     /* Drive through fire from WEST */
     else
     {
-        txGotoXY(param->x+FIRE_NODE_DELTA_GO, param->y, param->angle, FIRE_NODE_SPEED, game_state->barrier, GOTO_DRIVE_FORWARD);
+        txGotoXY(param->x+FIRE_NODE_DELTA_GO, param->y, param->angle, FIRE_NODE_SPEED, game_state_copy.barrier, GOTO_DRIVE_FORWARD);
     }
 
     /* Wait while driving */
@@ -110,6 +115,12 @@ void doFireNode(node_param_t* param, volatile game_state_t* game_state)
 	vTaskDelay(SERVO_MOVING_DELAY / portTICK_RATE_MS);
 
 	param->node_state = NODE_FINISH_SUCCESS;
+
+
+	/* Copy current game state back */
+    taskENTER_CRITICAL();
+    *game_state = game_state_copy;
+    taskEXIT_CRITICAL();
 
     /* Fire has fallen */
 //    if(Rangefinder_flag_SeAlarmUS == 0){
