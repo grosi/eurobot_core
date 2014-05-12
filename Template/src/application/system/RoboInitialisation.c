@@ -262,6 +262,7 @@ void runRoboInitialisationState(portTickType* tick)
             /* navi-node is okay -> goto to next system-state */
             {
                 system_state = runRoboSetupState;
+                state = SENSOR_TEST; /* reset state */
             }
             /* navi-node is not alive -> goto RoboError state */
             else

@@ -123,7 +123,7 @@ void SystemStop(void)
         setConfigRoboSetup2Default();
         setConfigRoboRunState2Default();
 
-        system_state = runRoboSetupState;
+        system_state = runRoboInitialisationState;
     }
 }
 
