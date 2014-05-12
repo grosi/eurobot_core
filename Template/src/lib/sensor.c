@@ -95,104 +95,104 @@ uint8_t getSensorNegEdge_Air(uint8_t* sensor_state)
 
 
 /**
- * \fn      initSensor_Fire_Pool
+ * \fn      initSensor_Fire_Pool_Right
  * \brief   sensor fire-pool initialisation
  */
-void initSensor_Fire_Pool()
+void initSensor_Fire_Pool_Right()
 {
-    initSensor(SENSOR_FIRE_POOL_PIN, SENSOR_FIRE_POOL_PIN_MODE, SENSOR_FIRE_POOL_PIN_TYPE, SENSOR_FIRE_POOL_PIN_PUPD, SENSOR_FIRE_POOL_PIN_SPEED,
-            SENSOR_FIRE_POOL_PORT, SENSOR_FIRE_POOL_PORT_CLK);
+    initSensor(SENSOR_FIRE_POOL_RIGHT_PIN, SENSOR_FIRE_POOL_RIGHT_PIN_MODE, SENSOR_FIRE_POOL_RIGHT_PIN_TYPE, SENSOR_FIRE_POOL_RIGHT_PIN_PUPD, SENSOR_FIRE_POOL_RIGHT_PIN_SPEED,
+            SENSOR_FIRE_POOL_RIGHT_PORT, SENSOR_FIRE_POOL_RIGHT_PORT_CLK);
 }
 
 
 /**
- * \fn      getSensor_Fire_Pool
+ * \fn      getSensor_Fire_Pool_Right
  * \brief   get the current pin value
  * \note    the pin is not debounced
  * \return  current button value
  */
-uint8_t getSensor_Fire_Pool()
+uint8_t getSensor_Fire_Pool_Right()
 {
-    return !GPIO_ReadInputDataBit(SENSOR_FIRE_POOL_PORT, SENSOR_FIRE_POOL_PIN);
+    return !GPIO_ReadInputDataBit(SENSOR_FIRE_POOL_RIGHT_PORT, SENSOR_FIRE_POOL_RIGHT_PIN);
 }
 
 
 /**
- * \fn      getSensorPosEdge_Fire_Pool
+ * \fn      getSensorPosEdge_Fire_Pool_Right
  * \brief   get the positive edge
  * \note    this function have to call every programm loop
  *
  * \param   sensor_state    pointer to a temporary button state memory
  * \return  the positive edge, if there
  */
-uint8_t getSensorPosEdge_Fire_Pool(uint8_t* sensor_state)
+uint8_t getSensorPosEdge_Fire_Pool_Right(uint8_t* sensor_state)
 {
-    return getSensorPosEdge(SENSOR_FIRE_POOL_PORT,SENSOR_FIRE_POOL_PIN, &sensor_state);
+    return getSensorPosEdge(SENSOR_FIRE_POOL_RIGHT_PORT,SENSOR_FIRE_POOL_RIGHT_PIN, &sensor_state);
 }
 
 
 /**
- * \fn      getSensorNegEdge_Fire_Pool
+ * \fn      getSensorNegEdge_Fire_Pool_Right
  * \brief   get the negative edge
  * \note    this function have to call every programm loop
  *
  * \param   button_state    pointer to a temporary button state memory
  * \return  the neagtive edge, if there
  */
-uint8_t getSensorNegEdge_Fire_Pool(uint8_t* sensor_state)
+uint8_t getSensorNegEdge_Fire_Pool_Right(uint8_t* sensor_state)
 {
-    return getSensorNegEdge(SENSOR_FIRE_POOL_PORT,SENSOR_FIRE_POOL_PIN, &sensor_state);
+    return getSensorNegEdge(SENSOR_FIRE_POOL_RIGHT_PORT,SENSOR_FIRE_POOL_RIGHT_PIN, &sensor_state);
 }
 
 
 /**
- * \fn      initSensor_1
- * \brief   sensor 1 initialisation
+ * \fn      initSensor_Fire_Pool_Left
+ * \brief   sensor fire-pool initialisation
  */
-void initSensor_1()
+void initSensor_Fire_Pool_Left()
 {
-    initSensor(SENSOR_1_PIN, SENSOR_1_PIN_MODE, SENSOR_1_PIN_TYPE, SENSOR_1_PIN_PUPD, SENSOR_1_PIN_SPEED,
-            SENSOR_1_PORT, SENSOR_1_PORT_CLK);
+    initSensor(SENSOR_FIRE_POOL_LEFT_PIN, SENSOR_FIRE_POOL_LEFT_PIN_MODE, SENSOR_FIRE_POOL_LEFT_PIN_TYPE, SENSOR_FIRE_POOL_LEFT_PIN_PUPD, SENSOR_FIRE_POOL_LEFT_PIN_SPEED,
+            SENSOR_FIRE_POOL_LEFT_PORT, SENSOR_FIRE_POOL_LEFT_PORT_CLK);
 }
 
 
 /**
- * \fn      getSensor_1
+ * \fn      getSensor_Fire_Pool_Left
  * \brief   get the current pin value
  * \note    the pin is not debounced
  * \return  current button value
  */
-uint8_t getSensor_1()
+uint8_t getSensor_Fire_Pool_Left()
 {
-    return !GPIO_ReadInputDataBit(SENSOR_1_PORT, SENSOR_1_PIN);
+    return !GPIO_ReadInputDataBit(SENSOR_FIRE_POOL_LEFT_PORT, SENSOR_FIRE_POOL_LEFT_PIN);
 }
 
 
 /**
- * \fn      getSensorPosEdge_1
+ * \fn      getSensorPosEdge_Fire_Pool_Left
  * \brief   get the positive edge
  * \note    this function have to call every programm loop
  *
  * \param   sensor_state    pointer to a temporary button state memory
  * \return  the positive edge, if there
  */
-uint8_t getSensorPosEdge_1(uint8_t* sensor_state)
+uint8_t getSensorPosEdge_Fire_Pool_Left(uint8_t* sensor_state)
 {
-    return getSensorPosEdge(SENSOR_1_PORT,SENSOR_1_PIN, &sensor_state);
+    return getSensorPosEdge(SENSOR_FIRE_POOL_LEFT_PORT,SENSOR_FIRE_POOL_LEFT_PIN, &sensor_state);
 }
 
 
 /**
- * \fn      getSensorNegEdge_1
+ * \fn      getSensorNegEdge_Fire_Pool_Left
  * \brief   get the negative edge
  * \note    this function have to call every programm loop
  *
  * \param   button_state    pointer to a temporary button state memory
  * \return  the neagtive edge, if there
  */
-uint8_t getSensorNegEdge_1(uint8_t* sensor_state)
+uint8_t getSensorNegEdge_Fire_Pool_Left(uint8_t* sensor_state)
 {
-    return getSensorNegEdge(SENSOR_1_PORT,SENSOR_1_PIN, &sensor_state);
+    return getSensorNegEdge(SENSOR_FIRE_POOL_LEFT_PORT,SENSOR_FIRE_POOL_LEFT_PIN, &sensor_state);
 }
 
 

@@ -39,8 +39,8 @@
 
 /* exported functions --------------------------------------------------------*/
 extern void initSensorEXTI_EmergencyStop();
-extern void initSensorEXTI_Fresco_1();
-extern void initSensorEXTI_Fresco_2();
+extern void initSensorEXTI_Fire_Pool_Right();
+extern void initSensorEXTI_Fire_Pool_Left();
 extern void initSensorEXTI_Wall();
 extern void initIRSensorEXTI_BwLeft();
 extern void initIRSensorEXTI_FwLeft();
