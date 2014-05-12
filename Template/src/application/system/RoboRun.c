@@ -65,7 +65,7 @@
 static xTaskHandle xNodeTask_Handle = NULL;
 xSemaphoreHandle sSyncRoboRunNodeTask; /*!< for RoboRun <-> node-task sync */
 
-/* game and strategy */
+/* game and strategy -> don't change the order!!!*/
 static volatile node_t* nodes_red[NODE_QUANTITY] = {&node_fire_1_red,
                                                     &node_fire_2_red,
                                                     &node_fire_3_red,
@@ -219,12 +219,16 @@ void setConfigRoboRunState2Default()
     /* local variable */
     uint8_t node_count;// y, x;
 
-    /* set all nodes to state UNDONE */
+    /* set all nodes to state UNDONE (except net-nodes -> NODE_FINISH_SUCCESS) */
     if(nodes_game != NULL)
     {
-        for(node_count = 0; node_count < NODE_QUANTITY; node_count++)
+        for(node_count = 0; node_count < NODE_QUANTITY-3; node_count++)
         {
             nodes_game[node_count]->param.node_state = NODE_UNDONE;
+        }
+        for(;node_count < NODE_QUANTITY; node_count++)
+        {
+            nodes_game[node_count]->param.node_state = NODE_FINISH_SUCCESS;
         }
     }
 
@@ -345,35 +349,21 @@ void runRoboRunState(portTickType* tick)
             return;
     }
 
-//    if(current_node->param.node_state == NODE_FINISH_SUCCESS)
-//    {
-//        remain_nodes--;
-//
-//        if(current_node->param.pool_id != NODE_NO_POOL_ID)
-//        {
-//            node_pools[current_node->param.pool_id-1][NODE_POOL_SIZE_INFO]--;
-//
-//            /* all necessary nodes within the pool are done */
-//            if(node_pools[current_node->param.pool_id-1][NODE_POOL_SIZE_INFO] ==
-//                    node_pools[current_node->param.pool_id-1][NODE_POOL_LEVEL_INFO])
-//            {
-//                remain_nodes -= node_pools[current_node->param.pool_id-1][NODE_POOL_LEVEL_INFO];
-//
-//                /* set all remaining nodes of the pool to FINISH_SUCCESS */
-//                for(node_count = 0; node_count < NODE_QUANTITY; node_count++)
-//                {
-//                    if(((*nodes_game)+node_count)->param.pool_id == current_node->param.pool_id)
-//                    {
-//                        ((*nodes_game)+node_count)->param.node_state = NODE_FINISH_SUCCESS;
-//                    }
-//                }
-//            }
-//        }
-//    }
-//    else
-//    {
-//        remain_nodes--;
-//    }
+
+    /******************
+     * time barrier
+     ******************/
+    if(getRemainingGameTime() < PLAY_TIME_TOTAL - PLAY_TIME)
+    {
+        for(node_count = 0; node_count < NODE_QUANTITY-3; node_count++)
+        {
+            nodes_game[node_count]->param.node_state = NODE_FINISH_SUCCESS;
+        }
+        for(;node_count < NODE_QUANTITY; node_count++)
+        {
+            nodes_game[node_count]->param.node_state = NODE_UNDONE;
+        }
+    }
 
 
     /******************/
@@ -581,7 +571,7 @@ static void vTrackEnemy(uint16_t id, CAN_data_t* data)
     /* start tracking only if an enemy exist and game runs */
     if(enemy_count > 0 )
     {
-        if(getRemainingGameTime() < PLAY_TIME)
+        if(getRemainingGameTime() < PLAY_TIME_TOTAL)
         {
             /* check if the position within the grid and not on the frame */
             if((data->elp_y/(ENEMY_GRID_SIZE_Y*1000)) < (PLAYGROUND_HEIGH/ENEMY_GRID_SIZE_Y-1) &&
@@ -754,10 +744,10 @@ static void vNodeTask(void* pvParameters )
     for(;;)
     {
     	/* Give goto command and do node if goto was successful */
-    	if(gotoNode(&node_task->param, &game_state) == FUNC_SUCCESS) {
+    	//if(gotoNode(&node_task->param, &game_state) == FUNC_SUCCESS) {
     		/* Do node action */
     		node_task->node_function(&node_task->param);
-    	}
+    	//}
 
     	/* unblock system task */
         xSemaphoreGive(sSyncRoboRunNodeTask);
