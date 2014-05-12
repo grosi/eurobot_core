@@ -100,16 +100,19 @@ typedef struct
 #define NODE_NORTH_MAX_ANGLE       314
 #define NODE_WEST_MIN_ANGLE        315 /*!< note, that the zero line is crossed */
 #define NODE_WEST_MAX_ANGLE        44  /*!< note, that the zero line is crossed */
+#define FIRENODE_APPROACHDISTANCE  400
 
 /* Servo */
 #define SERVO_MOVING_DELAY         400  /* Delay in ms to wait while the servo moves the whole way */
 #define SERVO_POS_AIR_UP           1990//2000 /* Servo position: Fresco panel all the way in */
 #define SERVO_POS_AIR_DOWN         1112 //1600 /* Servo position: Fresco panel all the way out */
+#define SERVO_POS_AIR_FIRE		   1500	/* Servo position: to push a fire */
 #define SERVO_POS_AIR_FIRST_FIRE   1800 //1600 /* Servo position: Fresco panel all the way out */
 #define SERVO_POS_AIR_SECOND_FIRE 1600 //1600 /* Servo position: Fresco panel all the way out */
 #define SERVO_POS_AIR_THIRD_FIRE  1200 //1600 /* Servo position: Fresco panel all the way out */
 #define SERVO_POS_NET_LOAD         1400//1340 /* Servo position: Launcher all the way front */
 #define SERVO_POS_NET_LAUNCH       1700 /* Servo position: Launcher all the way back */
+
 
 
 /* exported macro -------------------------------------------------------------*/
