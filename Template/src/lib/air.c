@@ -56,8 +56,9 @@ void initAir()
     /* enables port and pin */
     GPIO_Init(AIR_IN1_PORT,&air_gpio);
 
-    /* set IN1 always on */
-    GPIO_WriteBit(AIR_IN1_PORT,AIR_IN1_PIN,ENABLE);
+    /* set IN2 always on */
+    GPIO_WriteBit(AIR_IN2_PORT,AIR_IN2_PIN,ENABLE);
+    GPIO_WriteBit(AIR_IN2_PORT,AIR_IN1_PIN,ENABLE);
 
 }
 
