@@ -56,26 +56,26 @@ volatile uint8_t Mammoth_flag_SeparationDone = 1;
  * \param       retry_count_max  Max. number of retries (including first try)
  * \return      separation_done  1 if separation done, 0 if undone
  */
-uint8_t moveSeparationOutSavely(uint8_t retry_delay, uint8_t retry_count_max) {
+uint8_t moveSeparationOutSavely(uint8_t retry_delay, uint8_t retry_count_max, volatile game_state_t* game_state) {
 
 	/* Variable to count number of retries */
 	uint8_t i = 0;
 
-//	/* Check the rangefinder */
-//	while(Rangefinder_flag_SeAlarmUS) {
-//
-//		/* Separation (fresco panel) space is blocked, wait or return */
-//		if(i < retry_count_max) {
-//
-//			vTaskDelay(retry_delay / portTICK_RATE_MS);
-//			i++;
-//		}
-//		else {
-//
-//			/* Max retries reached */
-//			return 0;
-//		}
-//	}
+	/* Check if object within separation range & if it could be a robot  */
+	while(Rangefinder_flag_SeAlarmUS && isRobotInFront(game_state)) {
+
+		/* Separation (fresco panel) space is blocked, wait or return */
+		if(i < retry_count_max) {
+
+			vTaskDelay(retry_delay / portTICK_RATE_MS);
+			i++;
+		}
+		else {
+
+			/* Max retries reached */
+			return 0;
+		}
+	}
 
 	/* Move the separation all the way out */
 	setServo_1(SERVO_POS_FRESCO_OUT);
@@ -103,7 +103,7 @@ void doMammothNode(node_param_t* param, volatile game_state_t* game_state) {
 	if(!Mammoth_flag_SeparationDone) {
 
 		/* Retry it now */
-		Mammoth_flag_SeparationDone = moveSeparationOutSavely(SEPARATION_RETRY_DELAY, SEPARATION_MAX_RETRIES);
+		Mammoth_flag_SeparationDone = moveSeparationOutSavely(SEPARATION_RETRY_DELAY, SEPARATION_MAX_RETRIES, game_state);
 		/* Don't continue if it's still not possible to move separation out */
 		if(!Mammoth_flag_SeparationDone) {
 
@@ -172,7 +172,7 @@ void doMammothNode(node_param_t* param, volatile game_state_t* game_state) {
 	}
 
 	/* Move the separation out if it's save to do so */
-	Mammoth_flag_SeparationDone = moveSeparationOutSavely(SEPARATION_RETRY_DELAY, SEPARATION_MAX_RETRIES);
+	Mammoth_flag_SeparationDone = moveSeparationOutSavely(SEPARATION_RETRY_DELAY, SEPARATION_MAX_RETRIES, game_state);
 	/* Wait some time while servo moves */
 	vTaskDelay(SERVO_MOVING_DELAY / portTICK_RATE_MS);
 
