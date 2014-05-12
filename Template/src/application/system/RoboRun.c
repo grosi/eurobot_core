@@ -654,6 +654,9 @@ func_report_t gotoNode(node_param_t* param, volatile game_state_t* game_state)
 
     /* Activate rangefinder */
 	vTaskResume(xRangefinderTask_Handle);
+	taskENTER_CRITICAL();
+	sendStringUSART("\nRangefinder-Task resumed (gotoNode)");
+	taskEXIT_CRITICAL();
 
 	uint8_t i=0;
 	do {
@@ -718,6 +721,9 @@ func_report_t gotoNode(node_param_t* param, volatile game_state_t* game_state)
 		if(estimated_GoTo_time != 0 && xSemaphoreTake(sSyncNodeTask, estimated_GoTo_time / portTICK_RATE_MS) == pdTRUE)
 		{
 			/* Semaphore received, this means an obstacle was detected! */
+		    taskENTER_CRITICAL();
+            sendStringUSART("\nSemaphore received");
+            taskEXIT_CRITICAL();
 			
 			/* Check if an enemy/confederate is within range in front of the robot */
 			if(isRobotInFront(game_state)) {
@@ -757,10 +763,24 @@ static void vNodeTask(void* pvParameters )
     /* endless */
     for(;;)
     {
+        taskENTER_CRITICAL();
+        char str[100];
+        sprintf(str, "\n%d s ---------------------%d-----------------------", TIMER_STOP_TIME-getRemainingGameTime(), node_task->param.id);
+        sendStringUSART(str);
+        taskEXIT_CRITICAL();
+
     	/* Give goto command and do node if goto was successful */
-    	if(gotoNode(&node_task->param, &game_state) == FUNC_SUCCESS) {
+        func_report_t rep = gotoNode(&node_task->param, &game_state);
+    	if(rep == FUNC_SUCCESS) {
     		/* Do node action */
     		node_task->node_function(&node_task->param, &game_state);
+    	}
+    	else {
+    	    taskENTER_CRITICAL();
+    	    char str[100];
+            sprintf(str, "\nReport: %d", rep);
+            sendStringUSART(str);
+            taskEXIT_CRITICAL();
     	}
 
     	/* unblock system task */

@@ -162,7 +162,9 @@ void initRangefinderTask(void) {
  */
 static void vRangefinderTask(void* pvParameters ) {
 
-	sendStringUSART("\nRangefinder-Task started");
+    taskENTER_CRITICAL();
+	sendStringUSART("\n\nRangefinder-Task started");
+    taskEXIT_CRITICAL();
 
 	portTickType xLastFlashTime;
 
@@ -184,7 +186,9 @@ static void vRangefinderTask(void* pvParameters ) {
 	/* Suspend ourselves, so the task is only running when really used.
 	 * This way there is less possible ultrasonic disturbance (navigation and other robot),
 	 * infrared is still running. */
-	sendStringUSART("\nSuspending Rangefinder-Task");
+    taskENTER_CRITICAL();
+    sendStringUSART("\nSuspending Rangefinder-Task");
+    taskEXIT_CRITICAL();
 	vTaskSuspend(NULL);
 
 	for(EVER) {
@@ -204,6 +208,12 @@ static void vRangefinderTask(void* pvParameters ) {
 		distance_bw = readSRF08Meas(SRF08_ADDR_BW);
 #endif /* RANGEFINDER_ONLY_FW */
 
+//		taskENTER_CRITICAL();
+//		char str[100];
+//        sprintf(str, "\nR-distance: %d cm", distance_fw);
+//        sendStringUSART(str);
+//        taskEXIT_CRITICAL();
+
 		/* Check front */
 		/* Check for error */
 		if(distance_fw == 0xFFFF) {
@@ -219,9 +229,11 @@ static void vRangefinderTask(void* pvParameters ) {
 				/* Two of three were positive, set alarm (object detected) */
 				Rangefinder_flag_FwAlarmUS = 1;
 				/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
+				taskENTER_CRITICAL();
 				char str[100];
 				sprintf(str, "\nSemaphoreGive, distance: %d cm", distance_fw);
 				sendStringUSART(str);
+				taskEXIT_CRITICAL();
 				xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
 			}
 			else
@@ -248,9 +260,11 @@ static void vRangefinderTask(void* pvParameters ) {
 				/* Two of three were positive, so don't reset the alarm yet. */
 				Rangefinder_flag_FwAlarmUS = 1;
 				/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
+				taskENTER_CRITICAL();
 				char str[100];
 				sprintf(str, "\nSemaphoreGive, distance: %d cm", distance_fw);
 				sendStringUSART(str);
+				taskEXIT_CRITICAL();
 				xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
 			}
 
@@ -288,7 +302,7 @@ static void vRangefinderTask(void* pvParameters ) {
 				/* Two of three were positive, set alarm (object detected) */
 				Rangefinder_flag_BwAlarmUS = 1;
 				/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
-				xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
+				//xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
 			}
 			else
 			{
@@ -314,7 +328,7 @@ static void vRangefinderTask(void* pvParameters ) {
 				/* Two of three were positive, so don't reset the alarm yet. */
 				Rangefinder_flag_BwAlarmUS = 1;
 				/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
-				xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
+				//xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
 			}
 
 			/* Remember measure (NOT flag which is affected by the last two measures) */
@@ -348,7 +362,7 @@ void IRSensorFwLeft_IT(void) {
 		/* Object detected, set alarm */
 		Rangefinder_flag_FwAlarmIR = 1;
 		/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
-		xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
+		//xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
 	}
 }
 
@@ -372,7 +386,7 @@ void IRSensorFwRight_IT(void) {
 		/* Object detected, set alarm */
 		Rangefinder_flag_FwAlarmIR = 1;
 		/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
-		xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
+		//xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
 	}
 }
 
@@ -397,7 +411,7 @@ void IRSensorBwLeft_IT(void) {
 		/* Object detected, set alarm */
 		Rangefinder_flag_BwAlarmIR = 1;
 		/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
-		xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
+		//xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
 	}
 #endif /* RANGEFINDER_ONLY_FW */
 }
@@ -423,7 +437,7 @@ void IRSensorBwRight_IT(void) {
 		/* Object detected, set alarm */
 		Rangefinder_flag_BwAlarmIR = 1;
 		/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
-		xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
+		//xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
 	}
 #endif /* RANGEFINDER_ONLY_FW */
 }
@@ -678,13 +692,18 @@ boolean isRobotInFront(volatile game_state_t* game_state) {
 
 			delta_x = game_state_copy.enemy_1_x - game_state_copy.x;
 			delta_y = game_state_copy.enemy_1_y - game_state_copy.y;
-			distance_treshold = game_state_copy.enemy_1_diameter/2 + ROBOT_BALLERINA_RADIUS + RANGEFINDER_THRESHOLD_FW*10;
+			distance_treshold = game_state_copy.enemy_1_diameter*10/2 + ROBOT_BALLERINA_RADIUS + RANGEFINDER_THRESHOLD_FW*10;
 		}
 		else if(current_robot_check == 2) {
 
 			delta_x = game_state_copy.enemy_2_x - game_state_copy.x;
 			delta_y = game_state_copy.enemy_2_y - game_state_copy.y;
-			distance_treshold = game_state_copy.enemy_2_diameter/2 + ROBOT_BALLERINA_RADIUS + RANGEFINDER_THRESHOLD_FW*10;
+			distance_treshold = game_state_copy.enemy_2_diameter*10/2 + ROBOT_BALLERINA_RADIUS + RANGEFINDER_THRESHOLD_FW*10;
+		}
+		else {
+		    //TODO
+		    //Just for breakpoint
+		    vTaskDelay(1);
 		}
 		/* Else:
 		 *  current_robot_check > 2: (More than 2 enemies)      Not possible in eurobot 2014 scenario
@@ -709,7 +728,7 @@ boolean isRobotInFront(volatile game_state_t* game_state) {
 			phi = phi-alpha;
 
 			char str[100];
-			sprintf(str, "\nRobot%d within range, distance: %d cm, phi: %d °", current_robot_check, distance, phi);
+			sprintf(str, "\nRobot%d within range (%d), distance: %d mm, phi: %d °", current_robot_check, distance_treshold, distance, phi);
 			sendStringUSART(str);
 
 			/* Check if the enemy is within our angle */
