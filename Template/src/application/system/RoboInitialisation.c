@@ -140,11 +140,11 @@ void runRoboInitialisationState(portTickType* tick)
                 }
             }
 
-            if(getSensor_Fire_Pool() != SENSOR_FIRE_POOL_INIT)
+            if(getSensor_Fire_Pool_Right() != SENSOR_FIRE_POOL_RIGHT_INIT)
             {
                 if(!(sensor_error & 1<<1))
                 {
-                    LCD_write_string(MESSAGE_FIRE_POOL_ROW, MESSAGE_FIRE_POOL_COLUMN, MESSAGE_FIRE_POOL, TRUE);
+                    LCD_write_string(MESSAGE_FIRE_POOL_RIGHT_ROW, MESSAGE_FIRE_POOL_RIGHT_COLUMN, MESSAGE_FIRE_POOL_RIGHT, TRUE);
                     LCD_write_string(MESSAGE_CHECK_ROW, MESSAGE_CHECK_COLUMN, MESSAGE_CHECK, TRUE);
                     sensor_old = sensor_error |= 1<<1;
                 }
@@ -153,6 +153,26 @@ void runRoboInitialisationState(portTickType* tick)
             else
             {
                 sensor_error &= ~(1<<1);
+                if(sensor_old ^ sensor_error)
+                {
+                    sensor_old = sensor_error = 0;
+                }
+            }
+
+
+            if(getSensor_Fire_Pool_Left() != SENSOR_FIRE_POOL_LEFT_INIT)
+            {
+                if(!(sensor_error & 1<<2))
+                {
+                    LCD_write_string(MESSAGE_FIRE_POOL_LEFT_ROW, MESSAGE_FIRE_POOL_LEFT_COLUMN, MESSAGE_FIRE_POOL_LEFT, TRUE);
+                    LCD_write_string(MESSAGE_CHECK_ROW, MESSAGE_CHECK_COLUMN, MESSAGE_CHECK, TRUE);
+                    sensor_old = sensor_error |= 1<<2;
+                }
+                sensor_done = FALSE;
+            }
+            else
+            {
+                sensor_error &= ~(1<<2);
                 if(sensor_old ^ sensor_error)
                 {
                     sensor_old = sensor_error = 0;

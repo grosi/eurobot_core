@@ -26,10 +26,11 @@
 #define ROBOINIT_TIMEOUT        1000 /*!< wait for max. 1s */
 
 /* sensors */
-#define SENSOR_EMERGENCY_INIT   1
-#define SENSOR_AIR_INIT         0
-#define SENSOR_FIRE_POOL_INIT   1
-#define SENSOR_KEY_INIT         0
+#define SENSOR_EMERGENCY_INIT       1
+#define SENSOR_AIR_INIT             0
+#define SENSOR_FIRE_POOL_RIGHT_INIT 0
+#define SENSOR_FIRE_POOL_LEFT_INIT  0
+#define SENSOR_KEY_INIT             0
 
 /* exported macro -------------------------------------------------------------*/
 
