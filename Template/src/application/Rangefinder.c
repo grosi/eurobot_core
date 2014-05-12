@@ -162,6 +162,8 @@ void initRangefinderTask(void) {
  */
 static void vRangefinderTask(void* pvParameters ) {
 
+	sendStringUSART("\nRangefinder-Task started");
+
 	portTickType xLastFlashTime;
 
 	/* We need to initialise xLastFlashTime prior to the first call to vTaskDelayUntil() */
@@ -182,6 +184,7 @@ static void vRangefinderTask(void* pvParameters ) {
 	/* Suspend ourselves, so the task is only running when really used.
 	 * This way there is less possible ultrasonic disturbance (navigation and other robot),
 	 * infrared is still running. */
+	sendStringUSART("\nSuspending Rangefinder-Task");
 	vTaskSuspend(NULL);
 
 	for(EVER) {
@@ -216,6 +219,9 @@ static void vRangefinderTask(void* pvParameters ) {
 				/* Two of three were positive, set alarm (object detected) */
 				Rangefinder_flag_FwAlarmUS = 1;
 				/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
+				char str[100];
+				sprintf(str, "\nSemaphoreGive, distance: %d cm", distance_fw);
+				sendStringUSART(str);
 				xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
 			}
 			else
@@ -242,6 +248,9 @@ static void vRangefinderTask(void* pvParameters ) {
 				/* Two of three were positive, so don't reset the alarm yet. */
 				Rangefinder_flag_FwAlarmUS = 1;
 				/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
+				char str[100];
+				sprintf(str, "\nSemaphoreGive, distance: %d cm", distance_fw);
+				sendStringUSART(str);
 				xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
 			}
 
@@ -610,6 +619,8 @@ uint16_t readSRF08Meas(uint8_t slave_address) {
  */
 void suspendRangefinderTask(void) {
 
+	sendStringUSART("\nSuspending (safely) Rangefinder-Task");
+
 	/* Suspend task */
 	vTaskSuspend(xRangefinderTask_Handle);
 
@@ -697,10 +708,22 @@ boolean isRobotInFront(volatile game_state_t* game_state) {
 			/* Calculate the angle to the enemy (relative to our angle, -180 <= phi < 180) */
 			phi = phi-alpha;
 
+			char str[100];
+			sprintf(str, "\nRobot%d within range, distance: %d cm, phi: %d °", current_robot_check, distance, phi);
+			sendStringUSART(str);
+
 			/* Check if the enemy is within our angle */
 			if(fabs(phi) <= RANGEFINDER_ANGLE) {
+				sendStringUSART(" (within RANGEFINDER_ANGLE)");
 				return TRUE;
 			}
+		}
+		else {
+
+			char str[100];
+			sprintf(str, "\nRobot%d not within range, Our Pos: (%d, %d), Delta: (%d, %d), distance: %d cm",
+					current_robot_check, game_state_copy.x, game_state_copy.y, delta_x, delta_y, distance);
+			sendStringUSART(str);
 		}
 	}
 

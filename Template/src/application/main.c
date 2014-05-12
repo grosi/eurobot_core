@@ -88,6 +88,7 @@ int main(void)
     initSystemTask();
     initRangefinderTask();
     initDefaultTask();
+    initUSART();
     initCANGatekeeper(); /* have to be the last initialization modul! */
 
     vTaskStartScheduler();

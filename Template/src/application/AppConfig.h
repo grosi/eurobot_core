@@ -27,6 +27,9 @@
 #include "memPoolService.h"
 #include "CANGatekeeper.h"
 
+#include <stdio.h>
+#include "../lib/usart.h"
+
 
 /* define this only in debug mode, if a error is occured the programm is capture in a loop
  * define the "INCLUDE_uxTaskGetStackHighWaterMark 1" in FreeRTOS.h*/
