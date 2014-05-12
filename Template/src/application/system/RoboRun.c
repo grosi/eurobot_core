@@ -510,7 +510,13 @@ void runRoboRunState(portTickType* tick)
                     ((game_state_copy.y - nodes_game[node_count]->param.y) * (game_state_copy.y - nodes_game[node_count]->param.y)))/1000) / ROBO_AVERAGE_SPEED;
 
             /* searching next node */
-            if((weight_dest * weight_dec + weight_enemy * weight_dec + weight_src_dest * weight_inc) < weight_next_node)
+            float myweight = weight_dest * weight_dec + weight_enemy * weight_dec + weight_src_dest * weight_inc;
+            taskENTER_CRITICAL();
+            char str[100];
+            sprintf(str, "\nID %d: %d", node_count, (int)(weight_dest*1000000));
+            sendStringUSART(str);
+            taskEXIT_CRITICAL();
+            if(myweight < weight_next_node)
             {
                 weight_next_node = weight_dest * weight_dec + weight_enemy * weight_dec + weight_src_dest * weight_inc;
                 next_node = nodes_game[node_count];
@@ -654,9 +660,6 @@ func_report_t gotoNode(node_param_t* param, volatile game_state_t* game_state)
 
     /* Activate rangefinder */
 	vTaskResume(xRangefinderTask_Handle);
-	taskENTER_CRITICAL();
-	sendStringUSART("\nRangefinder-Task resumed (gotoNode)");
-	taskEXIT_CRITICAL();
 
 	uint8_t i=0;
 	do {
@@ -721,9 +724,6 @@ func_report_t gotoNode(node_param_t* param, volatile game_state_t* game_state)
 		if(estimated_GoTo_time != 0 && xSemaphoreTake(sSyncNodeTask, estimated_GoTo_time / portTICK_RATE_MS) == pdTRUE)
 		{
 			/* Semaphore received, this means an obstacle was detected! */
-		    taskENTER_CRITICAL();
-            sendStringUSART("\nSemaphore received");
-            taskEXIT_CRITICAL();
 			
 			/* Check if an enemy/confederate is within range in front of the robot */
 			if(isRobotInFront(game_state)) {
@@ -777,9 +777,19 @@ static void vNodeTask(void* pvParameters )
     	}
     	else {
     	    taskENTER_CRITICAL();
-    	    char str[100];
-            sprintf(str, "\nReport: %d", rep);
-            sendStringUSART(str);
+    	    switch(rep) {
+    	        case FUNC_SUCCESS: sendStringUSART("\nReport: FUNC_SUCCESS"); break;
+    	        case FUNC_INCOMPLETE: sendStringUSART("\nReport: FUNC_INCOMPLETE"); break;
+    	        case FUNC_ERROR: sendStringUSART("\nReport: FUNC_ERROR"); break;
+    	        default: sendStringUSART("\nReport: -"); break;
+    	    }
+            switch(node_task->param.node_state) {
+                case NODE_UNDONE: sendStringUSART(", node_state: NODE_UNDONE"); break;
+                case NODE_FINISH_SUCCESS: sendStringUSART(", node_state: NODE_FINISH_SUCCESS"); break;
+                case NODE_FINISH_ERROR: sendStringUSART(", node_state: NODE_FINISH_ERROR"); break;
+                case GOTO_CAN_ERROR: sendStringUSART(", node_state: GOTO_CAN_ERROR"); break;
+                default: sendStringUSART(", node_state: -"); break;
+            }
             taskEXIT_CRITICAL();
     	}
 

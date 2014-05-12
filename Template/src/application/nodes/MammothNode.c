@@ -178,8 +178,9 @@ void doMammothNode(node_param_t* param, volatile game_state_t* game_state) {
 
 	/* Make sure the separation is all the way in */
 	setServo_1(SERVO_POS_FRESCO_IN);
-	/* Wait some time while servo moves */
-	vTaskDelay(SERVO_MOVING_DELAY / portTICK_RATE_MS);
+
+//	/* Wait some time while servo moves */
+//	vTaskDelay(SERVO_MOVING_DELAY / portTICK_RATE_MS);
 
 	/* Suspend rangefinder safely */
 	suspendRangefinderTask();

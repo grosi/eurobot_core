@@ -105,6 +105,12 @@ void doFrescoNode(node_param_t* param, volatile game_state_t* game_state) {
 		setServo_1(SERVO_POS_FRESCO_IN);
 	}
 
+    /* drive 5 cm backwards */
+    txGotoXY(0,0,0,50,0,1);
+
+    /* wait while driving backwards */
+    vTaskDelay(500 / portTICK_RATE_MS);
+
 	/* Get number of frescos still in robot */
 	uint8_t n_frescos_present = getSensor_Fresco_1() + getSensor_Fresco_2();
 

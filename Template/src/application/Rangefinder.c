@@ -162,10 +162,6 @@ void initRangefinderTask(void) {
  */
 static void vRangefinderTask(void* pvParameters ) {
 
-    taskENTER_CRITICAL();
-	sendStringUSART("\n\nRangefinder-Task started");
-    taskEXIT_CRITICAL();
-
 	portTickType xLastFlashTime;
 
 	/* We need to initialise xLastFlashTime prior to the first call to vTaskDelayUntil() */
@@ -186,9 +182,6 @@ static void vRangefinderTask(void* pvParameters ) {
 	/* Suspend ourselves, so the task is only running when really used.
 	 * This way there is less possible ultrasonic disturbance (navigation and other robot),
 	 * infrared is still running. */
-    taskENTER_CRITICAL();
-    sendStringUSART("\nSuspending Rangefinder-Task");
-    taskEXIT_CRITICAL();
 	vTaskSuspend(NULL);
 
 	for(EVER) {
@@ -229,11 +222,6 @@ static void vRangefinderTask(void* pvParameters ) {
 				/* Two of three were positive, set alarm (object detected) */
 				Rangefinder_flag_FwAlarmUS = 1;
 				/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
-				taskENTER_CRITICAL();
-				char str[100];
-				sprintf(str, "\nSemaphoreGive, distance: %d cm", distance_fw);
-				sendStringUSART(str);
-				taskEXIT_CRITICAL();
 				xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
 			}
 			else
@@ -260,11 +248,6 @@ static void vRangefinderTask(void* pvParameters ) {
 				/* Two of three were positive, so don't reset the alarm yet. */
 				Rangefinder_flag_FwAlarmUS = 1;
 				/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
-				taskENTER_CRITICAL();
-				char str[100];
-				sprintf(str, "\nSemaphoreGive, distance: %d cm", distance_fw);
-				sendStringUSART(str);
-				taskEXIT_CRITICAL();
 				xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
 			}
 
@@ -633,8 +616,6 @@ uint16_t readSRF08Meas(uint8_t slave_address) {
  */
 void suspendRangefinderTask(void) {
 
-	sendStringUSART("\nSuspending (safely) Rangefinder-Task");
-
 	/* Suspend task */
 	vTaskSuspend(xRangefinderTask_Handle);
 
@@ -700,11 +681,6 @@ boolean isRobotInFront(volatile game_state_t* game_state) {
 			delta_y = game_state_copy.enemy_2_y - game_state_copy.y;
 			distance_treshold = game_state_copy.enemy_2_diameter*10/2 + ROBOT_BALLERINA_RADIUS + RANGEFINDER_THRESHOLD_FW*10;
 		}
-		else {
-		    //TODO
-		    //Just for breakpoint
-		    vTaskDelay(1);
-		}
 		/* Else:
 		 *  current_robot_check > 2: (More than 2 enemies)      Not possible in eurobot 2014 scenario
 		 *  current_robot_check < 0: (More than 1 confederate)  Not possible in eurobot 2014 scenario */
@@ -727,22 +703,10 @@ boolean isRobotInFront(volatile game_state_t* game_state) {
 			/* Calculate the angle to the enemy (relative to our angle, -180 <= phi < 180) */
 			phi = phi-alpha;
 
-			char str[100];
-			sprintf(str, "\nRobot%d within range (%d), distance: %d mm, phi: %d °", current_robot_check, distance_treshold, distance, phi);
-			sendStringUSART(str);
-
 			/* Check if the enemy is within our angle */
 			if(fabs(phi) <= RANGEFINDER_ANGLE) {
-				sendStringUSART(" (within RANGEFINDER_ANGLE)");
 				return TRUE;
 			}
-		}
-		else {
-
-			char str[100];
-			sprintf(str, "\nRobot%d not within range, Our Pos: (%d, %d), Delta: (%d, %d), distance: %d cm",
-					current_robot_check, game_state_copy.x, game_state_copy.y, delta_x, delta_y, distance);
-			sendStringUSART(str);
 		}
 	}
 
