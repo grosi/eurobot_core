@@ -48,7 +48,7 @@
  * \param       param  node parameters
  * \return      None
  */
-void doFirePoolNode(node_param_t* param)
+void doFirePoolNode(node_param_t* param, volatile game_state_t* game_state)
 {
 
     setAir(1);

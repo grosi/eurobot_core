@@ -34,7 +34,7 @@
 
 
 /* exported function prototypes -----------------------------------------------*/
-extern void doFireWallNormalNode(node_param_t*);
+extern void doFireWallNormalNode(node_param_t*, volatile game_state_t* game_state);
 
 
 #endif /* FIREWALLNORMALNODE_H_ */

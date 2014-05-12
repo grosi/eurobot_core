@@ -34,7 +34,7 @@
 
 
 /* exported function prototypes -----------------------------------------------*/
-extern void doFireWallInversNode(node_param_t*);
+extern void doFireWallInversNode(node_param_t*, volatile game_state_t*);
 
 
 #endif /* FIREWALLINVERSNODE_H_ */

@@ -34,7 +34,7 @@
 
 
 /* exported function prototypes -----------------------------------------------*/
-extern void doNetNode(node_param_t*);
+extern void doNetNode(node_param_t*, volatile game_state_t* game_state);
 
 
 #endif /* FIREWALLINVERSNODE_H_ */

@@ -48,7 +48,7 @@
  * \param       param  node parameters
  * \return      None
  */
-void doFireWallInversNode(node_param_t* param)
+void doFireWallInversNode(node_param_t* param, volatile game_state_t* game_state)
 {
 //    /* local variables */
 //    /* Variable for CAN RX */

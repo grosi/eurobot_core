@@ -34,7 +34,7 @@
 
 
 /* exported function prototypes -----------------------------------------------*/
-extern void doFirePoolNode(node_param_t*);
+extern void doFirePoolNode(node_param_t*, volatile game_state_t*);
 
 
 #endif /* FIREPOOLNODE_H_ */
