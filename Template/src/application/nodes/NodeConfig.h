@@ -39,14 +39,21 @@ typedef struct
     uint16_t x;
     uint16_t y;
     uint16_t angle;
-    uint16_t enemy_1_x;       /*!< 0xFFFF = no enemy 1 or error */
-    uint16_t enemy_1_y;       /*!< 0xFFFF = no enemy 1 or error */
-    uint8_t enemy_1_diameter; /*!< 0 = no enemy 1 [cm] */
-    uint16_t enemy_2_x;       /*!< 0xFFFF = no enemy 2 or error */
-    uint16_t enemy_2_y;       /*!< 0xFFFF = no enemy 2 or error */
-    uint8_t enemy_2_diameter; /*!< 0 = no enemy 2 [cm] */
-    uint16_t confederate_x;   /*!< 0xFFFF = no enemy 2 or error */
-    uint16_t confederate_y;   /*!< 0xFFFF = no enemy 2 or error */
+    team_color_t teamcolor;
+
+    uint8_t  enemy_count;       /*!< Number of enemies: 0, 1 or 2 */
+    uint16_t enemy_1_x;         /*!< 0xFFFF = no enemy 1 or error */
+    uint16_t enemy_1_y;         /*!< 0xFFFF = no enemy 1 or error */
+    uint8_t  enemy_1_diameter;  /*!< 0 = no enemy 1 [cm] */
+    uint16_t enemy_2_x;         /*!< 0xFFFF = no enemy 2 or error */
+    uint16_t enemy_2_y;         /*!< 0xFFFF = no enemy 2 or error */
+    uint8_t  enemy_2_diameter;  /*!< 0 = no enemy 2 [cm] */
+
+    uint8_t  confederate_count; /*!< Number of confederate: 0, 1 or 2 */
+    uint16_t confederate_x;     /*!< 0xFFFF = no confederate or error */
+    uint16_t confederate_y;     /*!< 0xFFFF = no confederate or error */
+
+    uint16_t barrier;           /*!< barriers flags */
 }game_state_t;
 
 
@@ -56,14 +63,14 @@ typedef struct
 typedef struct
 {
     const uint8_t id;
-    const uint8_t points;
+    const float points;
     const float   percent;
     const float time; /*[s]*/
     const uint16_t x; /*!<[mm]*/
     const uint16_t y; /*!<[mm]*/
     const uint8_t pool_id;
     const uint16_t angle; /*10 bit, 1 bit =ca. 1°*/
-    uint8_t node_tries; /*!< how many times the node was the current node*/
+    uint16_t node_tries; /*!< how many times the node was the current node*/
     node_state_t node_state;
 }node_param_t;
 
@@ -74,7 +81,7 @@ typedef struct
 typedef struct
 {
     node_param_t param;
-    void (*node_function)(node_param_t*);
+    void (*node_function)(node_param_t*, volatile game_state_t*);
 }node_t;
 
 

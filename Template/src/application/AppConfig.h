@@ -25,6 +25,7 @@
 #include "semphr.h"
 #include "timers.h"
 #include "memPoolService.h"
+#include "CANGatekeeper.h"
 
 
 /* define this only in debug mode, if a error is occured the programm is capture in a loop
@@ -37,6 +38,7 @@
 /* typedefs */
 typedef enum { FALSE = 0, TRUE } boolean;
 typedef enum { FUNC_SUCCESS = 0, FUNC_INCOMPLETE, FUNC_ERROR } func_report_t;  /* Typedef enum for function return status */
+typedef enum { TEAM_YELLOW = GIP_TEAMCOLOR_YELLOW, TEAM_RED = GIP_TEAMCOLOR_RED } team_color_t;  /* Typedef enum for the team color, use the same values as CAN-Gatekeeper for compatibility */
 
 
 #endif

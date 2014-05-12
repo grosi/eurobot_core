@@ -72,6 +72,12 @@ void initDefaultTask(void)
  */
 inline void deleteDefaultTask(void)
 {
+    /* diable all LEDs */
+    setBoardLED_red(0);
+    setBoardLED_orange(1);
+    setBoardLED_green(0);
+    setBoardLED_blue(1);
+
     vTaskDelete(xDefaultTask_Handle);
 }
 

@@ -23,7 +23,7 @@
 /* exported define ------------------------------------------------------------*/
 /* RTOS */
 #define SYSTEM_NODE_TASK_NAME       "Node Task"
-#define SYSTEM_NODE_STACK_SIZE      configMINIMAL_STACK_SIZE
+#define SYSTEM_NODE_STACK_SIZE      4*configMINIMAL_STACK_SIZE
 #define SYSTEM_NODE_TASK_PRIORITY   (configMAX_PRIORITIES - 5UL) /*!< priority 2 */
 #define ROBORUN_TIMEOUT             1000 /*!< wait for max. 1s */
 
@@ -31,12 +31,12 @@
 #define PLAY_TIME_TOTAL             90.0 /*!< [s] */
 #define PLAY_TIME                   70.0 /*!< [s] */
 #define ROBO_AVERAGE_SPEED          0.5  /*!< [m/s] */
-#define PLAYGROUND_WIDTH            3    /*!< [m] */
-#define PLAYGROUND_HEIGH            2    /*!< [m] */
-#define ENEMY_GRID_SIZE_X           0.1  /*!< [m] */
-#define ENEMY_GRID_SIZE_Y           0.1  /*!< [m] */
-#define ENEMY_GRID_CENTER_WEIGHT    3
-#define ENEMY_GRID_FRAME_WEIGHT     2
+#define PLAYGROUND_WIDTH            3000    /*!< [mm] */
+#define PLAYGROUND_HEIGH            2000    /*!< [mm] */
+#define ENEMY_GRID_SIZE_X           100  /*!< [mm] */
+#define ENEMY_GRID_SIZE_Y           100  /*!< [mm] */
+#define ENEMY_GRID_CENTER_WEIGHT    5
+#define ENEMY_GRID_FRAME_WEIGHT     3
 
 /* node weighting settings */
 #define NODE_ARRIVE_FRAME       100 /*!< [mm] */

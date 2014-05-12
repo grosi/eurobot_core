@@ -112,12 +112,16 @@ void runRoboInitialisationState(portTickType* tick)
             /* plot message */
             LCD_write_string(MESSAGE_INIT_ROW, MESSAGE_INIT_COLUMN, MESSAGE_INIT, TRUE);
             LCD_write_string(MESSAGE_WAIT_ROW, MESSAGE_WAIT_COLUMN, MESSAGE_WAIT, TRUE);
-
+#ifndef STANDALONE
             state = SENSOR_TEST;
+#else
+            system_state = runRoboSetupState;
+#endif
 
             break;
 
         case SENSOR_TEST:
+
 
             /* test every sensor input */
             if(getSensor_Air() != SENSOR_AIR_INIT)
@@ -216,7 +220,6 @@ void runRoboInitialisationState(portTickType* tick)
                     sensor_old = sensor_error = 0;
                 }
             }
-
 
             /* every sensor was okay */
             if(sensor_done == TRUE)

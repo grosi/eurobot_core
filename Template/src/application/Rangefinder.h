@@ -82,7 +82,7 @@ extern void IRSensorFwLeft_IT(void);
 extern void IRSensorFwRight_IT(void);
 extern void IRSensorBwLeft_IT(void);
 extern void IRSensorBwRight_IT(void);
-extern boolean isRobotInFront(volatile game_state_t* game_state, uint8_t n_enemies, uint8_t n_friends);
+extern boolean isRobotInFront(volatile game_state_t*);
 
 #endif /* RANGEFINDER_TASK_H_ */
 

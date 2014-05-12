@@ -637,7 +637,7 @@ void suspendRangefinderTask(void) {
  * \param[in]   game_state_t* game_state Game infos (navi)
  * \return      boolean
  */
-boolean isRobotInFront(volatile game_state_t* game_state, uint8_t n_enemies, uint8_t n_friends) {
+boolean isRobotInFront(volatile game_state_t* game_state) {
 
     /* local variables */
     int16_t delta_x, delta_y;
@@ -651,8 +651,8 @@ boolean isRobotInFront(volatile game_state_t* game_state, uint8_t n_enemies, uin
 
 	/* Check 0, 1 or both enemies */
 	int8_t current_robot_check;  /* Signed, so in worst case it starts on negative numbers and thus still does the loop */
-	for(current_robot_check = 1-n_friends;  /* Start on 0 if we have a confederate robot */
-			current_robot_check <= n_enemies; current_robot_check++)
+	for(current_robot_check = 1-game_state_copy.confederate_count;  /* Start on 0 if we have a confederate robot */
+			current_robot_check <= game_state_copy.enemy_count; current_robot_check++)
 	{
 		/* Get deltas and distance for current robot */
 		/* If we have a confederate robot, the counting starts with 0 */

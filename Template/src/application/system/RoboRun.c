@@ -90,22 +90,26 @@ static node_t* nodes_game[NODE_QUANTITY];
 static node_t* node_task = NULL; /*!< pointer to the current running node */
 static node_t* next_node; /*!< pointer to the next node */
 static uint8_t remain_nodes; /*!< undone nodes */
-static uint8_t enemy_count; /*!< enemy quantity */
-static uint8_t confederate_quantity; /*!< confederate quantity */
 static uint8_t node_pools[NODE_POOL_QUANTITY][3] = {{NODE_NET_POOL_ID,
                                                      NODE_NET_POOL_SIZE,
                                                      NODE_NET_POOL_LEVEL}};/*!< pool settings -> have to set to default values after game round */
 volatile static uint16_t enemey_position[20][30] = {{0}}; /*!< enemy-tracking grid TODO*/
 //volatile static uint16_t enemey_position[((int)(PLAYGROUND_HEIGH/ENEMY_GRID_SIZE_Y))][((int)(PLAYGROUND_WIDTH/ENEMY_GRID_SIZE_X))] = {{0.0}}; /*!< enemy-tracking grid */
-volatile static game_state_t game_state = { .x = 0,               /*!< x-position */
-                                            .x = 0,              /*!< y-position */
-                                            .angle = 0,              /*!< angle */
+volatile static game_state_t game_state = { .x = 0,                      /*!< x-position */
+                                            .x = 0,                      /*!< y-position */
+                                            .angle = 0,                  /*!< angle */
+                                            .teamcolor = TEAM_YELLOW,    /*!< color of our team */
+                                            .enemy_count = 0,            /*!< number of enemies */
                                             .enemy_1_x = NODE_NO_ENEMY,  /*!< x-position enemy 1 */
                                             .enemy_1_y = NODE_NO_ENEMY,  /*!< y-position enemy 1 */
                                             .enemy_1_diameter = NODE_NO_ENEMY_DIAMETER, /*!< diameter of enemy 1 [cm] */
                                             .enemy_2_x = NODE_NO_ENEMY,  /*!< x-position enemy 2 */
                                             .enemy_2_y = NODE_NO_ENEMY,  /*!< y-position enemy 2 */
-                                            .enemy_2_diameter = NODE_NO_ENEMY_DIAMETER}; /*!< diameter of enemy 2 [cm] */
+                                            .enemy_2_diameter = NODE_NO_ENEMY_DIAMETER,  /*!< diameter of enemy 2 [cm] */
+                                            .confederate_count = 0,      /*!< number of enemies */
+                                            .confederate_x = NODE_NO_CONFEDERATE,  /*!< x-position enemy 1 */
+                                            .confederate_y = NODE_NO_CONFEDERATE  /*!< y-position enemy 1 */
+                                           };
 
 
 /* Private function prototypes -----------------------------------------------*/
@@ -165,15 +169,22 @@ uint8_t setConfigRoboRunState(uint8_t start_node_id, uint8_t teamcolor, uint8_t 
     uint8_t node_count;
     uint8_t success = 0;
 
+    /* save color in game_state */
+    game_state.teamcolor = teamcolor;
+
     /* load correct node-set */
     taskENTER_CRITICAL();
     if(teamcolor == GIP_TEAMCOLOR_YELLOW)
     {
         memcpy(&nodes_game,nodes_yellow,sizeof(node_t*[NODE_QUANTITY]));
+        game_state.teamcolor = TEAM_YELLOW;
+        game_state.barrier = GOTO_DEFAULT_BARRIER_Y;
     }
     else
     {
         memcpy(&nodes_game,nodes_red,sizeof(node_t*[NODE_QUANTITY]));
+        game_state.teamcolor = TEAM_RED;
+        game_state.barrier = GOTO_DEFAULT_BARRIER_R;
     }
     remain_nodes = NODE_QUANTITY; /* set counter to max. */
     taskEXIT_CRITICAL();
@@ -190,12 +201,12 @@ uint8_t setConfigRoboRunState(uint8_t start_node_id, uint8_t teamcolor, uint8_t 
     }
 
     /* set enemy count */
-    enemy_count = enemies;
+    game_state.enemy_count = enemies;
     game_state.enemy_1_diameter = enemy_size_1; /* diameter in centimeter */
     game_state.enemy_2_diameter = enemy_size_2; /* diameter in centimeter */
 
     /* set confederate count */
-    confederate_quantity = confederate;
+    game_state.confederate_count = confederate;
 
     /* create the node-task */
     xTaskCreate(vNodeTask, ( signed char * ) SYSTEM_NODE_TASK_NAME,
@@ -225,6 +236,7 @@ void setConfigRoboRunState2Default()
         for(node_count = 0; node_count < NODE_QUANTITY-3; node_count++)
         {
             nodes_game[node_count]->param.node_state = NODE_UNDONE;
+            nodes_game[node_count]->param.node_tries = 1;
         }
         for(;node_count < NODE_QUANTITY; node_count++)
         {
@@ -236,8 +248,10 @@ void setConfigRoboRunState2Default()
     node_pools[NODE_NET_POOL_ID-1][NODE_POOL_SIZE_INFO] = NODE_NET_POOL_SIZE;
     node_pools[NODE_NET_POOL_ID-1][NODE_POOL_LEVEL_INFO] = NODE_NET_POOL_LEVEL;
 
+    taskENTER_CRITICAL(); /* for more safety */
+
     /* enemy-field to default */
-    memset(enemey_position,0,sizeof(enemey_position[0][0]) * ((int)(PLAYGROUND_WIDTH/ENEMY_GRID_SIZE_X))
+    memset(enemy_position,0,sizeof(enemy_position[0][0]) * ((int)(PLAYGROUND_WIDTH/ENEMY_GRID_SIZE_X))
             * ((int)(PLAYGROUND_HEIGH/ENEMY_GRID_SIZE_Y)));
 
     /* give the node-task semaphore free */
@@ -252,6 +266,8 @@ void setConfigRoboRunState2Default()
     /* stop timers */
     stopGameTimer();
     stopELP();
+
+    taskEXIT_CRITICAL();
 }
 
 
@@ -269,15 +285,19 @@ void runRoboRunState(portTickType* tick)
     float weight_enemy; /* enemy tracking weight */
     float weight_src_dest; /* way-time weight (estimated) */
     float weight_next_node; /* the weight of the next node */
-    uint8_t weight_arrive; /* additional weight for bad arrives */
+    uint8_t weight_arrive = NODE_PERFECT_ARRIVE; /* additional weight for bad arrives */
     uint8_t remain_time;
     uint8_t node_count; /* simple count variable */
     volatile node_t* current_node;
+    uint8_t x_index, y_index;
+    game_state_t game_state_copy;
 
 
     /* load next node in node task */
+    taskENTER_CRITICAL();
     current_node = next_node;
     node_task = next_node;
+    taskEXIT_CRITICAL();
 
     vTaskResume(xNodeTask_Handle);
 
@@ -295,6 +315,10 @@ void runRoboRunState(portTickType* tick)
         }
     }
 
+    /* Copy current game state, so it wont be changed during calculation */
+    taskENTER_CRITICAL();
+    game_state_copy = game_state;
+    taskEXIT_CRITICAL();
 
     /*********************/
     /* check node result */
@@ -385,20 +409,20 @@ void runRoboRunState(portTickType* tick)
                     nodes_game[node_count]->param.angle <= NODE_SOUTH_MAX_ANGLE)
             {
                 /* opposite arrive */
-                if(nodes_game[node_count]->param.y < current_node->param.y)
+                if(nodes_game[node_count]->param.y < game_state_copy.y)
                 {
                     weight_arrive = NODE_WORST_ARRIVE;
                 /* too close */
                 }
-                else if(nodes_game[node_count]->param.y >= current_node->param.y &&
-                        nodes_game[node_count]->param.y - NODE_ARRIVE_FRAME < current_node->param.y)
+                else if(nodes_game[node_count]->param.y >= game_state_copy.y &&
+                        nodes_game[node_count]->param.y - NODE_ARRIVE_FRAME < game_state_copy.y)
                 {
                     weight_arrive = NODE_BAD_ARRIVE;
                 /* not bad, but not perfect as well */
                 }
-                else if(nodes_game[node_count]->param.y - NODE_ARRIVE_FRAME >= current_node->param.y &&
-                        (nodes_game[node_count]->param.x - NODE_ARRIVE_FRAME >= current_node->param.x ||
-                         nodes_game[node_count]->param.x + NODE_ARRIVE_FRAME <= current_node->param.x))
+                else if(nodes_game[node_count]->param.y - NODE_ARRIVE_FRAME >= game_state_copy.y &&
+                        (nodes_game[node_count]->param.x - NODE_ARRIVE_FRAME >= game_state_copy.x ||
+                         nodes_game[node_count]->param.x + NODE_ARRIVE_FRAME <= game_state_copy.x))
                 {
                     weight_arrive = NODE_WELL_ARRIVE;
                 /* best possible arrive */
@@ -412,18 +436,18 @@ void runRoboRunState(portTickType* tick)
                       nodes_game[node_count]->param.angle <= NODE_EAST_MAX_ANGLE)
             {
                 /* opposite arrive */
-                if(nodes_game[node_count]->param.x > current_node->param.x)
+                if(nodes_game[node_count]->param.x > game_state_copy.x)
                 {
                     weight_arrive = NODE_WORST_ARRIVE;
                 /* too close */
-                }else if(nodes_game[node_count]->param.x <= current_node->param.x &&
-                         nodes_game[node_count]->param.x + NODE_ARRIVE_FRAME > current_node->param.x)
+                }else if(nodes_game[node_count]->param.x <= game_state_copy.x &&
+                         nodes_game[node_count]->param.x + NODE_ARRIVE_FRAME > game_state_copy.x)
                 {
                     weight_arrive = NODE_BAD_ARRIVE;
                 /* not bad, but not perfect as well */
-                }else if(nodes_game[node_count]->param.x + NODE_ARRIVE_FRAME <= current_node->param.x &&
-                        (nodes_game[node_count]->param.y - NODE_ARRIVE_FRAME >= current_node->param.y ||
-                         nodes_game[node_count]->param.y + NODE_ARRIVE_FRAME <= current_node->param.y))
+                }else if(nodes_game[node_count]->param.x + NODE_ARRIVE_FRAME <= game_state_copy.x &&
+                        (nodes_game[node_count]->param.y - NODE_ARRIVE_FRAME >= game_state_copy.y ||
+                         nodes_game[node_count]->param.y + NODE_ARRIVE_FRAME <= game_state_copy.y))
                 {
                     weight_arrive = NODE_WELL_ARRIVE;
                 /* best possible arrive */
@@ -442,15 +466,15 @@ void runRoboRunState(portTickType* tick)
                     weight_arrive = NODE_WORST_ARRIVE;
                 /* too close */
                 }
-                else if(nodes_game[node_count]->param.y <= current_node->param.y &&
-                         nodes_game[node_count]->param.y + NODE_ARRIVE_FRAME > current_node->param.y)
+                else if(nodes_game[node_count]->param.y <= game_state_copy.y &&
+                         nodes_game[node_count]->param.y + NODE_ARRIVE_FRAME > game_state_copy.y)
                 {
                     weight_arrive = NODE_BAD_ARRIVE;
                 /* not bad, but not perfect as well */
                 }
-                else if(nodes_game[node_count]->param.y + NODE_ARRIVE_FRAME <= current_node->param.y &&
-                    (nodes_game[node_count]->param.x - NODE_ARRIVE_FRAME >= current_node->param.x ||
-                     nodes_game[node_count]->param.x + NODE_ARRIVE_FRAME <= current_node->param.x))
+                else if(nodes_game[node_count]->param.y + NODE_ARRIVE_FRAME <= game_state_copy.y &&
+                    (nodes_game[node_count]->param.x - NODE_ARRIVE_FRAME >= game_state_copy.x ||
+                     nodes_game[node_count]->param.x + NODE_ARRIVE_FRAME <= game_state_copy.x))
                 {
                     weight_arrive = NODE_WELL_ARRIVE;
                 /* best possible arrive */
@@ -463,18 +487,18 @@ void runRoboRunState(portTickType* tick)
             } else
             {
                 /* opposite arrive */
-                if(nodes_game[node_count]->param.x < current_node->param.x)
+                if(nodes_game[node_count]->param.x < game_state_copy.x)
                 {
                     weight_arrive = NODE_WORST_ARRIVE;
                 /* too close */
-                }else if(nodes_game[node_count]->param.x >= current_node->param.x &&
-                         nodes_game[node_count]->param.x - NODE_ARRIVE_FRAME < current_node->param.x)
+                }else if(nodes_game[node_count]->param.x >= game_state_copy.x &&
+                         nodes_game[node_count]->param.x - NODE_ARRIVE_FRAME < game_state_copy.x)
                 {
                     weight_arrive = NODE_BAD_ARRIVE;
                 /* not bad, but not perfect as well */
-                }else if(nodes_game[node_count]->param.x - NODE_ARRIVE_FRAME >= current_node->param.x &&
-                        (nodes_game[node_count]->param.y - NODE_ARRIVE_FRAME >= current_node->param.y ||
-                         nodes_game[node_count]->param.y + NODE_ARRIVE_FRAME <= current_node->param.y))
+                }else if(nodes_game[node_count]->param.x - NODE_ARRIVE_FRAME >= game_state_copy.x &&
+                        (nodes_game[node_count]->param.y - NODE_ARRIVE_FRAME >= game_state_copy.y ||
+                         nodes_game[node_count]->param.y + NODE_ARRIVE_FRAME <= game_state_copy.y))
                 {
                     weight_arrive = NODE_WELL_ARRIVE;
                 /* best possible arrive */
@@ -486,18 +510,19 @@ void runRoboRunState(portTickType* tick)
 
 
             /* cost of destination */
-            weight_dest =((nodes_game[node_count]->param.points/nodes_game[node_count]->param.time)
-                    * (1/nodes_game[node_count]->param.percent)) * weight_arrive * (nodes_game[node_count]->param.node_tries);
+            weight_dest = ((nodes_game[node_count]->param.time/nodes_game[node_count]->param.points)
+                   * (1/nodes_game[node_count]->param.percent)) * weight_arrive * (nodes_game[node_count]->param.node_tries);
 
             /* read out the enemy track-position for the node location */
-            taskENTER_CRITICAL();
-            weight_enemy = enemey_position[(int)(nodes_game[node_count]->param.y / (ENEMY_GRID_SIZE_Y*1000))]
-                                           [(int)(nodes_game[node_count]->param.y / (ENEMY_GRID_SIZE_Y*1000))];
-            taskEXIT_CRITICAL();
+            taskDISABLE_INTERRUPTS();
+            y_index = (uint8_t)(nodes_game[node_count]->param.y / ENEMY_GRID_SIZE_Y);
+            x_index = (uint8_t)(nodes_game[node_count]->param.y / ENEMY_GRID_SIZE_Y);
+            weight_enemy = enemy_position[y_index][x_index];
+            taskENABLE_INTERRUPTS();
 
             /* source -> destination node distance-time weight */
-            weight_src_dest = (sqrtf(((current_node->param.x - nodes_game[node_count]->param.x) * (current_node->param.x - nodes_game[node_count]->param.x)) +
-                    ((current_node->param.y - nodes_game[node_count]->param.y) * (current_node->param.y - nodes_game[node_count]->param.y)))/1000) / ROBO_AVERAGE_SPEED;
+            weight_src_dest = (sqrtf(((game_state_copy.x - nodes_game[node_count]->param.x) * (game_state_copy.x - nodes_game[node_count]->param.x)) +
+                    ((game_state_copy.y - nodes_game[node_count]->param.y) * (game_state_copy.y - nodes_game[node_count]->param.y)))/1000) / ROBO_AVERAGE_SPEED;
 
             /* searching next node */
             if((weight_dest * weight_dec + weight_enemy * weight_dec + weight_src_dest * weight_inc) < weight_next_node)
@@ -545,7 +570,7 @@ static void vMyPosition(uint16_t id, CAN_data_t* data)
  */
 static void vConfederatePosition(uint16_t id, CAN_data_t* data)
 {
-    if(confederate_quantity > 0)
+    if(game_state.confederate_count > 0)
     {
         game_state.confederate_x = data->elp_x;
         game_state.confederate_y = data->elp_y;
@@ -569,38 +594,38 @@ static void vTrackEnemy(uint16_t id, CAN_data_t* data)
     uint8_t x_index, y_index;
 
     /* start tracking only if an enemy exist and game runs */
-    if(enemy_count > 0 )
+    if(game_state.enemy_count > 0 )
     {
         if(getRemainingGameTime() < PLAY_TIME_TOTAL)
         {
+
+            y_index = (uint8_t)(data->elp_y/ENEMY_GRID_SIZE_Y);
+            x_index = (uint8_t)(data->elp_x/ENEMY_GRID_SIZE_X);
+
             /* check if the position within the grid and not on the frame */
-            if((data->elp_y/(ENEMY_GRID_SIZE_Y*1000)) < (PLAYGROUND_HEIGH/ENEMY_GRID_SIZE_Y-1) &&
-                    (data->elp_y/(ENEMY_GRID_SIZE_Y*1000)) > 0 &&
-                    (data->elp_x/(ENEMY_GRID_SIZE_X*1000)) > 0 &&
-                    (data->elp_x/(ENEMY_GRID_SIZE_X*1000)) < (PLAYGROUND_WIDTH/ENEMY_GRID_SIZE_X-1))
+            if(y_index < (PLAYGROUND_HEIGH/ENEMY_GRID_SIZE_Y-1) && y_index > 0 &&
+                    x_index > 0 && x_index < (PLAYGROUND_WIDTH/ENEMY_GRID_SIZE_X-1))
             {
                 /* set center weight */
-                y_index = (int)(data->elp_y/(ENEMY_GRID_SIZE_Y*1000));
-                x_index = (int)(data->elp_x/(ENEMY_GRID_SIZE_X*1000));
-                enemey_position[y_index][x_index] += ENEMY_GRID_CENTER_WEIGHT;
+                enemy_position[y_index][x_index] += ENEMY_GRID_CENTER_WEIGHT;
 
                 /* set upper frame edge */
                 for(i=0; i<3; i++)
                 {
-                    enemey_position[y_index-1][x_index-1+i] += ENEMY_GRID_FRAME_WEIGHT;
+                    enemy_position[y_index-1][x_index-1+i] += ENEMY_GRID_FRAME_WEIGHT;
                 }
 
                 /* set deeper frame edge */
                 for(i=0; i<3; i++)
                 {
-                    enemey_position[y_index+1][x_index-1+i] += ENEMY_GRID_FRAME_WEIGHT;
+                    enemy_position[y_index+1][x_index-1+i] += ENEMY_GRID_FRAME_WEIGHT;
                 }
 
                 /* set left frame edge */
-                enemey_position[y_index][x_index-1] += ENEMY_GRID_FRAME_WEIGHT;
+                enemy_position[y_index][x_index-1] += ENEMY_GRID_FRAME_WEIGHT;
 
                 /* set right frame edge */
-                enemey_position[y_index][x_index+1] += ENEMY_GRID_FRAME_WEIGHT;
+                enemy_position[y_index][x_index+1] += ENEMY_GRID_FRAME_WEIGHT;
             }
         }
 
@@ -634,6 +659,11 @@ func_report_t gotoNode(node_param_t* param, volatile game_state_t* game_state)
     CAN_data_t CAN_buffer;
     uint8_t CAN_ok = pdFALSE;
 
+    /* Copy current game state, so it wont be changed during calculation */
+    taskENTER_CRITICAL();
+    game_state_t game_state_copy = *game_state;
+    taskEXIT_CRITICAL();
+
     /* Variable to store estimated GoTo time received from drive system (24 Bit, 1 Bit ca. 1 ms) */
     uint32_t estimated_GoTo_time = 0;
 
@@ -645,8 +675,7 @@ func_report_t gotoNode(node_param_t* param, volatile game_state_t* game_state)
 
 		i++;
 
-		/* Send GoTo command through CAN to drive system */
-		txGotoXY(param->x, param->y, param->angle, ROBO_SPEED, ROBO_BARRIER_FLAGS, GOTO_DRIVE_FORWARD);
+        txGotoXY(param->x, param->y, param->angle, GOTO_DEFAULT_SPEED, game_state_copy.barrier, GOTO_DRIVE_FORWARD);
 
 		/* Receive GoTo confirmation */
 		CAN_ok = xQueueReceive(qGotoConfirm, &CAN_buffer, GOTO_ACK_DELAY / portTICK_RATE_MS);
@@ -706,7 +735,7 @@ func_report_t gotoNode(node_param_t* param, volatile game_state_t* game_state)
 			/* Semaphore received, this means an obstacle was detected! */
 			
 			/* Check if an enemy/confederate is within range in front of the robot */
-			if(isRobotInFront(game_state, enemy_count, confederate_quantity)) {
+			if(isRobotInFront(game_state)) {
 
 				/* STOPP */
 				txStopDrive();
@@ -744,10 +773,10 @@ static void vNodeTask(void* pvParameters )
     for(;;)
     {
     	/* Give goto command and do node if goto was successful */
-    	//if(gotoNode(&node_task->param, &game_state) == FUNC_SUCCESS) {
+    	if(gotoNode(&node_task->param, &game_state) == FUNC_SUCCESS) {
     		/* Do node action */
-    		node_task->node_function(&node_task->param);
-    	//}
+    		node_task->node_function(&node_task->param, &game_state);
+    	}
 
     	/* unblock system task */
         xSemaphoreGive(sSyncRoboRunNodeTask);

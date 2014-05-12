@@ -47,7 +47,7 @@
  * \param       param  node parameters
  * \return      None
  */
-void doFireNode(node_param_t* param)
+void doFireNode(node_param_t* param, volatile game_state_t* game_state)
 {
 	 /* Copy current game state, so it wont be changed during calculation */
 //	taskENTER_CRITICAL();
@@ -85,43 +85,53 @@ void doFireNode(node_param_t* param)
     /* Drive through fire from NORTH */
     if(param->angle >= NODE_NORTH_MIN_ANGLE && param->angle <= NODE_NORTH_MAX_ANGLE)
     {
-        txGotoXY(param->x, param->y-FIRE_NODE_DELTA_GO, param->angle, FIRE_NODE_SPEED, FIRE_NODE_BARRIER, GOTO_DRIVE_FORWARD);
-
+        txGotoXY(param->x, param->y-FIRE_NODE_DELTA_GO, param->angle, FIRE_NODE_SPEED, game_state_copy.barrier, GOTO_DRIVE_FORWARD);
     }
     /* Drive through fire from EAST */
     else if(param->angle >= NODE_EAST_MIN_ANGLE && param->angle <= NODE_EAST_MAX_ANGLE)
     {
-        txGotoXY(param->x-FIRE_NODE_DELTA_GO, param->y, param->angle, FIRE_NODE_SPEED, FIRE_NODE_BARRIER, GOTO_DRIVE_FORWARD);
+        txGotoXY(param->x-FIRE_NODE_DELTA_GO, param->y, param->angle, FIRE_NODE_SPEED, game_state_copy.barrier, GOTO_DRIVE_FORWARD);
     }
     /* Drive through fire from SOUTH */
     else if(param->angle >= NODE_SOUTH_MIN_ANGLE && param->angle <= NODE_SOUTH_MAX_ANGLE)
     {
-        txGotoXY(param->x, param->y+FIRE_NODE_DELTA_GO, param->angle, FIRE_NODE_SPEED, FIRE_NODE_BARRIER, GOTO_DRIVE_FORWARD);
+        txGotoXY(param->x, param->y+FIRE_NODE_DELTA_GO, param->angle, FIRE_NODE_SPEED, game_state_copy.barrier, GOTO_DRIVE_FORWARD);
     }
     /* Drive through fire from WEST */
     else
     {
-        txGotoXY(param->x+FIRE_NODE_DELTA_GO, param->y, param->angle, FIRE_NODE_SPEED, FIRE_NODE_BARRIER, GOTO_DRIVE_FORWARD);
+        txGotoXY(param->x+FIRE_NODE_DELTA_GO, param->y, param->angle, FIRE_NODE_SPEED, game_state_copy.barrier, GOTO_DRIVE_FORWARD);
     }
 
     /* Wait while driving */
-    vTaskDelay(FIRE_NODE_DRIVE_DELAY / portTICK_RATE_MS);
+	vTaskDelay(FIRE_NODE_DRIVE_DELAY / portTICK_RATE_MS);
 
-    /* Put the sucker in init position */
-    // TODO add right value
-    //setServo_1(SERVO_POS_FRESCO_IN);
+    /* Put seperation in after driving through the fire */
+	setServo_1(SERVO_POS_FRESCO_IN);
 
-    /* Wait some time while servo moves */
-    vTaskDelay(SERVO_MOVING_DELAY / portTICK_RATE_MS);
+	/* Wait some time while servo moves */
+	vTaskDelay(SERVO_MOVING_DELAY / portTICK_RATE_MS);
 
-    param->node_state = NODE_FINISH_SUCCESS;
+	param->node_state = NODE_FINISH_SUCCESS;
 
 
-//    /* Copy current game state back */
-//    taskENTER_CRITICAL();
-//    *game_state = game_state_copy;
-//    taskEXIT_CRITICAL();
+	/* Copy current game state back */
+    taskENTER_CRITICAL();
+    *game_state = game_state_copy;
+    taskEXIT_CRITICAL();
 
+    /* Fire has fallen */
+//    if(Rangefinder_flag_SeAlarmUS == 0){
+//
+//
+//    }
+//    else {
+//
+//    	param->node_state = NODE_FINISH_ERROR;
+//    }
+
+    /* Suspend rangefinder safely */
+    //suspendRangefinderTask();
 }
 
 /**
