@@ -189,7 +189,7 @@ node_t node_net_1_red =
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
         .angle = 0,                         /*!<node arrive direction */
         .node_tries = 1,                    /*!< node repeats (1 = default)*/
-        .node_state = NODE_UNDONE,          /*!<node state */
+        .node_state = NODE_FINISH_SUCCESS,          /*!<node state */
     },
     doNetNode
 };
@@ -207,7 +207,7 @@ node_t node_net_2_red =
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
         .angle = 0,                         /*!<node arrive direction */
         .node_tries = 1,                    /*!< node repeats (1 = default)*/
-        .node_state = NODE_UNDONE,          /*!<node state */
+        .node_state = NODE_FINISH_SUCCESS,          /*!<node state */
     },
     doNetNode
 };
@@ -225,7 +225,7 @@ node_t node_net_3_red =
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
         .angle = 0,                         /*!<node arrive direction */
         .node_tries = 1,                    /*!< node repeats (1 = default)*/
-        .node_state = NODE_UNDONE,          /*!<node state */
+        .node_state = NODE_FINISH_SUCCESS,          /*!<node state */
     },
     doNetNode
 };
@@ -388,7 +388,7 @@ node_t node_net_1_yellow =
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
         .angle = 0,                         /*!<node arrive direction */
         .node_tries = 1,                    /*!< node repeats (1 = default)*/
-        .node_state = NODE_UNDONE,          /*!<node state */
+        .node_state = NODE_FINISH_SUCCESS,          /*!<node state */
     },
     doNetNode
 };
@@ -406,7 +406,7 @@ node_t node_net_2_yellow =
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
         .angle = 0,                         /*!<node arrive direction */
         .node_tries = 1,                    /*!< node repeats (1 = default)*/
-        .node_state = NODE_UNDONE,          /*!<node state */
+        .node_state = NODE_FINISH_SUCCESS,          /*!<node state */
     },
     doNetNode
 };
@@ -424,7 +424,7 @@ node_t node_net_3_yellow =
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
         .angle = 0,                         /*!<node arrive direction */
         .node_tries = 1,                    /*!< node repeats (1 = default)*/
-        .node_state = NODE_UNDONE,          /*!<node state */
+        .node_state = NODE_FINISH_SUCCESS,          /*!<node state */
     },
     doNetNode
 };
@@ -456,11 +456,12 @@ void initNodeResources()
 	setServo_2(SERVO_POS_NET_LOAD);
 
 	/* Initialise fresco sensors */
-	initSensor_Fire_Pool();
+	initSensor_Fire_Pool_Right();
+	initSensor_Fire_Pool_Left();
 	initSensor_Air();
 
 	/* Initialise air system */
-	//initAir();
+	initAir();
 
 	/* Create a queue and set CAN listener for GoTo ACK */
     qGotoConfirm = xQueueCreate(GOTOCONFIRM_QUEUE_LENGTH, sizeof(CAN_data_t));
