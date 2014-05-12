@@ -91,6 +91,7 @@ typedef struct
 #define NODE_POOL_QUANTITY         1
 #define NODE_NO_ENEMY              0xFFFF
 #define NODE_NO_ENEMY_DIAMETER     0
+#define NODE_NO_CONFEDERATE        0
 
 /* nodes pools */
 #define NODE_NO_POOL_ID            0
@@ -117,6 +118,8 @@ typedef struct
 #define SERVO_POS_AIR_FIRST_FIRE   1800 //1600 /* Servo position: Fresco panel all the way out */
 #define SERVO_POS_AIR_SECOND_FIRE 1600 //1600 /* Servo position: Fresco panel all the way out */
 #define SERVO_POS_AIR_THIRD_FIRE  1200 //1600 /* Servo position: Fresco panel all the way out */
+#define SERVO_AIR_STEP              2
+#define SERVO_AIR_STEP_DELAY        2
 #define SERVO_POS_NET_LOAD         1400//1340 /* Servo position: Launcher all the way front */
 #define SERVO_POS_NET_LAUNCH       1700 /* Servo position: Launcher all the way back */
 
