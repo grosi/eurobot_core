@@ -49,38 +49,57 @@
  */
 void doFireNode(node_param_t* param, volatile game_state_t* game_state)
 {
-	 /* Copy current game state, so it wont be changed during calculation */
-//	taskENTER_CRITICAL();
-//	game_state_t game_state_copy = *game_state;
-//	taskEXIT_CRITICAL();
+    /* local variables */
+    /* Variable to set the servo position step by step */
+    volatile uint16_t servo_pos;
+    /* Copy current game state, so it wont be changed during calculation */
+    taskENTER_CRITICAL();
+    game_state_t game_state_copy = *game_state;
+    taskEXIT_CRITICAL();
 
-//	/* Don't continue if an other robot is in front */
-//	if(isRobotInFront(&game_state_copy))
-//	{
-//
-//		param->node_state = NODE_FINISH_ERROR;
-//		return;
-//	}
+	/* Don't continue if an other robot is in front */
+	if(isRobotInFront(&game_state_copy))
+	{
+		param->node_state = NODE_FINISH_ERROR;
+		return;
+	}
 
-//	/* reset current barrier flag */
-//	switch(param->id)
-//	{
-//	case 1:
-//	game_state_copy.barrier &= ~(GOTO_FIRE_1_FORCE | GOTO_FIRE_1 | GOTO_FIRE_2_FORCE | GOTO_FIRE_2);
-//	break;
-//	case 2:
-//	game_state_copy.barrier &= ~(GOTO_FIRE_3_FORCE | GOTO_FIRE_3 | GOTO_FIRE_4_FORCE | GOTO_FIRE_4);
-//	break;
-//	case 3:
-//	game_state_copy.barrier &= ~(GOTO_FIRE_5_FORCE | GOTO_FIRE_5 | GOTO_FIRE_6_FORCE | GOTO_FIRE_6);
-//	break;
-//	}
-	/* Move the sucker down a bit */
-	// TODO add right value 1500
-	//setServo_1(SERVO_POS_FRESCO_OUT);
+	/* reset current barrier flag */
+	switch(param->id)
+	{
+	case 1:
+        game_state_copy.barrier &= ~(GOTO_FIRE_1_FORCE | GOTO_FIRE_1 | GOTO_FIRE_2_FORCE | GOTO_FIRE_2);
+        break;
+	case 2:
+        game_state_copy.barrier &= ~(GOTO_FIRE_3_FORCE | GOTO_FIRE_3 | GOTO_FIRE_4_FORCE | GOTO_FIRE_4);
+        break;
+	case 3:
+        game_state_copy.barrier &= ~(GOTO_FIRE_5_FORCE | GOTO_FIRE_5 | GOTO_FIRE_6_FORCE | GOTO_FIRE_6);
+        break;
+	}
 
-	/* Wait some time while servo moves */
-	vTaskDelay(SERVO_MOVING_DELAY / portTICK_RATE_MS);
+    /* Move the sucker servo down a bit, step by step */
+	servo_pos = SERVO_POS_AIR_UP; /* Current position */
+    while(servo_pos > (SERVO_POS_AIR_SECOND_FIRE+SERVO_AIR_STEP))
+    {
+        /* Decrement servo position by step size */
+        servo_pos -= SERVO_AIR_STEP;
+
+        /* Check if it's the last step */
+        if(servo_pos < SERVO_POS_AIR_SECOND_FIRE)
+        {
+            /* Set the final servo position without over-rotating */
+            setServo_1(SERVO_POS_AIR_SECOND_FIRE);
+        }
+        else
+        {
+            /* Set the new servo position */
+            setServo_1(servo_pos);
+        }
+        /* Wait some time while servo moves */
+        vTaskDelay(SERVO_AIR_STEP_DELAY / portTICK_RATE_MS);
+    }
+
 
     /* Drive through fire from NORTH */
     if(param->angle >= NODE_NORTH_MIN_ANGLE && param->angle <= NODE_NORTH_MAX_ANGLE)
@@ -106,32 +125,37 @@ void doFireNode(node_param_t* param, volatile game_state_t* game_state)
     /* Wait while driving */
 	vTaskDelay(FIRE_NODE_DRIVE_DELAY / portTICK_RATE_MS);
 
-    /* Put seperation in after driving through the fire */
-	setServo_1(SERVO_POS_FRESCO_IN);
+	/* Move the sucker servo up, step by step */
+    servo_pos = SERVO_POS_AIR_SECOND_FIRE; /* Current position */
+    while(servo_pos < (SERVO_POS_AIR_UP+SERVO_AIR_STEP))
+    {
+        /* Decrement servo position by step size */
+        servo_pos += SERVO_AIR_STEP;
 
-	/* Wait some time while servo moves */
-	vTaskDelay(SERVO_MOVING_DELAY / portTICK_RATE_MS);
+        /* Check if it's the last step */
+        if(servo_pos > SERVO_POS_AIR_UP)
+        {
+            /* Set the final servo position without over-rotating */
+            setServo_1(SERVO_POS_AIR_UP);
+        }
+        else
+        {
+            /* Set the new servo position */
+            setServo_1(servo_pos);
+        }
+        /* Wait some time while servo moves */
+        vTaskDelay(SERVO_AIR_STEP_DELAY / portTICK_RATE_MS);
+    }
 
+
+
+	/* node complete */
 	param->node_state = NODE_FINISH_SUCCESS;
-
 
 	/* Copy current game state back */
     taskENTER_CRITICAL();
     *game_state = game_state_copy;
     taskEXIT_CRITICAL();
-
-    /* Fire has fallen */
-//    if(Rangefinder_flag_SeAlarmUS == 0){
-//
-//
-//    }
-//    else {
-//
-//    	param->node_state = NODE_FINISH_ERROR;
-//    }
-
-    /* Suspend rangefinder safely */
-    //suspendRangefinderTask();
 }
 
 /**

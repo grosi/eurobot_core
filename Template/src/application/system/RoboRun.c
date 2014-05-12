@@ -46,10 +46,10 @@
 #define NODE_POOL_SIZE_INFO    1
 #define NODE_POOL_LEVEL_INFO   2
 /* CAN */
-#define ROBO_SPEED             100      /* Speed in percent */
-#define ROBO_BARRIER_FLAGS     0x0000
-#define GOTO_DEFAULT_BARRIER_R GOTO_FIRE_1_FORCE|GOTO_FIRE_3_FORCE|GOTO_FIRE_5_FORCE|GOTO_FIRE_7_FORCE /* Barrier flags for red team */
-#define GOTO_DEFAULT_BARRIER_Y GOTO_FIRE_2_FORCE|GOTO_FIRE_4_FORCE|GOTO_FIRE_6_FORCE|GOTO_FIRE_8_FORCE /* Barrier flags for yellow team */
+#define GOTO_DEFAULT_SPEED             100      /* Speed in percent */
+#define GOTO_ROBO_BARRIER_FLAGS     0x0000
+#define GOTO_DEFAULT_BARRIER_R GOTO_FIRE_1_FORCE|GOTO_FIRE_3_FORCE|GOTO_FIRE_5_FORCE|GOTO_FIRE_POOL_1_FORCE /* Barrier flags for red team */
+#define GOTO_DEFAULT_BARRIER_Y GOTO_FIRE_2_FORCE|GOTO_FIRE_4_FORCE|GOTO_FIRE_6_FORCE|GOTO_FIRE_POOL_2_FORCE /* Barrier flags for yellow team */
 #define GOTO_ACK_DELAY         20       /* Delay in ms to wait before checking goto confirmation */
 #define GOTO_NACK_MAX_RETRIES  5        /* Number of retries (incl. first try) if there's no confirmation from drive system (uint8_t) */
 #define GOTO_STATERESP_DELAY   100      /* Delay in ms to wait for GoTo state response. Drive system needs 400 ms (worst case) */
@@ -93,10 +93,10 @@ static uint8_t remain_nodes; /*!< undone nodes */
 static uint8_t node_pools[NODE_POOL_QUANTITY][3] = {{NODE_NET_POOL_ID,
                                                      NODE_NET_POOL_SIZE,
                                                      NODE_NET_POOL_LEVEL}};/*!< pool settings -> have to set to default values after game round */
-volatile static uint16_t enemey_position[20][30] = {{0}}; /*!< enemy-tracking grid TODO*/
+volatile static uint16_t enemy_position[20][30] = {{0}}; /*!< enemy-tracking grid TODO*/
 //volatile static uint16_t enemey_position[((int)(PLAYGROUND_HEIGH/ENEMY_GRID_SIZE_Y))][((int)(PLAYGROUND_WIDTH/ENEMY_GRID_SIZE_X))] = {{0.0}}; /*!< enemy-tracking grid */
 volatile static game_state_t game_state = { .x = 0,                      /*!< x-position */
-                                            .x = 0,                      /*!< y-position */
+                                            .y = 0,                      /*!< y-position */
                                             .angle = 0,                  /*!< angle */
                                             .teamcolor = TEAM_YELLOW,    /*!< color of our team */
                                             .enemy_count = 0,            /*!< number of enemies */
@@ -773,10 +773,10 @@ static void vNodeTask(void* pvParameters )
     for(;;)
     {
     	/* Give goto command and do node if goto was successful */
-    	if(gotoNode(&node_task->param, &game_state) == FUNC_SUCCESS) {
+//    	if(gotoNode(&node_task->param, &game_state) == FUNC_SUCCESS) {
     		/* Do node action */
     		node_task->node_function(&node_task->param, &game_state);
-    	}
+//    	}
 
     	/* unblock system task */
         xSemaphoreGive(sSyncRoboRunNodeTask);
