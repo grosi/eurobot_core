@@ -5,6 +5,7 @@
  *
  * \version 1.3
  *  - Added function isRobotInFront to compare rangefinder with navigation informations
+ *  - Releasing semaphore on i2c error for safety reason
  * \version 1.2
  *  - IR sensors in new arrangement
  *  - Added flag for separation blocked alarm
@@ -204,7 +205,12 @@ static void vRangefinderTask(void* pvParameters ) {
 		/* Check front */
 		/* Check for error */
 		if(distance_fw == 0xFFFF) {
+			
 			/* ERROR (Semaphore not created correctly or timeout) */
+			
+			/* Release semaphore to so the range is at least checked by navigation,
+			 * "FromISR" because it's possible the semaphore is released already */
+			xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
 		}
 		/* Check if an obstacle is to close */
 		else if(distance_fw != 0 && distance_fw < RANGEFINDER_THRESHOLD_FW) {
