@@ -20,6 +20,7 @@
 #include "../CANGatekeeper.h"
 #include "NodeConfig.h"
 #include "FireNode.h"
+
 /* lib */
 #include "lib/servo.h"
 
