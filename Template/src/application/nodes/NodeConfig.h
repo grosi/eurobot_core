@@ -112,23 +112,28 @@ typedef struct
 #define FIREWALL_APPROACHDISTANCE  300
 
 /* Servo */
-#define SERVO_MOVING_DELAY         400  /* Delay in ms to wait while the servo moves the whole way */
-#define SERVO_POS_AIR_UP           1990//2000 /* Servo position: Fresco panel all the way in */
-#define SERVO_POS_AIR_DOWN         1112 //1600 /* Servo position: Fresco panel all the way out */
-#define SERVO_POS_AIR_FIRE		   1500	/* Servo position: to push a fire */
-#define SERVO_POS_AIR_FIRST_FIRE   1800 //1600 /* Servo position: Fresco panel all the way out */
-#define SERVO_POS_AIR_SECOND_FIRE 1600 //1600 /* Servo position: Fresco panel all the way out */
-#define SERVO_POS_AIR_THIRD_FIRE  1200 //1600 /* Servo position: Fresco panel all the way out */
+#define SERVO_MOVING_DELAY          400  /* Delay in ms to wait while the servo moves the whole way */
+#define SERVO_POS_AIR_UP            1990//2000 /* Servo position: Fresco panel all the way in */
+#define SERVO_POS_AIR_DOWN          1112 //1600 /* Servo position: Fresco panel all the way out */
+#define SERVO_POS_AIR_FIRE		    1500	/* Servo position: to push a fire */
+#define SERVO_POS_AIR_FIRST_FIRE    1970 //1600 /* Servo position: Fresco panel all the way out */
+#define SERVO_POS_AIR_SECOND_FIRE   1590 //1600 /* Servo position: Fresco panel all the way out */
+#define SERVO_POS_AIR_THIRD_FIRE    1180 //1600 /* Servo position: Fresco panel all the way out */
+#define SERVO_POS_AIR_HEART         SERVO_POS_AIR_DOWN
 #define SERVO_AIR_STEP              2
 #define SERVO_AIR_STEP_DELAY        2
-#define SERVO_POS_NET_LOAD         1400//1340 /* Servo position: Launcher all the way front */
-#define SERVO_POS_NET_LAUNCH       1700 /* Servo position: Launcher all the way back */
+#define SERVO_POS_NET_LOAD          1400//1340 /* Servo position: Launcher all the way front */
+#define SERVO_POS_NET_LAUNCH        1700 /* Servo position: Launcher all the way back */
 
-/* Firewallnodes */
-#define FIRE_WALL_NODE_SPEED 		30 		/*!< [%] */
-#define FIRE_WALL_NODE_BARRIER 		0
-#define FIRE_WALL_NODE_DRIVE_DELAY 	500
-#define FIRE_WALL_NODE_DRIVE_BACK_DELAY 	500
+/* CAN */
+#define CAN_WAIT_DELAY              400
+#define CAN_CHECK_DELAY             50
+#define CAN_MAX_RETRIES             5
+
+
+/* Fire node */
+#define FIRE_APPROACH_DISTANCE  400
+
 
 /* exported macro -------------------------------------------------------------*/
 
@@ -162,6 +167,9 @@ extern xQueueHandle qGotoStateResp;
 
 /* exported function prototypes -----------------------------------------------*/
 extern void initNodeResources(void);
+extern uint8_t checkDrive(uint16_t, uint16_t, uint16_t, uint8_t, uint8_t, volatile game_state_t*);
+extern uint8_t driveGoto(uint16_t, uint16_t, uint16_t, uint8_t, uint8_t, volatile game_state_t*);
+extern void placeSucker(uint16_t);
 
 
 #endif /* NODECONFIG_H_ */
