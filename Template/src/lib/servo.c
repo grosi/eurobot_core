@@ -123,6 +123,18 @@ void setServo_1(uint16_t new_position)
 
 
 /**
+ * \fn      getServo_1
+ * \brief   current servo position
+ *
+ * \return servo position [900-2000]
+ */
+uint16_t getServo_1(void)
+{
+    return SERVO_1_TIMER->CCR1;
+}
+
+
+/**
  * \fn      initServo_2
  * \brief   initialize the servo 2 output with the predefinded settings
  *
@@ -201,6 +213,18 @@ void setServo_2(uint16_t new_position)
     }
 
     SERVO_2_TIMER->CCR2 = new_position;
+}
+
+
+/**
+ * \fn      getServo_2
+ * \brief   current servo position
+ *
+ * \return servo position [900-2000]
+ */
+uint16_t getServo_2(void)
+{
+    return SERVO_2_TIMER->CCR1;
 }
 
 
@@ -288,6 +312,18 @@ void setServo_3(uint16_t new_position)
 
 
 /**
+ * \fn      getServo_3
+ * \brief   current servo position
+ *
+ * \return servo position [900-2000]
+ */
+uint16_t getServo_3(void)
+{
+    return SERVO_3_TIMER->CCR1;
+}
+
+
+/**
  * \fn      initServo_4
  * \brief   initialize the servo 4 output with the predefinded settings
  *
@@ -367,6 +403,18 @@ void setServo_4(uint16_t new_position)
 
     /* set the dutycycle */
     SERVO_4_TIMER->CCR4 = new_position;
+}
+
+
+/**
+ * \fn      getServo_4
+ * \brief   current servo position
+ *
+ * \return servo position [900-2000]
+ */
+uint16_t getServo_4(void)
+{
+    return SERVO_4_TIMER->CCR1;
 }
 
 /**

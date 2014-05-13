@@ -22,6 +22,8 @@
 
 
 /* exported define -----------------------------------------------------------*/
+#define AIR_ON  1
+#define AIR_OFF 0
 /* Pin and Port roboboard*/
 #define AIR_IN1_PIN       GPIO_Pin_15
 #define AIR_IN1_PIN_MODE  GPIO_Mode_OUT

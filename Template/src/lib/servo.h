@@ -88,12 +88,16 @@
 /* exported functions --------------------------------------------------------*/
 extern void initServo_1();
 extern void setServo_1(uint16_t);
+extern uint16_t getServo_1(void);
 extern void initServo_2();
 extern void setServo_2(uint16_t);
+extern uint16_t getServo_2(void);
 extern void initServo_3();
 extern void setServo_3(uint16_t);
+extern uint16_t getServo_3(void);
 extern void initServo_4();
 extern void setServo_4(uint16_t);
+extern uint16_t getServo_4(void);
 
 #endif /* SERVO_H_ */
 
