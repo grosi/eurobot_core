@@ -134,6 +134,12 @@ typedef struct
 /* Fire node */
 #define FIRE_APPROACH_DISTANCE  400
 
+/* Firewallnodes */
+#define FIRE_WALL_NODE_SPEED        30      /*!< [%] */
+#define FIRE_WALL_NODE_BARRIER      0
+#define FIRE_WALL_NODE_DRIVE_DELAY  500
+#define FIRE_WALL_NODE_DRIVE_BACK_DELAY     500
+
 
 /* exported macro -------------------------------------------------------------*/
 
