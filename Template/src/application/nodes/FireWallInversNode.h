@@ -21,12 +21,23 @@
 
 
 /* exported define ------------------------------------------------------------*/
+/* FireWall */
 #define FIRE_WALL_INVERSE_NODE_DELTA_GO 	100 	/*!< [mm] */
 #define FIRE_WALL_NODE_DRIVE_HEART_DELAY	1500
 #define FIRE_HEART_DRIVE_DELAY				500
+
+/* Servo positions */
 #define SERVO_POS_AIR_WALL_INVERSE			1700
 #define SERVO_POS_AIR_WALL_INVERSE_SUCKER	1600
 #define SERVO_POS_AIR_PLACE					1200
+
+/* drive positions */
+#define X_HEART_OF_FIRE						1500
+#define Y_HEART_OF_FIRE						650
+#define Y_APPROACH_HEART_OF_FIRE			50
+#define HEART_OF_FIRE_DRIVE_SPEED			100
+#define HEART_OF_FIRE_DIRECTION				180
+
 
 /* exported macro -------------------------------------------------------------*/
 

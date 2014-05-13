@@ -180,7 +180,7 @@ void doFireWallInversNode(node_param_t* param, volatile game_state_t* game_state
 	// TODO to be defined if we go to the heart of fire or just place it anywhere else
 	// TODO activate Rangefinder
 	/* drive to the heart of fire in the middle */
-	txGotoXY(1500, 600, 180, 100, GOTO_NO_BARRIER, GOTO_DRIVE_FORWARD);
+	txGotoXY(X_HEART_OF_FIRE, Y_HEART_OF_FIRE - Y_APPROACH_HEART_OF_FIRE, HEART_OF_FIRE_DIRECTION, HEART_OF_FIRE_DRIVE_SPEED, GOTO_NO_BARRIER, GOTO_DRIVE_FORWARD);
 
 	/* wait while driving to the heart of fire */
 	vTaskDelay(FIRE_WALL_NODE_DRIVE_HEART_DELAY / portTICK_RATE_MS);
@@ -210,7 +210,7 @@ void doFireWallInversNode(node_param_t* param, volatile game_state_t* game_state
 	// TODO to be defined if we go to the heart of fire or just place it anywhere else
 	// TODO activate Rangefinder
 	/* drive to the heart of fire in the middle */
-	txGotoXY(1500, 650, 180, FIRE_WALL_NODE_SPEED, GOTO_NO_BARRIER, GOTO_DRIVE_FORWARD);
+	txGotoXY(X_HEART_OF_FIRE, Y_HEART_OF_FIRE, HEART_OF_FIRE_DIRECTION, FIRE_WALL_NODE_SPEED, GOTO_NO_BARRIER, GOTO_DRIVE_FORWARD);
 
 	/* wait while driving to the heart of fire */
 	vTaskDelay(FIRE_HEART_DRIVE_DELAY / portTICK_RATE_MS);
