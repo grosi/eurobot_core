@@ -667,13 +667,13 @@ boolean isRobotInFront(volatile game_state_t* game_state) {
 
 			delta_x = game_state_copy.enemy_1_x - game_state_copy.x;
 			delta_y = game_state_copy.enemy_1_y - game_state_copy.y;
-			distance_treshold = game_state_copy.enemy_1_diameter/2 + ROBOT_BALLERINA_RADIUS + RANGEFINDER_THRESHOLD_FW*10;
+			distance_treshold = game_state_copy.enemy_1_diameter*10/2 + ROBOT_BALLERINA_RADIUS + RANGEFINDER_THRESHOLD_FW*10;
 		}
 		else if(current_robot_check == 2) {
 
 			delta_x = game_state_copy.enemy_2_x - game_state_copy.x;
 			delta_y = game_state_copy.enemy_2_y - game_state_copy.y;
-			distance_treshold = game_state_copy.enemy_2_diameter/2 + ROBOT_BALLERINA_RADIUS + RANGEFINDER_THRESHOLD_FW*10;
+			distance_treshold = game_state_copy.enemy_2_diameter*10/2 + ROBOT_BALLERINA_RADIUS + RANGEFINDER_THRESHOLD_FW*10;
 		}
 		/* Else:
 		 *  current_robot_check > 2: (More than 2 enemies)      Not possible in eurobot 2014 scenario
