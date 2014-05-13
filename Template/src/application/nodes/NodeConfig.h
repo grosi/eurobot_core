@@ -109,6 +109,7 @@ typedef struct
 #define NODE_WEST_MIN_ANGLE        315 /*!< note, that the zero line is crossed */
 #define NODE_WEST_MAX_ANGLE        44  /*!< note, that the zero line is crossed */
 #define FIRENODE_APPROACHDISTANCE  400
+#define FIREWALL_APPROACHDISTANCE  300
 
 /* Servo */
 #define SERVO_MOVING_DELAY         400  /* Delay in ms to wait while the servo moves the whole way */
