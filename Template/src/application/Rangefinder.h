@@ -55,8 +55,7 @@
 /* Rangefinder settings */ //TODO: Adjust values
 #define RANGEFINDER_RANGE           100     /*!< Maximum detection range in cm (int16_t values from 5 to 1100) */
 #define RANGEFINDER_THRESHOLD_FW    40      /*!< Minimum allowed distance in cm to an obstacle (in front) without alert */
-#define RANGEFINDER_THRESHOLD_BW    40      /*!< Minimum allowed distance in cm to an obstacle (in back) without alert */
-#define RANGEFINDER_THRESHOLD_SE    3       /*!< Minimum allowed space in cm for the separation (fresco panel) without alert */
+#define RANGEFINDER_THRESHOLD_FI    3       /*!< Minimum allowed space in cm for the fire node without alert */
 #define RANGEFINDER_DELAY           100     /*!< Task delay in ms between measures */
 #define RANGEFINDER_ANGLE           30      /*!< half of the complete angle range (complete 60 degree) */
 
@@ -69,19 +68,13 @@ extern xSemaphoreHandle mHwI2C;  /* Mutex for I2C */
 extern xSemaphoreHandle sSyncNodeTask;  /* Semaphore for node task synchronisation */
 
 /* Alarm flags (read only!), 1 if object detected, 0 if no object detected */
-extern volatile uint8_t Rangefinder_flag_FwAlarmIR;     /* Infrared forward alarm */
-extern volatile uint8_t Rangefinder_flag_BwAlarmIR;     /* Infrared backward alarm */
-extern volatile uint8_t Rangefinder_flag_FwAlarmUS;     /* Ultrasonic forward alarm */
-extern volatile uint8_t Rangefinder_flag_BwAlarmUS;     /* Ultrasonic backward alarm */
-extern volatile uint8_t Rangefinder_flag_SeAlarmUS;     /* Ultrasonic separation alarm */
+extern volatile uint8_t Rangefinder_flag_LAlarmUS;     /* Ultrasonic left alarm */
+extern volatile uint8_t Rangefinder_flag_RAlarmUS;     /* Ultrasonic right alarm */
+extern volatile uint8_t Rangefinder_flag_FiAlarmUS;     /* Ultrasonic fire node alarm */
 
 /* exported function prototypes -----------------------------------------------*/
 extern void initRangefinderTask(void);
 extern void suspendRangefinderTask(void);
-extern void IRSensorFwLeft_IT(void);
-extern void IRSensorFwRight_IT(void);
-extern void IRSensorBwLeft_IT(void);
-extern void IRSensorBwRight_IT(void);
 extern boolean isRobotInFront(volatile game_state_t*);
 
 #endif /* RANGEFINDER_TASK_H_ */

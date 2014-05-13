@@ -3,8 +3,12 @@
  * \author  kasen1
  * \date    2013-04-13
  *
+ * \version 1.4b
+ *  - Changed to two ultrasonic sensor in front (for the big robot "B52")
+ *  - Removed code for IR-Sensors, as they're not used in this robot
  * \version 1.3
  *  - Added function isRobotInFront to compare rangefinder with navigation informations
+ *  - Releasing semaphore on i2c error for safety reason
  * \version 1.2
  *  - IR sensors in new arrangement
  *  - Added flag for separation blocked alarm
@@ -56,8 +60,8 @@
 #define I2C_TIMEOUT     1000            /* Number of times a while loop checks for status, to prevent deadlock */
 
 /* SRF08 I2C addresses */
-#define SRF08_ADDR_FW   0xE0            /* Slave address of the SRF08 facing forward */
-#define SRF08_ADDR_BW   0xE2            /* Slave address of the SRF08 facing backward */
+#define SRF08_ADDR_L    0xE0            /* Slave address of the SRF08 on the left */
+#define SRF08_ADDR_R    0xE2            /* Slave address of the SRF08 on the right */
 
 /* SRF08 I2C registers */
 #define SRF08_REG_CMD   0x00            /* Write: Command register */
@@ -83,14 +87,12 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* Variables for comparing the last three values */
-volatile uint8_t flag_FwAlarmUS_last[2] = {0,0};
-#ifndef RANGEFINDER_ONLY_FW
-volatile uint8_t flag_BwAlarmUS_last[2] = {0,0};
-#endif /* RANGEFINDER_ONLY_FW */
+volatile uint8_t flag_LAlarmUS_last[2] = {0,0};
+volatile uint8_t flag_RAlarmUS_last[2] = {0,0};
 
 /* Sensor values */
-uint16_t distance_fw;                   /* Variable for the distance detected by the forward SRF08 (lower- /higher byte joined) */
-uint16_t distance_bw;                   /* Variable for the distance detected by the backward SRF08 (lower- /higher byte joined) */
+uint16_t distance_l;                   /* Variable for the distance detected by the left SRF08 (lower- /higher byte joined) */
+uint16_t distance_r;                   /* Variable for the distance detected by the right SRF08 (lower- /higher byte joined) */
 
 /* Globale variables ---------------------------------------------------------*/
 /* RTOS */
@@ -99,11 +101,9 @@ xSemaphoreHandle mHwI2C = NULL;  /* Mutex for I2C */
 xSemaphoreHandle sSyncNodeTask = NULL;  /* Semaphore for node task synchronisation */
 
 /* Alarm flags, 1 if object detected, 0 if no object detected */
-volatile uint8_t Rangefinder_flag_FwAlarmIR = 0; /* Infrared forward alarm */
-volatile uint8_t Rangefinder_flag_BwAlarmIR = 0; /* Infrared backward alarm */
-volatile uint8_t Rangefinder_flag_FwAlarmUS = 0; /* Ultrasonic forward alarm */
-volatile uint8_t Rangefinder_flag_BwAlarmUS = 0; /* Ultrasonic backward alarm */
-volatile uint8_t Rangefinder_flag_SeAlarmUS = 0; /* Ultrasonic separation alarm */
+volatile uint8_t Rangefinder_flag_LAlarmUS = 0; /* Ultrasonic left alarm */
+volatile uint8_t Rangefinder_flag_RAlarmUS = 0; /* Ultrasonic right alarm */
+volatile uint8_t Rangefinder_flag_FiAlarmUS = 0; /* Ultrasonic fire node alarm */
 
 /* Private function prototypes -----------------------------------------------*/
 static void vRangefinderTask(void*);
@@ -113,6 +113,8 @@ void setSRF08Range(uint8_t slave_address, uint16_t range_in_mm);
 void setSRF08Gain(uint8_t slave_address, uint8_t gain_value);
 void startSRF08Meas(uint8_t slave_address, uint8_t meas_mode);
 uint16_t readSRF08Meas(uint8_t slave_address);
+void checkLeftUS(void);
+void checkRightUS(void);
 
 /**
  * \fn          initRangefinderTasks
@@ -122,22 +124,6 @@ uint16_t readSRF08Meas(uint8_t slave_address);
  * \return      None
  */
 void initRangefinderTask(void) {
-
-	/* sensors initialisations */
-	/* IR: init GPIOs */
-	initIRSensor_FwLeft();
-	initIRSensor_FwRight();
-	initIRSensor_BwLeft();
-	initIRSensor_BwRight();
-
-	/* Configure EXTI Line in interrupt mode */
-	initIRSensorEXTI_FwLeft();
-	initIRSensorEXTI_FwRight();
-	initIRSensorEXTI_BwLeft();
-	initIRSensorEXTI_BwRight();
-
-	/* For testing: Generate software interrupt: simulate a rising edge applied on EXTI5 line
-	EXTI_GenerateSWInterrupt(EXTI_Line5); */
 
 	/* US: I2C */
 	initI2C();
@@ -168,256 +154,212 @@ static void vRangefinderTask(void* pvParameters ) {
 	xLastFlashTime = xTaskGetTickCount();
 
 	/* Set the range */
-	setSRF08Range(SRF08_ADDR_FW, RANGEFINDER_RANGE * 10); /* In mm */
-#ifndef RANGEFINDER_ONLY_FW
-	setSRF08Range(SRF08_ADDR_BW, RANGEFINDER_RANGE * 10); /* In mm */
-#endif /* RANGEFINDER_ONLY_FW */
+	setSRF08Range(SRF08_ADDR_L, RANGEFINDER_RANGE * 10); /* In mm */
+	setSRF08Range(SRF08_ADDR_R, RANGEFINDER_RANGE * 10); /* In mm */
 
 	/* Set the gain register to evaluated value */
-	setSRF08Gain(SRF08_ADDR_FW, 0x1F);
-#ifndef RANGEFINDER_ONLY_FW
-	setSRF08Gain(SRF08_ADDR_BW, 0x1F);
-#endif /* RANGEFINDER_ONLY_FW */
+	setSRF08Gain(SRF08_ADDR_L, 0x1F);
+	setSRF08Gain(SRF08_ADDR_R, 0x1F);
 
 	/* Suspend ourselves, so the task is only running when really used.
 	 * This way there is less possible ultrasonic disturbance (navigation and other robot),
 	 * infrared is still running. */
 	vTaskSuspend(NULL);
 
+	/* Use variable to toggle between left and right ultrasonic measure */
+	boolean toggle_var = TRUE;
+
 	for(EVER) {
 
-		/* Start the ultrasonic measures */
-		startSRF08Meas(SRF08_ADDR_FW, SRF08_MEAS_CM);
-#ifndef RANGEFINDER_ONLY_FW
-		startSRF08Meas(SRF08_ADDR_BW, SRF08_MEAS_CM);
-#endif /* RANGEFINDER_ONLY_FW */
-
-		/* Wait 70 ms, for the sound to travel s_max (11 m) twice (=ca. 64.1 ms), and rounded up (65 ms still made trouble sometimes). */
-		vTaskDelay(70 / portTICK_RATE_MS);
-
-		/* Get distance from the modules */
-		distance_fw = readSRF08Meas(SRF08_ADDR_FW);
-#ifndef RANGEFINDER_ONLY_FW
-		distance_bw = readSRF08Meas(SRF08_ADDR_BW);
-#endif /* RANGEFINDER_ONLY_FW */
-
-		/* Check front */
-		/* Check for error */
-		if(distance_fw == 0xFFFF) {
-			/* ERROR (Semaphore not created correctly or timeout) */
-		}
-		/* Check if an obstacle is to close */
-		else if(distance_fw != 0 && distance_fw < RANGEFINDER_THRESHOLD_FW) {
-
-			/* Compare last three measures, only set alarm if at least two were positive.
-			 * Inside of this block the current measure is positive, so check if at least one of the last two was positive too */
-			if(flag_FwAlarmUS_last[1] || flag_FwAlarmUS_last[0])
-			{
-				/* Two of three were positive, set alarm (object detected) */
-				Rangefinder_flag_FwAlarmUS = 1;
-				/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
-				xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
-			}
-			else
-			{
-				/* Two of three were negative, so don't set the alarm yet. */
-				Rangefinder_flag_FwAlarmUS = 0;
-			}
-
-			/* Remember measure (NOT flag which is affected by the last two measures) */
-			flag_FwAlarmUS_last[1] = flag_FwAlarmUS_last[0];  /* Move last measure one back */
-			flag_FwAlarmUS_last[0] = 1;  /* Current measure is positive */
+		/* Toggle left and right measure, so the ultrasonic sounds don't interfere with each other */
+		if(toggle_var) {
+			checkLeftUS();
+			toggle_var = !toggle_var;
 		}
 		else {
-
-			/* Compare last three measures, only reset alarm if at least two were negative.
-			 * Inside of this block the current measure is negative, so check if at least one of the last two was negative too */
-			if(!(flag_FwAlarmUS_last[1] && flag_FwAlarmUS_last[0]))
-			{
-				/* Two of three were negative, reset alarm  (nothing detected) */
-				Rangefinder_flag_FwAlarmUS = 0;
-			}
-			else
-			{
-				/* Two of three were positive, so don't reset the alarm yet. */
-				Rangefinder_flag_FwAlarmUS = 1;
-				/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
-				xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
-			}
-
-			/* Remember measure (NOT flag which is affected by the last two measures) */
-			flag_FwAlarmUS_last[1] = flag_FwAlarmUS_last[0];  /* Move last measure one back */
-			flag_FwAlarmUS_last[0] = 0;  /* Current measure is negative */
+			checkRightUS();
+			toggle_var = !toggle_var;
 		}
-		/* Check if separation space is blocked */
-		if(distance_fw != 0xFFFF) {
-			if(distance_fw <= RANGEFINDER_THRESHOLD_SE) {
-
-				/* Set flag */
-				Rangefinder_flag_SeAlarmUS = 1;
-			}
-			else {
-
-				/* Reset flag */
-				Rangefinder_flag_SeAlarmUS = 0;
-			}
-		}
-
-#ifndef RANGEFINDER_ONLY_FW
-		/* Check rear */
-		/* Check for error */
-		if(distance_bw == 0xFFFF) {
-			/* ERROR (Semaphore not created correctly or timeout) */
-		}
-		/* Check if an obstacle is to close */
-		else if(distance_bw != 0 && distance_bw < RANGEFINDER_THRESHOLD_BW) {
-
-			/* Compare last three measures, only set alarm if at least two were positive.
-			 * Inside of this block the current measure is positive, so check if at least one of the last two was positive too */
-			if(flag_BwAlarmUS_last[1] || flag_BwAlarmUS_last[0])
-			{
-				/* Two of three were positive, set alarm (object detected) */
-				Rangefinder_flag_BwAlarmUS = 1;
-				/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
-				xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
-			}
-			else
-			{
-				/* Two of three were negative, so don't set the alarm yet. */
-				Rangefinder_flag_BwAlarmUS = 0;
-			}
-
-			/* Remember measure (NOT flag which is affected by the last two measures) */
-			flag_BwAlarmUS_last[1] = flag_BwAlarmUS_last[0];  /* Move last measure one back */
-			flag_BwAlarmUS_last[0] = 1;  /* Current measure is positive */
-		}
-		else {
-
-			/* Compare last three measures, only reset alarm if at least two were negative.
-			 * Inside of this block the current measure is negative, so check if at least one of the last two was negative too */
-			if(!(flag_BwAlarmUS_last[1] && flag_BwAlarmUS_last[0]))
-			{
-				/* Two of three were negative, reset alarm  (nothing detected) */
-				Rangefinder_flag_BwAlarmUS = 0;
-			}
-			else
-			{
-				/* Two of three were positive, so don't reset the alarm yet. */
-				Rangefinder_flag_BwAlarmUS = 1;
-				/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
-				xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
-			}
-
-			/* Remember measure (NOT flag which is affected by the last two measures) */
-			flag_BwAlarmUS_last[1] = flag_BwAlarmUS_last[0];  /* Move last measure one back */
-			flag_BwAlarmUS_last[0] = 0;  /* Current measure is negative */
-		}
-#endif /* RANGEFINDER_ONLY_FW */
 
 		/* Delay until defined time passed */
 		vTaskDelayUntil( &xLastFlashTime, RANGEFINDER_DELAY / portTICK_RATE_MS);
 	}
 }
 
+
 /**
- * \fn
- * \brief  This function is called by the external line 10-15 interrupt handler
+ * \fn          checkLeftUS
+ * \brief       Handles the left ultrasonic rangefinder
  *
- * \param  None
- * \retval None
+ * \param[in]   None
+ * \return      None
  */
-void IRSensorFwLeft_IT(void) {
+void checkLeftUS(void) {
 
-	/* Check if rising or falling interrupt */
-	if(getIRSensor_FwLeft()) {
+	/* Start the ultrasonic measure */
+	startSRF08Meas(SRF08_ADDR_L, SRF08_MEAS_CM);
 
-		/* Nothing detected, all ok */
-		Rangefinder_flag_FwAlarmIR = 0;
+	/* Wait 70 ms, for the sound to travel s_max (11 m) twice (=ca. 64.1 ms), and rounded up (65 ms still made trouble sometimes). */
+	vTaskDelay(70 / portTICK_RATE_MS);
+
+	/* Get distance from the module */
+	distance_l = readSRF08Meas(SRF08_ADDR_L);
+
+	/* Check distance */
+	/* Check for error */
+	if(distance_l == 0xFFFF) {
+
+		/* ERROR (Semaphore not created correctly or timeout) */
+
+		/* Release semaphore to so the range is at least checked by navigation,
+		 * "FromISR" because it's possible the semaphore is released already */
+		xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
+	}
+	/* Check if an obstacle is to close */
+	else if(distance_l != 0 && distance_l < RANGEFINDER_THRESHOLD_FW) {
+
+		/* Compare last three measures, only set alarm if at least two were positive.
+		 * Inside of this block the current measure is positive, so check if at least one of the last two was positive too */
+		if(flag_LAlarmUS_last[1] || flag_LAlarmUS_last[0])
+		{
+			/* Two of three were positive, set alarm (object detected) */
+			Rangefinder_flag_LAlarmUS = 1;
+			/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
+			xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
+		}
+		else
+		{
+			/* Two of three were negative, so don't set the alarm yet. */
+			Rangefinder_flag_LAlarmUS = 0;
+		}
+
+		/* Remember measure (NOT flag which is affected by the last two measures) */
+		flag_LAlarmUS_last[1] = flag_LAlarmUS_last[0];  /* Move last measure one back */
+		flag_LAlarmUS_last[0] = 1;  /* Current measure is positive */
 	}
 	else {
 
-		/* Object detected, set alarm */
-		Rangefinder_flag_FwAlarmIR = 1;
-		/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
-		xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
+		/* Compare last three measures, only reset alarm if at least two were negative.
+		 * Inside of this block the current measure is negative, so check if at least one of the last two was negative too */
+		if(!(flag_LAlarmUS_last[1] && flag_LAlarmUS_last[0]))
+		{
+			/* Two of three were negative, reset alarm  (nothing detected) */
+			Rangefinder_flag_LAlarmUS = 0;
+		}
+		else
+		{
+			/* Two of three were positive, so don't reset the alarm yet. */
+			Rangefinder_flag_LAlarmUS = 1;
+			/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
+			xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
+		}
+
+		/* Remember measure (NOT flag which is affected by the last two measures) */
+		flag_LAlarmUS_last[1] = flag_LAlarmUS_last[0];  /* Move last measure one back */
+		flag_LAlarmUS_last[0] = 0;  /* Current measure is negative */
+	}
+	/* Check space for fire node */
+	if(distance_l != 0xFFFF) {
+		if(distance_l <= RANGEFINDER_THRESHOLD_FI) {
+
+			/* Set flag */
+			Rangefinder_flag_FiAlarmUS = 1;
+		}
+		else {
+
+			/* Reset flag */
+			Rangefinder_flag_FiAlarmUS = 0;
+		}
 	}
 }
 
+
 /**
- * \fn
- * \brief  This function is called by the external line 10-15 interrupt handler
+ * \fn          checkRightUS
+ * \brief       Handles the right ultrasonic rangefinder
  *
- * \param  None
- * \retval None
+ * \param[in]   None
+ * \return      None
  */
-void IRSensorFwRight_IT(void) {
+void checkRightUS(void) {
 
-	/* Check if rising or falling interrupt */
-	if(getIRSensor_FwRight()) {
+	/* Start the ultrasonic measure */
+	startSRF08Meas(SRF08_ADDR_R, SRF08_MEAS_CM);
 
-		/* Nothing detected, all ok */
-		Rangefinder_flag_FwAlarmIR = 0;
+	/* Wait 70 ms, for the sound to travel s_max (11 m) twice (=ca. 64.1 ms), and rounded up (65 ms still made trouble sometimes). */
+	vTaskDelay(70 / portTICK_RATE_MS);
+
+	/* Get distance from the module */
+	distance_r = readSRF08Meas(SRF08_ADDR_R);
+
+	/* Check distance */
+	/* Check for error */
+	if(distance_r == 0xFFFF) {
+
+		/* ERROR (Semaphore not created correctly or timeout) */
+
+		/* Release semaphore to so the range is at least checked by navigation,
+		 * "FromISR" because it's possible the semaphore is released already */
+		xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
+	}
+	/* Check if an obstacle is to close */
+	else if(distance_r != 0 && distance_r < RANGEFINDER_THRESHOLD_FW) {
+
+		/* Compare last three measures, only set alarm if at least two were positive.
+		 * Inside of this block the current measure is positive, so check if at least one of the last two was positive too */
+		if(flag_RAlarmUS_last[1] || flag_RAlarmUS_last[0])
+		{
+			/* Two of three were positive, set alarm (object detected) */
+			Rangefinder_flag_RAlarmUS = 1;
+			/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
+			xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
+		}
+		else
+		{
+			/* Two of three were negative, so don't set the alarm yet. */
+			Rangefinder_flag_RAlarmUS = 0;
+		}
+
+		/* Remember measure (NOT flag which is affected by the last two measures) */
+		flag_RAlarmUS_last[1] = flag_RAlarmUS_last[0];  /* Move last measure one back */
+		flag_RAlarmUS_last[0] = 1;  /* Current measure is positive */
 	}
 	else {
 
-		/* Object detected, set alarm */
-		Rangefinder_flag_FwAlarmIR = 1;
-		/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
-		xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
+		/* Compare last three measures, only reset alarm if at least two were negative.
+		 * Inside of this block the current measure is negative, so check if at least one of the last two was negative too */
+		if(!(flag_RAlarmUS_last[1] && flag_RAlarmUS_last[0]))
+		{
+			/* Two of three were negative, reset alarm  (nothing detected) */
+			Rangefinder_flag_RAlarmUS = 0;
+		}
+		else
+		{
+			/* Two of three were positive, so don't reset the alarm yet. */
+			Rangefinder_flag_RAlarmUS = 1;
+			/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
+			xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
+		}
+
+		/* Remember measure (NOT flag which is affected by the last two measures) */
+		flag_RAlarmUS_last[1] = flag_RAlarmUS_last[0];  /* Move last measure one back */
+		flag_RAlarmUS_last[0] = 0;  /* Current measure is negative */
+	}
+	/* Check space for fire node */
+	if(distance_r != 0xFFFF) {
+		if(distance_r <= RANGEFINDER_THRESHOLD_FI) {
+
+			/* Set flag */
+			Rangefinder_flag_FiAlarmUS = 1;
+		}
+		else {
+
+			/* Reset flag */
+			Rangefinder_flag_FiAlarmUS = 0;
+		}
 	}
 }
 
-/**
- * \fn
- * \brief  This function is called by the external line 5-9 interrupt handler
- *
- * \param  None
- * \retval None
- */
-void IRSensorBwLeft_IT(void) {
-#ifndef RANGEFINDER_ONLY_FW
-
-	/* Check if rising or falling interrupt */
-	if(getIRSensor_BwLeft()) {
-
-		/* Nothing detected, all ok */
-		Rangefinder_flag_BwAlarmIR = 0;
-	}
-	else {
-
-		/* Object detected, set alarm */
-		Rangefinder_flag_BwAlarmIR = 1;
-		/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
-		xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
-	}
-#endif /* RANGEFINDER_ONLY_FW */
-}
-
-/**
- * \fn
- * \brief  This function is called by the external line 10-15 interrupt handler
- *
- * \param  None
- * \retval None
- */
-void IRSensorBwRight_IT(void) {
-#ifndef RANGEFINDER_ONLY_FW
-
-	/* Check if rising or falling interrupt */
-	if(getIRSensor_BwRight()) {
-
-		/* Nothing detected, all ok */
-		Rangefinder_flag_BwAlarmIR = 0;
-	}
-	else {
-
-		/* Object detected, set alarm */
-		Rangefinder_flag_BwAlarmIR = 1;
-		/* Release semaphore to indicate detection of an obstacle, "FromISR" because it's possible the semaphore is released already */
-		xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
-	}
-#endif /* RANGEFINDER_ONLY_FW */
-}
 
 /**
  * \fn          setSRF08Range
@@ -614,19 +556,14 @@ void suspendRangefinderTask(void) {
 	vTaskSuspend(xRangefinderTask_Handle);
 
 	/* Reset variables for comparing the last three values */
-	flag_FwAlarmUS_last[0] = 0;
-	flag_FwAlarmUS_last[1] = 0;
-#ifndef RANGEFINDER_ONLY_FW
-	flag_BwAlarmUS_last[0] = 0;
-	flag_BwAlarmUS_last[1] = 0;
-#endif /* RANGEFINDER_ONLY_FW */
+	flag_LAlarmUS_last[0] = 0;
+	flag_LAlarmUS_last[1] = 0;
+	flag_RAlarmUS_last[0] = 0;
+	flag_RAlarmUS_last[1] = 0;
 
 	/* Reset alarm flags */
-	Rangefinder_flag_FwAlarmIR = 0;
-	Rangefinder_flag_BwAlarmIR = 0;
-	Rangefinder_flag_FwAlarmUS = 0;
-	Rangefinder_flag_BwAlarmUS = 0;
-	Rangefinder_flag_SeAlarmUS = 0;
+	Rangefinder_flag_LAlarmUS = 0;
+	Rangefinder_flag_RAlarmUS = 0;
 }
 
 

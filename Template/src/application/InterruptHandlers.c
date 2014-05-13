@@ -135,8 +135,9 @@ void EXTI4_IRQHandler(void) {
 void EXTI9_5_IRQHandler(void) {
 	if(EXTI_GetITStatus(EXTI_Line5) != RESET) {
 
-		/* Call rangefinder function */
-		IRSensorBwLeft_IT();
+		/*
+		 * Add YourFunction_IT() here
+		 */
 
 		/* Clear the EXTI line pending bit */
 		EXTI_ClearITPendingBit(EXTI_Line5);
@@ -199,16 +200,18 @@ void EXTI15_10_IRQHandler(void) {
 	}
 	if(EXTI_GetITStatus(EXTI_Line11) != RESET) {
 
-		/* Call rangefinder function */
-		IRSensorFwLeft_IT();
+		/*
+		 * Add YourFunction_IT() here
+		 */
 
 		/* Clear the EXTI line pending bit */
 		EXTI_ClearITPendingBit(EXTI_Line11);
 	}
 	if(EXTI_GetITStatus(EXTI_Line12) != RESET) {
 
-		/* Call rangefinder function */
-		IRSensorFwRight_IT();
+		/*
+		 * Add YourFunction_IT() here
+		 */
 
 		/* Clear the EXTI line pending bit */
 		EXTI_ClearITPendingBit(EXTI_Line12);
@@ -233,8 +236,9 @@ void EXTI15_10_IRQHandler(void) {
 	}
 	if(EXTI_GetITStatus(EXTI_Line15) != RESET) {
 
-		/* Call rangefinder function */
-		IRSensorBwRight_IT();
+		/*
+		 * Add YourFunction_IT() here
+		 */
 
 		/* Clear the EXTI line pending bit */
 		EXTI_ClearITPendingBit(EXTI_Line15);
