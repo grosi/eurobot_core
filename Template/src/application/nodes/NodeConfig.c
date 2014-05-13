@@ -523,7 +523,7 @@ uint8_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, uint8_
             /* TODO: repeat barrier */
             if(direction == GOTO_DRIVE_FORWARD)
             {
-                if(isRobotInFront(game_state))
+                if(isRobotInRange(game_state, FALSE))
                 {
                     /* STOPP */
                     txStopDrive();

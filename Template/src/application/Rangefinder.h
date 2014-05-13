@@ -3,8 +3,13 @@
  * \author  kasen1
  * \date    2014-01-14
  *
+ * \version 1.4b
+ *  - Changed to two ultrasonic sensor in front (for the big robot "B52")
+ *  - Removed code for IR-Sensors, as they're not used in this robot
+ *  - Updated navigation comparing function with option to check backwards
  * \version 1.3
- *  - Added function isRobotInFront to compare rangefinder with navigation informations
+ *  - Added function to compare rangefinder with navigation informations
+ *  - Releasing semaphore on i2c error for safety reason
  * \version 1.2
  *  - IR sensors in new arrangement
  *  - Added flag for separation blocked alarm
@@ -75,7 +80,7 @@ extern volatile uint8_t Rangefinder_flag_FiAlarmUS;     /* Ultrasonic fire node 
 /* exported function prototypes -----------------------------------------------*/
 extern void initRangefinderTask(void);
 extern void suspendRangefinderTask(void);
-extern boolean isRobotInFront(volatile game_state_t*);
+extern boolean isRobotInRange(volatile game_state_t*, boolean);
 
 #endif /* RANGEFINDER_TASK_H_ */
 

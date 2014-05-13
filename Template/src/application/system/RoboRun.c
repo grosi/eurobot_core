@@ -735,7 +735,7 @@ func_report_t gotoNode(node_param_t* param, volatile game_state_t* game_state)
 			/* Semaphore received, this means an obstacle was detected! */
 			
 			/* Check if an enemy/confederate is within range in front of the robot */
-			if(isRobotInFront(game_state)) {
+			if(isRobotInRange(game_state, FALSE)) {
 
 				/* STOPP */
 				txStopDrive();

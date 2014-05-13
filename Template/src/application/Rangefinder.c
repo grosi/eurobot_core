@@ -6,8 +6,9 @@
  * \version 1.4b
  *  - Changed to two ultrasonic sensor in front (for the big robot "B52")
  *  - Removed code for IR-Sensors, as they're not used in this robot
+ *  - Updated navigation comparing function with option to check backwards
  * \version 1.3
- *  - Added function isRobotInFront to compare rangefinder with navigation informations
+ *  - Added function to compare rangefinder with navigation informations
  *  - Releasing semaphore on i2c error for safety reason
  * \version 1.2
  *  - IR sensors in new arrangement
@@ -107,8 +108,6 @@ volatile uint8_t Rangefinder_flag_FiAlarmUS = 0; /* Ultrasonic fire node alarm *
 
 /* Private function prototypes -----------------------------------------------*/
 static void vRangefinderTask(void*);
-
-/* Private functions ---------------------------------------------------------*/
 void setSRF08Range(uint8_t slave_address, uint16_t range_in_mm);
 void setSRF08Gain(uint8_t slave_address, uint8_t gain_value);
 void startSRF08Meas(uint8_t slave_address, uint8_t meas_mode);
@@ -568,13 +567,13 @@ void suspendRangefinderTask(void) {
 
 
 /**
- * \fn          isRobotInFront
- * \brief       Function to check if an enemy/confederate is in front of robot within range
+ * \fn          isRobotInRange
+ * \brief       Function to check if an enemy/confederate is in front/front of robot within range
  *
  * \param[in]   game_state_t* game_state Game infos (navi)
  * \return      boolean
  */
-boolean isRobotInFront(volatile game_state_t* game_state) {
+boolean isRobotInRange(volatile game_state_t* game_state, boolean in_back) {
 
     /* local variables */
     int16_t delta_x, delta_y;
@@ -622,7 +621,7 @@ boolean isRobotInFront(volatile game_state_t* game_state) {
 		/* Check if a robot is within threshold range (mm) */
 		if(distance <= distance_treshold) {
 
-			/* Convert angle to -180 <= alpha < 180 */
+			/* Convert (0 <= angle < 360) to (-180 <= alpha < 180) */
 			if(game_state_copy.angle < 180) {
 				alpha = game_state_copy.angle;
 			}
@@ -633,6 +632,14 @@ boolean isRobotInFront(volatile game_state_t* game_state) {
 			phi = round(atan2f(delta_y, delta_x)/M_PI*180);
 			/* Calculate the angle to the enemy (relative to our angle, -180 <= phi < 180) */
 			phi = phi-alpha;
+
+			/* If we have to check the back, rotate phi +180 */
+			if(in_back) {
+				phi += 180;
+				if(phi >= 180) {
+					phi -= 360;
+				}
+			}
 
 			/* Check if the enemy is within our angle */
 			if(fabs(phi) <= RANGEFINDER_ANGLE) {
