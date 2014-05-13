@@ -65,6 +65,29 @@ void doFireWallNormalNode(node_param_t* param, volatile game_state_t* game_state
 //		return;
 //	}
 
+    /* Move the sucker servo up, step by step just to make sure*/
+	servo_pos = SERVO_POS_AIR_WALL; /* Current position */
+	while(servo_pos < (SERVO_POS_AIR_UP+SERVO_AIR_STEP))
+	{
+		/* Decrement servo position by step size */
+		servo_pos += SERVO_AIR_STEP;
+
+		/* Check if it's the last step */
+		if(servo_pos > SERVO_POS_AIR_UP)
+		{
+			/* Set the final servo position without over-rotating */
+			setServo_1(SERVO_POS_AIR_UP);
+		}
+		else
+		{
+			/* Set the new servo position */
+			setServo_1(servo_pos);
+		}
+
+		/* Wait some time while servo moves */
+		vTaskDelay(SERVO_AIR_STEP_DELAY / portTICK_RATE_MS);
+	}
+
     /* Drive over fire from NORTH */
     if(param->angle >= NODE_NORTH_MIN_ANGLE && param->angle <= NODE_NORTH_MAX_ANGLE)
     {
@@ -95,29 +118,6 @@ void doFireWallNormalNode(node_param_t* param, volatile game_state_t* game_state
 
     /* Wait while driving */
 	vTaskDelay(FIRE_WALL_NODE_DRIVE_DELAY / portTICK_RATE_MS);
-
-	/* Move the sucker servo up, step by step just to make sure*/
-	servo_pos = SERVO_POS_AIR_WALL; /* Current position */
-	while(servo_pos < (SERVO_POS_AIR_UP+SERVO_AIR_STEP))
-	{
-		/* Decrement servo position by step size */
-	    servo_pos += SERVO_AIR_STEP;
-
-	    /* Check if it's the last step */
-	    if(servo_pos > SERVO_POS_AIR_UP)
-	    {
-	    	/* Set the final servo position without over-rotating */
-	        setServo_1(SERVO_POS_AIR_UP);
-	    }
-	    else
-	    {
-	    	/* Set the new servo position */
-	        setServo_1(servo_pos);
-	    }
-
-	    /* Wait some time while servo moves */
-	    vTaskDelay(SERVO_AIR_STEP_DELAY / portTICK_RATE_MS);
-	}
 
 	/* Move the sucker servo down a bit, step by step */
 	servo_pos = SERVO_POS_AIR_UP; /* Current position */

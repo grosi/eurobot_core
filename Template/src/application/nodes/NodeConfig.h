@@ -124,7 +124,11 @@ typedef struct
 #define SERVO_POS_NET_LOAD         1400//1340 /* Servo position: Launcher all the way front */
 #define SERVO_POS_NET_LAUNCH       1700 /* Servo position: Launcher all the way back */
 
-
+/* Firewallnodes */
+#define FIRE_WALL_NODE_SPEED 		30 		/*!< [%] */
+#define FIRE_WALL_NODE_BARRIER 		0
+#define FIRE_WALL_NODE_DRIVE_DELAY 	500
+#define FIRE_WALL_NODE_DRIVE_BACK_DELAY 	500
 
 /* exported macro -------------------------------------------------------------*/
 
