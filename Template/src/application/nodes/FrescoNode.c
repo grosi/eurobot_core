@@ -103,12 +103,15 @@ void doFrescoNode(node_param_t* param, volatile game_state_t* game_state) {
 
 		/* Move panel all the way in, we don't need to do that slowly here because we're not pasting frescos */
 		setServo_1(SERVO_POS_FRESCO_IN);
+
+	    /* Wait some time while servo moves */
+	    vTaskDelay(SERVO_MOVING_DELAY / portTICK_RATE_MS);
 	}
 
     /* drive backwards (defined 5 cm by drive system) */
     txGotoXY(IGNORED_VALUE, IGNORED_VALUE, IGNORED_VALUE, FRESCO_APPROACH_SPEED, IGNORED_VALUE, GOTO_DRIVE_BACKWARD);
     /* wait while driving backwards */
-    vTaskDelay(500 / portTICK_RATE_MS);
+    vTaskDelay(2000 / portTICK_RATE_MS);  // 1s is too short, TODO: evaluate why even necessary
 
 	/* Get number of frescos still in robot */
 	uint8_t n_frescos_present = getSensor_Fresco_1() + getSensor_Fresco_2();
