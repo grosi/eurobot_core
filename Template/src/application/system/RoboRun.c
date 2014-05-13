@@ -377,7 +377,7 @@ void runRoboRunState(portTickType* tick)
     /******************
      * time barrier
      ******************/
-    if(getRemainingGameTime() < PLAY_TIME_TOTAL - PLAY_TIME)
+    if(getRemainingGameTime() < PLAY_TIME_TOTAL - PLAY_TIME || remain_nodes == 1)
     {
         for(node_count = 0; node_count < NODE_QUANTITY-3; node_count++)
         {
