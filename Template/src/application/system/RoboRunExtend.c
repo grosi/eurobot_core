@@ -20,13 +20,12 @@
 #include "../ELP.h"
 #include "../System.h"
 #include "../nodes/NodeConfig.h"
-#include "RoboSetup.h" /* next state if this one is completed successfully */
+#include "RoboInitialisation.h" /* next state if this one is completed successfully */
 #include "RoboError.h" /* next state if this one is completed with errors */
 #include "RoboRunExtend.h"
 
 /* lib */
-#include "lib/display.h"
-#include "lib/sensor.h"
+#include "lib/servo.h"
 
 /* Private typedef -----------------------------------------------------------*/
 
@@ -39,17 +38,34 @@
 
 /* Private functions ---------------------------------------------------------*/
 
+
+/**
+ * \fn      initRoboRunExtendState
+ * \brief   init things for this state
+ */
 void initRoboRunExtendState()
 {
 
 }
 
+
+/**
+ * \fn      runRoboRunExtendState
+ * \brief   system state for the funny action
+ *
+ * \param   tick    tick for cycle delays
+ */
 void runRoboRunExtendState(portTickType* tick)
 {
     /* check if the 90s are over */
     if(getRemainingGameTime() == 0)
     {
-        //TODO Netz
+        setServo_2(SERVO_POS_NET_LAUNCH);
+        vTaskDelay(1000/portMAX_DELAY);
+        setServo_2(SERVO_POS_NET_LOAD);
+
+        /* re-init the complete system */
+        system_state = runRoboInitialisationState;
     }
     /* wait until the game is finished */
     else
