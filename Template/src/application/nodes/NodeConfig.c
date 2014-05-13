@@ -470,6 +470,8 @@ void initNodeResources()
  * \param[in]  x   x-position [mm]
  * \param[in]  y   y-position [mm]
  * \param[in]  angle
+ * \param[in]  speed
+ * \param[in]  direction
  * \param[in]  game_state
  *
  * \retval 0   error
@@ -570,6 +572,8 @@ uint8_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, uint8_
  *  \param[in]  x   x-position [mm]
  *  \param[in]  y   y-position [mm]
  *  \param[in]  angle
+ *  \param[in]  speed
+ *  \param[in]  direction
  *  \param[in]  game_state
  *
  *  \retval 0   error

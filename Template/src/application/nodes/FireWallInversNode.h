@@ -36,7 +36,7 @@
 #define Y_HEART_OF_FIRE						650
 #define Y_APPROACH_HEART_OF_FIRE			50
 #define HEART_OF_FIRE_DRIVE_SPEED			100
-#define HEART_OF_FIRE_DIRECTION				180
+#define HEART_OF_FIRE_ANGLE					180
 
 
 /* exported macro -------------------------------------------------------------*/

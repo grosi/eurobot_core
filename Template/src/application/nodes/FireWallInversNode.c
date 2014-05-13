@@ -67,26 +67,7 @@ void doFireWallInversNode(node_param_t* param, volatile game_state_t* game_state
 //	}
 
 	/* Move the sucker servo down a bit, step by step */
-	servo_pos = SERVO_POS_AIR_UP; /* Current position */
-	while(servo_pos > (SERVO_POS_AIR_WALL_INVERSE+SERVO_AIR_STEP))
-	{
-		/* Decrement servo position by step size */
-		servo_pos -= SERVO_AIR_STEP;
-
-		/* Check if it's the last step */
-		if(servo_pos < SERVO_POS_AIR_WALL_INVERSE)
-		{
-			/* Set the final servo position without over-rotating */
-			setServo_1(SERVO_POS_AIR_WALL_INVERSE);
-		}
-		else
-		{
-			/* Set the new servo position */
-			setServo_1(servo_pos);
-		}
-		/* Wait some time while servo moves */
-		vTaskDelay(SERVO_AIR_STEP_DELAY / portTICK_RATE_MS);
-	}
+	placeSucker(SERVO_POS_AIR_WALL_INVERSE);
 
 	/* Drive over fire from NORTH */
 	if(param->angle >= NODE_NORTH_MIN_ANGLE && param->angle <= NODE_NORTH_MAX_ANGLE)
@@ -151,25 +132,7 @@ void doFireWallInversNode(node_param_t* param, volatile game_state_t* game_state
 	}
 
 	/* Move the sucker servo up, step by step */
-	while(servo_pos < (SERVO_POS_AIR_UP+SERVO_AIR_STEP))
-	{
-		/* Decrement servo position by step size */
-		servo_pos += SERVO_AIR_STEP;
-
-		/* Check if it's the last step */
-		if(servo_pos > SERVO_POS_AIR_UP)
-		{
-			/* Set the final servo position without over-rotating */
-			setServo_1(SERVO_POS_AIR_UP);
-		}
-		else
-		{
-			/* Set the new servo position */
-			setServo_1(servo_pos);
-		}
-		/* Wait some time while servo moves */
-		vTaskDelay(SERVO_AIR_STEP_DELAY / portTICK_RATE_MS);
-	}
+	placeSucker(SERVO_POS_AIR_UP);
 
 	/* Drive 5 cm backwards */
 	txGotoXY(param->x, param->y, param->angle, FIRE_WALL_NODE_SPEED, FIRE_WALL_NODE_BARRIER, GOTO_DRIVE_BACKWARD);
@@ -177,45 +140,37 @@ void doFireWallInversNode(node_param_t* param, volatile game_state_t* game_state
 	/* wait while driving backwards */
 	vTaskDelay(FIRE_WALL_NODE_DRIVE_BACK_DELAY / portTICK_RATE_MS);
 
-	// TODO to be defined if we go to the heart of fire or just place it anywhere else
-	// TODO activate Rangefinder
-	/* drive to the heart of fire in the middle */
-	txGotoXY(X_HEART_OF_FIRE, Y_HEART_OF_FIRE - Y_APPROACH_HEART_OF_FIRE, HEART_OF_FIRE_DIRECTION, HEART_OF_FIRE_DRIVE_SPEED, GOTO_NO_BARRIER, GOTO_DRIVE_FORWARD);
+	/* drive before the heart of fire in the middle */
+	if(checkDrive(X_HEART_OF_FIRE, Y_HEART_OF_FIRE - Y_APPROACH_HEART_OF_FIRE, HEART_OF_FIRE_ANGLE, HEART_OF_FIRE_DRIVE_SPEED, GOTO_DRIVE_FORWARD, game_state) == 0)
+	{
+		/* place the fire where the robot stopped */
+		setAir(AIR_OFF);
+		/* Don't continue */
+		param->node_state = NODE_FINISH_ERROR;
+		return;
+	}
 
 	/* wait while driving to the heart of fire */
 	vTaskDelay(FIRE_WALL_NODE_DRIVE_HEART_DELAY / portTICK_RATE_MS);
 
 	/* move sucker down */
-	servo_pos = SERVO_POS_AIR_UP; /* Current position */
-	while(servo_pos > (SERVO_POS_AIR_PLACE+SERVO_AIR_STEP))
+	placeSucker(SERVO_POS_AIR_PLACE);
+
+	/* drive to the heart of fire place position */
+	if(checkDrive(X_HEART_OF_FIRE, Y_HEART_OF_FIRE, HEART_OF_FIRE_ANGLE, HEART_OF_FIRE_DRIVE_SPEED, GOTO_DRIVE_FORWARD, game_state) == 0)
 	{
-		/* Decrement servo position by step size */
-		servo_pos -= SERVO_AIR_STEP;
+		/* place the fire where the robot stopped */
+		setAir(AIR_OFF);
+		/* Don't continue */
+		param->node_state = NODE_FINISH_ERROR;
+		return;
 
-		/* Check if it's the last step */
-		if(servo_pos < SERVO_POS_AIR_PLACE)
-		{
-			/* Set the final servo position without over-rotating */
-			setServo_1(SERVO_POS_AIR_PLACE);
-		}
-		else
-		{
-			/* Set the new servo position */
-			setServo_1(servo_pos);
-		}
-		/* Wait some time while servo moves */
-		vTaskDelay(SERVO_AIR_STEP_DELAY / portTICK_RATE_MS);
 	}
-
-	// TODO to be defined if we go to the heart of fire or just place it anywhere else
-	// TODO activate Rangefinder
-	/* drive to the heart of fire in the middle */
-	txGotoXY(X_HEART_OF_FIRE, Y_HEART_OF_FIRE, HEART_OF_FIRE_DIRECTION, FIRE_WALL_NODE_SPEED, GOTO_NO_BARRIER, GOTO_DRIVE_FORWARD);
 
 	/* wait while driving to the heart of fire */
 	vTaskDelay(FIRE_HEART_DRIVE_DELAY / portTICK_RATE_MS);
 
-	/* deactivate sucker, place fire */
+	/* place fire */
 	setAir(AIR_OFF);
 
 	/* Drive 5 cm backwards */
