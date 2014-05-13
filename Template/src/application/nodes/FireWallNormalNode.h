@@ -21,11 +21,14 @@
 
 
 /* exported define ------------------------------------------------------------*/
-//#define FIRE_NODE_DELTA_GO 250 /*!< [mm] */
-//#define FIRE_NODE_SPEED 100 /*!< [%] */
-//#define FIRE_NODE_BARRIER 0
-//#define FIRE_NODE_ACK_DELAY 20
-//#define FIRE_NODE_DRIVE_DELAY 500
+#define FIRE_WALL_NODE_DELTA_GO 	120 	/*!< [mm] */
+#define FIRE_WALL_NODE_SPEED 		30 		/*!< [%] */
+#define FIRE_WALL_NODE_BARRIER 		0
+#define FIRE_NODE_ACK_DELAY 		20
+#define FIRE_WALL_NODE_DRIVE_DELAY 	500
+#define FIRE_WALL_NODE_DRIVE_BACK_DELAY 	500
+
+#define SERVO_POS_AIR_WALL			1700	/* Servo Position to drop fire */
 
 /* exported macro -------------------------------------------------------------*/
 
