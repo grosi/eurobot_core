@@ -4,8 +4,9 @@
  * \date    2013-04-13
  *
  * \version 1.3
- *  - Added function isRobotInFront to compare rangefinder with navigation informations
+ *  - Added function to compare rangefinder with navigation informations
  *  - Releasing semaphore on i2c error for safety reason
+ *  - Software tested (13.05.2014)
  * \version 1.2
  *  - IR sensors in new arrangement
  *  - Added flag for separation blocked alarm
