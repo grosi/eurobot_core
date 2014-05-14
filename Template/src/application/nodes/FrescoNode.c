@@ -55,22 +55,17 @@
  */
 void doFrescoNode(node_param_t* param, volatile game_state_t* game_state) {
 
-	/* Local variable to calculate the y position for driving to the wall */
-	uint16_t y;
+	/* Drive 5 cm closer to the wall */
+	txGotoXY(param->x, param->y + FRESCO_APPROACH_DISTANCE, param->angle, FRESCO_SPEED, game_state->barrier, GOTO_DRIVE_FORWARD);
 
 	/* Move panel all the way out */
 	setServo_1(SERVO_POS_FRESCO_OUT);
 
 	/* Wait some time while servo moves */
-	vTaskDelay(SERVO_MOVING_DELAY / portTICK_RATE_MS);
+	vTaskDelay(FRESCO_APPROACH_DELAY / portTICK_RATE_MS);
 
-	/* Calculate the y position and add overhead, but make sure it's inside the map */
-	y = param->y + FRESCO_APPROACH_DISTANCE + FRESCO_APPROACH_OVERHEAD;
-	if(y > PLAYGROUND_HEIGH) {
-		y = PLAYGROUND_HEIGH;
-	}
 	/* Drive closer to the wall */
-	txGotoXY(param->x, y, param->angle, FRESCO_APPROACH_SPEED, game_state->barrier, GOTO_DRIVE_FORWARD);
+	txGotoXY(param->x, FRESCO_WALL_POSITION, param->angle, FRESCO_APPROACH_SPEED, game_state->barrier, GOTO_DRIVE_FORWARD);
 
 	volatile uint16_t approach_counter = 0;
 	while(!getSensor_Fresco_Wall() && approach_counter < FRESCO_APPROACH_TIME) {

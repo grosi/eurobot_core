@@ -156,16 +156,16 @@ node_t node_mammoth_6 =
 node_t node_fresco_1 =
 {
     {
-        .id = 4,                            /*!<node id */
-        .points = 6,                        /*!<node points */
-        .percent = 0.28,                    /*!<percent of the total points [%]*/
-        .time = 6,                         /*!<estimated node time [s]*/
-        .x = 1350,                          /*!<node x position [mm]*/
-        .y = 1860-FRESCO_APPROACH_DISTANCE, /*!<node y position [mm]*/  //TODO update after including Kalman filter
-        .pool_id = NODE_FRESCO_POOL_ID,     /*!<node pool id */
-        .angle = 90,                        /*!<node arrive direction */
-        .node_tries = 1,                    /*!< node repeats (1 = default)*/
-        .node_state = NODE_UNDONE,          /*!<node state */
+        .id = 4,                            	/*!<node id */
+        .points = 6,                        	/*!<node points */
+        .percent = 0.28,                    	/*!<percent of the total points [%]*/
+        .time = 6,                         		/*!<estimated node time [s]*/
+        .x = 1350,                          	/*!<node x position [mm]*/
+        .y = 1860 - FRESCO_APPROACH_DISTANCE,	/*!<node y position [mm]*/
+        .pool_id = NODE_FRESCO_POOL_ID,     	/*!<node pool id */
+        .angle = 90,                        	/*!<node arrive direction */
+        .node_tries = 1,                    	/*!< node repeats (1 = default)*/
+        .node_state = NODE_UNDONE,          	/*!<node state */
     },
     doFrescoNode
 };
@@ -174,16 +174,16 @@ node_t node_fresco_1 =
 node_t node_fresco_2 =
 {
     {
-        .id = 5,                            /*!<node id */
-        .points = 6,                        /*!<node points */
-        .percent = 0.28,                    /*!<percent of the total points [%]*/
-        .time = 6,                         /*!<estimated node time [s]*/
-        .x = 1650,                          /*!<node x position [mm]*/
-        .y = 1860-FRESCO_APPROACH_DISTANCE, /*!<node y position [mm]*/  //TODO update after including Kalman filter
-        .pool_id = NODE_FRESCO_POOL_ID,     /*!<node pool id */
-        .angle = 90,                        /*!<node arrive direction */
-        .node_tries = 1,                    /*!< node repeats (1 = default)*/
-        .node_state = NODE_UNDONE,          /*!<node state */
+        .id = 5,                            	/*!<node id */
+        .points = 6,                        	/*!<node points */
+        .percent = 0.28,                    	/*!<percent of the total points [%]*/
+        .time = 6,                          	/*!<estimated node time [s]*/
+        .x = 1650,                          	/*!<node x position [mm]*/
+        .y = 1860 - FRESCO_APPROACH_DISTANCE,	/*!<node y position [mm]*/
+        .pool_id = NODE_FRESCO_POOL_ID,     	/*!<node pool id */
+        .angle = 90,                        	/*!<node arrive direction */
+        .node_tries = 1,                    	/*!< node repeats (1 = default)*/
+        .node_state = NODE_UNDONE,          	/*!<node state */
     },
     doFrescoNode
 };
