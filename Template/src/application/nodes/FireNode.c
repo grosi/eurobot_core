@@ -29,6 +29,7 @@
 
 /* Private define ------------------------------------------------------------*/
 
+
 /* Private macro -------------------------------------------------------------*/
 
 
@@ -61,9 +62,6 @@ void doFireNode(node_param_t* param, volatile game_state_t* game_state)
 		param->node_state = NODE_FINISH_ERROR;
 		return;
 	}
-
-    /* Activate rangefinder */
-//    vTaskResume(xRangefinderTask_Handle);
 
 	/* reset current barrier flag */
 	switch(param->id)
@@ -116,25 +114,6 @@ void doFireNode(node_param_t* param, volatile game_state_t* game_state)
 	vTaskDelay(SERVO_MOVING_DELAY / portTICK_RATE_MS);
 
 	param->node_state = NODE_FINISH_SUCCESS;
-
-
-	/* Copy current game state back */
-    taskENTER_CRITICAL();
-    *game_state = game_state_copy;
-    taskEXIT_CRITICAL();
-
-    /* Fire has fallen */
-//    if(Rangefinder_flag_SeAlarmUS == 0){
-//
-//
-//    }
-//    else {
-//
-//    	param->node_state = NODE_FINISH_ERROR;
-//    }
-
-    /* Suspend rangefinder safely */
-    //suspendRangefinderTask();
 }
 
 /**
