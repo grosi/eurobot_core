@@ -38,7 +38,6 @@
 
 
 /* Private variables ---------------------------------------------------------*/
-volatile uint8_t Mammoth_flag_SeparationDone = 1;
 
 
 /* Private function prototypes -----------------------------------------------*/
