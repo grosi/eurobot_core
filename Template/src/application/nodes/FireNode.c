@@ -113,6 +113,11 @@ void doFireNode(node_param_t* param, volatile game_state_t* game_state)
 	/* Wait some time while servo moves */
 	vTaskDelay(SERVO_MOVING_DELAY / portTICK_RATE_MS);
 
+	/* Copy current game state back */
+	taskENTER_CRITICAL();
+	*game_state = game_state_copy;
+	taskEXIT_CRITICAL();
+
 	param->node_state = NODE_FINISH_SUCCESS;
 }
 
