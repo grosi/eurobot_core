@@ -275,6 +275,10 @@ static void vRangefinderTask(void* pvParameters ) {
 		/* Check for error */
 		if(distance_bw == 0xFFFF) {
 			/* ERROR (Semaphore not created correctly or timeout) */
+
+			/* Release semaphore to so the range is at least checked by navigation,
+			 * "FromISR" because it's possible the semaphore is released already */
+			xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
 		}
 		/* Check if an obstacle is to close */
 		else if(distance_bw != 0 && distance_bw < RANGEFINDER_THRESHOLD_BW) {

@@ -148,7 +148,7 @@ menu_t enemy_quantity =
 /* ENEMY 1 SIZE*/
 menu_t enemy_size1 =
 {
-    .title = "ENEMY SIZE1 [cm]",
+    .title = "ENEMY1 SIZE [cm]",
     .byte0 = "-",
     .byte15 = "+",
     .opt1 = "10..",
@@ -167,7 +167,7 @@ menu_t enemy_size1 =
 /* ENEMY 2 SIZE*/
 menu_t enemy_size2 =
 {
-    .title = "ENEMY SIZE1 [cm]",
+    .title = "ENEMY2 SIZE [cm]",
     .byte0 = "-",
     .byte15 = "+",
     .opt1 = "10..",
