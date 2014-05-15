@@ -49,7 +49,7 @@
  */
 void doNetNode(node_param_t* param, volatile game_state_t* game_state)
 {
-    /* do nothing */
+    param->node_state = NODE_FINISH_SUCCESS;
 }
 
 /**

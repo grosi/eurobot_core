@@ -79,26 +79,28 @@ void doFireNode(node_param_t* param, volatile game_state_t* game_state)
 	}
 
     /* Move the sucker servo down a bit, step by step */
-	servo_pos = SERVO_POS_AIR_UP; /* Current position */
-    while(servo_pos > (SERVO_POS_AIR_SECOND_FIRE+SERVO_AIR_STEP))
-    {
-        /* Decrement servo position by step size */
-        servo_pos -= SERVO_AIR_STEP;
+	placeSucker(SERVO_POS_AIR_THIRD_FIRE);
 
-        /* Check if it's the last step */
-        if(servo_pos < SERVO_POS_AIR_SECOND_FIRE)
-        {
-            /* Set the final servo position without over-rotating */
-            setServo_1(SERVO_POS_AIR_SECOND_FIRE);
-        }
-        else
-        {
-            /* Set the new servo position */
-            setServo_1(servo_pos);
-        }
-        /* Wait some time while servo moves */
-        vTaskDelay(SERVO_AIR_STEP_DELAY / portTICK_RATE_MS);
-    }
+//	servo_pos = getServo_1(); /* Current position */
+//    while(servo_pos > (SERVO_POS_AIR_THIRD_FIRE+SERVO_AIR_STEP))
+//    {
+//        /* Decrement servo position by step size */
+//        servo_pos -= SERVO_AIR_STEP;
+//
+//        /* Check if it's the last step */
+//        if(servo_pos < SERVO_POS_AIR_THIRD_FIRE)
+//        {
+//            /* Set the final servo position without over-rotating */
+//            setServo_1(SERVO_POS_AIR_THIRD_FIRE);
+//        }
+//        else
+//        {
+//            /* Set the new servo position */
+//            setServo_1(servo_pos);
+//        }
+//        /* Wait some time while servo moves */
+//        vTaskDelay(SERVO_AIR_STEP_DELAY / portTICK_RATE_MS);
+//    }
 
 
     /* Drive through fire from NORTH */
@@ -126,26 +128,27 @@ void doFireNode(node_param_t* param, volatile game_state_t* game_state)
 	vTaskDelay(FIRE_NODE_DRIVE_DELAY / portTICK_RATE_MS);
 
 	/* Move the sucker servo up, step by step */
-    servo_pos = SERVO_POS_AIR_SECOND_FIRE; /* Current position */
-    while(servo_pos < (SERVO_POS_AIR_UP+SERVO_AIR_STEP))
-    {
-        /* Decrement servo position by step size */
-        servo_pos += SERVO_AIR_STEP;
-
-        /* Check if it's the last step */
-        if(servo_pos > SERVO_POS_AIR_UP)
-        {
-            /* Set the final servo position without over-rotating */
-            setServo_1(SERVO_POS_AIR_UP);
-        }
-        else
-        {
-            /* Set the new servo position */
-            setServo_1(servo_pos);
-        }
-        /* Wait some time while servo moves */
-        vTaskDelay(SERVO_AIR_STEP_DELAY / portTICK_RATE_MS);
-    }
+	placeSucker(SERVO_POS_AIR_UP);
+//    servo_pos = getServo_1(); /* Current position */
+//    while(servo_pos < (SERVO_POS_AIR_UP+SERVO_AIR_STEP))
+//    {
+//        /* Decrement servo position by step size */
+//        servo_pos += SERVO_AIR_STEP;
+//
+//        /* Check if it's the last step */
+//        if(servo_pos > SERVO_POS_AIR_UP)
+//        {
+//            /* Set the final servo position without over-rotating */
+//            setServo_1(SERVO_POS_AIR_UP);
+//        }
+//        else
+//        {
+//            /* Set the new servo position */
+//            setServo_1(servo_pos);
+//        }
+//        /* Wait some time while servo moves */
+//        vTaskDelay(SERVO_AIR_STEP_DELAY / portTICK_RATE_MS);
+//    }
 
 
 

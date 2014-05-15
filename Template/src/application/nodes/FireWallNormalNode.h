@@ -21,9 +21,9 @@
 
 
 /* exported define ------------------------------------------------------------*/
-#define FIRE_WALL_NODE_DELTA_GO 	120 	/*!< [mm] */
+#define FIRE_WALL_NODE_DELTA_GO 	150 	/*!< [mm] */
 
-#define SERVO_POS_AIR_WALL			1700	/* Servo Position to drop fire */
+#define SERVO_POS_AIR_WALL			1750	/* Servo Position to drop fire */
 
 /* exported macro -------------------------------------------------------------*/
 

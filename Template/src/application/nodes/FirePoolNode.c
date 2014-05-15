@@ -108,9 +108,9 @@ static uint8_t takePool(uint16_t x, uint16_t y, uint16_t angle, volatile game_st
     uint8_t success;
 
     /* Drive closer to the pool */
-    if(checkDrive(x,y,angle,FIRE_POOL_APPROACH_SPEED,GOTO_DRIVE_FORWARD,game_state))
+    if(driveGoto(x,y,angle,FIRE_POOL_APPROACH_SPEED,GOTO_DRIVE_FORWARD,game_state))
     {
-        while(!getSensor_Fire_Pool_Left() && !getSensor_Fire_Pool_Left() && approach_counter < FIRE_POOL_APPROACH_TIME)
+        while(!getSensor_Fire_Pool_Left() && approach_counter < FIRE_POOL_APPROACH_TIME)
         {
             /* Wait some time before next check */
             vTaskDelay(FIRE_POOL_DRIVECHECK_DELAY / portTICK_RATE_MS);
@@ -121,7 +121,7 @@ static uint8_t takePool(uint16_t x, uint16_t y, uint16_t angle, volatile game_st
         txStopDrive();
 
         /* check pool position */
-        if(getSensor_Fire_Pool_Left() && getSensor_Fire_Pool_Right())
+        if(getSensor_Fire_Pool_Left())
         {
             /* Move the sucker servo down a bit, step by step */
             servo_pos = getServo_1(); /* Current position */
@@ -178,7 +178,7 @@ void doFirePoolNode(node_param_t* param, volatile game_state_t* game_state)
     /* local variables */
     uint8_t fire_count;
     uint16_t x_pool, y_pool, angle_pool;
-    uint16_t x_heart, y_heart, angle_heart;
+    uint16_t x_heart, y_heart, angle_heart, x_heart_front, y_heart_front;
 
     /* differ between the tow possible teamcolors */
     if(game_state->teamcolor == TEAM_YELLOW)
@@ -197,8 +197,12 @@ void doFirePoolNode(node_param_t* param, volatile game_state_t* game_state)
         angle_pool = FIRE_POOL_HEARTPOOL_ANGLE_POSITION_RED;
         x_heart = FIRE_POOL_HEART_X_POSITION_RED;
         y_heart = FIRE_POOL_HEART_Y_POSITION_RED;
+        x_heart_front = FIRE_POOL_HEART_FRONT_X_POSITION_RED;
+        y_heart_front = FIRE_POOL_HEART_FRONT_Y_POSITION_RED;
         angle_heart = FIRE_POOL_HEART_ANGLE_POSITION_RED;
     }
+
+    game_state->barrier &= ~(GOTO_FIRE_POOL_1_FORCE | GOTO_FIRE_POOL_2_FORCE);
 
 
     /* try to get the fire-pool */
@@ -225,7 +229,7 @@ void doFirePoolNode(node_param_t* param, volatile game_state_t* game_state)
                     /* drive back 5cm*/
                     if(!checkDrive(x_pool,y_pool,angle_pool,FIRE_POOL_APPROACH_SPEED,GOTO_DRIVE_BACKWARD,game_state)){break;};
                     /* drive to the front of heart*/
-                    if(!checkDrive(x_heart-50,y_heart-50,angle_heart,FIRE_POOL_TRANSIT_SPEED,GOTO_DRIVE_FORWARD,game_state)){break;};
+                    if(!checkDrive(x_heart_front,y_heart_front,angle_heart,FIRE_POOL_TRANSIT_SPEED,GOTO_DRIVE_FORWARD,game_state)){break;};
                     /* moves sucker down */
                     placeSucker(SERVO_POS_AIR_HEART);
                     /* drive a bit forward (slowly) and shift the other fire back */
@@ -239,7 +243,7 @@ void doFirePoolNode(node_param_t* param, volatile game_state_t* game_state)
                 if(fire_count < 2)
                 {
                     /* drive back to the pool and take the next fire */
-                    if(!checkDrive(x_pool-50,y_pool-50,angle_pool,FIRE_POOL_TRANSIT_SPEED,GOTO_DRIVE_FORWARD,game_state)){break;};
+                    if(!checkDrive(x_pool-100,y_pool-100,angle_pool,FIRE_POOL_TRANSIT_SPEED,GOTO_DRIVE_FORWARD,game_state)){break;};
                     if(!takePool(x_pool, y_pool,angle_pool, game_state)){break;};
                 }
             }

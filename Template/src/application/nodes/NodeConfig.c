@@ -112,8 +112,8 @@ node_t node_fire_pool_red =
         .points = 1,                        /*!<node points */
         .percent = 0.05,                    /*!<percent of the total points [%]*/
         .time = 2,                          /*!<estimated node time [s]*/
-        .x = 1950,                          /*!<node x position [mm]*/
-        .y = 1400,                          /*!<node y position [mm]*/
+        .x = 900,                          /*!<node x position [mm]*/
+        .y = 900+200,                          /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
         .angle = 270,                         /*!<node arrive direction */
         .node_tries = 1,                    /*!< node repeats (1 = default)*/
@@ -188,7 +188,7 @@ node_t node_net_1_red =
         .x = 1950,                          /*!<node x position [mm]*/
         .y = 1400,                          /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
-        .angle = 0,                         /*!<node arrive direction */
+        .angle = 270,                         /*!<node arrive direction */
         .node_tries = 1,                    /*!< node repeats (1 = default)*/
         .node_state = NODE_FINISH_SUCCESS,          /*!<node state */
     },
@@ -206,7 +206,7 @@ node_t node_net_2_red =
         .x = 1950,                          /*!<node x position [mm]*/
         .y = 1400,                          /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
-        .angle = 0,                         /*!<node arrive direction */
+        .angle = 270,                         /*!<node arrive direction */
         .node_tries = 1,                    /*!< node repeats (1 = default)*/
         .node_state = NODE_FINISH_SUCCESS,          /*!<node state */
     },
@@ -224,7 +224,7 @@ node_t node_net_3_red =
         .x = 1950,                          /*!<node x position [mm]*/
         .y = 1400,                          /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
-        .angle = 0,                         /*!<node arrive direction */
+        .angle = 270,                         /*!<node arrive direction */
         .node_tries = 1,                    /*!< node repeats (1 = default)*/
         .node_state = NODE_FINISH_SUCCESS,          /*!<node state */
     },
@@ -373,7 +373,7 @@ node_t node_net_1_yellow =
         .x = 1950,                          /*!<node x position [mm]*/
         .y = 1400,                          /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
-        .angle = 0,                         /*!<node arrive direction */
+        .angle = 270,                         /*!<node arrive direction */
         .node_tries = 1,                    /*!< node repeats (1 = default)*/
         .node_state = NODE_FINISH_SUCCESS,          /*!<node state */
     },
@@ -391,7 +391,7 @@ node_t node_net_2_yellow =
         .x = 1950,                          /*!<node x position [mm]*/
         .y = 1400,                          /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
-        .angle = 0,                         /*!<node arrive direction */
+        .angle = 2700,                         /*!<node arrive direction */
         .node_tries = 1,                    /*!< node repeats (1 = default)*/
         .node_state = NODE_FINISH_SUCCESS,          /*!<node state */
     },
@@ -409,7 +409,7 @@ node_t node_net_3_yellow =
         .x = 1950,                          /*!<node x position [mm]*/
         .y = 1400,                          /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
-        .angle = 0,                         /*!<node arrive direction */
+        .angle = 270,                         /*!<node arrive direction */
         .node_tries = 1,                    /*!< node repeats (1 = default)*/
         .node_state = NODE_FINISH_SUCCESS,          /*!<node state */
     },
@@ -521,7 +521,6 @@ uint8_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, uint8_
             }
 
             /* Check if an enemy/confederate is within range in front of the robot */
-            /* TODO: repeat barrier */
             if(direction == GOTO_DRIVE_FORWARD)
             {
                 if(isRobotInRange(game_state, FALSE))
