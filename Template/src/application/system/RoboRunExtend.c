@@ -57,20 +57,23 @@ void initRoboRunExtendState()
  */
 void runRoboRunExtendState(portTickType* tick)
 {
+	uint8_t remaining_time = getRemainingGameTime();
+
     /* check if the 90s are over */
-    if(getRemainingGameTime() == 0)
+    if(remaining_time == 0)
     {
         setServo_2(SERVO_POS_NET_LAUNCH);
         vTaskDelay(1000/portMAX_DELAY);
         setServo_2(SERVO_POS_NET_LOAD);
 
         /* re-init the complete system */
+        stopGameTimer();
         system_state = runRoboInitialisationState;
     }
     /* wait until the game is finished */
     else
     {
-        vTaskDelay(getRemainingGameTime()*1000);
+        vTaskDelay(1000/portTICK_RATE_MS);
     }
 }
 
