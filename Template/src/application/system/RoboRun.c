@@ -47,8 +47,8 @@
 #define NODE_POOL_LEVEL_INFO   2
 /* CAN */
 #define GOTO_DEFAULT_SPEED     100      /* Speed in percent */
-#define GOTO_DEFAULT_BARRIER_R GOTO_FIRE_2_FORCE|GOTO_FIRE_4_FORCE|GOTO_FIRE_6_FORCE  /* Barrier flags for red team */
-#define GOTO_DEFAULT_BARRIER_Y GOTO_FIRE_1_FORCE|GOTO_FIRE_3_FORCE|GOTO_FIRE_5_FORCE  /* Barrier flags for yellow team */
+#define GOTO_DEFAULT_BARRIER_R GOTO_FIRE_4_FORCE|GOTO_FIRE_6_FORCE  /* Barrier flags for red team */
+#define GOTO_DEFAULT_BARRIER_Y GOTO_FIRE_3_FORCE|GOTO_FIRE_5_FORCE  /* Barrier flags for yellow team */
 #define GOTO_ACK_DELAY         20       /* Delay in ms to wait before checking goto confirmation */
 #define GOTO_NACK_MAX_RETRIES  5        /* Number of retries (incl. first try) if there's no confirmation from drive system (uint8_t) */
 #define GOTO_STATERESP_DELAY   100      /* Delay in ms to wait for GoTo state response. Drive system needs 400 ms (worst case) */
@@ -367,7 +367,7 @@ void runRoboRunState(portTickType* tick)
 
         /* Node not complete, but not repeatable */
         case NODE_FINISH_ERROR:
-            current_node->param.node_state = NODE_UNDONE;
+            current_node->param.node_state = NODE_FINISH_SUCCESS;
             break;
 
 
