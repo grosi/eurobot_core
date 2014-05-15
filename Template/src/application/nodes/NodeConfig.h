@@ -118,17 +118,17 @@ typedef struct
 /* Servo */
 #define SERVO_MOVING_DELAY         400  /* Delay in ms to wait while the servo moves the whole way */
 #define SERVO_POS_FRESCO_IN        2000 /* Servo position: Fresco panel all the way in */
-#define SERVO_POS_FRESCO_OUT       900//1600 /* Servo position: Fresco panel all the way out */
+#define SERVO_POS_FRESCO_OUT       900  /* Servo position: Fresco panel all the way out */
 #define SERVO_POS_LAUNCHER_LOAD    1750 /* Servo position: Launcher all the way front */
 #define SERVO_POS_LAUNCHER_LAUNCH  1200 /* Servo position: Launcher all the way back */
 
 /* Fresco node */
-#define FRESCO_APPROACH_DISTANCE   50	/* Distance to drive clsoer to the wall */
-#define FRESCO_SPEED			   30	/* Speed in percent to drive 5 cm closer to the wall */
-#define FRESCO_APPROACH_SPEED      20   /* Speed in percent to drive from node point to wall */
-#define FRESCO_APPROACH_DELAY	   2000	/* Time to wait while driving foreward and moving Fresco out*/
-#define FRESCO_WALL_POSITION	   1950	/* Place the Fresco into the wall */
-#define FRESCO_APPROACH_TIME       4000 /* Time in ms to wait while driving to wall */
+#define FRESCO_APPROACH_DISTANCE   50   /* Distance to drive closer to the wall */
+#define FRESCO_APPROACH_SPEED      30   /* Speed in percent to drive closer to the wall */
+#define FRESCO_APPROACH_DELAY      2000 /* Time to wait while driving closer to the wall and moving Fresco out*/
+#define FRESCO_WALL_POSITION       1950 /* Position to place the Fresco on the wall */
+#define FRESCO_WALL_SPEED          20   /* Speed in percent to finally drive all the way to the wall */
+#define FRESCO_WALL_TIME           4000 /* Time in ms to wait while driving all the way to the wall */
 
 /* Fresco node */
 #define FIRE_APPROACH_DISTANCE     300  /* Distance in mm to drive into the fire */  //TODO: Evaluate good value (as short as possible)
