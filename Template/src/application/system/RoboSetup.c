@@ -767,7 +767,6 @@ static void menu_handler(menu_t* current_menu)
     static uint8_t button_left_state = 0;
     static uint8_t button_right_state = 0;
 
-
     /* check if a change of the display is necessary */
     if(last_menu != current_menu)
     {
@@ -814,7 +813,6 @@ static void menu_handler(menu_t* current_menu)
     }
 }
 #endif
-
 
 /**
  * \fn      setRoboSetup2Default
@@ -890,8 +888,6 @@ void setConfigRoboSetup2Default()
     setLED_5(0);
     setLED_6(0);
 #endif
-
-
 
     current_menu = TEAMCOLOR;
     last_menu = NULL;

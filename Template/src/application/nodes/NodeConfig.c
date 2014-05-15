@@ -441,7 +441,6 @@ void initNodeResources()
 	setServo_2(SERVO_POS_NET_LOAD);
 
 	/* Initialise fresco sensors */
-	initSensor_Fire_Pool_Right();
 	initSensor_Fire_Pool_Left();
 	initSensor_Air();
 
