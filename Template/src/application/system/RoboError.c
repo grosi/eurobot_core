@@ -47,14 +47,8 @@
  */
 void initRoboErrorState()
 {
-    /* hw modules */
-    initLED_1();
-    initLED_2();
-    initLED_3();
-    initLED_4();
-    initLED_5();
-    initLED_6();
-
+    /* do nothing */
+    /* LED are initialised in RoboSetup.c */
 }
 
 void runRoboErrorState(portTickType* tick)

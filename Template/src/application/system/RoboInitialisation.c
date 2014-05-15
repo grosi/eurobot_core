@@ -107,11 +107,14 @@ void runRoboInitialisationState(portTickType* tick)
     {
         /* first init state */
         case DISPLAY_INIT:
+#ifndef WITHOUT_USERPANEL
             LCD_init((void(*)(long))vTaskDelay);
 
             /* plot message */
             LCD_write_string(MESSAGE_INIT_ROW, MESSAGE_INIT_COLUMN, MESSAGE_INIT, TRUE);
             LCD_write_string(MESSAGE_WAIT_ROW, MESSAGE_WAIT_COLUMN, MESSAGE_WAIT, TRUE);
+#endif
+
 #ifndef STANDALONE
             state = SENSOR_TEST;
 #else
@@ -124,13 +127,15 @@ void runRoboInitialisationState(portTickType* tick)
 
 
             /* test every sensor input */
-            if(getSensor_Air() != SENSOR_AIR_INIT)
+            if(getSensor_Fresco_1() != SENSOR_FRESCO_1_INIT)
             {
                 /* error message */
                 if(!(sensor_error & 1<<0))
                 {
-                    LCD_write_string(MESSAGE_AIR_ROW, MESSAGE_AIR_COLUMN, MESSAGE_AIR, TRUE);
+#ifndef WITHOUT_USERPANEL
+                    LCD_write_string(MESSAGE_FRESCO_1_ROW, MESSAGE_FRESCO_1_COLUMN, MESSAGE_FRESCO_1, TRUE);
                     LCD_write_string(MESSAGE_CHECK_ROW, MESSAGE_CHECK_COLUMN, MESSAGE_CHECK, TRUE);
+#endif
                     sensor_old = sensor_error |= 1<<0;
                 }
                 sensor_done = FALSE;
@@ -144,12 +149,14 @@ void runRoboInitialisationState(portTickType* tick)
                 }
             }
 
-            if(getSensor_Fire_Pool_Right() != SENSOR_FIRE_POOL_RIGHT_INIT)
+            if(getSensor_Fresco_2() != SENSOR_FRESCO_2_INIT)
             {
                 if(!(sensor_error & 1<<1))
                 {
-                    LCD_write_string(MESSAGE_FIRE_POOL_RIGHT_ROW, MESSAGE_FIRE_POOL_RIGHT_COLUMN, MESSAGE_FIRE_POOL_RIGHT, TRUE);
+#ifndef WITHOUT_USERPANEL
+                    LCD_write_string(MESSAGE_FRESCO_2_ROW, MESSAGE_FRESCO_2_COLUMN, MESSAGE_FRESCO_2, TRUE);
                     LCD_write_string(MESSAGE_CHECK_ROW, MESSAGE_CHECK_COLUMN, MESSAGE_CHECK, TRUE);
+#endif
                     sensor_old = sensor_error |= 1<<1;
                 }
                 sensor_done = FALSE;
@@ -163,13 +170,14 @@ void runRoboInitialisationState(portTickType* tick)
                 }
             }
 
-
-            if(getSensor_Fire_Pool_Left() != SENSOR_FIRE_POOL_LEFT_INIT)
+            if(getSensor_Fresco_Wall() != SENSOR_WALL_INIT)
             {
                 if(!(sensor_error & 1<<2))
                 {
-                    LCD_write_string(MESSAGE_FIRE_POOL_LEFT_ROW, MESSAGE_FIRE_POOL_LEFT_COLUMN, MESSAGE_FIRE_POOL_LEFT, TRUE);
+#ifndef WITHOUT_USERPANEL
+                    LCD_write_string(MESSAGE_WALL_ROW, MESSAGE_WALL_COLUMN, MESSAGE_WALL, TRUE);
                     LCD_write_string(MESSAGE_CHECK_ROW, MESSAGE_CHECK_COLUMN, MESSAGE_CHECK, TRUE);
+#endif
                     sensor_old = sensor_error |= 1<<2;
                 }
                 sensor_done = FALSE;
@@ -187,8 +195,10 @@ void runRoboInitialisationState(portTickType* tick)
             {
                 if(!(sensor_error & 1<<3))
                 {
+#ifndef WITHOUT_USERPANEL
                     LCD_write_string(MESSAGE_EMERGENCY_ROW, MESSAGE_EMERGENCY_COLUMN, MESSAGE_EMERGENCY, TRUE);
                     LCD_write_string(MESSAGE_CHECK_ROW, MESSAGE_CHECK_COLUMN, MESSAGE_CHECK, TRUE);
+#endif
                     sensor_old = sensor_error |= 1<<3;
                 }
                 sensor_done = FALSE;
@@ -206,8 +216,10 @@ void runRoboInitialisationState(portTickType* tick)
             {
                 if(!(sensor_error & 1<<4))
                 {
+#ifndef WITHOUT_USERPANEL
                     LCD_write_string(MESSAGE_KEY_ROW, MESSAGE_KEY_COLUMN, MESSAGE_KEY, TRUE);
                     LCD_write_string(MESSAGE_CHECK_ROW, MESSAGE_CHECK_COLUMN, MESSAGE_CHECK, TRUE);
+#endif
                     sensor_old = sensor_error |= 1<<4;
                 }
                 sensor_done = FALSE;
@@ -247,8 +259,10 @@ void runRoboInitialisationState(portTickType* tick)
             else
             {
                 /* error message */
+#ifndef WITHOUT_USERPANEL
                 LCD_write_string(MESSAGE_ERROR_ROW, MESSAGE_ERROR_COLUMN, MESSAGE_ERROR, TRUE);
                 LCD_write_string(MESSAGE_RESTART_ROW, MESSAGE_RESTART_COLUMN, MESSAGE_RESTART, TRUE);
+#endif
 
                 system_state = runRoboErrorState;
             }
@@ -263,13 +277,16 @@ void runRoboInitialisationState(portTickType* tick)
             /* navi-node is okay -> goto to next system-state */
             {
                 system_state = runRoboSetupState;
+                state = SENSOR_TEST; /* reset state */
             }
             /* navi-node is not alive -> goto RoboError state */
             else
             {
                 /* error message */
+#ifndef WITHOUT_USERPANEL
                 LCD_write_string(MESSAGE_ERROR_ROW, MESSAGE_ERROR_COLUMN, MESSAGE_ERROR, TRUE);
                 LCD_write_string(MESSAGE_RESTART_ROW, MESSAGE_RESTART_COLUMN, MESSAGE_RESTART, TRUE);
+#endif
 
                 system_state = runRoboErrorState;
             }
@@ -277,8 +294,10 @@ void runRoboInitialisationState(portTickType* tick)
 
         case EMERGENCY_ACTIVE_MESSAGE:
             /* message */
+#ifndef WITHOUT_USERPANEL
             LCD_write_string(MESSAGE_EMERGENCY_ROW,MESSAGE_EMERGENCY_COLUMN,MESSAGE_EMERGENCY,TRUE);
             LCD_write_string(MESSAGE_CHECK_ROW,MESSAGE_CHECK_COLUMN,MESSAGE_CHECK,TRUE);
+#endif
 
             /* send message over CAN for better break-enhancement */
             txEmergencyStop(0);

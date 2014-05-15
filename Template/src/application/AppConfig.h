@@ -35,6 +35,9 @@
 /* uncomment this define if your core node is not connect to all  */
 //#define STANDALONE
 
+/* uncomment this if the userpanel doesnt works */
+#define WITHOUT_USERPANEL
+
 /* typedefs */
 typedef enum { FALSE = 0, TRUE } boolean;
 typedef enum { FUNC_SUCCESS = 0, FUNC_INCOMPLETE, FUNC_ERROR } func_report_t;  /* Typedef enum for function return status */
