@@ -84,10 +84,12 @@ void initServo_1()
     GPIO_PinAFConfig(SERVO_1_PORT, GPIO_PinSource9, GPIO_AF_TIM1);
 
     /* init timer */
+    TIM_DeInit(SERVO_1_TIMER);
     TIM_TimeBaseInit(SERVO_1_TIMER, &TIM_TimeBaseStructure);
 
     /* load and enable the correct channels */
     TIM_OC1Init(SERVO_1_TIMER, &TIM_OCInitStructure);
+    TIM_OC1PolarityConfig(SERVO_1_TIMER,TIM_OCPolarity_High);
     TIM_OC1PreloadConfig(SERVO_1_TIMER, TIM_OCPreload_Enable);
 
     /* enable the channels in the timer */
@@ -183,6 +185,7 @@ void initServo_2()
 
     /* load and enable the correct channels */
     TIM_OC2Init(SERVO_2_TIMER, &TIM_OCInitStructure);
+    TIM_OC2PolarityConfig(SERVO_2_TIMER,TIM_OCPolarity_High);
     TIM_OC2PreloadConfig(SERVO_2_TIMER, TIM_OCPreload_Enable);
 
     /* enable the channels in the timer */
