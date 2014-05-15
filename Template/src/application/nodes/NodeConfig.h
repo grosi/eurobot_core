@@ -26,7 +26,8 @@ typedef enum
 {
     NODE_UNDONE = 0,        /*!< no node is in ready mode -> still undone */
     NODE_FINISH_SUCCESS,    /*!< node is done and the node-task ready for new tasks */
-    NODE_FINISH_ERROR,      /*!< node is done with errors and the node-task ready for new tasks -> if the node is in a pool, don't decrement this! */
+    NODE_FINISH_UNSUCCESS,  /*!< node is done with errors and the node-task ready for new tasks -> try again later */
+    NODE_FINISH_ERROR,      /*!< node is done with errors and the node-task ready for new tasks*/
     GOTO_CAN_ERROR,         /*!< didn't receive GoTo confirmation via CAN after several retries */
 }node_state_t;
 
@@ -119,7 +120,7 @@ typedef struct
 #define SERVO_MOVING_DELAY         400  /* Delay in ms to wait while the servo moves the whole way */
 #define SERVO_POS_FRESCO_IN        2000 /* Servo position: Fresco panel all the way in */
 #define SERVO_POS_FRESCO_OUT       900  /* Servo position: Fresco panel all the way out */
-#define SERVO_POS_LAUNCHER_LOAD    1750 /* Servo position: Launcher all the way front */
+#define SERVO_POS_LAUNCHER_LOAD    1780 /* Servo position: Launcher all the way front */
 #define SERVO_POS_LAUNCHER_LAUNCH  1200 /* Servo position: Launcher all the way back */
 
 /* Fresco node */

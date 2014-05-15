@@ -59,7 +59,7 @@ void doFireNode(node_param_t* param, volatile game_state_t* game_state)
 	/* Don't continue if an other robot is in front */
 	if(isRobotInFront(&game_state_copy)) {
 
-		param->node_state = NODE_FINISH_ERROR;
+		param->node_state = NODE_FINISH_UNSUCCESS;
 		return;
 	}
 
