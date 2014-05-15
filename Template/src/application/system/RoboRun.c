@@ -264,7 +264,6 @@ void setConfigRoboRunState2Default()
     }
 
     /* stop timers */
-    stopGameTimer();
     stopELP();
 
     taskEXIT_CRITICAL();
@@ -377,7 +376,7 @@ void runRoboRunState(portTickType* tick)
     /******************
      * time barrier
      ******************/
-    if(getRemainingGameTime() < PLAY_TIME_TOTAL - PLAY_TIME || remain_nodes == 1)
+    if((getRemainingGameTime() < PLAY_TIME_TOTAL- PLAY_TIME && remain_nodes != 0) || (remain_nodes == 1)) //
     {
         for(node_count = 0; node_count < NODE_QUANTITY-3; node_count++)
         {
@@ -387,6 +386,7 @@ void runRoboRunState(portTickType* tick)
         {
             nodes_game[node_count]->param.node_state = NODE_UNDONE;
         }
+        remain_nodes = 1;
     }
 
 
