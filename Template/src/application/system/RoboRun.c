@@ -41,6 +41,7 @@
 /* Private define ------------------------------------------------------------*/
 /* System */
 #define BINARY_SEMAPHORE_LENGTH 1
+#define DRIVE_ROUTE_DIST_MIN   15       /* Min. drive distance in cm for which the drive system calculates a route an not just drives */
 /* Node */
 #define NODE_POOL_ID_INFO      0
 #define NODE_POOL_SIZE_INFO    1
@@ -656,6 +657,10 @@ static void vTrackEnemy(uint16_t id, CAN_data_t* data)
  */
 func_report_t gotoNode(node_param_t* param, volatile game_state_t* game_state)
 {
+	/* Variables for calculating drive distance */
+	int16_t delta_x, delta_y;
+	uint16_t distance;
+
     /* Variable for CAN RX */
     CAN_data_t CAN_buffer;
     uint8_t CAN_ok = pdFALSE;
@@ -667,6 +672,16 @@ func_report_t gotoNode(node_param_t* param, volatile game_state_t* game_state)
 
     /* Variable to store estimated GoTo time received from drive system (24 Bit, 1 Bit ca. 1 ms) */
     uint32_t estimated_GoTo_time = 0;
+
+	/* If distance is to small, the drive system doesn't calculate a route and thus doesn't check if an enemy
+	 * blocks the path. We have to check this here, else we start drive until the rangefinder reports an enemy. */
+	delta_x = param->x - game_state_copy.x;
+	delta_y = param->y - game_state_copy.y;
+	distance = round(sqrt(delta_x*delta_x + delta_y*delta_y));
+	/* Don't continue if distance is to small for route calculation (+5 cm overhead) and robot in front */
+	if(distance <= DRIVE_ROUTE_DIST_MIN + 5 && isRobotInFront(game_state)) {
+		return FUNC_INCOMPLETE;
+	}
 
     /* Activate rangefinder */
 	vTaskResume(xRangefinderTask_Handle);
@@ -716,7 +731,7 @@ func_report_t gotoNode(node_param_t* param, volatile game_state_t* game_state)
 
 			/* Extract time */
 			estimated_GoTo_time = CAN_buffer.state_time;  /* In ms */
-			/* Handle "time unknown" message */
+			/* Handle "goto not possible at the moment" message */
 			if(estimated_GoTo_time == GOTO_NOT_POSSIBLE_ATM) {
 
 				/* Suspend rangefinder safely */
