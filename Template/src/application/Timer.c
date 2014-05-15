@@ -141,8 +141,18 @@ inline void resetGameTimer(void)
  */
 uint8_t getRemainingGameTime(void)
 {
+	uint8_t remaining_time;
+
     /* Return the remaining time of the game */
-    return TIMER_STOP_TIME - elapsedTime;
+	if(elapsedTime >= TIMER_STOP_TIME)
+	{
+		remaining_time = 0;
+	}
+	else
+	{
+		remaining_time = TIMER_STOP_TIME - elapsedTime;
+	}
+	return remaining_time;
 }
 
 /**
