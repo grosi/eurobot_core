@@ -129,6 +129,13 @@ void doFireWallInversNode(node_param_t* param, volatile game_state_t* game_state
 		{
 			break;
 		}
+
+		/* Stop moving down when there is no fire */
+		if(servo_pos < SERVO_POS_AIR_WALL_THRESHOLD)
+		{
+			param->node_state = NODE_FINISH_ERROR;
+			return;
+		}
 	}
 
 	/* Move the sucker servo up, step by step */

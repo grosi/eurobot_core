@@ -29,6 +29,7 @@
 /* Servo positions */
 #define SERVO_POS_AIR_WALL_INVERSE			1700
 #define SERVO_POS_AIR_WALL_INVERSE_SUCKER	1600
+#define SERVO_POS_AIR_WALL_THRESHOLD		1650
 #define SERVO_POS_AIR_PLACE					1200
 
 /* drive positions */
