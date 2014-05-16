@@ -115,7 +115,7 @@ node_t node_fire_pool_red =
         .percent = 0.05,                    /*!<percent of the total points [%]*/
         .time = 2,                          /*!<estimated node time [s]*/
         .x = 900,                          /*!<node x position [mm]*/
-        .y = 900+200,                          /*!<node y position [mm]*/
+        .y = 900+300,                          /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
         .angle = 270,                         /*!<node arrive direction */
         .node_tries = 1,                    /*!< node repeats (1 = default)*/

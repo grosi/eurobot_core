@@ -21,10 +21,10 @@
 
 
 /* exported define ------------------------------------------------------------*/
-#define FIRE_POOL_APPROACH_DISTANCE                 100 /* Distance in mm to drive from the fire-pool node point to the pool */
+#define FIRE_POOL_APPROACH_DISTANCE                 200 /* Distance in mm to drive from the fire-pool node point to the pool */
 #define FIRE_POOL_APPROACH_OVERHEAD                 30 /* Additional Distance in mm to drive to the pool to make sure we are there */
-#define FIRE_POOL_APPROACH_SPEED                    30 /* Speed in percent to drive from node point to pool */
-#define FIRE_POOL_TRANSIT_SPEED                     100
+#define FIRE_POOL_APPROACH_SPEED                    40 /* Speed in percent to drive from node point to pool */
+#define FIRE_POOL_TRANSIT_SPEED                     80
 #define FIRE_POOL_APPROACH_TIME                     5000 /* Time in ms to wait while driving to pool */ //TODO
 #define FIRE_POOL_DRIVECHECK_DELAY                  10
 #define FIRE_POOL_MAX_RETRIES                       5

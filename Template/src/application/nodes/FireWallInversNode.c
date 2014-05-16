@@ -122,7 +122,7 @@ void doFireWallInversNode(node_param_t* param, volatile game_state_t* game_state
 		placeSucker(SERVO_POS_AIR_UP);
 
 		/* Drive 5 cm backwards */
-		while(checkDrive(param->x, param->y, param->angle, FIRE_WALL_NODE_SPEED, GOTO_DRIVE_BACKWARD, game_state));
+		while(!checkDrive(param->x, param->y, param->angle, FIRE_WALL_NODE_SPEED, GOTO_DRIVE_BACKWARD, game_state));
 		//txGotoXY(param->x, param->y, param->angle, FIRE_WALL_NODE_SPEED, FIRE_WALL_NODE_BARRIER, GOTO_DRIVE_BACKWARD);
 
 		/* Deactivate sucker */
@@ -139,7 +139,7 @@ void doFireWallInversNode(node_param_t* param, volatile game_state_t* game_state
 	placeSucker(SERVO_POS_AIR_UP);
 
 	/* Drive 5 cm backwards */
-	while(checkDrive(param->x, param->y, param->angle, FIRE_WALL_NODE_SPEED, GOTO_DRIVE_BACKWARD, game_state));
+	while(!checkDrive(param->x, param->y, param->angle, FIRE_WALL_NODE_SPEED, GOTO_DRIVE_BACKWARD, game_state));
 	//txGotoXY(param->x, param->y, param->angle, FIRE_WALL_NODE_SPEED, FIRE_WALL_NODE_BARRIER, GOTO_DRIVE_BACKWARD);
 
 	/* wait while driving backwards */
@@ -149,7 +149,7 @@ void doFireWallInversNode(node_param_t* param, volatile game_state_t* game_state
 	if(checkDrive(X_HEART_OF_FIRE, Y_HEART_OF_FIRE - Y_APPROACH_HEART_OF_FIRE, HEART_OF_FIRE_ANGLE, HEART_OF_FIRE_DRIVE_SPEED, GOTO_DRIVE_FORWARD, game_state) == 0)
 	{
 		/* Drive 5 cm backwards if it's not possible to get to the heart of fire */
-		while(checkDrive(param->x, param->y, param->angle, FIRE_WALL_NODE_SPEED, GOTO_DRIVE_BACKWARD, game_state));
+		while(!checkDrive(param->x, param->y, param->angle, FIRE_WALL_NODE_SPEED, GOTO_DRIVE_BACKWARD, game_state));
 		//txGotoXY(param->x, param->y, param->angle, FIRE_WALL_NODE_SPEED, FIRE_WALL_NODE_BARRIER, GOTO_DRIVE_BACKWARD);
 
 		/* wait while driving backwards */
@@ -190,7 +190,7 @@ void doFireWallInversNode(node_param_t* param, volatile game_state_t* game_state
 	placeSucker(SERVO_POS_AIR_UP);
 
 	/* Drive 5 cm backwards */
-	while(checkDrive(param->x, param->y, param->angle, FIRE_WALL_NODE_SPEED, GOTO_DRIVE_BACKWARD, game_state));
+	while(!checkDrive(param->x, param->y, param->angle, FIRE_WALL_NODE_SPEED, GOTO_DRIVE_BACKWARD, game_state));
 	//txGotoXY(param->x, param->y, param->angle, FIRE_WALL_NODE_SPEED, FIRE_WALL_NODE_BARRIER, GOTO_DRIVE_BACKWARD);
 
 	/* wait while driving backwards */

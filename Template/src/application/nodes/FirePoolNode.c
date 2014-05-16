@@ -54,8 +54,6 @@ static uint8_t takePool(uint16_t, uint16_t, uint16_t, volatile game_state_t*);
  */
 static void releasePool(uint8_t air)
 {
-    /* local variable */
-    volatile uint16_t servo_pos; /* Variable to set the servo position step by step */
 
     if(air)
     {
@@ -221,9 +219,19 @@ void doFirePoolNode(node_param_t* param, volatile game_state_t* game_state)
                 /* the second fire lies on the wrong side */
                 if(fire_count % 2)
                 {
-                    /* turn a bit */
-                    if(!checkDrive(x_pool,y_pool,angle_pool,FIRE_POOL_TRANSIT_SPEED,GOTO_DRIVE_FORWARD,game_state)){break;};
-                    releasePool(0);
+
+                   	/* drive back 5cm*/
+					if(!checkDrive(x_pool,y_pool,angle_pool,FIRE_POOL_APPROACH_SPEED,GOTO_DRIVE_BACKWARD,game_state)){break;};
+					/* drive to the front of heart*/
+					if(!checkDrive(x_heart_front,y_heart_front,angle_heart,FIRE_POOL_TRANSIT_SPEED,GOTO_DRIVE_FORWARD,game_state)){break;};
+					/* moves sucker down */
+					placeSucker(SERVO_POS_AIR_THIRD_FIRE);
+					/* drive a bit forward (slowly) and shift the other fire back */
+					if(!checkDrive(x_heart,y_heart,angle_heart,FIRE_POOL_APPROACH_SPEED,GOTO_DRIVE_FORWARD,game_state)){break;};
+					/* place fire and moves the sucker up */
+					releasePool(0);
+					/* drive a bit backwarts */
+					if(!checkDrive(x_heart-50,y_heart-50,angle_heart,FIRE_POOL_APPROACH_SPEED,GOTO_DRIVE_BACKWARD,game_state)){break;};
                 }
                 else
                 {
