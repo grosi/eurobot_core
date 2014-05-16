@@ -228,7 +228,7 @@ uint8_t setConfigRoboRunState(uint8_t start_node_id, uint8_t teamcolor, uint8_t 
 void setConfigRoboRunState2Default()
 {
     /* local variable */
-    uint8_t node_count;// y, x;
+    uint8_t node_count;
 
     /* set all nodes to state UNDONE (except net-nodes -> NODE_FINISH_SUCCESS) */
     if(nodes_game != NULL)
@@ -265,6 +265,7 @@ void setConfigRoboRunState2Default()
 
     /* stop timers */
     stopELP();
+    stopGameTimer();
 
     taskEXIT_CRITICAL();
 }
