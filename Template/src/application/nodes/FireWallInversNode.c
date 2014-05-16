@@ -59,44 +59,34 @@ void doFireWallInversNode(node_param_t* param, volatile game_state_t* game_state
 	game_state_t game_state_copy = *game_state;
 	taskEXIT_CRITICAL();
 
-//	/* Don't continue if an other robot is in front */
-//	if(isRobotInFront(&game_state_copy))
-//	{
-//		param->node_state = NODE_FINISH_ERROR;
-//		return;
-//	}
-
 	/* Move the sucker servo down a bit, step by step */
 	placeSucker(SERVO_POS_AIR_WALL_INVERSE);
 
+	// TODO handle return value of checkDrive
 	/* Drive over fire from NORTH */
 	if(param->angle >= NODE_NORTH_MIN_ANGLE && param->angle <= NODE_NORTH_MAX_ANGLE)
 	{
-		checkDrive(param->x, param->y-FIRE_WALL_INVERSE_NODE_DELTA_GO, param->angle, FIRE_WALL_NODE_SPEED, GOTO_DRIVE_FORWARD,game_state);
+		checkDrive(param->x, param->y-FIRE_WALL_INVERSE_NODE_DELTA_GO, param->angle, FIRE_WALL_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state);
 		//txGotoXY(param->x, param->y-FIRE_WALL_INVERSE_NODE_DELTA_GO, param->angle, FIRE_WALL_NODE_SPEED, FIRE_WALL_NODE_BARRIER, GOTO_DRIVE_FORWARD);
 	}
 	/* Drive over fire from EAST */
 	else if(param->angle >= NODE_EAST_MIN_ANGLE && param->angle <= NODE_EAST_MAX_ANGLE)
 	{
-		txGotoXY(param->x-FIRE_WALL_INVERSE_NODE_DELTA_GO, param->y, param->angle, FIRE_WALL_NODE_SPEED, FIRE_WALL_NODE_BARRIER, GOTO_DRIVE_FORWARD);
+		checkDrive(param->x - FIRE_WALL_INVERSE_NODE_DELTA_GO, param->y, param->angle, FIRE_WALL_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state);
+		//txGotoXY(param->x-FIRE_WALL_INVERSE_NODE_DELTA_GO, param->y, param->angle, FIRE_WALL_NODE_SPEED, FIRE_WALL_NODE_BARRIER, GOTO_DRIVE_FORWARD);
 	}
 	/* Drive over fire from SOUTH */
 	else if(param->angle >= NODE_SOUTH_MIN_ANGLE && param->angle <= NODE_SOUTH_MAX_ANGLE)
 	{
-		txGotoXY(param->x, param->y+FIRE_WALL_INVERSE_NODE_DELTA_GO, param->angle, FIRE_WALL_NODE_SPEED, FIRE_WALL_NODE_BARRIER, GOTO_DRIVE_FORWARD);
+		checkDrive(param->x, param->y+FIRE_WALL_INVERSE_NODE_DELTA_GO, param->angle, FIRE_WALL_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state);
+		//txGotoXY(param->x, param->y+FIRE_WALL_INVERSE_NODE_DELTA_GO, param->angle, FIRE_WALL_NODE_SPEED, FIRE_WALL_NODE_BARRIER, GOTO_DRIVE_FORWARD);
 	}
 	/* Drive over fire from WEST */
 	else
 	{
-		txGotoXY(param->x+FIRE_WALL_INVERSE_NODE_DELTA_GO, param->y, param->angle, FIRE_WALL_NODE_SPEED, FIRE_WALL_NODE_BARRIER, GOTO_DRIVE_FORWARD);
+		checkDrive(param->x+FIRE_WALL_INVERSE_NODE_DELTA_GO, param->y, param->angle, FIRE_WALL_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state);
+		//txGotoXY(param->x+FIRE_WALL_INVERSE_NODE_DELTA_GO, param->y, param->angle, FIRE_WALL_NODE_SPEED, FIRE_WALL_NODE_BARRIER, GOTO_DRIVE_FORWARD);
 	}
-
-// TODO add Rangfinder flag
-//    /* Stop driving when Rangefinderflag (5 cm) is set */
-//    if()
-//    {
-//    	txStopDrive();
-//    }
 
 	/* Wait while driving */
 	vTaskDelay(FIRE_WALL_NODE_DRIVE_DELAY / portTICK_RATE_MS);
@@ -104,45 +94,9 @@ void doFireWallInversNode(node_param_t* param, volatile game_state_t* game_state
 	/* activate sucker */
 	setAir(AIR_ON);
 
-//	/* move sucker down */
-//	servo_pos = SERVO_POS_AIR_WALL_INVERSE; /* Current position */
-//	while(servo_pos > (SERVO_POS_AIR_WALL_INVERSE_SUCKER+SERVO_AIR_STEP))
-//	{
-//		/* Decrement servo position by step size */
-//		servo_pos -= SERVO_AIR_STEP;
-//
-//		/* Check if it's the last step */
-//		if(servo_pos < SERVO_POS_AIR_WALL_INVERSE_SUCKER)
-//		{
-//			/* Set the final servo position without over-rotating */
-//			setServo_1(SERVO_POS_AIR_WALL_INVERSE_SUCKER);
-//		}
-//		else
-//		{
-//			/* Set the new servo position */
-//			setServo_1(servo_pos);
-//		}
-//		/* Wait some time while servo moves */
-//		vTaskDelay(SERVO_AIR_STEP_DELAY / portTICK_RATE_MS);
-//
-//		/* stop moving the sucker down */
-//		if(getSensor_Air())
-//		{
-//			break;
-//		}
-//
-//		/* Stop moving down when there is no fire */
-//		if(servo_pos < SERVO_POS_AIR_WALL_THRESHOLD)
-//		{
-//			param->node_state = NODE_FINISH_ERROR;
-//			return;
-//		}
-//	}
-
-
 	/* Move the sucker servo down a bit, step by step */
 	servo_pos = getServo_1(); /* Current position */
-	while(servo_pos > (SERVO_POS_AIR_DOWN+SERVO_AIR_STEP) && !getSensor_Air())
+	while(servo_pos > (SERVO_POS_AIR_WALL_INVERSE_SUCKER + SERVO_AIR_STEP) && !getSensor_Air())
 	{
 		/* Decrement servo position by step size */
 		servo_pos -= SERVO_AIR_STEP;
@@ -162,28 +116,48 @@ void doFireWallInversNode(node_param_t* param, volatile game_state_t* game_state
 		vTaskDelay(SERVO_AIR_STEP_DELAY*10 / portTICK_RATE_MS);
 	}
 
-	if(getServo_1() <= SERVO_POS_AIR_DOWN)
+	if(getServo_1() <= SERVO_POS_AIR_WALL_INVERSE_SUCKER + SERVO_AIR_STEP)
 	{
+		/* Move sucker down */
+		placeSucker(SERVO_POS_AIR_UP);
+
+		/* Drive 5 cm backwards */
+		while(checkDrive(param->x, param->y, param->angle, FIRE_WALL_NODE_SPEED, GOTO_DRIVE_BACKWARD, game_state));
+		//txGotoXY(param->x, param->y, param->angle, FIRE_WALL_NODE_SPEED, FIRE_WALL_NODE_BARRIER, GOTO_DRIVE_BACKWARD);
+
+		/* Deactivate sucker */
+		setAir(AIR_OFF);
+
+		/* wait while driving backwards */
+		vTaskDelay(FIRE_WALL_NODE_DRIVE_BACK_DELAY / portTICK_RATE_MS);
+
 		param->node_state = NODE_FINISH_ERROR;
 		return;
 	}
-
-
 
 	/* Move the sucker servo up, step by step */
 	placeSucker(SERVO_POS_AIR_UP);
 
 	/* Drive 5 cm backwards */
-	txGotoXY(param->x, param->y, param->angle, FIRE_WALL_NODE_SPEED, FIRE_WALL_NODE_BARRIER, GOTO_DRIVE_BACKWARD);
+	while(checkDrive(param->x, param->y, param->angle, FIRE_WALL_NODE_SPEED, GOTO_DRIVE_BACKWARD, game_state));
+	//txGotoXY(param->x, param->y, param->angle, FIRE_WALL_NODE_SPEED, FIRE_WALL_NODE_BARRIER, GOTO_DRIVE_BACKWARD);
 
 	/* wait while driving backwards */
-	vTaskDelay(FIRE_WALL_NODE_DRIVE_BACK_DELAY / portTICK_RATE_MS);
+	vTaskDelay(FIRE_WALL_NODE_DRIVE_HEART_DELAY / portTICK_RATE_MS);
 
 	/* drive before the heart of fire in the middle */
 	if(checkDrive(X_HEART_OF_FIRE, Y_HEART_OF_FIRE - Y_APPROACH_HEART_OF_FIRE, HEART_OF_FIRE_ANGLE, HEART_OF_FIRE_DRIVE_SPEED, GOTO_DRIVE_FORWARD, game_state) == 0)
 	{
+		/* Drive 5 cm backwards if it's not possible to get to the heart of fire */
+		while(checkDrive(param->x, param->y, param->angle, FIRE_WALL_NODE_SPEED, GOTO_DRIVE_BACKWARD, game_state));
+		//txGotoXY(param->x, param->y, param->angle, FIRE_WALL_NODE_SPEED, FIRE_WALL_NODE_BARRIER, GOTO_DRIVE_BACKWARD);
+
+		/* wait while driving backwards */
+		vTaskDelay(FIRE_WALL_NODE_DRIVE_BACK_DELAY / portTICK_RATE_MS);
+
 		/* place the fire where the robot stopped */
 		setAir(AIR_OFF);
+
 		/* Don't continue */
 		param->node_state = NODE_FINISH_ERROR;
 		return;
@@ -212,8 +186,12 @@ void doFireWallInversNode(node_param_t* param, volatile game_state_t* game_state
 	/* place fire */
 	setAir(AIR_OFF);
 
+	/* move sucker up */
+	placeSucker(SERVO_POS_AIR_UP);
+
 	/* Drive 5 cm backwards */
-	txGotoXY(param->x, param->y, param->angle, FIRE_WALL_NODE_SPEED, FIRE_WALL_NODE_BARRIER, GOTO_DRIVE_BACKWARD);
+	while(checkDrive(param->x, param->y, param->angle, FIRE_WALL_NODE_SPEED, GOTO_DRIVE_BACKWARD, game_state));
+	//txGotoXY(param->x, param->y, param->angle, FIRE_WALL_NODE_SPEED, FIRE_WALL_NODE_BARRIER, GOTO_DRIVE_BACKWARD);
 
 	/* wait while driving backwards */
 	vTaskDelay(FIRE_WALL_NODE_DRIVE_BACK_DELAY / portTICK_RATE_MS);
