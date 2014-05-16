@@ -669,6 +669,10 @@ boolean isRobotInFront(volatile game_state_t* game_state) {
 		/* If we have a confederate robot, the counting starts with 0 */
 		if(current_robot_check == 0) {
 
+			if(game_state_copy.confederate_x == 0 || game_state_copy.confederate_y == 0)
+			{
+				continue;
+			}
 			delta_x = game_state_copy.confederate_x - game_state_copy.x;
 			delta_y = game_state_copy.confederate_y - game_state_copy.y;
 			distance_treshold = ROBOT_B52_RADIUS + ROBOT_BALLERINA_RADIUS + RANGEFINDER_THRESHOLD_FW*10;
@@ -676,12 +680,20 @@ boolean isRobotInFront(volatile game_state_t* game_state) {
 		/* Enemies always start with 1 */
 		else if(current_robot_check == 1) {
 
+			if(game_state_copy.enemy_1_x == 0 || game_state_copy.enemy_1_y == 0)
+			{
+				continue;
+			}
 			delta_x = game_state_copy.enemy_1_x - game_state_copy.x;
 			delta_y = game_state_copy.enemy_1_y - game_state_copy.y;
 			distance_treshold = game_state_copy.enemy_1_diameter*10/2 + ROBOT_BALLERINA_RADIUS + RANGEFINDER_THRESHOLD_FW*10;
 		}
 		else if(current_robot_check == 2) {
 
+			if(game_state_copy.enemy_2_x == 0 || game_state_copy.enemy_2_y == 0)
+			{
+				continue;
+			}
 			delta_x = game_state_copy.enemy_2_x - game_state_copy.x;
 			delta_y = game_state_copy.enemy_2_y - game_state_copy.y;
 			distance_treshold = game_state_copy.enemy_2_diameter*10/2 + ROBOT_BALLERINA_RADIUS + RANGEFINDER_THRESHOLD_FW*10;
