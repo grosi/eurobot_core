@@ -88,7 +88,7 @@ typedef struct
 
 /* exported define ------------------------------------------------------------*/
 /* general */
-#define NODE_QUANTITY              11
+#define NODE_QUANTITY              12
 #define NODE_POOL_QUANTITY         2
 #define NODE_NO_CONFEDERATE        0xFFFF
 #define NODE_NO_ENEMY              0xFFFF
@@ -100,7 +100,7 @@ typedef struct
 #define NODE_MAMMOTH_POOL_SIZE     6
 #define NODE_MAMMOTH_POOL_LEVEL    3
 #define NODE_FRESCO_POOL_ID        2
-#define NODE_FRESCO_POOL_SIZE      2
+#define NODE_FRESCO_POOL_SIZE      3
 #define NODE_FRESCO_POOL_LEVEL     1
 #define NODE_FIRE_POOL_ID          3
 #define NODE_FIRE_POOL_SIZE        0
@@ -147,6 +147,7 @@ extern node_t node_mammoth_5;
 extern node_t node_mammoth_6;
 extern node_t node_fresco_1;
 extern node_t node_fresco_2;
+extern node_t node_fresco_3;
 extern node_t node_fire_1_red;
 extern node_t node_fire_2_red;
 extern node_t node_fire_3_red;
@@ -160,6 +161,7 @@ extern xQueueHandle qGotoStateResp;
 
 /* exported function prototypes -----------------------------------------------*/
 extern void initNodeResources(void);
+extern void setNodeConfig2Default(void);
 
 
 #endif /* NODECONFIG_H_ */

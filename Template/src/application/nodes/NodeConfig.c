@@ -102,7 +102,7 @@ node_t node_mammoth_3 =
 node_t node_mammoth_4 =
 {
     {
-        .id = 6,                            /*!<node id */
+        .id = 7,                            /*!<node id */
         .points = 4,                        /*!<node points */
         .percent = 0.19,                    /*!<percent of the total points [%]*/
         .time = 4,                          /*!<estimated node time [s]*/
@@ -120,7 +120,7 @@ node_t node_mammoth_4 =
 node_t node_mammoth_5 =
 {
     {
-        .id = 7,                            /*!<node id */
+        .id = 8,                            /*!<node id */
         .points = 4,                        /*!<node points */
         .percent = 0.19,                    /*!<percent of the total points [%]*/
         .time = 4,                          /*!<estimated node time [s]*/
@@ -138,7 +138,7 @@ node_t node_mammoth_5 =
 node_t node_mammoth_6 =
 {
     {
-        .id = 8,                            /*!<node id */
+        .id = 9,                            /*!<node id */
         .points = 4,                        /*!<node points */
         .percent = 0.19,                    /*!<percent of the total points [%]*/
         .time = 4,                          /*!<estimated node time [s]*/
@@ -178,7 +178,7 @@ node_t node_fresco_2 =
         .points = 6,                        	/*!<node points */
         .percent = 0.28,                    	/*!<percent of the total points [%]*/
         .time = 6,                          	/*!<estimated node time [s]*/
-        .x = 1650,                          	/*!<node x position [mm]*/
+        .x = 1500,                          	/*!<node x position [mm]*/
         .y = 1860 - FRESCO_APPROACH_DISTANCE,	/*!<node y position [mm]*/
         .pool_id = NODE_FRESCO_POOL_ID,     	/*!<node pool id */
         .angle = 90,                        	/*!<node arrive direction */
@@ -188,11 +188,29 @@ node_t node_fresco_2 =
     doFrescoNode
 };
 
+/* node fresco 3 */
+node_t node_fresco_3 =
+{
+    {
+        .id = 6,                                /*!<node id */
+        .points = 6,                            /*!<node points */
+        .percent = 0.28,                        /*!<percent of the total points [%]*/
+        .time = 6,                              /*!<estimated node time [s]*/
+        .x = 1650,                              /*!<node x position [mm]*/
+        .y = 1860 - FRESCO_APPROACH_DISTANCE,   /*!<node y position [mm]*/
+        .pool_id = NODE_FRESCO_POOL_ID,         /*!<node pool id */
+        .angle = 90,                            /*!<node arrive direction */
+        .node_tries = 1,                        /*!< node repeats (1 = default)*/
+        .node_state = NODE_UNDONE,              /*!<node state */
+    },
+    doFrescoNode
+};
+
 /* node fire 1 red*/
 node_t node_fire_1_red =
 {
     {
-        .id = 9,                            /*!<node id */
+        .id = 10,                            /*!<node id */
         .points = 1,                        /*!<node points */
         .percent = 0.05,                    /*!<percent of the total points [%]*/
         .time = 4,                          /*!<estimated node time [s]*/
@@ -210,7 +228,7 @@ node_t node_fire_1_red =
 node_t node_fire_2_red =
 {
     {
-        .id = 10,                           /*!<node id */
+        .id = 11,                           /*!<node id */
         .points = 1,                        /*!<node points */
         .percent = 0.05,                    /*!<percent of the total points [%]*/
         .time = 4,                          /*!<estimated node time [s]*/
@@ -228,7 +246,7 @@ node_t node_fire_2_red =
 node_t node_fire_3_red =
 {
     {
-        .id = 11,                           /*!<node id */
+        .id = 12,                           /*!<node id */
         .points = 1,                        /*!<node points */
         .percent = 0.05,                    /*!<percent of the total points [%]*/
         .time = 4,                          /*!<estimated node time [s]*/
@@ -246,7 +264,7 @@ node_t node_fire_3_red =
 node_t node_fire_1_yellow =
 {
     {
-        .id = 9,                            /*!<node id */
+        .id = 10,                            /*!<node id */
         .points = 1,                        /*!<node points */
         .percent = 0.05,                    /*!<percent of the total points [%]*/
         .time = 4,                          /*!<estimated node time [s]*/
@@ -264,7 +282,7 @@ node_t node_fire_1_yellow =
 node_t node_fire_2_yellow =
 {
     {
-        .id = 10,                           /*!<node id */
+        .id = 11,                           /*!<node id */
         .points = 1,                        /*!<node points */
         .percent = 0.05,                    /*!<percent of the total points [%]*/
         .time = 4,                          /*!<estimated node time [s]*/
@@ -282,7 +300,7 @@ node_t node_fire_2_yellow =
 node_t node_fire_3_yellow =
 {
     {
-        .id = 11,                           /*!<node id */
+        .id = 12,                           /*!<node id */
         .points = 1,                        /*!<node points */
         .percent = 0.05,                    /*!<percent of the total points [%]*/
         .time = 4,                          /*!<estimated node time [s]*/
@@ -343,6 +361,18 @@ void initNodeResources()
 //TODO:
 //    else {
 //    }
+}
+
+
+/**
+ * \fn      setNodeConfig2Default
+ * \brief   set all node actors to default.
+ */
+void setNodeConfig2Default(void)
+{
+    /* servos */
+    setServo_1(SERVO_POS_FRESCO_IN);
+    setServo_2(SERVO_POS_LAUNCHER_LOAD);
 }
 
 

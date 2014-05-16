@@ -18,6 +18,7 @@
 /* Includes ------------------------------------------------------------------*/
 /* application */
 #include "AppConfig.h"
+#include "Rangefinder.h"
 #include "system/RoboInitialisation.h"
 #include "system/RoboSetup.h"
 #include "system/RoboRun.h"
@@ -122,6 +123,8 @@ void SystemStop(void)
         /* set correct state in initialisation state */
         setConfigRoboSetup2Default();
         setConfigRoboRunState2Default();
+        setNodeConfig2Default();
+        suspendRangefinderTask();
 
         system_state = runRoboInitialisationState;
     }
@@ -141,6 +144,8 @@ void SystemReset(void)
         /* set correct state in initialisation state */
         setConfigRoboInitialisationState2Emergency();
         setConfigRoboSetup2Default();
+        setNodeConfig2Default();
+        suspendRangefinderTask();
 
         system_state = runRoboInitialisationState;
     }
