@@ -513,6 +513,11 @@ uint8_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, uint8_
         success = 0;
         //return success;
     }
+    else if(driving_backward)
+    {
+        /* Drive backward */
+        success = driveGoto(x,y,angle,speed,direction,game_state);
+    }
     else
     {
         /* Start driving */
