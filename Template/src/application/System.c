@@ -156,7 +156,12 @@ void EmergencyStop_Handler(void)
 {
     static signed portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
 
-    xSemaphoreGiveFromISR(sSyncEmergencyStopRoboState, &xHigherPriorityTaskWoken);
+    /* handle an interrupt before the semaphore is initialisied */
+    if(sSyncEmergencyStopRoboState != NULL)
+    {
+        xSemaphoreGiveFromISR(sSyncEmergencyStopRoboState, &xHigherPriorityTaskWoken);
+    }
+
     SystemReset();
 
     portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
