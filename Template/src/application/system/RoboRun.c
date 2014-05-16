@@ -330,6 +330,7 @@ void runRoboRunState(portTickType* tick)
     {
         /* the arrival wasn't possible */
         case NODE_UNDONE:
+            //TODO?: Add node_tries here too, but not as heavy as in NODE_FINISH_UNSUCCESS */
             break;
 
         case NODE_FINISH_SUCCESS:
@@ -357,19 +358,16 @@ void runRoboRunState(portTickType* tick)
             }
             break;
 
-
         /* Node not complete -> try again later */
         case NODE_FINISH_UNSUCCESS:
             current_node->param.node_tries += NODE_REPEAT;
             current_node->param.node_state = NODE_UNDONE;
             break;
 
-
         /* Node not complete, but not repeatable */
         case NODE_FINISH_ERROR:
             current_node->param.node_state = NODE_FINISH_SUCCESS;
             break;
-
 
         /* no CAN communication */
         case GOTO_CAN_ERROR:
@@ -699,8 +697,6 @@ func_report_t gotoNode(node_param_t* param, volatile game_state_t* game_state)
 //	    /* Suspend rangefinder safely */
 //        suspendRangefinderTask();
 //
-//		/* No confirmation was received from drive system! */
-//		param->node_state = GOTO_CAN_ERROR;
 //		return FUNC_ERROR;
 	}
 
@@ -730,10 +726,6 @@ func_report_t gotoNode(node_param_t* param, volatile game_state_t* game_state)
 
 				/* Suspend rangefinder safely */
 				suspendRangefinderTask();
-
-				/* Finish node with error,
-				 * this way the current node will be retried if it's more attractive again */
-				param->node_state = NODE_FINISH_UNSUCCESS;
 
 				return FUNC_INCOMPLETE;
 			}
@@ -782,10 +774,30 @@ static void vNodeTask(void* pvParameters )
     /* endless */
     for(;;)
     {
-    	/* Give goto command and do node if goto was successful */
-    	if(gotoNode(&node_task->param, &game_state) == FUNC_SUCCESS) {
+    	/* Give goto command */
+    	func_report_t gotoNode_report = gotoNode(&node_task->param, &game_state);
+
+    	/* Check return value */
+    	switch(gotoNode_report) {
+
+    	case FUNC_SUCCESS:
     		/* Do node action */
     		node_task->node_function(&node_task->param, &game_state);
+    		break;
+
+    	case FUNC_INCOMPLETE:
+			/* Arrival was not possible */
+			node_task->param.node_state = NODE_UNDONE;
+    		break;
+
+    	case FUNC_ERROR:
+    		/* No confirmation was received from drive system! */
+    		node_task->param.node_state = GOTO_CAN_ERROR;
+    		break;
+
+    	default:
+    		/* Not possible */
+    		break;
     	}
 
     	/* unblock system task */
