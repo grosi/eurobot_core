@@ -114,7 +114,7 @@ typedef struct
 /* Servo */
 #define SERVO_MOVING_DELAY          400  /* Delay in ms to wait while the servo moves the whole way */
 #define SERVO_POS_AIR_UP            1990//2000 /* Servo position: Fresco panel all the way in */
-#define SERVO_POS_AIR_DOWN          1112 //1600 /* Servo position: Fresco panel all the way out */
+#define SERVO_POS_AIR_DOWN          1100 //1600 /* Servo position: Fresco panel all the way out */
 #define SERVO_POS_AIR_FIRE		    1500	/* Servo position: to push a fire */
 #define SERVO_POS_AIR_FIRST_FIRE    1970 //1600 /* Servo position: Fresco panel all the way out */
 #define SERVO_POS_AIR_SECOND_FIRE   1590 //1600 /* Servo position: Fresco panel all the way out */

@@ -141,7 +141,7 @@ static uint8_t takePool(uint16_t x, uint16_t y, uint16_t angle, volatile game_st
                     setServo_1(servo_pos);
                 }
                 /* Wait some time while servo moves  (a bit slower)*/
-                vTaskDelay(SERVO_AIR_STEP_DELAY*10 / portTICK_RATE_MS);
+                vTaskDelay(SERVO_AIR_STEP_DELAY*5 / portTICK_RATE_MS);
             }
 
             setAir(AIR_ON);
@@ -205,7 +205,8 @@ void doFirePoolNode(node_param_t* param, volatile game_state_t* game_state)
 
 
     /* try to get the fire-pool */
-    if(takePool(param->x, param->y - FIRE_POOL_APPROACH_DISTANCE - FIRE_POOL_APPROACH_OVERHEAD,
+    //if(takePool(param->x, param->y - FIRE_POOL_APPROACH_DISTANCE - FIRE_POOL_APPROACH_OVERHEAD,
+	if(takePool(param->x - FIRE_POOL_APPROACH_DISTANCE - FIRE_POOL_APPROACH_OVERHEAD, param->y- FIRE_POOL_APPROACH_DISTANCE - FIRE_POOL_APPROACH_OVERHEAD,
             param->angle, game_state))
     {
         /* drive to the heart of fire */
@@ -219,24 +220,24 @@ void doFirePoolNode(node_param_t* param, volatile game_state_t* game_state)
                 /* the second fire lies on the wrong side */
                 if(fire_count % 2)
                 {
-
                    	/* drive back 5cm*/
 					if(!checkDrive(x_pool,y_pool,angle_pool,FIRE_POOL_APPROACH_SPEED,GOTO_DRIVE_BACKWARD,game_state)){break;};
+					vTaskDelay(1000/portTICK_RATE_MS);
 					/* drive to the front of heart*/
 					if(!checkDrive(x_heart_front,y_heart_front,angle_heart,FIRE_POOL_TRANSIT_SPEED,GOTO_DRIVE_FORWARD,game_state)){break;};
-					/* moves sucker down */
-					placeSucker(SERVO_POS_AIR_THIRD_FIRE);
 					/* drive a bit forward (slowly) and shift the other fire back */
 					if(!checkDrive(x_heart,y_heart,angle_heart,FIRE_POOL_APPROACH_SPEED,GOTO_DRIVE_FORWARD,game_state)){break;};
 					/* place fire and moves the sucker up */
 					releasePool(0);
 					/* drive a bit backwarts */
 					if(!checkDrive(x_heart-50,y_heart-50,angle_heart,FIRE_POOL_APPROACH_SPEED,GOTO_DRIVE_BACKWARD,game_state)){break;};
+					vTaskDelay(1000/portTICK_RATE_MS);
                 }
                 else
                 {
                     /* drive back 5cm*/
                     if(!checkDrive(x_pool,y_pool,angle_pool,FIRE_POOL_APPROACH_SPEED,GOTO_DRIVE_BACKWARD,game_state)){break;};
+                    vTaskDelay(1000/portTICK_RATE_MS);
                     /* drive to the front of heart*/
                     if(!checkDrive(x_heart_front,y_heart_front,angle_heart,FIRE_POOL_TRANSIT_SPEED,GOTO_DRIVE_FORWARD,game_state)){break;};
                     /* moves sucker down */
@@ -247,13 +248,15 @@ void doFirePoolNode(node_param_t* param, volatile game_state_t* game_state)
                     releasePool(0);
                     /* drive a bit backwarts */
                     if(!checkDrive(x_heart-50,y_heart-50,angle_heart,FIRE_POOL_APPROACH_SPEED,GOTO_DRIVE_BACKWARD,game_state)){break;};
+                    vTaskDelay(1000/portTICK_RATE_MS);
                 }
 
                 if(fire_count < 2)
                 {
                     /* drive back to the pool and take the next fire */
-                    if(!checkDrive(x_pool-100,y_pool-100,angle_pool,FIRE_POOL_TRANSIT_SPEED,GOTO_DRIVE_FORWARD,game_state)){break;};
-                    if(!takePool(x_pool, y_pool,angle_pool, game_state)){break;};
+                	//TODO Farbe unterscheiden
+                    if(!checkDrive(x_pool+150,y_pool,angle_pool,FIRE_POOL_TRANSIT_SPEED,GOTO_DRIVE_FORWARD,game_state)){break;};
+                    if(!takePool(x_pool-100, y_pool,angle_pool, game_state)){break;};
                 }
             }
             releasePool(0); /* be sure that the sucker is up and the air-system off */
