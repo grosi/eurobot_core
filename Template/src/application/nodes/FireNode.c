@@ -51,31 +51,31 @@
  */
 void doFireNode(node_param_t* param, volatile game_state_t* game_state)
 {
-    /* Copy current game state, so it wont be changed during calculation */
     taskENTER_CRITICAL();
-    game_state_t game_state_copy = *game_state;
-    taskEXIT_CRITICAL();
-
-	/* Don't continue if an other robot is in front */
-	if(isRobotInFront(&game_state_copy)) {
-
-		param->node_state = NODE_FINISH_UNSUCCESS;
-		return;
-	}
-
 	/* reset current barrier flag */
 	switch(param->id)
 	{
 	    case 9:
-	        game_state_copy.barrier &= ~(GOTO_FIRE_1_FORCE | GOTO_FIRE_1 | GOTO_FIRE_2_FORCE | GOTO_FIRE_2);
+	        game_state->barrier &= ~(GOTO_FIRE_1_FORCE | GOTO_FIRE_1 | GOTO_FIRE_2_FORCE | GOTO_FIRE_2);
 	        break;
 	    case 10:
-	        game_state_copy.barrier &= ~(GOTO_FIRE_3_FORCE | GOTO_FIRE_3 | GOTO_FIRE_4_FORCE | GOTO_FIRE_4);
+	        game_state->barrier &= ~(GOTO_FIRE_3_FORCE | GOTO_FIRE_3 | GOTO_FIRE_4_FORCE | GOTO_FIRE_4);
             break;
 	    case 11:
-	        game_state_copy.barrier &= ~(GOTO_FIRE_5_FORCE | GOTO_FIRE_5 | GOTO_FIRE_6_FORCE | GOTO_FIRE_6);
+	        game_state->barrier &= ~(GOTO_FIRE_5_FORCE | GOTO_FIRE_5 | GOTO_FIRE_6_FORCE | GOTO_FIRE_6);
 	        break;
 	}
+
+	/* Copy current game state, so it wont be changed during calculation */
+    game_state_t game_state_copy = *game_state;
+    taskEXIT_CRITICAL();
+
+    /* Don't continue if an other robot is in front */
+    if(isRobotInFront(&game_state_copy)) {
+
+        param->node_state = NODE_FINISH_UNSUCCESS;
+        return;
+    }
 
 	/* Move the separation all the way out */
 	setServo_1(SERVO_POS_FRESCO_OUT);
@@ -112,11 +112,6 @@ void doFireNode(node_param_t* param, volatile game_state_t* game_state)
 
 	/* Wait some time while servo moves */
 	vTaskDelay(SERVO_MOVING_DELAY / portTICK_RATE_MS);
-
-	/* Copy current game state back */
-	taskENTER_CRITICAL();
-	*game_state = game_state_copy;
-	taskEXIT_CRITICAL();
 
 	param->node_state = NODE_FINISH_SUCCESS;
 }
