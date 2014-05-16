@@ -24,7 +24,7 @@
 /* exported define ------------------------------------------------------------*/
 /* Strategy-task RTOS configuration */
 #define SYSTEM_TASK_NAME        "System Task"
-#define SYSTEM_STACK_SIZE       2*configMINIMAL_STACK_SIZE
+#define SYSTEM_STACK_SIZE       3*configMINIMAL_STACK_SIZE
 #define SYSTEM_TASK_PRIORITY    (configMAX_PRIORITIES - 4UL) /*!< priority 3 */
 
 
