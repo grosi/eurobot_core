@@ -132,7 +132,7 @@ typedef struct
 #define FRESCO_WALL_TIME           4000 /* Time in ms to wait while driving all the way to the wall */
 
 /* Fresco node */
-#define FIRE_APPROACH_DISTANCE     300  /* Distance in mm to drive into the fire */  //TODO: Evaluate good value (as short as possible)
+#define FIRE_APPROACH_DISTANCE     250  /* Distance in mm to drive into the fire */  //TODO: Evaluate good value (as short as possible)
 
 
 /* exported macro -------------------------------------------------------------*/
