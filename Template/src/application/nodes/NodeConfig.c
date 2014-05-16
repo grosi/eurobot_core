@@ -14,6 +14,8 @@
  */
 
 /* Includes ------------------------------------------------------------------*/
+/* standard */
+#include <math.h>
 /* application */
 #include "../AppConfig.h"
 #include "../CANGatekeeper.h"
@@ -479,84 +481,93 @@ void initNodeResources()
 uint8_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, uint8_t direction, volatile game_state_t* game_state)
 {
     CAN_data_t CAN_buffer;
-    uint16_t estimated_GoTo_time = 0;
-    uint8_t success = 1;
+    uint16_t estimated_GoTo_time;
+    uint8_t success;
     uint8_t CAN_ok;
-    uint8_t retries = 0;
+    int16_t delta_x, delta_y;
+    uint16_t distance;
+    boolean driving_backward;
 
-    success = driveGoto(x,y,angle,speed,direction,game_state);
-
-    /* check arrive drive for barriers like enemys */
-    if(success)
+    /* Differentiate between driving backward and forward */
+    if(direction == GOTO_DRIVE_BACKWARD)
     {
-        do
+        driving_backward = TRUE;
+        distance = 0;
+    }
+    else
+    {
+        driving_backward = FALSE;
+
+        /* If distance is to small, the drive system doesn't calculate a route and thus doesn't check if an enemy
+        * blocks the path. We have to check this here, else we start drive until the rangefinder reports an enemy. */
+        taskENTER_CRITICAL();
+        delta_x = x - game_state->x;
+        delta_y = y - game_state->y;
+        taskEXIT_CRITICAL();
+        distance = round(sqrt(delta_x*delta_x + delta_y*delta_y));
+    }
+
+    /* Don't continue if distance is to small for route calculation (+5 cm overhead) and robot in front */
+//TODO: if(distance <= DRIVE_ROUTE_DIST_MIN + 5 && isRobotInRange(game_state, driving_backward)) {
+    if(distance <= 50 + 50 && isRobotInRange(game_state, driving_backward)) {
+        success = 0;
+        //return success;
+    }
+    else
+    {
+        /* Start driving */
+        success = driveGoto(x,y,angle,speed,direction,game_state);
+
+        /* check arrive drive for obstacles like enemys */
+        if(success)
         {
-            /* Wait at least GOTO_STATERESP_DELAY before asking for goto time for the first time,
-             * else we may get the old time */
-            if(estimated_GoTo_time < 20) {
-                vTaskDelay(20 / portTICK_RATE_MS);
-            }
-
-            /* Ask drive system for GoTo state */
-            txGotoStateRequest();
-            /* Receive the GoTo state response */
-            CAN_ok = xQueueReceive(qGotoStateResp, &CAN_buffer, CAN_WAIT_DELAY / portTICK_RATE_MS);
-
-            if(CAN_ok == pdFALSE)
+            estimated_GoTo_time = 0;
+            do
             {
-                success = 0;
-                break;
-            }
+                /* Wait at least GOTO_STATERESP_DELAY before asking for goto time for the first time,
+                 * else we may get the old time */
+                if(estimated_GoTo_time < 100) {//TODO: GOTO_STATERESP_DELAY) {
+                    vTaskDelay(100 / portTICK_RATE_MS);//TODO: GOTO_STATERESP_DELAY / portTICK_RATE_MS);
+                }
 
-            /* Extract time */
-            estimated_GoTo_time = CAN_buffer.state_time;  /* In ms */
+                /* Ask drive system for GoTo state */
+                txGotoStateRequest();
+                /* Receive the GoTo state response */
+                CAN_ok = xQueueReceive(qGotoStateResp, &CAN_buffer, CAN_WAIT_DELAY / portTICK_RATE_MS);
 
-            /* Handle "time unknown" message */
-            if(estimated_GoTo_time == 0xFFFFFF)
-            {
-                /* Finish node with error,
-                 * this way the current node will be retried if it's more attractive again */
-                success = 0;
-                break;
-            }
+                if(CAN_ok == pdFALSE)
+                {
+                    success = 0;
+                    break;
+                }
 
-            /* Check if an enemy/confederate is within range in front of the robot */
-            if(direction == GOTO_DRIVE_FORWARD)
-            {
-                if(isRobotInRange(game_state, FALSE))
+                /* Extract time */
+                estimated_GoTo_time = CAN_buffer.state_time;  /* In ms */
+
+                /* Handle "goto not possible at the moment" message */
+                if(estimated_GoTo_time == 0xFFFFFF)//TODO: GOTO_NOT_POSSIBLE_ATM)
+                {
+                    /* Finish node with error,
+                     * this way the current node will be retried if it's more attractive again */
+                    success = 0;
+                    break;
+                }
+
+                /* Check if an enemy/confederate is within range in front of the robot */
+                if(isRobotInRange(game_state, driving_backward))
                 {
                     /* STOPP */
                     txStopDrive();
 
-                    /* recalculate route */
-                    driveGoto(x, y, angle, speed, direction, game_state);
-                    retries++;
-
-                    if(retries >= 5)
-                    {
-                        success = 0;
-                        break;
-                    }
+                    success = 0;
+                    break;
                 }
-            }
-            else
-            {
-                //TODO: isRobotInBack()
-//                if(isRobotInFront(game_state))
-//                {
-//                    /* STOPP */
-//                    txStopDrive();
-//
-//                    /* recalculate route */
-//                    driveGoto(x, y, angle, speed, direction, game_state);
-//                }
-            }
 
+                vTaskDelay(CAN_CHECK_DELAY/portTICK_RATE_MS);
 
-            vTaskDelay(CAN_CHECK_DELAY/portTICK_RATE_MS);
-
-        /* Repeat while not at target destination */
-        } while(estimated_GoTo_time != 0);
+            /* Repeat state request while not at target destination */
+            } while(estimated_GoTo_time != 0);
+        }
     }
 
     return success;
