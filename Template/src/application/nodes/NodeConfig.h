@@ -66,12 +66,12 @@ typedef struct
     const uint8_t id;
     const float points;
     const float   percent;
-    const float time; /*[s]*/
-    const uint16_t x; /*!<[mm]*/
-    const uint16_t y; /*!<[mm]*/
+    const float time; /*!< [s] */
+    const uint16_t x; /*!< [mm] */
+    const uint16_t y; /*!< [mm] */
     const uint8_t pool_id;
-    const uint16_t angle; /*10 bit, 1 bit =ca. 1°*/
-    uint16_t node_tries; /*!< how many times the node was the current node*/
+    const uint16_t angle; /*!< 10 bit, 1 bit =ca. 1° */
+    uint16_t node_tries; /*!< weight factor for retrying the current node (grows when node couldn't be completed) */
     node_state_t node_state;
 }node_param_t;
 
