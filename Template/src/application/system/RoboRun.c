@@ -285,6 +285,7 @@ void runRoboRunState(portTickType* tick)
     float weight_dest; /* costs of the destination node */
     float weight_enemy; /* enemy tracking weight */
     float weight_src_dest; /* way-time weight (estimated) */
+    float weight_total; /* total weight of the current node */
     float weight_next_node; /* the weight of the next node */
     uint8_t weight_arrive = NODE_PERFECT_ARRIVE; /* additional weight for bad arrives */
     uint8_t remain_time;
@@ -357,8 +358,14 @@ void runRoboRunState(portTickType* tick)
 
 
         /* Node not complete -> try again later */
+        case NODE_FINISH_UNSUCCESS:
+            current_node->param.node_tries += NODE_REPEAT;
+            current_node->param.node_state = NODE_UNDONE;
+            break;
+
+
+        /* Node not complete, but not repeatable */
         case NODE_FINISH_ERROR:
-            current_node->param.node_tries++;
             current_node->param.node_state = NODE_UNDONE;
             break;
 
@@ -526,10 +533,13 @@ void runRoboRunState(portTickType* tick)
             weight_src_dest = (sqrtf(((game_state_copy.x - nodes_game[node_count]->param.x) * (game_state_copy.x - nodes_game[node_count]->param.x)) +
                     ((game_state_copy.y - nodes_game[node_count]->param.y) * (game_state_copy.y - nodes_game[node_count]->param.y)))/1000) / ROBO_AVERAGE_SPEED;
 
+            /* calc total weight */
+            weight_total = weight_dest * weight_dec + weight_enemy * weight_dec + weight_src_dest * weight_inc;
+
             /* searching next node */
-            if((weight_dest * weight_dec + weight_enemy * weight_dec + weight_src_dest * weight_inc) < weight_next_node)
+            if(weight_total < weight_next_node)
             {
-                weight_next_node = weight_dest * weight_dec + weight_enemy * weight_dec + weight_src_dest * weight_inc;
+                weight_next_node = weight_total;
                 next_node = nodes_game[node_count];
             }
         }
@@ -739,7 +749,7 @@ func_report_t gotoNode(node_param_t* param, volatile game_state_t* game_state)
 
 				/* Finish node with error,
 				 * this way the current node will be retried if it's more attractive again */
-				param->node_state = NODE_FINISH_ERROR;
+				param->node_state = NODE_FINISH_UNSUCCESS;
 
 				return FUNC_INCOMPLETE;
 			}
