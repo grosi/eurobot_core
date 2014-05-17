@@ -59,7 +59,7 @@ node_t node_fire_1_red =
         .id = 1,                            	/*!<node id */
         .points = 1,                        	/*!<node points */
         .percent = 0.05,                    	/*!<percent of the total points [%]*/
-        .time = 2,                          	/*!<estimated node time [s]*/
+        .time = 4,                          	/*!<estimated node time [s]*/
         .x = 900 - FIRE_APPROACH_DISTANCE, 	/*!<node x position [mm]*/
         .y = 1400,                          	/*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         	/*!<node pool id */
@@ -77,7 +77,7 @@ node_t node_fire_2_red =
         .id = 2,                           		/*!<node id */
         .points = 1,                        	/*!<node points */
         .percent = 0.05,                    	/*!<percent of the total points [%]*/
-        .time = 2,                          	/*!<estimated node time [s]*/
+        .time = 4,                          	/*!<estimated node time [s]*/
         .x = 400,                           	/*!<node x position [mm]*/
         .y = 900 + FIRE_APPROACH_DISTANCE,	/*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         	/*!<node pool id */
@@ -95,7 +95,7 @@ node_t node_fire_3_red =
         .id = 3,                           		/*!<node id */
         .points = 1,                        	/*!<node points */
         .percent = 0.05,                    	/*!<percent of the total points [%]*/
-        .time = 2,                          	/*!<estimated node time [s]*/
+        .time = 4,                          	/*!<estimated node time [s]*/
         .x = 900 + FIRE_APPROACH_DISTANCE,   /*!<node x position [mm]*/
         .y = 400,                           	/*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         	/*!<node pool id */
@@ -111,13 +111,13 @@ node_t node_fire_pool_red =
 {
     {
         .id = 4,                            /*!<node id */
-        .points = 1,                        /*!<node points */
-        .percent = 0.05,                    /*!<percent of the total points [%]*/
-        .time = 2,                          /*!<estimated node time [s]*/
-        .x = 900+300,                          /*!<node x position [mm]*/
-        .y = 900+300,                          /*!<node y position [mm]*/
+        .points = 4,                        /*!<node points */
+        .percent = 0.23,                    /*!<percent of the total points [%]*/
+        .time = 30,                         /*!<estimated node time [s]*/
+        .x = 1200,                          /*!<node x position [mm]*/
+        .y = 1200,                          /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
-        .angle = 225,//270,                         /*!<node arrive direction */
+        .angle = 225,                       /*!<node arrive direction */
         .node_tries = 1,                    /*!< node repeats (1 = default)*/
         .node_state = NODE_UNDONE,          /*!<node state */
     },
@@ -131,7 +131,7 @@ node_t node_fire_wall_normal_1_red =
         .id = 5,                            /*!<node id */
         .points = 1,                        /*!<node points */
         .percent = 0.05,                    /*!<percent of the total points [%]*/
-        .time = 2,                          /*!<estimated node time [s]*/
+        .time = 6,                          /*!<estimated node time [s]*/
         .x = 0 + FIREWALL_APPROACHDISTANCE,	/*!<node x position [mm]*/
         .y = 1200,                          /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
@@ -149,7 +149,7 @@ node_t node_fire_wall_normal_2_red =
         .id = 6,                            /*!<node id */
         .points = 1,                        /*!<node points */
         .percent = 0.05,                    /*!<percent of the total points [%]*/
-        .time = 2,                          /*!<estimated node time [s]*/
+        .time = 6,                          /*!<estimated node time [s]*/
         .x = 1700,                          /*!<node x position [mm]*/
         .y = 0 + FIREWALL_APPROACHDISTANCE, /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
@@ -165,8 +165,8 @@ node_t node_fire_wall_invers_red =
 {
     {
         .id = 7,                            /*!<node id */
-        .points = 1,                        /*!<node points */
-        .percent = 0.05,                    /*!<percent of the total points [%]*/
+        .points = 2,                        /*!<node points */
+        .percent = 0.11,                    /*!<percent of the total points [%]*/
         .time = 2,                          /*!<estimated node time [s]*/
         .x = 1300,                          /*!<node x position [mm]*/
         .y = 0 + FIREWALL_APPROACHDISTANCE, /*!<node y position [mm]*/
@@ -184,13 +184,13 @@ node_t node_net_1_red =
 {
     {
         .id = 8,                            /*!<node id */
-        .points = 1,                        /*!<node points */
-        .percent = 0.05,                    /*!<percent of the total points [%]*/
+        .points = 6,                        /*!<node points */
+        .percent = 0.35,                    /*!<percent of the total points [%]*/
         .time = 2,                          /*!<estimated node time [s]*/
-        .x = 1950,                          /*!<node x position [mm]*/
+        .x = 400,                          /*!<node x position [mm]*/
         .y = 1400,                          /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
-        .angle = 270,                         /*!<node arrive direction */
+        .angle = 250,                         /*!<node arrive direction */
         .node_tries = 1,                    /*!< node repeats (1 = default)*/
         .node_state = NODE_FINISH_SUCCESS,          /*!<node state */
     },
@@ -202,10 +202,10 @@ node_t node_net_2_red =
 {
     {
         .id = 9,                            /*!<node id */
-        .points = 1,                        /*!<node points */
-        .percent = 0.05,                    /*!<percent of the total points [%]*/
+        .points = 6,                        /*!<node points */
+        .percent = 0.35,                    /*!<percent of the total points [%]*/
         .time = 2,                          /*!<estimated node time [s]*/
-        .x = 1950,                          /*!<node x position [mm]*/
+        .x = 700,                          /*!<node x position [mm]*/
         .y = 1400,                          /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
         .angle = 270,                         /*!<node arrive direction */
@@ -220,13 +220,13 @@ node_t node_net_3_red =
 {
     {
         .id = 10,                            /*!<node id */
-        .points = 1,                        /*!<node points */
-        .percent = 0.05,                    /*!<percent of the total points [%]*/
+        .points = 6,                        /*!<node points */
+        .percent = 0.35,                    /*!<percent of the total points [%]*/
         .time = 2,                          /*!<estimated node time [s]*/
-        .x = 1950,                          /*!<node x position [mm]*/
+        .x = 1000,                          /*!<node x position [mm]*/
         .y = 1400,                          /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
-        .angle = 270,                         /*!<node arrive direction */
+        .angle = 290,                         /*!<node arrive direction */
         .node_tries = 1,                    /*!< node repeats (1 = default)*/
         .node_state = NODE_FINISH_SUCCESS,          /*!<node state */
     },
@@ -243,7 +243,7 @@ node_t node_fire_1_yellow =
         .id = 1,                            	/*!<node id */
         .points = 1,                        	/*!<node points */
         .percent = 0.05,                    	/*!<percent of the total points [%]*/
-        .time = 2,                          	/*!<estimated node time [s]*/
+        .time = 4,                          	/*!<estimated node time [s]*/
         .x = 2100 + FIRE_APPROACH_DISTANCE,  /*!<node x position [mm]*/
         .y = 1400,                          	/*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         	/*!<node pool id */
@@ -261,7 +261,7 @@ node_t node_fire_2_yellow =
         .id = 2,                           		/*!<node id */
         .points = 1,                       	 	/*!<node points */
         .percent = 0.05,                    	/*!<percent of the total points [%]*/
-        .time = 2,                          	/*!<estimated node time [s]*/
+        .time = 4,                          	/*!<estimated node time [s]*/
         .x =  2600,                          	/*!<node x position [mm]*/
         .y = 900 + FIRE_APPROACH_DISTANCE,	/*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         	/*!<node pool id */
@@ -279,7 +279,7 @@ node_t node_fire_3_yellow =
         .id = 3,                           		/*!<node id */
         .points = 1,                        	/*!<node points */
         .percent = 0.05,                    	/*!<percent of the total points [%]*/
-        .time = 2,                          	/*!<estimated node time [s]*/
+        .time = 4,                          	/*!<estimated node time [s]*/
         .x = 2100 - FIRE_APPROACH_DISTANCE,	/*!<node x position [mm]*/
         .y = 400,                           	/*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         	/*!<node pool id */
@@ -296,13 +296,13 @@ node_t node_fire_pool_yellow =
 {
     {
         .id = 4,                            /*!<node id */
-        .points = 1,                        /*!<node points */
-        .percent = 0.05,                    /*!<percent of the total points [%]*/
-        .time = 2,                          /*!<estimated node time [s]*/
-        .x = 1950,                          /*!<node x position [mm]*/
-        .y = 1400,                          /*!<node y position [mm]*/
+        .points = 4,                        /*!<node points */
+        .percent = 0.23,                    /*!<percent of the total points [%]*/
+        .time = 30,                          /*!<estimated node time [s]*/
+        .x = 1800,                          /*!<node x position [mm]*/
+        .y = 1200,                          /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
-        .angle = 270,                         /*!<node arrive direction */
+        .angle = 315,                         /*!<node arrive direction */
         .node_tries = 1,                    /*!< node repeats (1 = default)*/
         .node_state = NODE_UNDONE,          /*!<node state */
     },
@@ -316,7 +316,7 @@ node_t node_fire_wall_normal_1_yellow =
         .id = 5,                            	/*!<node id */
         .points = 1,                        	/*!<node points */
         .percent = 0.05,                    	/*!<percent of the total points [%]*/
-        .time = 2,                          	/*!<estimated node time [s]*/
+        .time = 6,                          	/*!<estimated node time [s]*/
         .x = 3000 - FIREWALL_APPROACHDISTANCE,  /*!<node x position [mm]*/
         .y = 1200,                          	/*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         	/*!<node pool id */
@@ -334,7 +334,7 @@ node_t node_fire_wall_normal_2_yellow =
         .id = 6,                            /*!<node id */
         .points = 1,                        /*!<node points */
         .percent = 0.05,                    /*!<percent of the total points [%]*/
-        .time = 2,                          /*!<estimated node time [s]*/
+        .time = 6,                          /*!<estimated node time [s]*/
         .x = 1300,                          /*!<node x position [mm]*/
         .y = 0 + FIREWALL_APPROACHDISTANCE, /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
@@ -351,8 +351,8 @@ node_t node_fire_wall_invers_yellow =
     {
         .id = 7,                            /*!<node id */
         .points = 1,                        /*!<node points */
-        .percent = 0.05,                    /*!<percent of the total points [%]*/
-        .time = 2,                          /*!<estimated node time [s]*/
+        .percent = 0.11,                    /*!<percent of the total points [%]*/
+        .time = 15,                          /*!<estimated node time [s]*/
         .x = 1700,                          /*!<node x position [mm]*/
         .y = 0 + FIREWALL_APPROACHDISTANCE, /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
@@ -369,13 +369,13 @@ node_t node_net_1_yellow =
 {
     {
         .id = 8,                            /*!<node id */
-        .points = 1,                        /*!<node points */
-        .percent = 0.05,                    /*!<percent of the total points [%]*/
-        .time = 2,                          /*!<estimated node time [s]*/
-        .x = 1950,                          /*!<node x position [mm]*/
+        .points = 6,                        /*!<node points */
+        .percent = 0.35,                    /*!<percent of the total points [%]*/
+        .time = 30,                          /*!<estimated node time [s]*/
+        .x = 2000,                          /*!<node x position [mm]*/
         .y = 1400,                          /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
-        .angle = 270,                         /*!<node arrive direction */
+        .angle = 250,                         /*!<node arrive direction */
         .node_tries = 1,                    /*!< node repeats (1 = default)*/
         .node_state = NODE_FINISH_SUCCESS,          /*!<node state */
     },
@@ -387,13 +387,13 @@ node_t node_net_2_yellow =
 {
     {
         .id = 9,                            /*!<node id */
-        .points = 1,                        /*!<node points */
-        .percent = 0.05,                    /*!<percent of the total points [%]*/
-        .time = 2,                          /*!<estimated node time [s]*/
-        .x = 1950,                          /*!<node x position [mm]*/
+        .points = 6,                        /*!<node points */
+        .percent = 0.35,                    /*!<percent of the total points [%]*/
+        .time = 30,                          /*!<estimated node time [s]*/
+        .x = 2300,                          /*!<node x position [mm]*/
         .y = 1400,                          /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
-        .angle = 2700,                         /*!<node arrive direction */
+        .angle = 270,                         /*!<node arrive direction */
         .node_tries = 1,                    /*!< node repeats (1 = default)*/
         .node_state = NODE_FINISH_SUCCESS,          /*!<node state */
     },
@@ -405,13 +405,13 @@ node_t node_net_3_yellow =
 {
     {
         .id = 10,                            /*!<node id */
-        .points = 1,                        /*!<node points */
-        .percent = 0.05,                    /*!<percent of the total points [%]*/
-        .time = 2,                          /*!<estimated node time [s]*/
-        .x = 1950,                          /*!<node x position [mm]*/
+        .points = 6,                        /*!<node points */
+        .percent = 0.35,                    /*!<percent of the total points [%]*/
+        .time = 30,                          /*!<estimated node time [s]*/
+        .x = 2600,                          /*!<node x position [mm]*/
         .y = 1400,                          /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
-        .angle = 270,                         /*!<node arrive direction */
+        .angle = 290,                         /*!<node arrive direction */
         .node_tries = 1,                    /*!< node repeats (1 = default)*/
         .node_state = NODE_FINISH_SUCCESS,          /*!<node state */
     },
