@@ -151,7 +151,6 @@ void SystemReset(void)
         setConfigRoboInitialisationState2Emergency();
         setConfigRoboSetup2Default();
         setNodeConfig2Default();
-        suspendRangefinderTask();
 
         system_state = runRoboInitialisationState;
     }
