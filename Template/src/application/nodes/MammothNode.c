@@ -34,7 +34,7 @@
 #define SEPARATION_MAX_RETRIES    10   /* Number of retries if the seperation is blocked */
 #define SERVO_LAUNCHER_STEP       10   /* Size of single step for the launch servo */ //TODO
 #define SERVO_LAUNCHER_STEP_DELAY 10   /* Delay in ms to wait between steps */ //TODO
-#define SERVO_LAUNCHER_RELIEF     5    /* Servo position delta to relieve servo */
+#define SERVO_LAUNCHER_RELIEF     10    /* Servo position delta to relieve servo */
 
 
 /* Private variables ---------------------------------------------------------*/
