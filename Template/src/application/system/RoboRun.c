@@ -55,8 +55,6 @@
 #define GOTO_NACK_MAX_RETRIES  5        /* Number of retries (incl. first try) if there's no confirmation from drive system (uint8_t) */
 #define GOTO_STATERESP_DELAY   500      /* Delay in ms to wait for GoTo state response. Drive system needs 400 ms (worst case) */
 #define GOTO_STATERESP_TIMEOUT 400      /* Time in ms to wait for the GoTo state response */
-#define GOTO_NOT_POSSIBLE_ATM  0xFFFFFF /* Message: It's not possible to go to that position at the moment */
-#define GOTO_BLOCKED_ATM       0xFFFFFE /* Message: It's blocked at the moment */
 #define GOTO_DEFAULT_TIME      1000     /* Time in ms to use if no time was received from drive system */
 
 
