@@ -573,9 +573,10 @@ void suspendRangefinderTask(void) {
  * \brief       Function to check if an enemy/confederate is in front/front of robot within range
  *
  * \param[in]   game_state_t* game_state Game infos (navi)
- * \return      boolean
+ * \retval      0 robot is not in range
+ * \retval      1...    robot is in range
  */
-boolean isRobotInRange(volatile game_state_t* game_state, boolean in_back) {
+uint16_t isRobotInRange(volatile game_state_t* game_state, boolean in_back) {
 
     /* local variables */
     int16_t delta_x, delta_y;
@@ -657,12 +658,12 @@ boolean isRobotInRange(volatile game_state_t* game_state, boolean in_back) {
 
 			/* Check if the enemy is within our angle */
 			if(fabs(phi) <= RANGEFINDER_ANGLE) {
-				return TRUE;
+				return distance;
 			}
 		}
 	}
 
-	return FALSE;
+	return 0;
 }
 
 
