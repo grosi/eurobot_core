@@ -128,7 +128,7 @@ typedef struct
 
 /* CAN */
 #define CAN_WAIT_DELAY              400
-#define CAN_CHECK_DELAY             50
+#define CAN_CHECK_DELAY             100
 #define CAN_MAX_RETRIES             5
 
 
