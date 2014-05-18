@@ -17,6 +17,7 @@
 /* application */
 #include "../AppConfig.h"
 #include "../CANGatekeeper.h"
+#include "../Rangefinder.h"
 #include "../System.h"
 #include "RoboSetup.h" /* next state if this one is completed successfully */
 #include "RoboError.h" /* next state if this one is completed with errors */
@@ -282,6 +283,7 @@ void runRoboInitialisationState(portTickType* tick)
 
             /* send message over CAN for better break-enhancement */
             txEmergencyStop(0);
+            suspendRangefinderTask();
 
             state = EMERGENCY_ACTIVE;
         case EMERGENCY_ACTIVE:
