@@ -101,7 +101,7 @@ typedef struct
 #define NODE_MAMMOTH_POOL_LEVEL    3
 #define NODE_FRESCO_POOL_ID        2
 #define NODE_FRESCO_POOL_SIZE      3
-#define NODE_FRESCO_POOL_LEVEL     1
+#define NODE_FRESCO_POOL_LEVEL     2
 #define NODE_FIRE_POOL_ID          3
 #define NODE_FIRE_POOL_SIZE        0
 #define NODE_FIRE_POOL_LEVEL       0
