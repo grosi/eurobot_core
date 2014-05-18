@@ -56,6 +56,7 @@
 #define GOTO_STATERESP_DELAY   500      /* Delay in ms to wait for GoTo state response. Drive system needs 400 ms (worst case) */
 #define GOTO_STATERESP_TIMEOUT 400      /* Time in ms to wait for the GoTo state response */
 #define GOTO_NOT_POSSIBLE_ATM  0xFFFFFF /* Message: It's not possible to go to that position at the moment */
+#define GOTO_BLOCKED_ATM       0xFFFFFE /* Message: It's blocked at the moment */
 #define GOTO_DEFAULT_TIME      1000     /* Time in ms to use if no time was received from drive system */
 
 
@@ -739,7 +740,7 @@ func_report_t gotoNode(node_param_t* param, volatile game_state_t* game_state)
 			/* Extract time */
 			estimated_GoTo_time = CAN_buffer.state_time;  /* In ms */
 			/* Handle "goto not possible at the moment" message */
-			if(estimated_GoTo_time == GOTO_NOT_POSSIBLE_ATM) {
+			if(estimated_GoTo_time == GOTO_NOT_POSSIBLE_ATM || estimated_GoTo_time == GOTO_BLOCKED_ATM) {
 
 				/* Suspend rangefinder safely */
 				suspendRangefinderTask();
