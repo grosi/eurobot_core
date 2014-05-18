@@ -7,24 +7,25 @@
  *  - Changed to two ultrasonic sensor in front (for the big robot "B52")
  *  - Removed code for IR-Sensors, as they're not used in this robot
  *  - Updated navigation comparing function with option to check backwards
+ *  - Version tested (18.05.2014)
  * \version 1.3
  *  - Added function to compare rangefinder with navigation informations
  *  - Releasing semaphore on i2c error for safety reason
- *  - Software tested (13.05.2014)
+ *  - Version tested (13.05.2014)
  * \version 1.2
  *  - IR sensors in new arrangement
  *  - Added flag for separation blocked alarm
  *  - Added option to only use forward rangefinder by defining RANGEFINDER_ONLY_FW
  *  - Task is suspended at beginning, so ultrasonic only running when really used
  *  - Semaphore for synchronising with node task added (not in test protocol, but is tested)
- *  - Software tested (01.05.2014)
+ *  - Version tested (01.05.2014)
  * \version 1.1
  *  - Changed implementation of IR detection to external interrupt
  *  - Implemented comparison of last three US measures
  *  - Fixed I2C error, where the bus was always busy after disconnecting a slave
- *  - Software tested (12.03.2014)
+ *  - Version tested (12.03.2014)
  * \version 1.0
- *  Software tested (14.01.2014)
+ *  Version tested (14.01.2014)
  * \version 0.1
  *  Import from template (14.01.2014)
  *
