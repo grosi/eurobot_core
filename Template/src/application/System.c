@@ -19,6 +19,7 @@
 /* application */
 #include "AppConfig.h"
 #include "Rangefinder.h"
+#include "CANGatekeeper.h"
 #include "system/RoboInitialisation.h"
 #include "system/RoboSetup.h"
 #include "system/RoboRun.h"
@@ -124,7 +125,10 @@ void SystemStop(void)
         setConfigRoboSetup2Default();
         setConfigRoboRunState2Default();
         setNodeConfig2Default();
+
+        /* hw */
         suspendRangefinderTask();
+        txEmergencyStop(0);
 
         system_state = runRoboInitialisationState;
     }
