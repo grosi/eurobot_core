@@ -1,37 +1,38 @@
 /**
  * \file    Rangefinder.c
  * \author  kasen1
- * \date    2013-04-13
+ * \date    2013-05-18
  *
- * \version 1.4b
+ * \version 2.1b
+ *  - Updated function to compare rangefinder with navigation informations
+ * \version 2.0b
  *  - Changed to two ultrasonic sensor in front (for the big robot "B52")
  *  - Removed code for IR-Sensors, as they're not used in this robot
  *  - Updated navigation comparing function with option to check backwards
- *  - Version tested (18.05.2014)
+ *  - Version tested (2013-05-18)
  * \version 1.3
  *  - Added function to compare rangefinder with navigation informations
  *  - Releasing semaphore on i2c error for safety reason
- *  - Version tested (13.05.2014)
+ *  - Version tested (2013-05-13)
  * \version 1.2
  *  - IR sensors in new arrangement
  *  - Added flag for separation blocked alarm
  *  - Added option to only use forward rangefinder by defining RANGEFINDER_ONLY_FW
  *  - Task is suspended at beginning, so ultrasonic only running when really used
  *  - Semaphore for synchronising with node task added (not in test protocol, but is tested)
- *  - Version tested (01.05.2014)
+ *  - Version tested (2013-05-01)
  * \version 1.1
  *  - Changed implementation of IR detection to external interrupt
  *  - Implemented comparison of last three US measures
  *  - Fixed I2C error, where the bus was always busy after disconnecting a slave
- *  - Version tested (12.03.2014)
+ *  - Version tested (2013-03-12)
  * \version 1.0
- *  Version tested (14.01.2014)
+ *  - Implemented first version
+ *  - Version tested (2013-01-14)
  * \version 0.1
- *  Import from template (14.01.2014)
+ *  - Import from template (2013-01-14)
  *
- * \brief    task for the rangefinder sensors
- *
- * \todo     Unit test for version 1.2 on robot
+ * \brief    task for the rangefinder sensors and helper functions
  *
  * \defgroup rangefinder Rangefinder
  * \brief    Rangefinder task
@@ -84,8 +85,8 @@
 #define SRF08_ANN_US    0x55            /* Measure in micro-seconds (ANN mode) */
 
 /* Robot information */
-#define ROBOT_BALLERINA_RADIUS  120  /* Distance from nose to center (navigation) in mm */
-#define ROBOT_B52_RADIUS        230  /* Distance from nose to center (navigation) in mm */
+#define ROBOT_OUR_RADIUS           230  /* Distance from nose to center (navigation) in mm */
+#define ROBOT_CONFEDERATE_RADIUS   120  /* Distance from nose to center (navigation) in mm */
 
 
 /* Private variables ---------------------------------------------------------*/
@@ -580,7 +581,7 @@ uint16_t isRobotInRange(volatile game_state_t* game_state, boolean in_back) {
 
     /* local variables */
     int16_t delta_x, delta_y;
-    uint16_t distance, distance_treshold;
+    uint16_t distance, distance_offset;
     int16_t alpha, phi;
 
 	/* Copy current game state, so it wont be changed during calculation */
@@ -603,7 +604,7 @@ uint16_t isRobotInRange(volatile game_state_t* game_state, boolean in_back) {
 			}
 			delta_x = game_state_copy.confederate_x - game_state_copy.x;
 			delta_y = game_state_copy.confederate_y - game_state_copy.y;
-			distance_treshold = ROBOT_B52_RADIUS + ROBOT_BALLERINA_RADIUS + RANGEFINDER_THRESHOLD_FW*10;
+			distance_offset = ROBOT_CONFEDERATE_RADIUS + ROBOT_OUR_RADIUS;
 		}
 		/* Enemies always start with 1 */
 		else if(current_robot_check == 1) {
@@ -614,7 +615,7 @@ uint16_t isRobotInRange(volatile game_state_t* game_state, boolean in_back) {
 			}
 			delta_x = game_state_copy.enemy_1_x - game_state_copy.x;
 			delta_y = game_state_copy.enemy_1_y - game_state_copy.y;
-			distance_treshold = game_state_copy.enemy_1_diameter*10/2 + ROBOT_BALLERINA_RADIUS + RANGEFINDER_THRESHOLD_FW*10;
+			distance_offset = game_state_copy.enemy_1_diameter*10/2 + ROBOT_OUR_RADIUS;
 		}
 		else if(current_robot_check == 2) {
 
@@ -624,7 +625,7 @@ uint16_t isRobotInRange(volatile game_state_t* game_state, boolean in_back) {
 			}
 			delta_x = game_state_copy.enemy_2_x - game_state_copy.x;
 			delta_y = game_state_copy.enemy_2_y - game_state_copy.y;
-			distance_treshold = game_state_copy.enemy_2_diameter*10/2 + ROBOT_BALLERINA_RADIUS + RANGEFINDER_THRESHOLD_FW*10;
+			distance_offset = game_state_copy.enemy_2_diameter*10/2 + ROBOT_OUR_RADIUS;
 		}
 		/* Else:
 		 *  current_robot_check > 2: (More than 2 enemies)      Not possible in eurobot 2014 scenario
@@ -634,7 +635,7 @@ uint16_t isRobotInRange(volatile game_state_t* game_state, boolean in_back) {
 		distance = round(sqrt(delta_x*delta_x + delta_y*delta_y));
 
 		/* Check if a robot is within threshold range (mm) */
-		if(distance <= distance_treshold) {
+		if(distance <= distance_offset + RANGEFINDER_THRESHOLD_FW*10) {
 
 			/* Convert (0 <= angle < 360) to (-180 <= alpha < 180) */
 			if(game_state_copy.angle < 180) {
@@ -658,7 +659,8 @@ uint16_t isRobotInRange(volatile game_state_t* game_state, boolean in_back) {
 
 			/* Check if the enemy is within our angle */
 			if(fabs(phi) <= RANGEFINDER_ANGLE) {
-				return distance;
+				/* Return the external distance (without radiuses) */
+				return distance - distance_offset;
 			}
 		}
 	}

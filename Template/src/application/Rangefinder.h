@@ -1,41 +1,42 @@
 /**
- * \file    Rangefinder.h
+ * \file    Rangefinder.c
  * \author  kasen1
- * \date    2014-01-14
+ * \date    2013-05-18
  *
- * \version 1.4b
+ * \version 2.1b
+ *  - Updated function to compare rangefinder with navigation informations
+ * \version 2.0b
  *  - Changed to two ultrasonic sensor in front (for the big robot "B52")
  *  - Removed code for IR-Sensors, as they're not used in this robot
  *  - Updated navigation comparing function with option to check backwards
- *  - Version tested (18.05.2014)
+ *  - Version tested (2013-05-18)
  * \version 1.3
  *  - Added function to compare rangefinder with navigation informations
  *  - Releasing semaphore on i2c error for safety reason
- *  - Version tested (13.05.2014)
+ *  - Version tested (2013-05-13)
  * \version 1.2
  *  - IR sensors in new arrangement
  *  - Added flag for separation blocked alarm
  *  - Added option to only use forward rangefinder by defining RANGEFINDER_ONLY_FW
  *  - Task is suspended at beginning, so ultrasonic only running when really used
  *  - Semaphore for synchronising with node task added (not in test protocol, but is tested)
- *  - Version tested (01.05.2014)
+ *  - Version tested (2013-05-01)
  * \version 1.1
  *  - Changed implementation of IR detection to external interrupt
  *  - Implemented comparison of last three US measures
  *  - Fixed I2C error, where the bus was always busy after disconnecting a slave
- *  - Version tested (12.03.2014)
+ *  - Version tested (2013-03-12)
  * \version 1.0
- *  Version tested (14.01.2014)
+ *  - Implemented first version
+ *  - Version tested (2013-01-14)
  * \version 0.1
- *  Import from template (14.01.2014)
+ *  - Import from template (2013-01-14)
  *
- * \brief   task for the rangefinder sensors
- *
- * \todo     Unit test for version 1.2 on robot
+ * \brief    task for the rangefinder sensors and helper functions
  *
  * \defgroup rangefinder Rangefinder
- * \brief   Rangefinder task
- * \ingroup hw_task
+ * \brief    Rangefinder task
+ * \ingroup  hw_task
  *
  * @{
  */
@@ -82,7 +83,7 @@ extern volatile uint8_t Rangefinder_flag_FiAlarmUS;     /* Ultrasonic fire node 
 /* exported function prototypes -----------------------------------------------*/
 extern void initRangefinderTask(void);
 extern void suspendRangefinderTask(void);
-extern boolean isRobotInRange(volatile game_state_t*, boolean);
+extern uint16_t isRobotInRange(volatile game_state_t*, boolean);
 
 #endif /* RANGEFINDER_TASK_H_ */
 

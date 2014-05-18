@@ -478,6 +478,28 @@ void setNodeConfig2Default(void)
 
 
 /**
+ * \fn distance2speed
+ * \brief returns a speed according
+ *
+ * \param[in] distance  absolute distance (without radiuses)
+ * \param[in] max_speed maximum speed in percent
+ *
+ * \retval speed in percent
+ */
+uint8_t distance2speed(uint16_t distance, uint8_t max_speed)
+{
+	uint8_t speed = max_speed * distance / RANGEFINDER_THRESHOLD_FW;
+
+	if(speed > max_speed)
+	{
+		speed = max_speed;
+	}
+
+	return speed;
+}
+
+
+/**
  * \fn      checkDrive
  * \brief   safety drive to the next X/Y position and control the route
  *
@@ -493,112 +515,124 @@ void setNodeConfig2Default(void)
  */
 uint8_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, uint8_t direction, volatile game_state_t* game_state)
 {
-    CAN_data_t CAN_buffer;
-    uint16_t estimated_GoTo_time;
-    uint8_t success;
-    uint8_t CAN_ok;
-    int16_t delta_x, delta_y;
-    uint16_t distance;
-    boolean driving_backward;
+	CAN_data_t CAN_buffer;
+	uint16_t estimated_GoTo_time;
+	uint8_t success;
+	uint8_t CAN_ok;
+	int16_t delta_x, delta_y;
+	uint16_t distance;
 
-    /* Differentiate between driving backward and forward */
-    if(direction == GOTO_DRIVE_BACKWARD)
-    {
-        driving_backward = TRUE;
-        distance = 0;
-    }
-    else
-    {
-        driving_backward = FALSE;
+	/* Differentiate between driving backward and forward */
+	if(direction == GOTO_DRIVE_FORWARD)
+	{
+		/* If distance is to small, the drive system doesn't calculate a route and thus doesn't check if an enemy
+		 * blocks the path. We have to check this here, else we start drive until the rangefinder reports an enemy. */
+		taskENTER_CRITICAL();
+		delta_x = x - game_state->x;
+		delta_y = y - game_state->y;
+		taskEXIT_CRITICAL();
+		distance = round(sqrt(delta_x*delta_x + delta_y*delta_y));
 
-        /* If distance is to small, the drive system doesn't calculate a route and thus doesn't check if an enemy
-        * blocks the path. We have to check this here, else we start drive until the rangefinder reports an enemy. */
-        taskENTER_CRITICAL();
-        delta_x = x - game_state->x;
-        delta_y = y - game_state->y;
-        taskEXIT_CRITICAL();
-        distance = round(sqrt(delta_x*delta_x + delta_y*delta_y));
-    }
+		if(distance <= 150) //TODO DRIVE_ROUTE_DIST_MIN /* No route calculation, just driving */
+		{
+			if(isRobotInRange(game_state, FALSE) < 150 + 50) //TODO DRIVE_ROUTE_DIST_MIN + 50
+			{
+				/* Don't drive */
+				success = 0;
+				//return success;
+			}
+			else
+			{
+				/* Drive forward with speed relative to the distance */
+				success = driveGoto(x, y, angle, distance2speed(distance, speed), direction, game_state);
+				//return success;
+			}
 
-    /* Don't continue if distance is to small for route calculation (+5 cm overhead) and robot in front */
-//TODO: if(distance <= DRIVE_ROUTE_DIST_MIN + 5 && isRobotInRange(game_state, driving_backward)) {
-    if(distance <= 50 + 50 && isRobotInRange(game_state, driving_backward)) {
-        success = 0;
-        //return success;
-    }
-    else if(driving_backward)
-    {
-        /* Drive backward */
-        success = driveGoto(x,y,angle,speed,direction,game_state);
-    }
-    else
-    {
-        /* Start driving */
-        success = driveGoto(x,y,angle,speed,direction,game_state);
+		}
+		else /* Route calculated */
+		{
+			/* Start driving forward */
+			success = driveGoto(x, y, angle, speed, direction, game_state);
 
-        /* check arrive drive for obstacles like enemys */
-        if(success)
-        {
-            estimated_GoTo_time = 0;
-            do
-            {
-                /* Wait at least GOTO_STATERESP_DELAY before asking for goto time for the first time,
-                 * else we may get the old time */
-                if(estimated_GoTo_time < 100) {//TODO: GOTO_STATERESP_DELAY) {
-                    vTaskDelay(100 / portTICK_RATE_MS);//TODO: GOTO_STATERESP_DELAY / portTICK_RATE_MS);
-                }
+			/* check arrive drive for obstacles like enemys */
+			if(success)
+			{
+				/* Wait at least GOTO_STATERESP_DELAY before asking for goto time for the first time,
+				 * else we may get the old time */
+				vTaskDelay(100 / portTICK_RATE_MS);//TODO: GOTO_STATERESP_DELAY / portTICK_RATE_MS);
 
-                /* Ask drive system for GoTo state */
-                txGotoStateRequest();
-                /* Receive the GoTo state response */
-                CAN_ok = xQueueReceive(qGotoStateResp, &CAN_buffer, CAN_WAIT_DELAY / portTICK_RATE_MS);
+				do
+				{
+					/* Ask drive system for GoTo state */
+					txGotoStateRequest();
+					/* Receive the GoTo state response */
+					CAN_ok = xQueueReceive(qGotoStateResp, &CAN_buffer, CAN_WAIT_DELAY / portTICK_RATE_MS);
 
-                if(CAN_ok == pdFALSE)
-                {
-                    success = 0;
-                    break;
-                }
+					if(CAN_ok == pdFALSE)
+					{
+						success = 0;
+						break;
+					}
 
-                /* Extract time */
-                estimated_GoTo_time = CAN_buffer.state_time;  /* In ms */
+					/* Extract time */
+					estimated_GoTo_time = CAN_buffer.state_time;  /* In ms */
 
-                /* Handle "goto not possible at the moment" message */
-                if(estimated_GoTo_time == GOTO_NOT_POSSIBLE_ATM)
-                {
-                    /* Finish node with error,
-                     * this way the current node will be retried if it's more attractive again */
-                    success = 0;
-                    break;
-                }
+					/* Handle "goto not possible at the moment" message */
+					if(estimated_GoTo_time == GOTO_NOT_POSSIBLE_ATM)
+					{
+						/* Finish node with error,
+						 * this way the current node will be retried if it's more attractive again */
+						success = 0;
+						break;
+					}
 
-                /* Handle "goto blocked at the moment" message */
-                if(estimated_GoTo_time == GOTO_BLOCKED_ATM)
-                {
-                    /* Finish node with error,
-                     * this way the current node will be retried if it's more attractive again */
-                    txStopDrive();
-                    success = 0;
-                    break;
-                }
+					/* Handle "goto blocked at the moment" message */
+					if(estimated_GoTo_time == GOTO_BLOCKED_ATM)
+					{
+						/* Finish node with error,
+						 * this way the current node will be retried if it's more attractive again */
+						txStopDrive();  //TODO: Necessary?
+						success = 0;
+						break;
+					}
 
-                /* Check if an enemy/confederate is within range in front of the robot */
-                if(isRobotInRange(game_state, driving_backward))
-                {
-                    /* STOPP */
-                    txStopDrive();
+					/* Check if an enemy/confederate is within range in front of the robot */
+					if(isRobotInRange(game_state, FALSE))
+					{
+						/* STOPP */
+						txStopDrive();
 
-                    success = 0;
-                    break;
-                }
+						success = 0;
+						break;
+					}
 
-                vTaskDelay(CAN_CHECK_DELAY/portTICK_RATE_MS);
+					vTaskDelay(CAN_CHECK_DELAY/portTICK_RATE_MS);
 
-            /* Repeat state request while not at target destination */
-            } while(estimated_GoTo_time != 0);
-        }
-    }
+				/* Repeat state request while not at target destination */
+				} while(estimated_GoTo_time > 0);
+			}
 
-    return success;
+			//return success;
+		}
+	}
+	else /* direction == GOTO_DRIVE_BACKRWARD */
+	{
+		/* Check if path blocked */
+		if(isRobotInRange(game_state, TRUE) < 50 + 50) //TODO DRIVE_BACK_DIST + 50
+		{
+			/* Don't drive */
+			success = 0;
+			//return success;
+		}
+		else
+		{
+			/* Drive backward */
+			success = driveGoto(x, y, angle, speed, direction, game_state);
+			//return success;
+		}
+	}
+
+	return success;
 }
 
 
