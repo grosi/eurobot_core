@@ -193,11 +193,11 @@ menu_t startnode =
     .pos1 = 1,
     .opt2 = SETUP_STARTNODE_OPTION,
     .pos2 = 7,
-    .opt3 = "..11",
+    .opt3 = "..12",
     .pos3 = 11,
     .cursor_position = SETUP_STARTNODE_CURSOR_DEFAULT,
     .min_result = 1,
-    .max_result = 11,
+    .max_result = 12,
     .result = SETUP_STARTNODE_RESULT_DEFAULT,    // 0... 11
     .confirmed = FALSE
 };
