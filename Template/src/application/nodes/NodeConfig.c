@@ -465,6 +465,19 @@ void initNodeResources()
 
 
 /**
+* \fn setNodeConfig2Default
+* \brief set all node actors to default.
+*/
+void setNodeConfig2Default(void)
+{
+    /* servos */
+    setServo_1(SERVO_POS_AIR_UP);
+    setServo_2(SERVO_POS_NET_LOAD);
+    setAir(0);
+}
+
+
+/**
  * \fn      checkDrive
  * \brief   safety drive to the next X/Y position and control the route
  *
