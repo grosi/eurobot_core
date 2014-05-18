@@ -62,7 +62,7 @@ void runRoboRunExtendState(portTickType* tick)
 	vTaskDelay(remaining_time/portTICK_RATE_MS);
 
 	setServo_2(SERVO_POS_NET_LAUNCH);
-    vTaskDelay(1000/portMAX_DELAY);
+    vTaskDelay(4000/portMAX_DELAY);
     setServo_2(SERVO_POS_NET_LOAD);
 
     /* re-init the complete system */
