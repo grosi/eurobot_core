@@ -687,7 +687,7 @@ func_report_t gotoNode(node_param_t* param, volatile game_state_t* game_state)
 	delta_y = param->y - game_state_copy.y;
 	distance = round(sqrt(delta_x*delta_x + delta_y*delta_y));
 	/* Don't continue if distance is to small for route calculation (+5 cm overhead) and robot in front */
-	if(distance <= DRIVE_ROUTE_DIST_MIN + 5 && isRobotInRange(game_state)) {
+	if(distance <= DRIVE_ROUTE_DIST_MIN + 5 && isRobotInRange(game_state,FALSE)) {
 		return FUNC_INCOMPLETE;
 	}
 
