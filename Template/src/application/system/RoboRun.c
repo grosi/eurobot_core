@@ -51,7 +51,7 @@
 #define GOTO_DEFAULT_BARRIER_Y GOTO_FIRE_3_FORCE|GOTO_FIRE_5_FORCE  /* Barrier flags for yellow team */
 #define GOTO_ACK_DELAY         20       /* Delay in ms to wait before checking goto confirmation */
 #define GOTO_NACK_MAX_RETRIES  5        /* Number of retries (incl. first try) if there's no confirmation from drive system (uint8_t) */
-#define GOTO_STATERESP_DELAY   100      /* Delay in ms to wait for GoTo state response. Drive system needs 400 ms (worst case) */
+#define GOTO_STATERESP_DELAY   500      /* Delay in ms to wait for GoTo state response. Drive system needs 400 ms (worst case) */
 #define GOTO_STATERESP_TIMEOUT 400      /* Time in ms to wait for the GoTo state response */
 #define GOTO_NOT_POSSIBLE_ATM  0xFFFFFF /* Message: It's not possible to go to that position at the moment */
 #define GOTO_DEFAULT_TIME      1000     /* Time in ms to use if no time was received from drive system */
@@ -674,7 +674,7 @@ func_report_t gotoNode(node_param_t* param, volatile game_state_t* game_state)
 	distance = round(sqrt(delta_x*delta_x + delta_y*delta_y));
 	/* Don't continue if distance is to small for route calculation (+5 cm overhead) and robot in front */
 	if(distance <= DRIVE_ROUTE_DIST_MIN + 5 && isRobotInFront(game_state)) {
-		return FUNC_INCOMPLETE;
+		return FUNC_INCOMPLETE_LIGHT;
 	}
 
     /* Activate rangefinder */
@@ -717,6 +717,7 @@ func_report_t gotoNode(node_param_t* param, volatile game_state_t* game_state)
 		if(CAN_ok != pdTRUE) {
 
 			/* Drive system didn't answer within specified time, use to default time */
+		    //TODO breakout
 			estimated_GoTo_time = GOTO_DEFAULT_TIME;
 		}
 		else {
@@ -729,7 +730,7 @@ func_report_t gotoNode(node_param_t* param, volatile game_state_t* game_state)
 				/* Suspend rangefinder safely */
 				suspendRangefinderTask();
 
-				return FUNC_INCOMPLETE;
+				return FUNC_INCOMPLETE_HEAVY;
 			}
 		}
 
@@ -747,7 +748,7 @@ func_report_t gotoNode(node_param_t* param, volatile game_state_t* game_state)
 				/* Suspend rangefinder safely */
 				suspendRangefinderTask();
 
-				return FUNC_INCOMPLETE;
+				return FUNC_INCOMPLETE_LIGHT;
 			}
 
 			/* Semaphore is always only given by rangefinder task and always only taken by node task,
@@ -787,10 +788,15 @@ static void vNodeTask(void* pvParameters )
     		node_task->node_function(&node_task->param, &game_state);
     		break;
 
-    	case FUNC_INCOMPLETE:
+    	case FUNC_INCOMPLETE_LIGHT:
 			/* Arrival was not possible */
 			node_task->param.node_state = NODE_UNDONE;
     		break;
+
+    	case FUNC_INCOMPLETE_HEAVY:
+            /* Arrival was not possible */
+            node_task->param.node_state = NODE_FINISH_UNSUCCESS;
+            break;
 
     	case FUNC_ERROR:
     		/* No confirmation was received from drive system! */
