@@ -21,7 +21,7 @@
 
 
 /* exported define ------------------------------------------------------------*/
-#define FIRE_NODE_DELTA_GO (50+FIRE_APPROACH_DISTANCE) /*!< [mm] */  //TODO: Evaluate good value (as short as possible)
+#define FIRE_NODE_DELTA_GO (FIRE_APPROACH_DISTANCE) /*!< [mm] */  //TODO: Evaluate good value (as short as possible)
 #define FIRE_NODE_SPEED 100 /*!< [%] */
 #define FIRE_NODE_DRIVE_DELAY 1200
 

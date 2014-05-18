@@ -51,30 +51,33 @@ void doFireNode(node_param_t* param, volatile game_state_t* game_state)
 {
     /* local variables */
     /* Copy current game state, so it wont be changed during calculation */
-    taskENTER_CRITICAL();
-    game_state_t game_state_copy = *game_state;
-    taskEXIT_CRITICAL();
+//    taskENTER_CRITICAL();
+//    game_state_t game_state_copy = *game_state;
+//    taskEXIT_CRITICAL();
 
 	/* Don't continue if an other robot is in front */
-	if(isRobotInRange(&game_state_copy, FALSE))
+	if(isRobotInRange(game_state, FALSE))
 	{
 		param->node_state = NODE_FINISH_ERROR;
 		return;
 	}
 
 	/* reset current barrier flag */
+	taskENTER_CRITICAL();
 	switch(param->id)
 	{
 	case 1:
-        game_state_copy.barrier &= ~(GOTO_FIRE_1_FORCE | GOTO_FIRE_1 | GOTO_FIRE_2_FORCE | GOTO_FIRE_2);
+        game_state->barrier &= ~(GOTO_FIRE_1_FORCE | GOTO_FIRE_1 | GOTO_FIRE_2_FORCE | GOTO_FIRE_2);
         break;
 	case 2:
-        game_state_copy.barrier &= ~(GOTO_FIRE_3_FORCE | GOTO_FIRE_3 | GOTO_FIRE_4_FORCE | GOTO_FIRE_4);
+	    game_state->barrier &= ~(GOTO_FIRE_3_FORCE | GOTO_FIRE_3 | GOTO_FIRE_4_FORCE | GOTO_FIRE_4);
         break;
 	case 3:
-        game_state_copy.barrier &= ~(GOTO_FIRE_5_FORCE | GOTO_FIRE_5 | GOTO_FIRE_6_FORCE | GOTO_FIRE_6);
+	    game_state->barrier &= ~(GOTO_FIRE_5_FORCE | GOTO_FIRE_5 | GOTO_FIRE_6_FORCE | GOTO_FIRE_6);
         break;
 	}
+	taskEXIT_CRITICAL();
+
 
     /* Move the sucker servo down a bit, step by step */
 	placeSucker(SERVO_POS_AIR_THIRD_FIRE);
@@ -114,9 +117,9 @@ void doFireNode(node_param_t* param, volatile game_state_t* game_state)
 	param->node_state = NODE_FINISH_SUCCESS;
 
 	/* Copy current game state back */
-    taskENTER_CRITICAL();
-    *game_state = game_state_copy;
-    taskEXIT_CRITICAL();
+//    taskENTER_CRITICAL();
+//    *game_state = game_state_copy;
+//    taskEXIT_CRITICAL();
 }
 
 /**
