@@ -84,6 +84,7 @@ static uint8_t takePool(uint16_t x, uint16_t y, uint16_t angle, volatile game_st
     /* local variable */
     volatile uint16_t servo_pos; /* Variable to set the servo position step by step */
     volatile uint16_t approach_counter = 0;
+    uint8_t pushed = 0;
     uint8_t success;
 
     /* Drive closer to the pool */
@@ -94,13 +95,19 @@ static uint8_t takePool(uint16_t x, uint16_t y, uint16_t angle, volatile game_st
             /* Wait some time before next check */
             vTaskDelay(FIRE_POOL_DRIVECHECK_DELAY / portTICK_RATE_MS);
             approach_counter += FIRE_POOL_DRIVECHECK_DELAY;
+
+            if(getSensor_Fire_Pool_Left())
+            {
+                pushed = 1;
+                break;
+            }
         }
 
         /* Stop driving further */
         txStopDrive();
 
         /* check pool position */
-        if(getSensor_Fire_Pool_Left())
+        if(pushed)
         {
             /* Move the sucker servo down a bit, step by step */
             servo_pos = getServo_1(); /* Current position */
@@ -181,7 +188,7 @@ void doFirePoolNode(node_param_t* param, volatile game_state_t* game_state)
 	if(takePool(param->x + x_pool_approach, param->y, param->angle, game_state))
     {
         /* drive to the heart of fire */
-        if(checkDrive(x_pool,y_pool,param->angle,FIRE_POOL_TRANSIT_SPEED,GOTO_DRIVE_FORWARD,game_state))
+        if(checkDrive(x_pool,y_pool,param->angle,FIRE_POOL_TRANSIT_SPEED,GOTO_DRIVE_FORWARD,game_state) == FUNC_SUCCESS)
         {
             /* release the pool and turn off the air-system */
             releasePool(0);
