@@ -316,7 +316,7 @@ node_t node_fire_wall_normal_1_yellow =
         .id = 5,                            	/*!<node id */
         .points = 1,                        	/*!<node points */
         .percent = 0.06,                    	/*!<percent of the total points [%]*/
-        .time = 8,                          	/*!<estimated node time [s]*/
+        .time = 11,                          	/*!<estimated node time [s]*/
         .x = 3000 - FIREWALL_APPROACHDISTANCE,  /*!<node x position [mm]*/
         .y = 1200,                          	/*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         	/*!<node pool id */
@@ -334,7 +334,7 @@ node_t node_fire_wall_normal_2_yellow =
         .id = 6,                            /*!<node id */
         .points = 1,                        /*!<node points */
         .percent = 0.06,                    /*!<percent of the total points [%]*/
-        .time = 8,                          /*!<estimated node time [s]*/
+        .time = 11,                          /*!<estimated node time [s]*/
         .x = 1300,                          /*!<node x position [mm]*/
         .y = 0 + FIREWALL_APPROACHDISTANCE, /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
@@ -527,7 +527,7 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
 	int16_t delta_x, delta_y;
 	uint16_t distance;
 	uint16_t range;
-	uint8_t is_in_range = 0; /* is in range flag */
+	uint8_t is_in_range = 0; /* is in range flag */ //TODO: ?
 
 	/* Differentiate between driving backward and forward */
 	if(direction == GOTO_DRIVE_FORWARD)
@@ -540,7 +540,6 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
 		taskEXIT_CRITICAL();
 		distance = round(sqrt(delta_x*delta_x + delta_y*delta_y));
 
-		/* NO rounting enhancements from the drive-node */
 		if(distance <= 150) //TODO DRIVE_ROUTE_DIST_MIN /* No route calculation, just driving */
 		{
 		    range = isRobotInRange(game_state, FALSE);
@@ -549,6 +548,8 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
 		        /* Drive forward */
                 if(driveGoto(x, y, angle, speed, direction, game_state))
                 {
+                    /* Wait at least GOTO_STATERESP_DELAY before asking for goto time for the first time,
+                     * else we may get the old time */
                     vTaskDelay(100 / portTICK_RATE_MS);//TODO: GOTO_STATERESP_DELAY / portTICK_RATE_MS);
 
                     do
@@ -721,7 +722,7 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
 
 
 		/* Check if path blocked */
-	    uint16_t range = isRobotInRange(game_state, TRUE);
+	    range = isRobotInRange(game_state, TRUE);
 	    if((range == 0) || (range >= 50 + 50)) //TODO DRIVE_BACK_DIST + DIST_OFFSET  /* No enemy in range */
         {
             /* Drive backward */

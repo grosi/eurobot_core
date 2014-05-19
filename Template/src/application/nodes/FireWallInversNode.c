@@ -121,7 +121,7 @@ void doFireWallInversNode(node_param_t* param, volatile game_state_t* game_state
 		/* Deactivate sucker */
 		setAir(AIR_OFF);
 
-		param->node_state = NODE_FINISH_ERROR;
+		param->node_state = NODE_FINISH_SUCCESS;
 		return;
 	}
 
@@ -141,7 +141,7 @@ void doFireWallInversNode(node_param_t* param, volatile game_state_t* game_state
 		setAir(AIR_OFF);
 
 		/* Don't continue */
-		param->node_state = NODE_FINISH_ERROR;
+		param->node_state = NODE_FINISH_SUCCESS;
 		return;
 	}
 
@@ -154,7 +154,7 @@ void doFireWallInversNode(node_param_t* param, volatile game_state_t* game_state
 		/* place the fire where the robot stopped */
 		setAir(AIR_OFF);
 		/* Don't continue */
-		param->node_state = NODE_FINISH_ERROR;
+		param->node_state = NODE_FINISH_SUCCESS;
 		return;
 
 	}

@@ -55,13 +55,6 @@ void doFireWallNormalNode(node_param_t* param, volatile game_state_t* game_state
     game_state_t game_state_copy = *game_state;
     taskEXIT_CRITICAL();
 
-//	/* Don't continue if an other robot is in front */
-//	if(isRobotInFront(&game_state_copy))
-//	{
-//		param->node_state = NODE_FINISH_ERROR;
-//		return;
-//	}
-
     /* Move the sucker servo up, step by step just to make sure*/
 	placeSucker(SERVO_POS_AIR_UP);
 
@@ -70,54 +63,35 @@ void doFireWallNormalNode(node_param_t* param, volatile game_state_t* game_state
     if(param->angle >= NODE_NORTH_MIN_ANGLE && param->angle <= NODE_NORTH_MAX_ANGLE)
     {
     	checkDrive(param->x, param->y-FIRE_WALL_NODE_DELTA_GO, param->angle, FIRE_WALL_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state);
-        //txGotoXY(param->x, param->y-FIRE_WALL_NODE_DELTA_GO, param->angle, FIRE_WALL_NODE_SPEED, FIRE_WALL_NODE_BARRIER, GOTO_DRIVE_FORWARD);
     }
     /* Drive over fire from EAST */
     else if(param->angle >= NODE_EAST_MIN_ANGLE && param->angle <= NODE_EAST_MAX_ANGLE)
     {
         checkDrive(param->x-FIRE_WALL_NODE_DELTA_GO, param->y, param->angle, FIRE_WALL_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state);
-    	//txGotoXY(param->x-FIRE_WALL_NODE_DELTA_GO, param->y, param->angle, FIRE_WALL_NODE_SPEED, FIRE_WALL_NODE_BARRIER, GOTO_DRIVE_FORWARD);
     }
     /* Drive over fire from SOUTH */
     else if(param->angle >= NODE_SOUTH_MIN_ANGLE && param->angle <= NODE_SOUTH_MAX_ANGLE)
     {
         checkDrive(param->x, param->y+FIRE_WALL_NODE_DELTA_GO, param->angle, FIRE_WALL_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state);
-    	//txGotoXY(param->x, param->y+FIRE_WALL_NODE_DELTA_GO, param->angle, FIRE_WALL_NODE_SPEED, FIRE_WALL_NODE_BARRIER, GOTO_DRIVE_FORWARD);
     }
     /* Drive over fire from WEST */
     else
     {
 
     	checkDrive(param->x+FIRE_WALL_NODE_DELTA_GO, param->y, param->angle, FIRE_WALL_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state);
-    	//txGotoXY(param->x+FIRE_WALL_NODE_DELTA_GO, param->y, param->angle, FIRE_WALL_NODE_SPEED, FIRE_WALL_NODE_BARRIER, GOTO_DRIVE_FORWARD);
     }
-
-
-//    /* Wait while driving */
-//	vTaskDelay(FIRE_WALL_NODE_DRIVE_DELAY / portTICK_RATE_MS);
 
 	/* Move the sucker servo down a bit, step by step */
 	placeSucker(SERVO_POS_AIR_WALL);
 
     /* Drive 5 cm backwards and drop the fire */
 	while(checkDrive(param->x, param->y, param->angle, FIRE_WALL_NODE_SPEED, GOTO_DRIVE_BACKWARD, game_state) != FUNC_SUCCESS);
-    //txGotoXY(param->x, param->y, param->angle, FIRE_WALL_NODE_SPEED, FIRE_WALL_NODE_BARRIER, GOTO_DRIVE_BACKWARD);
-
-    vTaskDelay(FIRE_WALL_NODE_DRIVE_DELAY / portTICK_RATE_MS);
 
     /* Drive 5 cm backwards and drop the fire */
     while(checkDrive(param->x, param->y, param->angle, FIRE_WALL_NODE_SPEED, GOTO_DRIVE_BACKWARD, game_state) != FUNC_SUCCESS);
-    //txGotoXY(param->x, param->y, param->angle, FIRE_WALL_NODE_SPEED, FIRE_WALL_NODE_BARRIER, GOTO_DRIVE_BACKWARD);
-
-//    /* wait while driving backwards */
-//    vTaskDelay(FIRE_WALL_NODE_DRIVE_BACK_DELAY / portTICK_RATE_MS);
 
     /* Drive 5 cm backwards and drop the fire */
 	while(checkDrive(param->x, param->y, param->angle, FIRE_WALL_NODE_SPEED, GOTO_DRIVE_BACKWARD, game_state) != FUNC_SUCCESS);
-    //txGotoXY(param->x, param->y, param->angle, FIRE_WALL_NODE_SPEED, FIRE_WALL_NODE_BARRIER, GOTO_DRIVE_BACKWARD);
-
-//	/* wait while driving backwards */
-//	vTaskDelay(FIRE_WALL_NODE_DRIVE_BACK_DELAY / portTICK_RATE_MS);
 
     /* Move the sucker servo up, step by step */
     placeSucker(SERVO_POS_AIR_UP);
