@@ -150,7 +150,8 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
     uint8_t CAN_ok;
     int16_t delta_x, delta_y;
     uint16_t distance;
-    uint16_t range;
+    uint16_t range = 0;
+    uint16_t old_range;
     uint8_t is_in_range = 0; /* is in range flag */ //TODO: ?
 
     /* Differentiate between driving backward and forward */
@@ -284,6 +285,7 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
                     }
 
                     /* Check if an enemy/confederate is within range in front of the robot */
+                    old_range = range;
                     range = isRobotInRange(game_state, FALSE);
                     if(range != 0)  /* Enemy in range */
                     {
@@ -303,14 +305,17 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
                         }
                         else
                         {
-                            if(driveGoto(x, y, angle, calc_speed, direction, game_state))
+                            if(fabsf(old_range-range) > 50)
                             {
-                                retval = FUNC_SUCCESS;
-                            }
-                            else
-                            {
-                                retval = FUNC_ERROR;
-                                break;
+                                if(driveGoto(x, y, angle, calc_speed, direction, game_state))
+                                {
+                                    retval = FUNC_SUCCESS;
+                                }
+                                else
+                                {
+                                    retval = FUNC_ERROR;
+                                    break;
+                                }
                             }
                         }
                     }
