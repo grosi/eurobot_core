@@ -185,33 +185,84 @@ void doFirePoolNode(node_param_t* param, volatile game_state_t* game_state)
     /* try to get the fire-pool */
 	if(takePool(param->x + x_pool_approach, param->y, param->angle, game_state))
     {
-        /* drive to the heart of fire */
-        if(checkDrive(x_pool,y_pool,param->angle,FIRE_POOL_TRANSIT_SPEED,GOTO_DRIVE_FORWARD,game_state) == FUNC_SUCCESS)
+	    /* put the sucker up */
+	    placeSucker(SERVO_POS_AIR_UP);
+
+	    /* turn left if Team yellow*/
+	    if(game_state->teamcolor == TEAM_YELLOW)
+	    {
+	        checkDrive(param->x + x_pool_approach, param->y, ANGLE_YELLOW, FIRE_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state);
+
+	    }
+
+	    /* turn right if Team red */
+	    else
+	    {
+	        checkDrive(param->x + x_pool_approach, param->y, ANGLE_RED, FIRE_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state);
+	    }
+
+        /* drive before the heart of fire in the middle */
+        if(checkDrive(X_HEART_OF_FIRE, Y_HEART_OF_FIRE - Y_APPROACH_HEART_OF_FIRE, HEART_OF_FIRE_ANGLE, HEART_OF_FIRE_DRIVE_SPEED, GOTO_DRIVE_FORWARD, game_state) != FUNC_SUCCESS)
         {
-            /* release the pool and turn off the air-system */
-            releasePool(0);
+            /* place the fire where the robot stopped */
+            setAir(AIR_OFF);
 
-            /* go 100 mm back */
-            checkDrive(x_pool,y_pool,param->angle,FIRE_POOL_TRANSIT_SPEED,GOTO_DRIVE_BACKWARD,game_state);
-            checkDrive(x_pool,y_pool,param->angle,FIRE_POOL_TRANSIT_SPEED,GOTO_DRIVE_BACKWARD,game_state);
-
-            placeSucker(SERVO_POS_AIR_SECOND_FIRE);
-
-            checkDrive(x_pool,y_pool,param->angle,FIRE_POOL_TRANSIT_SPEED,GOTO_DRIVE_FORWARD,game_state);
-
-            /* be sure that the sucker is up and the air-system off */
-            releasePool(0);
+            /* Don't continue */
             param->node_state = NODE_FINISH_SUCCESS;
+            return;
         }
-        else
+
+        /* move sucker down for placing fire on heart */
+        placeSucker(SERVO_POS_AIR_PLACE);
+
+        /* drive to the heart of fire place position */
+        if(checkDrive(X_HEART_OF_FIRE, Y_HEART_OF_FIRE, HEART_OF_FIRE_ANGLE, HEART_OF_FIRE_DRIVE_SPEED, GOTO_DRIVE_FORWARD, game_state)  != FUNC_SUCCESS)
         {
+            /* place the fire where the robot stopped */
+            setAir(AIR_OFF);
+            /* Don't continue */
             param->node_state = NODE_FINISH_SUCCESS;
-            releasePool(0);
+            return;
+
         }
+
+        /* place fire */
+        setAir(AIR_OFF);
+
+        /* move sucker up */
+        placeSucker(SERVO_WALL_INVERS_POS_UP);
+
+        /* Drive 5 cm backwards */
+        while(checkDrive(param->x, param->y, param->angle, FIRE_WALL_INVERS_NODE_SPEED, GOTO_DRIVE_BACKWARD, game_state) != FUNC_SUCCESS);
+
+
+//	    /* drive to the heart of fire */
+//        if(checkDrive(x_pool,y_pool,param->angle,FIRE_POOL_TRANSIT_SPEED,GOTO_DRIVE_FORWARD,game_state) == FUNC_SUCCESS)
+//        {
+//            /* release the pool and turn off the air-system */
+//            releasePool(0);
+//
+//            /* go 100 mm back */
+//            checkDrive(x_pool,y_pool,param->angle,FIRE_POOL_TRANSIT_SPEED,GOTO_DRIVE_BACKWARD,game_state);
+//            checkDrive(x_pool,y_pool,param->angle,FIRE_POOL_TRANSIT_SPEED,GOTO_DRIVE_BACKWARD,game_state);
+//
+//            placeSucker(SERVO_POS_AIR_SECOND_FIRE);
+//
+//            checkDrive(x_pool,y_pool,param->angle,FIRE_POOL_TRANSIT_SPEED,GOTO_DRIVE_FORWARD,game_state);
+//
+//            /* be sure that the sucker is up and the air-system off */
+//            releasePool(0);
+//            param->node_state = NODE_FINISH_SUCCESS;
+//        }
+//        else
+//        {
+//            param->node_state = NODE_FINISH_SUCCESS;
+//            releasePool(0);
+//        }
     }
     else
     {
-        param->node_state = NODE_FINISH_ERROR;
+        param->node_state = NODE_FINISH_SUCCESS;
     }
 }
 

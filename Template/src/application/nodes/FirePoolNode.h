@@ -39,14 +39,23 @@
 #define SERVO_AIR_STEP_DELAY                    2
 
 /* red */
+#define ANGLE_RED                               0
 #define FIRE_POOL_HEARTPOOL_X_POSITION_RED      1060
 #define FIRE_POOL_HEARTPOOL_Y_POSITION_RED      900
 #define FIRE_POOL_HEARTPOOL_APPROACH_X_RED      (FIRE_POOL_APPROACH_DISTANCE)
 
 /* yellow */
+#define ANGLE_YELLOW                            180
 #define FIRE_POOL_HEARTPOOL_X_POSITION_YELLOW   2730
 #define FIRE_POOL_HEARTPOOL_Y_POSITION_YELLOW   1940
 #define FIRE_POOL_HEARTPOOL_APPROACH_X_YELLOW   (-FIRE_POOL_APPROACH_DISTANCE)
+
+/* heart of fire */
+#define X_HEART_OF_FIRE                         1500
+#define Y_HEART_OF_FIRE                         650
+#define Y_APPROACH_HEART_OF_FIRE                200
+#define HEART_OF_FIRE_DRIVE_SPEED               100
+#define HEART_OF_FIRE_ANGLE                     90
 
 
 /* exported macro -------------------------------------------------------------*/
