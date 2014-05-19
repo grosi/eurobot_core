@@ -21,11 +21,16 @@
 
 
 /* exported define ------------------------------------------------------------*/
-#define FIRE_POOL_APPROACH_DISTANCE             280 /* Distance in mm to drive from the fire-pool node point to the pool */
+#define FIREPOOL_APPROACHDISTANCE               400 /* Distance in mm to drive from the fire-pool node point to the pool */
+#define FIRE_POOL_DELTA_GO                      50
 #define FIRE_POOL_APPROACH_SPEED                40 /* Speed in percent to drive from node point to pool */
 #define FIRE_POOL_TRANSIT_SPEED                 80
 #define FIRE_POOL_APPROACH_TIME                 5000 /* Time in ms to wait while driving to pool */
 #define FIRE_POOL_DRIVECHECK_DELAY              10
+#define FIRE_POOL_NODE_SPEED                    100
+#define ANGLE_TURN_LEFT                         0
+#define ANGLE_TURN_RIGHT                        180
+
 
 /* servos */
 #define SERVO_POS_AIR_UP                        1990
@@ -35,20 +40,9 @@
 #define SERVO_POS_AIR_SECOND_FIRE               1590
 #define SERVO_POS_AIR_THIRD_FIRE                1180
 #define SERVO_POS_AIR_HEART                     SERVO_POS_AIR_DOWN
+#define SERVO_POS_AIR_PLACE                     1200
 #define SERVO_AIR_STEP                          2
 #define SERVO_AIR_STEP_DELAY                    2
-
-/* red */
-#define ANGLE_RED                               0
-#define FIRE_POOL_HEARTPOOL_X_POSITION_RED      1060
-#define FIRE_POOL_HEARTPOOL_Y_POSITION_RED      900
-#define FIRE_POOL_HEARTPOOL_APPROACH_X_RED      (FIRE_POOL_APPROACH_DISTANCE)
-
-/* yellow */
-#define ANGLE_YELLOW                            180
-#define FIRE_POOL_HEARTPOOL_X_POSITION_YELLOW   2730
-#define FIRE_POOL_HEARTPOOL_Y_POSITION_YELLOW   1940
-#define FIRE_POOL_HEARTPOOL_APPROACH_X_YELLOW   (-FIRE_POOL_APPROACH_DISTANCE)
 
 /* heart of fire */
 #define X_HEART_OF_FIRE                         1500
