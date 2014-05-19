@@ -17,15 +17,15 @@
 #ifndef NETNODE_H_
 #define NETNODE_H_
 
+/* includes for prototypes */
+#include "NodeConfig.h"
+
 /* exported typedef -----------------------------------------------------------*/
 
 
 /* exported define ------------------------------------------------------------*/
-//#define FIRE_NODE_DELTA_GO 250 /*!< [mm] */
-//#define FIRE_NODE_SPEED 100 /*!< [%] */
-//#define FIRE_NODE_BARRIER 0
-//#define FIRE_NODE_ACK_DELAY 20
-//#define FIRE_NODE_DRIVE_DELAY 500
+#define SERVO_POS_NET_LOAD          1400 /* Servo position: Launcher all the way front */
+#define SERVO_POS_NET_LAUNCH        1700 /* Servo position: Launcher all the way back */
 
 /* exported macro -------------------------------------------------------------*/
 

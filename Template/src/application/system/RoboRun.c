@@ -25,6 +25,7 @@
 #include "../ELP.h"
 #include "../System.h"
 #include "../nodes/NodeConfig.h"
+#include "../nodes/NodeMisc.h"
 #include "../Rangefinder.h"
 #include "RoboSetup.h" /* previous state */
 #include "RoboRunExtend.h" /* next state if this one is completed successfully */

@@ -16,9 +16,8 @@
 /* Includes ------------------------------------------------------------------*/
 /* application */
 #include "../AppConfig.h"
-#include "../Rangefinder.h"
-#include "../CANGatekeeper.h"
 #include "NodeConfig.h"
+#include "NodeMisc.h"
 #include "FirePoolNode.h"
 /* lib */
 #include "lib/air.h"
@@ -54,7 +53,6 @@ static uint8_t takePool(uint16_t, uint16_t, uint16_t, volatile game_state_t*);
  */
 static void releasePool(uint8_t air)
 {
-
     if(air)
     {
         setAir(AIR_ON);

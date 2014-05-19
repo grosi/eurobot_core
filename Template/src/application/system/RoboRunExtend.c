@@ -19,7 +19,7 @@
 #include "../Timer.h"
 #include "../ELP.h"
 #include "../System.h"
-#include "../nodes/NodeConfig.h"
+#include "../nodes/NetNode.h"
 #include "RoboInitialisation.h" /* next state if this one is completed successfully */
 #include "RoboError.h" /* next state if this one is completed with errors */
 #include "RoboRunExtend.h"

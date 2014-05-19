@@ -16,9 +16,8 @@
 /* Includes ------------------------------------------------------------------*/
 /* application */
 #include "../AppConfig.h"
-#include "../Rangefinder.h"
-#include "../CANGatekeeper.h"
 #include "NodeConfig.h"
+#include "NodeMisc.h"
 #include "FireWallNormalNode.h"
 /* lib */
 #include "lib/air.h"
@@ -56,45 +55,45 @@ void doFireWallNormalNode(node_param_t* param, volatile game_state_t* game_state
     taskEXIT_CRITICAL();
 
     /* Move the sucker servo up, step by step just to make sure*/
-	placeSucker(SERVO_POS_AIR_UP);
+	placeSucker(SERVO_WALL_NORMAL_POS_UP);
 
 	// TODO handle return value of checkDrive
     /* Drive over fire from NORTH */
     if(param->angle >= NODE_NORTH_MIN_ANGLE && param->angle <= NODE_NORTH_MAX_ANGLE)
     {
-    	checkDrive(param->x, param->y-FIRE_WALL_NODE_DELTA_GO, param->angle, FIRE_WALL_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state);
+    	checkDrive(param->x, param->y-FIRE_WALL_NODE_DELTA_GO, param->angle, FIRE_WALL_NORMAL_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state);
     }
     /* Drive over fire from EAST */
     else if(param->angle >= NODE_EAST_MIN_ANGLE && param->angle <= NODE_EAST_MAX_ANGLE)
     {
-        checkDrive(param->x-FIRE_WALL_NODE_DELTA_GO, param->y, param->angle, FIRE_WALL_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state);
+        checkDrive(param->x-FIRE_WALL_NODE_DELTA_GO, param->y, param->angle, FIRE_WALL_NORMAL_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state);
     }
     /* Drive over fire from SOUTH */
     else if(param->angle >= NODE_SOUTH_MIN_ANGLE && param->angle <= NODE_SOUTH_MAX_ANGLE)
     {
-        checkDrive(param->x, param->y+FIRE_WALL_NODE_DELTA_GO, param->angle, FIRE_WALL_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state);
+        checkDrive(param->x, param->y+FIRE_WALL_NODE_DELTA_GO, param->angle, FIRE_WALL_NORMAL_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state);
     }
     /* Drive over fire from WEST */
     else
     {
 
-    	checkDrive(param->x+FIRE_WALL_NODE_DELTA_GO, param->y, param->angle, FIRE_WALL_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state);
+    	checkDrive(param->x+FIRE_WALL_NODE_DELTA_GO, param->y, param->angle, FIRE_WALL_NORMAL_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state);
     }
 
 	/* Move the sucker servo down a bit, step by step */
-	placeSucker(SERVO_POS_AIR_WALL);
+	placeSucker(SERVO_POS_WALL);
 
     /* Drive 5 cm backwards and drop the fire */
-	while(checkDrive(param->x, param->y, param->angle, FIRE_WALL_NODE_SPEED, GOTO_DRIVE_BACKWARD, game_state) != FUNC_SUCCESS);
+	while(checkDrive(param->x, param->y, param->angle, FIRE_WALL_NORMAL_NODE_SPEED, GOTO_DRIVE_BACKWARD, game_state) != FUNC_SUCCESS);
 
     /* Drive 5 cm backwards and drop the fire */
-    while(checkDrive(param->x, param->y, param->angle, FIRE_WALL_NODE_SPEED, GOTO_DRIVE_BACKWARD, game_state) != FUNC_SUCCESS);
+    while(checkDrive(param->x, param->y, param->angle, FIRE_WALL_NORMAL_NODE_SPEED, GOTO_DRIVE_BACKWARD, game_state) != FUNC_SUCCESS);
 
     /* Drive 5 cm backwards and drop the fire */
-	while(checkDrive(param->x, param->y, param->angle, FIRE_WALL_NODE_SPEED, GOTO_DRIVE_BACKWARD, game_state) != FUNC_SUCCESS);
+	while(checkDrive(param->x, param->y, param->angle, FIRE_WALL_NORMAL_NODE_SPEED, GOTO_DRIVE_BACKWARD, game_state) != FUNC_SUCCESS);
 
     /* Move the sucker servo up, step by step */
-    placeSucker(SERVO_POS_AIR_UP);
+    placeSucker(SERVO_WALL_NORMAL_POS_UP);
 
 	/* node complete */
 	param->node_state = NODE_FINISH_SUCCESS;

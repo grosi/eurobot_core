@@ -16,12 +16,7 @@
 /* Includes ------------------------------------------------------------------*/
 /* application */
 #include "../AppConfig.h"
-#include "../Rangefinder.h"
-#include "../CANGatekeeper.h"
-#include "NodeConfig.h"
 #include "NetNode.h"
-/* lib */
-#include "lib/servo.h"
 
 /* Private typedef -----------------------------------------------------------*/
 

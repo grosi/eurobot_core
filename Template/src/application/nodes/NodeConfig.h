@@ -109,43 +109,13 @@ typedef struct
 #define NODE_NORTH_MAX_ANGLE       314
 #define NODE_WEST_MIN_ANGLE        315 /*!< note, that the zero line is crossed */
 #define NODE_WEST_MAX_ANGLE        44  /*!< note, that the zero line is crossed */
-#define FIRENODE_APPROACHDISTANCE  400
-#define FIREWALL_APPROACHDISTANCE  300
-
-/* Servo */
-#define SERVO_MOVING_DELAY          400  /* Delay in ms to wait while the servo moves the whole way */
-#define SERVO_POS_AIR_UP            1990//2000 /* Servo position: Fresco panel all the way in */
-#define SERVO_POS_AIR_DOWN          1100 //1600 /* Servo position: Fresco panel all the way out */
-#define SERVO_POS_AIR_FIRE		    1500	/* Servo position: to push a fire */
-#define SERVO_POS_AIR_FIRST_FIRE    1970 //1600 /* Servo position: Fresco panel all the way out */
-#define SERVO_POS_AIR_SECOND_FIRE   1590 //1600 /* Servo position: Fresco panel all the way out */
-#define SERVO_POS_AIR_THIRD_FIRE    1180 //1600 /* Servo position: Fresco panel all the way out */
-#define SERVO_POS_AIR_HEART         SERVO_POS_AIR_DOWN
-#define SERVO_AIR_STEP              2
-#define SERVO_AIR_STEP_DELAY        2
-#define SERVO_POS_NET_LOAD          1400//1340 /* Servo position: Launcher all the way front */
-#define SERVO_POS_NET_LAUNCH        1700 /* Servo position: Launcher all the way back */
-
-/* CAN */
-#define CAN_WAIT_DELAY              400
-#define CAN_CHECK_DELAY             100
-#define CAN_MAX_RETRIES             5
-
-
-/* Fire node */
-#define FIRE_APPROACH_DISTANCE  400
-
-/* Firewallnodes */
-#define FIRE_WALL_NODE_SPEED        60      /*!< [%] */
-#define FIRE_WALL_NODE_BARRIER      0
-#define FIRE_WALL_NODE_DRIVE_DELAY  1000
-#define FIRE_WALL_NODE_DRIVE_BACK_DELAY     1000
 
 
 /* exported macro -------------------------------------------------------------*/
 
 
 /* exported variables ---------------------------------------------------------*/
+/* red */
 extern node_t node_fire_1_red;
 extern node_t node_fire_2_red;
 extern node_t node_fire_3_red;
@@ -157,6 +127,7 @@ extern node_t node_net_1_red;
 extern node_t node_net_2_red;
 extern node_t node_net_3_red;
 
+/* yellow */
 extern node_t node_fire_1_yellow;
 extern node_t node_fire_2_yellow;
 extern node_t node_fire_3_yellow;
@@ -168,16 +139,12 @@ extern node_t node_net_1_yellow;
 extern node_t node_net_2_yellow;
 extern node_t node_net_3_yellow;
 
+/* CAN */
 extern xQueueHandle qGotoConfirm;
 extern xQueueHandle qGotoStateResp;
 
 
 /* exported function prototypes -----------------------------------------------*/
-extern void initNodeResources(void);
-extern void setNodeConfig2Default(void);
-extern uint8_t checkDrive(uint16_t, uint16_t, uint16_t, uint8_t, uint8_t, volatile game_state_t*);
-extern uint8_t driveGoto(uint16_t, uint16_t, uint16_t, uint8_t, uint8_t, volatile game_state_t*);
-extern void placeSucker(uint16_t);
 
 
 #endif /* NODECONFIG_H_ */
