@@ -114,7 +114,7 @@ node_t node_fire_pool_red =
         .points = 2,                        /*!<node points */
         .percent = 0.13,                    /*!<percent of the total points [%]*/
         .time = 20,                         /*!<estimated node time [s]*/
-        .x = 680,                          /*!<node x position [mm]*/
+        .x = 600,                          /*!<node x position [mm]*/
         .y = 900,                          /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
         .angle = 0,                       /*!<node arrive direction */
@@ -521,11 +521,13 @@ uint8_t distance2speed(uint16_t distance, uint8_t max_speed)
 func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, uint8_t direction, volatile game_state_t* game_state)
 {
 	CAN_data_t CAN_buffer;
-	uint16_t estimated_GoTo_time;
+	uint32_t estimated_GoTo_time;
 	func_report_t retval;
 	uint8_t CAN_ok;
 	int16_t delta_x, delta_y;
 	uint16_t distance;
+	uint16_t range;
+	uint8_t is_in_range = 0; /* is in range flag */
 
 	/* Differentiate between driving backward and forward */
 	if(direction == GOTO_DRIVE_FORWARD)
@@ -538,35 +540,69 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
 		taskEXIT_CRITICAL();
 		distance = round(sqrt(delta_x*delta_x + delta_y*delta_y));
 
+		/* NO rounting enhancements from the drive-node */
 		if(distance <= 150) //TODO DRIVE_ROUTE_DIST_MIN /* No route calculation, just driving */
 		{
-			if(isRobotInRange(game_state, FALSE) < 150 + 50) //TODO DRIVE_ROUTE_DIST_MIN + DIST_OFFSET
-			{
-				/* Don't drive */
-				retval = FUNC_INCOMPLETE_LIGHT;
-			}
-			else
-			{
-				uint8_t calc_speed = distance2speed(distance, speed);
-				if(calc_speed <= 0)
-				{
-					/* Don't drive */
-					retval = FUNC_INCOMPLETE_LIGHT;
-				}
-				else
-				{
-					/* Drive forward with speed relative to the distance */
-					if(driveGoto(x, y, angle, calc_speed, direction, game_state))
-					{
-						retval = FUNC_SUCCESS;
-					}
-					else
-					{
-						retval = FUNC_ERROR;
-					}
-				}
-			}
+		    range = isRobotInRange(game_state, FALSE);
+		    if((range == 0) || (range >= 150 + 50)) //TODO DRIVE_ROUTE_DIST_MIN + DIST_OFFSET  /* No enemy in range */
+		    {
+		        /* Drive forward */
+                if(driveGoto(x, y, angle, speed, direction, game_state))
+                {
+                    vTaskDelay(100 / portTICK_RATE_MS);//TODO: GOTO_STATERESP_DELAY / portTICK_RATE_MS);
 
+                    do
+                    {
+                        /* Ask drive system for GoTo state */
+                        txGotoStateRequest();
+                        /* Receive the GoTo state response */
+                        CAN_ok = xQueueReceive(qGotoStateResp, &CAN_buffer, CAN_WAIT_DELAY / portTICK_RATE_MS);
+
+                        if(CAN_ok == pdFALSE)
+                        {
+                            retval = FUNC_ERROR;
+                            break;
+                        }
+
+                        /* Extract time */
+                        estimated_GoTo_time = CAN_buffer.state_time;  /* In ms */
+
+                        /* Handle "goto not possible at the moment" message */
+                        if(estimated_GoTo_time == GOTO_NOT_POSSIBLE_ATM)
+                        {
+                            /* Finish node with error,
+                             * this way the current node will be retried if it's more attractive again */
+                            retval = FUNC_INCOMPLETE_HEAVY;
+                            break;
+                        }
+
+                        /* Handle "goto blocked at the moment" message */
+                        if(estimated_GoTo_time == GOTO_BLOCKED_ATM)
+                        {
+                            /* Finish node with error,
+                             * this way the current node will be retried if it's more attractive again */
+                            txStopDrive();  //TODO: Necessary?
+                            retval = FUNC_INCOMPLETE_HEAVY;
+                            break;
+                        }
+                        vTaskDelay(CAN_CHECK_DELAY/portTICK_RATE_MS);
+                    }
+                    while(estimated_GoTo_time > 0);
+
+                    retval = FUNC_SUCCESS;
+                }
+                else
+                {
+                    retval = FUNC_ERROR;
+                }
+		    }
+		    else  /* Enemy in range */
+			{
+                //TODO: drive with relativ speed?
+
+                /* Don't drive */
+                retval = FUNC_INCOMPLETE_LIGHT;
+			}
 		}
 		else /* Route calculated */
 		{
@@ -623,13 +659,51 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
 					}
 
 					/* Check if an enemy/confederate is within range in front of the robot */
-					if(isRobotInRange(game_state, FALSE))
+					range = isRobotInRange(game_state, FALSE);
+					if(range != 0)  /* Enemy in range */
 					{
-						/* STOPP */
-						txStopDrive();
+					    /* set range flag */
+					    is_in_range = 1;
 
-						retval = FUNC_INCOMPLETE_LIGHT;
-						break;
+						/* Drive forward with speed relative to the range */
+                        uint8_t calc_speed = distance2speed(range, speed);
+                        if(calc_speed <= 0)
+                        {
+                            /* STOPP */
+                            txStopDrive();
+
+                            /* Don't drive */
+                            retval = FUNC_INCOMPLETE_LIGHT;
+                            break;
+                        }
+                        else
+                        {
+                            if(driveGoto(x, y, angle, calc_speed, direction, game_state))
+                            {
+                                retval = FUNC_SUCCESS;
+                            }
+                            else
+                            {
+                                retval = FUNC_ERROR;
+                                break;
+                            }
+                        }
+					}
+					else if(is_in_range)
+					{
+					    /* reset flag */
+					    is_in_range = 0;
+
+					    /* not in range anymore */
+					    if(driveGoto(x, y, angle, speed, direction, game_state))
+                        {
+                            retval = FUNC_SUCCESS;
+                        }
+                        else
+                        {
+                            retval = FUNC_ERROR;
+                            break;
+                        }
 					}
 
 					vTaskDelay(CAN_CHECK_DELAY/portTICK_RATE_MS);
@@ -641,23 +715,31 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
 	}
 	else /* direction == GOTO_DRIVE_BACKRWARD */
 	{
+	    /* Set distance and speed (just for caluculation) */
+        distance = 50;  //TODO DRIVE_BACK_DIST
+        speed = 50;  //mm/s TODO DRIVE_BACK_SPEED
+
+
 		/* Check if path blocked */
-		if(isRobotInRange(game_state, TRUE) < 50 + 50) //TODO DRIVE_BACK_DIST + DIST_OFFSET
+	    uint16_t range = isRobotInRange(game_state, TRUE);
+	    if((range == 0) || (range >= 50 + 50)) //TODO DRIVE_BACK_DIST + DIST_OFFSET  /* No enemy in range */
+        {
+            /* Drive backward */
+            if(driveGoto(x, y, angle, speed, direction, game_state))
+            {
+                /* Wait while driving */
+                vTaskDelay((distance/speed*1000) / portTICK_RATE_MS);  //TODO: ROBO_AVERAGE_SPEED
+                retval = FUNC_SUCCESS;
+            }
+            else
+            {
+                retval = FUNC_ERROR;
+            }
+        }
+        else  /* Enemy in range */
 		{
 			/* Don't drive */
 			retval = FUNC_INCOMPLETE_LIGHT;
-		}
-		else
-		{
-			/* Drive backward */
-			if(driveGoto(x, y, angle, speed, direction, game_state))
-			{
-				retval = FUNC_SUCCESS;
-			}
-			else
-			{
-				retval = FUNC_ERROR;
-			}
 		}
 	}
 
