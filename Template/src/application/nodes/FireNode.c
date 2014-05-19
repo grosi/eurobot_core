@@ -107,8 +107,8 @@ void doFireNode(node_param_t* param, volatile game_state_t* game_state)
     	//txGotoXY(param->x+FIRE_NODE_DELTA_GO, param->y, param->angle, FIRE_NODE_SPEED, game_state_copy.barrier, GOTO_DRIVE_FORWARD);
     }
 
-    /* Wait while driving */
-	vTaskDelay(FIRE_NODE_DRIVE_DELAY / portTICK_RATE_MS);
+//    /* Wait while driving */
+//	vTaskDelay(FIRE_NODE_DRIVE_DELAY / portTICK_RATE_MS);
 
 	/* Move the sucker servo up, step by step */
 	placeSucker(SERVO_POS_AIR_UP);
