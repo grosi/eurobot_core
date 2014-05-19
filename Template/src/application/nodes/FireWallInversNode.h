@@ -22,7 +22,7 @@
 
 /* exported define ------------------------------------------------------------*/
 /* FireWall */
-#define FIRE_WALL_INVERSE_NODE_DELTA_GO 	120 	/*!< [mm] */
+#define FIRE_WALL_INVERSE_NODE_DELTA_GO 	125 	/*!< [mm] */
 #define FIRE_WALL_NODE_DRIVE_HEART_DELAY	1500
 #define FIRE_HEART_DRIVE_DELAY				1500
 

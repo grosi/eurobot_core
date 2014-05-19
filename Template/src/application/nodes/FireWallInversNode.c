@@ -62,7 +62,7 @@ void doFireWallInversNode(node_param_t* param, volatile game_state_t* game_state
 	/* Move the sucker servo down a bit, step by step */
 	placeSucker(SERVO_POS_AIR_WALL_INVERSE);
 
-	// TODO handle return value of checkDrive
+	// TODO curve while driving foreward but there is no curve espected...
 	/* Drive over fire from NORTH */
 	if(param->angle >= NODE_NORTH_MIN_ANGLE && param->angle <= NODE_NORTH_MAX_ANGLE)
 	{
