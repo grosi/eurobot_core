@@ -155,45 +155,21 @@ static uint8_t takePool(uint16_t x, uint16_t y, uint16_t angle, volatile game_st
 void doFirePoolNode(node_param_t* param, volatile game_state_t* game_state)
 {
     /* local variables */
-    uint8_t fire_count;
-    uint16_t x_pool, y_pool, angle_pool, x_pool_front, y_pool_front;
-    int16_t x_pool_approach_first, y_pool_approach_first, x_pool_approach_second, y_pool_approach_second;
-    uint16_t x_heart, y_heart, angle_heart, x_heart_front, y_heart_front;
+    uint16_t x_pool, y_pool;
+    int16_t x_pool_approach;
 
     /* differ between the two possible teamcolors */
     if(game_state->teamcolor == TEAM_YELLOW)
     {
         x_pool = FIRE_POOL_HEARTPOOL_X_POSITION_YELLOW;
         y_pool = FIRE_POOL_HEARTPOOL_Y_POSITION_YELLOW;
-        x_pool_front = FIRE_POOL_HEARTPOOL_FRONT_X_POSITION_YELLOW;
-        y_pool_front = FIRE_POOL_HEARTPOOL_FRONT_Y_POSITION_YELLOW;
-        x_pool_approach_first = FIRE_POOL_HEARTPOOL_APPROACH_FIRST_X_YELLOW;
-        y_pool_approach_first = FIRE_POOL_HEARTPOOL_APPROACH_FIRST_Y_YELLOW;
-        x_pool_approach_second = FIRE_POOL_HEARTPOOL_APPROACH_SECOND_X_YELLOW;
-        y_pool_approach_second = FIRE_POOL_HEARTPOOL_APPROACH_SECOND_Y_YELLOW;
-        angle_pool = FIRE_POOL_HEARTPOOL_ANGLE_POSITION_YELLOW;
-        x_heart = FIRE_POOL_HEART_X_POSITION_YELLOW;
-        y_heart = FIRE_POOL_HEART_Y_POSITION_YELLOW;
-        x_heart_front = FIRE_POOL_HEART_FRONT_X_POSITION_YELLOW;
-        y_heart_front = FIRE_POOL_HEART_FRONT_Y_POSITION_YELLOW;
-        angle_heart = FIRE_POOL_HEART_ANGLE_POSITION_YELLOW;
+        x_pool_approach = FIRE_POOL_HEARTPOOL_APPROACH_X_YELLOW;
     }
     else
     {
         x_pool = FIRE_POOL_HEARTPOOL_X_POSITION_RED;
         y_pool = FIRE_POOL_HEARTPOOL_Y_POSITION_RED;
-        x_pool_front = FIRE_POOL_HEARTPOOL_FRONT_X_POSITION_RED;
-        y_pool_front = FIRE_POOL_HEARTPOOL_FRONT_Y_POSITION_RED;
-        x_pool_approach_first = FIRE_POOL_HEARTPOOL_APPROACH_FIRST_X_RED;
-        y_pool_approach_first = FIRE_POOL_HEARTPOOL_APPROACH_FIRST_Y_RED;
-        x_pool_approach_second = FIRE_POOL_HEARTPOOL_APPROACH_SECOND_X_RED;
-        y_pool_approach_second = FIRE_POOL_HEARTPOOL_APPROACH_SECOND_Y_RED;
-        angle_pool = FIRE_POOL_HEARTPOOL_ANGLE_POSITION_RED;
-        x_heart = FIRE_POOL_HEART_X_POSITION_RED;
-        y_heart = FIRE_POOL_HEART_Y_POSITION_RED;
-        x_heart_front = FIRE_POOL_HEART_FRONT_X_POSITION_RED;
-        y_heart_front = FIRE_POOL_HEART_FRONT_Y_POSITION_RED;
-        angle_heart = FIRE_POOL_HEART_ANGLE_POSITION_RED;
+        x_pool_approach = FIRE_POOL_HEARTPOOL_APPROACH_X_RED;
     }
 
 
@@ -202,69 +178,24 @@ void doFirePoolNode(node_param_t* param, volatile game_state_t* game_state)
 
 
     /* try to get the fire-pool */
-	if(takePool(param->x + x_pool_approach_first, param->y + y_pool_approach_first, param->angle, game_state))
+	if(takePool(param->x + x_pool_approach, param->y, param->angle, game_state))
     {
         /* drive to the heart of fire */
-        if(checkDrive(x_pool,y_pool,angle_pool,FIRE_POOL_TRANSIT_SPEED,GOTO_DRIVE_FORWARD,game_state))
+        if(checkDrive(x_pool,y_pool,param->angle,FIRE_POOL_TRANSIT_SPEED,GOTO_DRIVE_FORWARD,game_state))
         {
-            for(fire_count = 0; fire_count < 3; fire_count++)
-            {
-                /* move the sucker up with fire */
-                releasePool(1);
+            /* release the pool and turn off the air-system */
+            releasePool(0);
 
-                /* the second fire lies on the wrong side */
-                if(fire_count % 2)
-                {
-                   	/* drive back 5cm*/
-					if(!checkDrive(x_pool,y_pool,angle_pool,FIRE_POOL_APPROACH_SPEED,GOTO_DRIVE_BACKWARD,game_state)){break;};
-					vTaskDelay(1000/portTICK_RATE_MS);
-					/* drive to the front of heart*/
-					if(!checkDrive(x_heart_front,y_heart_front,angle_heart,FIRE_POOL_PLACE_SPEED,GOTO_DRIVE_FORWARD,game_state)){break;};
-					/* drive a bit forward */
-					if(!checkDrive(x_heart,y_heart,angle_heart,FIRE_POOL_PLACE_SPEED,GOTO_DRIVE_FORWARD,game_state)){break;};
-					/* place fire and moves the sucker up */
-					releasePool(0);
-					/* drive a bit backwarts */
-					if(!checkDrive(x_heart,y_heart,angle_heart,FIRE_POOL_APPROACH_SPEED,GOTO_DRIVE_BACKWARD,game_state)){break;};
-					vTaskDelay(1000/portTICK_RATE_MS);
-                }
-                else
-                {
-                    /* drive back 5cm*/
-                    if(!checkDrive(x_pool,y_pool,angle_pool,FIRE_POOL_APPROACH_SPEED,GOTO_DRIVE_BACKWARD,game_state)){break;};
-                    vTaskDelay(1000/portTICK_RATE_MS);
-                    /* drive to the front of heart*/
-                    if(!checkDrive(x_heart_front,y_heart_front,angle_heart,FIRE_POOL_PLACE_SPEED,GOTO_DRIVE_FORWARD,game_state)){break;};
-                    /* moves sucker down */
-                    placeSucker(SERVO_POS_AIR_HEART);
+            /* go 100 mm back */
+            checkDrive(x_pool,y_pool,param->angle,FIRE_POOL_TRANSIT_SPEED,GOTO_DRIVE_BACKWARD,game_state);
+            checkDrive(x_pool,y_pool,param->angle,FIRE_POOL_TRANSIT_SPEED,GOTO_DRIVE_BACKWARD,game_state);
 
-                    /* first fire with fullspeed */
-                    if(fire_count == 0)
-                    {
-                        /* drive a bit forward  */
-                        if(!checkDrive(x_heart,y_heart,angle_heart,FIRE_POOL_PLACE_SPEED,GOTO_DRIVE_FORWARD,game_state)){break;};
-                    }
-                    /* third a bit slower */
-                    else
-                    {
-                        /* drive a bit forward (slowly) and shift the other fire back */
-                        if(!checkDrive(x_heart,y_heart,angle_heart,FIRE_POOL_SHIFT_SPEED,GOTO_DRIVE_FORWARD,game_state)){break;};
-                    }
-                    /* place fire and moves the sucker up */
-                    releasePool(0);
-                    /* drive a bit backwarts */
-                    if(!checkDrive(x_heart,y_heart,angle_heart,FIRE_POOL_APPROACH_SPEED,GOTO_DRIVE_BACKWARD,game_state)){break;};
-                    vTaskDelay(1000/portTICK_RATE_MS);
-                }
+            placeSucker(SERVO_POS_AIR_SECOND_FIRE);
 
-                if(fire_count < 2)
-                {
-                    /* drive back to the pool and take the next fire */
-                    if(!checkDrive(x_pool + x_pool_front,y_pool+y_pool_front,angle_pool,FIRE_POOL_PLACE_SPEED,GOTO_DRIVE_FORWARD,game_state)){break;};
-                    if(!takePool(x_pool + x_pool_approach_second, y_pool,angle_pool+ y_pool_approach_second, game_state)){break;};
-                }
-            }
-            releasePool(0); /* be sure that the sucker is up and the air-system off */
+            checkDrive(x_pool,y_pool,param->angle,FIRE_POOL_TRANSIT_SPEED,GOTO_DRIVE_FORWARD,game_state);
+
+            /* be sure that the sucker is up and the air-system off */
+            releasePool(0);
             param->node_state = NODE_FINISH_SUCCESS;
         }
         else
