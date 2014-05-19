@@ -51,27 +51,29 @@
  */
 void doFireNode(node_param_t* param, volatile game_state_t* game_state)
 {
+    game_state_t game_state_copy;
+
     taskENTER_CRITICAL();
 	/* reset current barrier flag */
 	switch(param->id)
 	{
-	    case 9:
+	    case 10:
 	        game_state->barrier &= ~(GOTO_FIRE_1_FORCE | GOTO_FIRE_1 | GOTO_FIRE_2_FORCE | GOTO_FIRE_2);
 	        break;
-	    case 10:
+	    case 11:
 	        game_state->barrier &= ~(GOTO_FIRE_3_FORCE | GOTO_FIRE_3 | GOTO_FIRE_4_FORCE | GOTO_FIRE_4);
             break;
-	    case 11:
+	    case 12:
 	        game_state->barrier &= ~(GOTO_FIRE_5_FORCE | GOTO_FIRE_5 | GOTO_FIRE_6_FORCE | GOTO_FIRE_6);
 	        break;
 	}
 
 	/* Copy current game state, so it wont be changed during calculation */
-    game_state_t game_state_copy = *game_state;
+    game_state_copy = *game_state;
     taskEXIT_CRITICAL();
 
     /* Don't continue if an other robot is in front */
-    if(isRobotInFront(&game_state_copy)) {
+    if(isRobotInFront(game_state)) {
 
         param->node_state = NODE_FINISH_UNSUCCESS;
         return;
