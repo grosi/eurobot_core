@@ -68,16 +68,6 @@ void runRoboRunExtendState(portTickType* tick)
     /* re-init the complete system */
     system_state = runRoboInitialisationState;
 
-//    /* check if the 90s are over */
-//    if(remaining_time == 0)
-//    {
-//
-//    }
-//    /* wait until the game is finished */
-//    else
-//    {
-//        vTaskDelay(1000/portTICK_RATE_MS);
-//    }
 }
 
 
