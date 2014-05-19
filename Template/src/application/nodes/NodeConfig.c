@@ -516,14 +516,13 @@ uint8_t distance2speed(uint16_t distance, uint8_t max_speed)
  * \param[in]  direction
  * \param[in]  game_state
  *
- * \retval 0   error
- * \retval 1   success
+ * \retval     func_report (FUNC_SUCCESS, FUNC_INCOMPLETE_LIGHT, FUNC_INCOMPLETE_HEAVY or FUNC_ERROR)
  */
-uint8_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, uint8_t direction, volatile game_state_t* game_state)
+func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, uint8_t direction, volatile game_state_t* game_state)
 {
 	CAN_data_t CAN_buffer;
 	uint16_t estimated_GoTo_time;
-	uint8_t success;
+	func_report_t retval;
 	uint8_t CAN_ok;
 	int16_t delta_x, delta_y;
 	uint16_t distance;
@@ -544,8 +543,7 @@ uint8_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, uint8_
 			if(isRobotInRange(game_state, FALSE) < 150 + 50) //TODO DRIVE_ROUTE_DIST_MIN + DIST_OFFSET
 			{
 				/* Don't drive */
-				success = 0;
-				//return success;
+				retval = FUNC_INCOMPLETE_LIGHT;
 			}
 			else
 			{
@@ -553,24 +551,37 @@ uint8_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, uint8_
 				if(calc_speed <= 0)
 				{
 					/* Don't drive */
-					success = 0;
+					retval = FUNC_INCOMPLETE_LIGHT;
 				}
 				else
 				{
 					/* Drive forward with speed relative to the distance */
-					success = driveGoto(x, y, angle, calc_speed, direction, game_state);
+					if(driveGoto(x, y, angle, calc_speed, direction, game_state))
+					{
+						retval = FUNC_SUCCESS;
+					}
+					else
+					{
+						retval = FUNC_ERROR;
+					}
 				}
-				//return success;
 			}
 
 		}
 		else /* Route calculated */
 		{
 			/* Start driving forward */
-			success = driveGoto(x, y, angle, speed, direction, game_state);
+			if(driveGoto(x, y, angle, speed, direction, game_state))
+			{
+				retval = FUNC_SUCCESS;
+			}
+			else
+			{
+				retval = FUNC_ERROR;
+			}
 
 			/* check arrive drive for obstacles like enemys */
-			if(success)
+			if(retval == FUNC_SUCCESS)
 			{
 				/* Wait at least GOTO_STATERESP_DELAY before asking for goto time for the first time,
 				 * else we may get the old time */
@@ -585,7 +596,7 @@ uint8_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, uint8_
 
 					if(CAN_ok == pdFALSE)
 					{
-						success = 0;
+						retval = FUNC_ERROR;
 						break;
 					}
 
@@ -597,7 +608,7 @@ uint8_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, uint8_
 					{
 						/* Finish node with error,
 						 * this way the current node will be retried if it's more attractive again */
-						success = 0;
+						retval = FUNC_INCOMPLETE_HEAVY;
 						break;
 					}
 
@@ -607,7 +618,7 @@ uint8_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, uint8_
 						/* Finish node with error,
 						 * this way the current node will be retried if it's more attractive again */
 						txStopDrive();  //TODO: Necessary?
-						success = 0;
+						retval = FUNC_INCOMPLETE_HEAVY;
 						break;
 					}
 
@@ -617,7 +628,7 @@ uint8_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, uint8_
 						/* STOPP */
 						txStopDrive();
 
-						success = 0;
+						retval = FUNC_INCOMPLETE_LIGHT;
 						break;
 					}
 
@@ -626,8 +637,6 @@ uint8_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, uint8_
 				/* Repeat state request while not at target destination */
 				} while(estimated_GoTo_time > 0);
 			}
-
-			//return success;
 		}
 	}
 	else /* direction == GOTO_DRIVE_BACKRWARD */
@@ -636,18 +645,23 @@ uint8_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, uint8_
 		if(isRobotInRange(game_state, TRUE) < 50 + 50) //TODO DRIVE_BACK_DIST + DIST_OFFSET
 		{
 			/* Don't drive */
-			success = 0;
-			//return success;
+			retval = FUNC_INCOMPLETE_LIGHT;
 		}
 		else
 		{
 			/* Drive backward */
-			success = driveGoto(x, y, angle, speed, direction, game_state);
-			//return success;
+			if(driveGoto(x, y, angle, speed, direction, game_state))
+			{
+				retval = FUNC_SUCCESS;
+			}
+			else
+			{
+				retval = FUNC_ERROR;
+			}
 		}
 	}
 
-	return success;
+	return retval;
 }
 
 
@@ -671,6 +685,10 @@ uint8_t driveGoto(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, uint8_t
     uint8_t goto_retries = 0;
     uint8_t CAN_ok = pdFALSE;
     CAN_data_t CAN_buffer;
+    uint16_t barrier;
+    taskENTER_CRITICAL();
+    barrier = game_state->barrier;
+    taskEXIT_CRITICAL();
 
     /* send and check drive command */
     do
@@ -678,7 +696,7 @@ uint8_t driveGoto(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, uint8_t
         goto_retries++;
 
         /* drive to the heart */
-        txGotoXY(x, y, angle, speed, game_state->barrier, direction);
+        txGotoXY(x, y, angle, speed, barrier, direction);
 
         /* Receive GoTo confirmation */
         CAN_ok = xQueueReceive(qGotoConfirm, &CAN_buffer, CAN_WAIT_DELAY / portTICK_RATE_MS);
