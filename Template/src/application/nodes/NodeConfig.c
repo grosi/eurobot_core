@@ -488,7 +488,7 @@ void setNodeConfig2Default(void)
  */
 uint8_t distance2speed(uint16_t distance, uint8_t max_speed)
 {
-	uint8_t speed = max_speed * distance / RANGEFINDER_THRESHOLD_FW*10;
+	uint8_t speed = max_speed * distance / RANGEFINDER_THRESHOLD_FW;
 
 	/* Handle max. speed */
 	if(speed > max_speed)

@@ -5,6 +5,7 @@
  *
  * \version 2.1b
  *  - Updated function to compare rangefinder with navigation informations
+ *  - Changed all distances from cm to mm
  * \version 2.0b
  *  - Changed to two ultrasonic sensor in front (for the big robot "B52")
  *  - Removed code for IR-Sensors, as they're not used in this robot
@@ -61,9 +62,9 @@
 #define RANGEFINDER_TASK_PRIORITY   (configMAX_PRIORITIES - 2UL) /*!< priority 5*/
 
 /* Rangefinder settings */ //TODO: Adjust values
-#define RANGEFINDER_RANGE           100     /*!< Maximum detection range in cm (int16_t values from 5 to 1100) */
-#define RANGEFINDER_THRESHOLD_FW    40      /*!< Minimum allowed distance in cm to an obstacle (in front) without alert */
-#define RANGEFINDER_THRESHOLD_FI    3       /*!< Minimum allowed space in cm for the fire node without alert */
+#define RANGEFINDER_RANGE           1000    /*!< Maximum detection range in mm (int16_t values from 5 to 1100) */
+#define RANGEFINDER_THRESHOLD_FW    400     /*!< Minimum allowed distance in mm to an obstacle (in front) without alert */
+#define RANGEFINDER_THRESHOLD_FI    30      /*!< Minimum allowed space in mm for the fire node without alert */
 #define RANGEFINDER_DELAY           100     /*!< Task delay in ms between measures */
 #define RANGEFINDER_ANGLE           30      /*!< half of the complete angle range (complete 60 degree) */
 

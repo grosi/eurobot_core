@@ -5,6 +5,7 @@
  *
  * \version 2.1b
  *  - Updated function to compare rangefinder with navigation informations
+ *  - Changed all distances from cm to mm
  * \version 2.0b
  *  - Changed to two ultrasonic sensor in front (for the big robot "B52")
  *  - Removed code for IR-Sensors, as they're not used in this robot
@@ -156,8 +157,8 @@ static void vRangefinderTask(void* pvParameters ) {
 	xLastFlashTime = xTaskGetTickCount();
 
 	/* Set the range */
-	setSRF08Range(SRF08_ADDR_L, RANGEFINDER_RANGE * 10); /* In mm */
-	setSRF08Range(SRF08_ADDR_R, RANGEFINDER_RANGE * 10); /* In mm */
+	setSRF08Range(SRF08_ADDR_L, RANGEFINDER_RANGE);
+	setSRF08Range(SRF08_ADDR_R, RANGEFINDER_RANGE);
 
 	/* Set the gain register to evaluated value */
 	setSRF08Gain(SRF08_ADDR_L, 0x1F);
@@ -218,7 +219,7 @@ void checkLeftUS(void) {
 		xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
 	}
 	/* Check if an obstacle is to close */
-	else if(distance_l != 0 && distance_l < RANGEFINDER_THRESHOLD_FW) {
+	else if(distance_l != 0 && distance_l < RANGEFINDER_THRESHOLD_FW/10) {
 
 		/* Compare last three measures, only set alarm if at least two were positive.
 		 * Inside of this block the current measure is positive, so check if at least one of the last two was positive too */
@@ -262,7 +263,7 @@ void checkLeftUS(void) {
 	}
 	/* Check space for fire node */
 	if(distance_l != 0xFFFF) {
-		if(distance_l <= RANGEFINDER_THRESHOLD_FI) {
+		if(distance_l <= RANGEFINDER_THRESHOLD_FI/10) {
 
 			/* Set flag */
 			Rangefinder_flag_FiAlarmUS = 1;
@@ -305,7 +306,7 @@ void checkRightUS(void) {
 		xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
 	}
 	/* Check if an obstacle is to close */
-	else if(distance_r != 0 && distance_r < RANGEFINDER_THRESHOLD_FW) {
+	else if(distance_r != 0 && distance_r < RANGEFINDER_THRESHOLD_FW/10) {
 
 		/* Compare last three measures, only set alarm if at least two were positive.
 		 * Inside of this block the current measure is positive, so check if at least one of the last two was positive too */
@@ -349,7 +350,7 @@ void checkRightUS(void) {
 	}
 	/* Check space for fire node */
 	if(distance_r != 0xFFFF) {
-		if(distance_r <= RANGEFINDER_THRESHOLD_FI) {
+		if(distance_r <= RANGEFINDER_THRESHOLD_FI/10) {
 
 			/* Set flag */
 			Rangefinder_flag_FiAlarmUS = 1;
@@ -615,7 +616,7 @@ uint16_t isRobotInRange(volatile game_state_t* game_state, boolean in_back) {
 			}
 			delta_x = game_state_copy.enemy_1_x - game_state_copy.x;
 			delta_y = game_state_copy.enemy_1_y - game_state_copy.y;
-			distance_offset = game_state_copy.enemy_1_diameter*10/2 + ROBOT_OUR_RADIUS;
+			distance_offset = game_state_copy.enemy_1_diameter/2 + ROBOT_OUR_RADIUS;
 		}
 		else if(current_robot_check == 2) {
 
@@ -625,7 +626,7 @@ uint16_t isRobotInRange(volatile game_state_t* game_state, boolean in_back) {
 			}
 			delta_x = game_state_copy.enemy_2_x - game_state_copy.x;
 			delta_y = game_state_copy.enemy_2_y - game_state_copy.y;
-			distance_offset = game_state_copy.enemy_2_diameter*10/2 + ROBOT_OUR_RADIUS;
+			distance_offset = game_state_copy.enemy_2_diameter/2 + ROBOT_OUR_RADIUS;
 		}
 		/* Else:
 		 *  current_robot_check > 2: (More than 2 enemies)      Not possible in eurobot 2014 scenario
@@ -635,7 +636,7 @@ uint16_t isRobotInRange(volatile game_state_t* game_state, boolean in_back) {
 		distance = round(sqrt(delta_x*delta_x + delta_y*delta_y));
 
 		/* Check if a robot is within threshold range (mm) */
-		if(distance <= distance_offset + RANGEFINDER_THRESHOLD_FW*10) {
+		if(distance <= distance_offset + RANGEFINDER_THRESHOLD_FW) {
 
 			/* Convert (0 <= angle < 360) to (-180 <= alpha < 180) */
 			if(game_state_copy.angle < 180) {
