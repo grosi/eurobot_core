@@ -481,18 +481,24 @@ void setNodeConfig2Default(void)
  * \fn distance2speed
  * \brief returns a speed according
  *
- * \param[in] distance  absolute distance (without radiuses)
+ * \param[in] distance  absolute distance in mm (without radiuses)
  * \param[in] max_speed maximum speed in percent
  *
  * \retval speed in percent
  */
 uint8_t distance2speed(uint16_t distance, uint8_t max_speed)
 {
-	uint8_t speed = max_speed * distance / RANGEFINDER_THRESHOLD_FW;
+	uint8_t speed = max_speed * distance / RANGEFINDER_THRESHOLD_FW*10;
 
+	/* Handle max. speed */
 	if(speed > max_speed)
 	{
 		speed = max_speed;
+	}
+	/* Handle safety offset */
+	if(distance <= 50)  //TODO DIST_OFFSET
+	{
+		speed = 0;
 	}
 
 	return speed;
@@ -535,7 +541,7 @@ uint8_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, uint8_
 
 		if(distance <= 150) //TODO DRIVE_ROUTE_DIST_MIN /* No route calculation, just driving */
 		{
-			if(isRobotInRange(game_state, FALSE) < 150 + 50) //TODO DRIVE_ROUTE_DIST_MIN + 50
+			if(isRobotInRange(game_state, FALSE) < 150 + 50) //TODO DRIVE_ROUTE_DIST_MIN + DIST_OFFSET
 			{
 				/* Don't drive */
 				success = 0;
@@ -543,8 +549,17 @@ uint8_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, uint8_
 			}
 			else
 			{
-				/* Drive forward with speed relative to the distance */
-				success = driveGoto(x, y, angle, distance2speed(distance, speed), direction, game_state);
+				uint8_t calc_speed = distance2speed(distance, speed);
+				if(calc_speed <= 0)
+				{
+					/* Don't drive */
+					success = 0;
+				}
+				else
+				{
+					/* Drive forward with speed relative to the distance */
+					success = driveGoto(x, y, angle, calc_speed, direction, game_state);
+				}
 				//return success;
 			}
 
@@ -618,7 +633,7 @@ uint8_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, uint8_
 	else /* direction == GOTO_DRIVE_BACKRWARD */
 	{
 		/* Check if path blocked */
-		if(isRobotInRange(game_state, TRUE) < 50 + 50) //TODO DRIVE_BACK_DIST + 50
+		if(isRobotInRange(game_state, TRUE) < 50 + 50) //TODO DRIVE_BACK_DIST + DIST_OFFSET
 		{
 			/* Don't drive */
 			success = 0;
