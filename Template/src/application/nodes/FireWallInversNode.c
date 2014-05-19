@@ -84,9 +84,6 @@ void doFireWallInversNode(node_param_t* param, volatile game_state_t* game_state
 		checkDrive(param->x+FIRE_WALL_INVERSE_NODE_DELTA_GO, param->y, param->angle, FIRE_WALL_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state);
 	}
 
-	/* Wait while driving */
-	vTaskDelay(FIRE_WALL_NODE_DRIVE_DELAY / portTICK_RATE_MS);
-
 	/* activate sucker */
 	setAir(AIR_ON);
 
@@ -112,42 +109,33 @@ void doFireWallInversNode(node_param_t* param, volatile game_state_t* game_state
 		vTaskDelay(SERVO_AIR_STEP_DELAY*10 / portTICK_RATE_MS);
 	}
 
+	/* no fire detected */
 	if(getServo_1() <= SERVO_POS_AIR_WALL_INVERSE_SUCKER + SERVO_AIR_STEP)
 	{
 		/* Move sucker down */
 		placeSucker(SERVO_POS_AIR_UP);
 
 		/* Drive 5 cm backwards */
-		while(!checkDrive(param->x, param->y, param->angle, FIRE_WALL_NODE_SPEED, GOTO_DRIVE_BACKWARD, game_state));
+		while(checkDrive(param->x, param->y, param->angle, FIRE_WALL_NODE_SPEED, GOTO_DRIVE_BACKWARD, game_state) != FUNC_SUCCESS);
 
 		/* Deactivate sucker */
 		setAir(AIR_OFF);
 
-		/* wait while driving backwards */
-		vTaskDelay(FIRE_WALL_NODE_DRIVE_BACK_DELAY / portTICK_RATE_MS);
-
 		param->node_state = NODE_FINISH_ERROR;
 		return;
 	}
 
-	/* Move the sucker servo up, step by step */
+	/* Move the sucker servo up with fire, step by step */
 	placeSucker(SERVO_POS_AIR_UP);
 
 	/* Drive 5 cm backwards */
-	//TODO NID WHILE!!!
-	while(!checkDrive(param->x, param->y, param->angle, FIRE_WALL_NODE_SPEED, GOTO_DRIVE_BACKWARD, game_state));
-
-	/* wait while driving backwards */
-	vTaskDelay(FIRE_WALL_NODE_DRIVE_HEART_DELAY / portTICK_RATE_MS);
+	while(checkDrive(param->x, param->y, param->angle, FIRE_WALL_NODE_SPEED, GOTO_DRIVE_BACKWARD, game_state) != FUNC_SUCCESS);
 
 	/* drive before the heart of fire in the middle */
-	if(checkDrive(X_HEART_OF_FIRE, Y_HEART_OF_FIRE - Y_APPROACH_HEART_OF_FIRE, HEART_OF_FIRE_ANGLE, HEART_OF_FIRE_DRIVE_SPEED, GOTO_DRIVE_FORWARD, game_state) == 0)
+	if(checkDrive(X_HEART_OF_FIRE, Y_HEART_OF_FIRE - Y_APPROACH_HEART_OF_FIRE, HEART_OF_FIRE_ANGLE, HEART_OF_FIRE_DRIVE_SPEED, GOTO_DRIVE_FORWARD, game_state) != FUNC_SUCCESS)
 	{
 		/* Drive 5 cm backwards if it's not possible to get to the heart of fire */
-		while(!checkDrive(param->x, param->y, param->angle, FIRE_WALL_NODE_SPEED, GOTO_DRIVE_BACKWARD, game_state));
-
-		/* wait while driving backwards */
-		vTaskDelay(FIRE_WALL_NODE_DRIVE_BACK_DELAY / portTICK_RATE_MS);
+		while(checkDrive(param->x, param->y, param->angle, FIRE_WALL_NODE_SPEED, GOTO_DRIVE_BACKWARD, game_state) != FUNC_SUCCESS);
 
 		/* place the fire where the robot stopped */
 		setAir(AIR_OFF);
@@ -157,14 +145,11 @@ void doFireWallInversNode(node_param_t* param, volatile game_state_t* game_state
 		return;
 	}
 
-	/* wait while driving to the heart of fire */
-	vTaskDelay(FIRE_WALL_NODE_DRIVE_HEART_DELAY / portTICK_RATE_MS);
-
-	/* move sucker down */
+	/* move sucker down for placing fire on heart */
 	placeSucker(SERVO_POS_AIR_PLACE);
 
 	/* drive to the heart of fire place position */
-	if(checkDrive(X_HEART_OF_FIRE, Y_HEART_OF_FIRE, HEART_OF_FIRE_ANGLE, HEART_OF_FIRE_DRIVE_SPEED, GOTO_DRIVE_FORWARD, game_state) == 0)
+	if(checkDrive(X_HEART_OF_FIRE, Y_HEART_OF_FIRE, HEART_OF_FIRE_ANGLE, HEART_OF_FIRE_DRIVE_SPEED, GOTO_DRIVE_FORWARD, game_state)  != FUNC_SUCCESS)
 	{
 		/* place the fire where the robot stopped */
 		setAir(AIR_OFF);
@@ -173,9 +158,6 @@ void doFireWallInversNode(node_param_t* param, volatile game_state_t* game_state
 		return;
 
 	}
-
-	/* wait while driving to the heart of fire */
-	vTaskDelay(FIRE_HEART_DRIVE_DELAY / portTICK_RATE_MS);
 
 	/* place fire */
 	setAir(AIR_OFF);
@@ -184,10 +166,7 @@ void doFireWallInversNode(node_param_t* param, volatile game_state_t* game_state
 	placeSucker(SERVO_POS_AIR_UP);
 
 	/* Drive 5 cm backwards */
-	while(!checkDrive(param->x, param->y, param->angle, FIRE_WALL_NODE_SPEED, GOTO_DRIVE_BACKWARD, game_state));
-
-	/* wait while driving backwards */
-	vTaskDelay(FIRE_WALL_NODE_DRIVE_BACK_DELAY / portTICK_RATE_MS);
+	while(checkDrive(param->x, param->y, param->angle, FIRE_WALL_NODE_SPEED, GOTO_DRIVE_BACKWARD, game_state) != FUNC_SUCCESS);
 
 	/* node complete */
 	param->node_state = NODE_FINISH_SUCCESS;
