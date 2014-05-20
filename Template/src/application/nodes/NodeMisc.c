@@ -129,6 +129,11 @@ uint8_t distance2speed(uint16_t distance, uint8_t max_speed)
     {
         speed = max_speed;
     }
+    /* Handle safety offset */
+    if(distance <= DIST_OFFSET)
+    {
+    	speed = 0;
+    }
 
     return speed;
 }
