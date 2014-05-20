@@ -34,6 +34,13 @@
 /* Private define ------------------------------------------------------------*/
 #define GOTOCONFIRM_QUEUE_LENGTH   1
 #define GOTOSTATERESP_QUEUE_LENGTH 1
+#define GOTO_STATERESP_DELAY       100
+
+#define DRIVE_ROUTE_DIST_MIN       150   /* Minimum distance in mm for which the drive system calculates a route */
+#define DRIVE_BACK_DIST            50    /* Distance in mm the robot travels on a backwards goto command */
+#define DRIVE_BACK_TIME            1500  /* Time taken to travel DRIVE_BACK_DIST backwards */
+#define DIST_OFFSET                50    /* Safety distance offset in mm */  //TODO remove this or the one below
+#define SPEED_OFFSET               25    /* Safety speed offset in mm */  //TODO remove this or the one above
 
 /* Private macro -------------------------------------------------------------*/
 
@@ -149,7 +156,7 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
     int16_t delta_x, delta_y;
     uint16_t distance;
     uint16_t range;
-    uint8_t is_in_range = 0; /* is in range flag */ //TODO: ?
+    uint8_t is_in_range = 0; /* is in range flag */
 
     /* Differentiate between driving backward and forward */
     if(direction == GOTO_DRIVE_FORWARD)
@@ -162,17 +169,17 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
         taskEXIT_CRITICAL();
         distance = round(sqrt(delta_x*delta_x + delta_y*delta_y));
 
-        if(distance <= 150) //TODO DRIVE_ROUTE_DIST_MIN /* No route calculation, just driving */
+        if(distance <= DRIVE_ROUTE_DIST_MIN)  /* No route calculation, just driving */
         {
             range = isRobotInRange(game_state, FALSE);
-            if((range == 0) || (range >= 150 + 50)) //TODO DRIVE_ROUTE_DIST_MIN + DIST_OFFSET  /* No enemy in range */
+            if((range == 0) || (range >= DRIVE_ROUTE_DIST_MIN + DIST_OFFSET))  /* No enemy in range */
             {
                 /* Drive forward */
                 if(driveGoto(x, y, angle, speed, direction, GOTO_ROUTE, game_state))
                 {
                     /* Wait at least GOTO_STATERESP_DELAY before asking for goto time for the first time,
                      * else we may get the old time */
-                    vTaskDelay(100 / portTICK_RATE_MS);//TODO: GOTO_STATERESP_DELAY / portTICK_RATE_MS);
+                    vTaskDelay(GOTO_STATERESP_DELAY / portTICK_RATE_MS);
 
                     do
                     {
@@ -204,7 +211,6 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
                         {
                             /* Finish node with error,
                              * this way the current node will be retried if it's more attractive again */
-                            //txStopDrive();  //TODO: Necessary?
                             retval = FUNC_INCOMPLETE_HEAVY;
                             break;
                         }
@@ -244,7 +250,7 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
             {
                 /* Wait at least GOTO_STATERESP_DELAY before asking for goto time for the first time,
                  * else we may get the old time */
-                vTaskDelay(100 / portTICK_RATE_MS);//TODO: GOTO_STATERESP_DELAY / portTICK_RATE_MS);
+                vTaskDelay(GOTO_STATERESP_DELAY / portTICK_RATE_MS);
 
                 do
                 {
@@ -276,7 +282,6 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
                     {
                         /* Finish node with error,
                          * this way the current node will be retried if it's more attractive again */
-                        txStopDrive();  //TODO: Necessary?
                         retval = FUNC_INCOMPLETE_HEAVY;
                         break;
                     }
@@ -290,7 +295,7 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
 
                         /* Drive forward with speed relative to the range */
                         uint8_t calc_speed = distance2speed(range, speed);
-                        if(calc_speed <= 25)
+                        if(calc_speed <= SPEED_OFFSET)
                         {
                             /* STOPP */
                             txStopDrive();
@@ -298,16 +303,11 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
 
                             //TODO
                             ////////////////////////////////////////////////////////////////////
-                            /* Set distance and speed (just for caluculation) */
-							distance = 50;  //TODO DRIVE_BACK_DIST
-							speed = 50;  //mm/s TODO DRIVE_BACK_SPEED
-
-
 							/* Drive backward */
-							if(driveGoto(x, y, angle, speed, GOTO_DRIVE_BACKWARD, GOTO_ROUTE, game_state))
+							if(driveGoto(IGNORED_VALUE, IGNORED_VALUE, IGNORED_VALUE, IGNORED_VALUE, GOTO_DRIVE_BACKWARD, GOTO_ROUTE, game_state))
 							{
 								/* Wait while driving */
-								vTaskDelay(1500 / portTICK_RATE_MS);  //TODO: ROBO_BACKWARD_TIME
+								vTaskDelay(DRIVE_BACK_TIME / portTICK_RATE_MS);
 							}
 							else
 							{
@@ -360,20 +360,15 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
     }
     else /* direction == GOTO_DRIVE_BACKRWARD */
     {
-        /* Set distance and speed (just for caluculation) */
-        distance = 50;  //TODO DRIVE_BACK_DIST
-        speed = 50;  //mm/s TODO DRIVE_BACK_SPEED
-
-
         /* Check if path blocked */
         range = isRobotInRange(game_state, TRUE);
-        if((range == 0) || (range >= 50 + 50)) //TODO DRIVE_BACK_DIST + DIST_OFFSET  /* No enemy in range */
+        if((range == 0) || (range >= DRIVE_BACK_DIST + DIST_OFFSET))  /* No enemy in range */
         {
             /* Drive backward */
-            if(driveGoto(x, y, angle, speed, direction, GOTO_NO_ROUTE, game_state))
+            if(driveGoto(IGNORED_VALUE, IGNORED_VALUE, IGNORED_VALUE, IGNORED_VALUE, direction, GOTO_NO_ROUTE, game_state))
             {
                 /* Wait while driving */
-                vTaskDelay(1500 / portTICK_RATE_MS);  //TODO: ROBO_BACKWARD_TIME
+                vTaskDelay(DRIVE_BACK_TIME / portTICK_RATE_MS);
                 retval = FUNC_SUCCESS;
             }
             else
