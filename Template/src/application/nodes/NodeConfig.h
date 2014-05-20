@@ -50,7 +50,7 @@ typedef struct
     uint16_t enemy_2_y;         /*!< 0xFFFF = no enemy 2 or error */
     uint16_t enemy_2_diameter; /*!< 0 = no enemy 2 [mm] */
 
-    uint8_t  confederate_count; /*!< Number of confederate: 0, 1 or 2 */
+    uint8_t  confederate_count; /*!< Number of confederate: 0 or 1 */
     uint16_t confederate_x;     /*!< 0xFFFF = no confederate or error */
     uint16_t confederate_y;     /*!< 0xFFFF = no confederate or error */
 

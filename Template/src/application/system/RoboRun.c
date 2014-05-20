@@ -698,6 +698,13 @@ static void vNodeTask(void* pvParameters )
         taskEXIT_CRITICAL();
 #endif
 
+        /* Wait the first seconds for the second robot to get out of the way */
+        while((game_state.confederate_count >= 1) && (PLAY_TIME - getRemainingGameTime() < START_WAIT_TIME))
+        {
+        	/* Wait some time (less than 1 s) before new check */
+        	vTaskDelay(250 / portTICK_RATE_MS);
+        }
+
     	/* Give goto command */
     	func_report_t gotoNode_report = gotoNode(&node_task->param, &game_state);
 
