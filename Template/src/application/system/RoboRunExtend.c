@@ -20,6 +20,8 @@
 #include "../ELP.h"
 #include "../System.h"
 #include "../nodes/NetNode.h"
+#include "../nodes/NodeMisc.h"
+#include "../CANGatekeeper.h"
 #include "RoboInitialisation.h" /* next state if this one is completed successfully */
 #include "RoboError.h" /* next state if this one is completed with errors */
 #include "RoboRunExtend.h"
@@ -57,13 +59,19 @@ void initRoboRunExtendState()
  */
 void runRoboRunExtendState(portTickType* tick)
 {
-	uint8_t remaining_time = getRemainingGameTime();
+	uint8_t remaining_time;
+	remaining_time = getRemainingGameTime();
 
-	vTaskDelay(remaining_time/portTICK_RATE_MS);
+	vTaskDelay(remaining_time * 1000 /portTICK_RATE_MS);
 
+	vTaskDelay(1000 /portTICK_RATE_MS);
 	setServo_2(SERVO_POS_NET_LAUNCH);
     vTaskDelay(4000/portMAX_DELAY);
-    setServo_2(SERVO_POS_NET_LOAD);
+    //setServo_2(SERVO_POS_NET_LOAD);
+
+    txEmergencyStop(0);
+    /* this fucking shit doesn't work!!! */
+    setNodeConfig2Default();
 
     /* re-init the complete system */
     system_state = runRoboInitialisationState;
