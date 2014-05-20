@@ -65,25 +65,26 @@ void doFireNode(node_param_t* param, volatile game_state_t* game_state)
 	}
 	taskEXIT_CRITICAL();
 
-	if(param->id == 1)
-	{
-		/* node complete */
-		param->node_state = NODE_FINISH_SUCCESS;
-		return;
-	}
-
 	/* Move the sucker servo down a bit, step by step */
 	placeSucker(SERVO_FIRE_POS_DOWN);
 
     /* Drive through fire from NORTH */
     if(param->angle >= NODE_NORTH_MIN_ANGLE && param->angle <= NODE_NORTH_MAX_ANGLE)
     {
-        checkDrive(param->x, param->y-FIRE_NODE_DELTA_GO, param->angle, FIRE_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state);
+      	checkDrive(param->x, param->y-FIRE_NODE_DELTA_GO, param->angle, FIRE_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state);
     }
     /* Drive through fire from EAST */
     else if(param->angle >= NODE_EAST_MIN_ANGLE && param->angle <= NODE_EAST_MAX_ANGLE)
     {
-        checkDrive(param->x-FIRE_NODE_DELTA_GO, param->y, param->angle, FIRE_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state);
+    	if(param->id == 1)
+		{
+    		checkDrive(param->x-FIRE1_NODE_DELTA_GO, param->y, param->angle, FIRE_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state);
+		}
+    	else
+    	{
+    		checkDrive(param->x-FIRE_NODE_DELTA_GO, param->y, param->angle, FIRE_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state);
+    	}
+
     }
     /* Drive through fire from SOUTH */
     else if(param->angle >= NODE_SOUTH_MIN_ANGLE && param->angle <= NODE_SOUTH_MAX_ANGLE)
@@ -93,7 +94,15 @@ void doFireNode(node_param_t* param, volatile game_state_t* game_state)
     /* Drive through fire from WEST */
     else
     {
-        checkDrive(param->x+FIRE_NODE_DELTA_GO, param->y, param->angle, FIRE_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state);
+    	if(param->id == 1)
+    	{
+    		checkDrive(param->x+FIRE1_NODE_DELTA_GO, param->y, param->angle, FIRE_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state);
+    	}
+    	else
+    	{
+    		checkDrive(param->x+FIRE_NODE_DELTA_GO, param->y, param->angle, FIRE_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state);
+    	}
+
     }
 
 	/* Move the sucker servo up, step by step */
