@@ -733,10 +733,17 @@ uint16_t isRobotInRange(volatile game_state_t* game_state, boolean in_back) {
 
             /* Check if the enemy is within our angle */
             if(fabs(phi) <= RANGEFINDER_ANGLE) {
-                /* Return the external distance (without radiuses) */
-                return (distance - distance_offset);
+            	/* Return the external distance (without radiuses) */
 
-                //TODO Handle bug when distance_offset >= distance (because of wrong display input)
+				//TODO Please Test: Handle bug when distance_offset >= distance (because of wrong display input)
+				if(distance <= distance_offset)
+				{
+					return 1;
+				}
+				else
+				{
+					return (distance - distance_offset);
+				}
             }
         }
     }
