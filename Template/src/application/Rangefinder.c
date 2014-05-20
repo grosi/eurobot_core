@@ -86,8 +86,8 @@
 #define SRF08_ANN_US    0x55            /* Measure in micro-seconds (ANN mode) */
 
 /* Robot information */
-#define ROBOT_OUR_RADIUS           120  /* Distance from nose to center (navigation) in mm */
-#define ROBOT_CONFEDERATE_RADIUS   230  /* Distance from nose to center (navigation) in mm */
+#define ROBOT_OUR_RADIUS           230  /* Distance from nose to center (navigation) in mm */
+#define ROBOT_CONFEDERATE_RADIUS   120  /* Distance from nose to center (navigation) in mm */
 
 
 /* Private variables ---------------------------------------------------------*/

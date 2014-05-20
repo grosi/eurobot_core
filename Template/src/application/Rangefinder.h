@@ -66,7 +66,7 @@
 #define RANGEFINDER_THRESHOLD_FW    750     /*!< Minimum allowed distance in mm to an obstacle (in front) without alert */
 #define RANGEFINDER_THRESHOLD_FI    30      /*!< Minimum allowed space in mm for the fire node without alert */
 #define RANGEFINDER_DELAY           100     /*!< Task delay in ms between measures */
-#define RANGEFINDER_ANGLE           45      /*!< half of the complete angle range (complete 60 degree) */
+#define RANGEFINDER_ANGLE           40      /*!< half of the complete angle range (complete 60 degree) */
 
 /* exported macro -------------------------------------------------------------*/
 
