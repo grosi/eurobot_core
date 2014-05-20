@@ -173,7 +173,7 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
             if((range == 0) || (range >= 150 + 50)) //TODO DRIVE_ROUTE_DIST_MIN + DIST_OFFSET  /* No enemy in range */
             {
                 /* Drive forward */
-                if(driveGoto(x, y, angle, speed, direction, game_state))
+                if(driveGoto(x, y, angle, speed, direction, GOTO_ROUTE, game_state))
                 {
                     /* Wait at least GOTO_STATERESP_DELAY before asking for goto time for the first time,
                      * else we may get the old time */
@@ -235,7 +235,7 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
         else /* Route calculated */
         {
             /* Start driving forward */
-            if(driveGoto(x, y, angle, speed, direction, game_state))
+            if(driveGoto(x, y, angle, speed, direction, GOTO_ROUTE, game_state))
             {
                 retval = FUNC_SUCCESS;
             }
@@ -306,15 +306,18 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
                         }
                         else
                         {
-                            if(driveGoto(x, y, angle, calc_speed, direction, game_state))
-                            {
-                                retval = FUNC_SUCCESS;
-                            }
-                            else
-                            {
-                                retval = FUNC_ERROR;
-                                break;
-                            }
+                            //if(fabsf(old_range-range) > 50)
+                            //{
+                                if(driveGoto(x, y, angle, calc_speed, direction, GOTO_NO_ROUTE, game_state))
+                                {
+                                    retval = FUNC_SUCCESS;
+                                }
+                                else
+                                {
+                                    retval = FUNC_ERROR;
+                                    break;
+                                }
+                            //}
                         }
                     }
                     else if(is_in_range)
@@ -323,7 +326,7 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
                         is_in_range = 0;
 
                         /* not in range anymore */
-                        if(driveGoto(x, y, angle, speed, direction, game_state))
+                        if(driveGoto(x, y, angle, speed, direction, GOTO_NO_ROUTE, game_state))
                         {
                             retval = FUNC_SUCCESS;
                         }
@@ -353,7 +356,7 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
         if((range == 0) || (range >= 50 + 50)) //TODO DRIVE_BACK_DIST + DIST_OFFSET  /* No enemy in range */
         {
             /* Drive backward */
-            if(driveGoto(x, y, angle, speed, direction, game_state))
+            if(driveGoto(x, y, angle, speed, direction, GOTO_NO_ROUTE, game_state))
             {
                 /* Wait while driving */
                 vTaskDelay((distance/speed*1000) / portTICK_RATE_MS);  //TODO: ROBO_AVERAGE_SPEED
@@ -384,12 +387,13 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
  *  \param[in]  angle
  *  \param[in]  speed
  *  \param[in]  direction
+ *  \param[in]  route
  *  \param[in]  game_state
  *
  *  \retval 0   error
  *  \retval 1   success
  */
-uint8_t driveGoto(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, uint8_t direction, volatile game_state_t* game_state)
+uint8_t driveGoto(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, uint8_t direction, uint8_t route, volatile game_state_t* game_state)
 {
     uint8_t success = pdFALSE;
     uint8_t goto_retries = 0;
@@ -406,7 +410,7 @@ uint8_t driveGoto(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, uint8_t
         goto_retries++;
 
         /* drive to the heart */
-        txGotoXY(x, y, angle, speed, barrier, direction);
+        txGotoXY(x, y, angle, speed, barrier, direction, route);
 
         /* Receive GoTo confirmation */
         CAN_ok = xQueueReceive(qGotoConfirm, &CAN_buffer, CAN_WAIT_DELAY / portTICK_RATE_MS);

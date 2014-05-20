@@ -35,6 +35,7 @@ typedef union
         uint8_t goto_speed; /*!< speed in % */
         uint8_t goto_direction; /*!< drive direction */
         uint16_t goto_barrier; /*!< barrier-flags */
+        uint8_t goto_route; /*!< routing-flag */
     };
     /* ELP data-set */
     struct
@@ -62,7 +63,7 @@ typedef union
 /**
  * \brief function pointer for CAN-listeners
  */
-typedef void (*CAN_function_listener_t) (uint16_t, CAN_data_t*); //TODO
+typedef void (*CAN_function_listener_t) (uint16_t, CAN_data_t*);
 
 /**
  * \brief   type for listener-database
@@ -156,6 +157,13 @@ typedef struct
 #define GOTO_BLOCKED_ATM       0xFFFFFE /* Message: It's blocked at the moment */
 
 
+/*
+ * \brief   drive rounting
+ */
+#define GOTO_ROUTE              1
+#define GOTO_NO_ROUTE           0
+
+
 /**
  * \brief   Possible ELP-response id's
  */
@@ -189,7 +197,7 @@ extern void setFunctionCANListener(CAN_function_listener_t, uint16_t);
 extern void txEmergencyShutdown();
 extern void txEmergencyStop(uint8_t);
 extern void txStopDrive();
-extern void txGotoXY(uint16_t, uint16_t, uint16_t, uint8_t, uint16_t, uint8_t);
+extern void txGotoXY(uint16_t, uint16_t, uint16_t, uint8_t, uint16_t, uint8_t, uint8_t);
 extern void txGotoConfirm();
 extern void txGotoStateRequest();
 extern void txGotoStateResponse(uint32_t time);

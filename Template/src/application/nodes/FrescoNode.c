@@ -57,7 +57,7 @@ void doFrescoNode(node_param_t* param, volatile game_state_t* game_state) {
 
 	/* Drive closer to the wall, so the final goto distance is < 150 mm and
 	 * thus no route is calculated (which allows us to drive in the "forbidden" zone near the wall) */
-	txGotoXY(param->x, param->y + FRESCO_APPROACH_DISTANCE, param->angle, FRESCO_APPROACH_SPEED, game_state->barrier, GOTO_DRIVE_FORWARD);
+	txGotoXY(param->x, param->y + FRESCO_APPROACH_DISTANCE, param->angle, FRESCO_APPROACH_SPEED, game_state->barrier, GOTO_DRIVE_FORWARD, GOTO_ROUTE);
 
 	/* Move panel all the way out */
 	setServo_1(SERVO_POS_FRESCO_OUT);
@@ -66,7 +66,7 @@ void doFrescoNode(node_param_t* param, volatile game_state_t* game_state) {
 	vTaskDelay(FRESCO_APPROACH_DELAY / portTICK_RATE_MS);
 
 	/* Drive all the way to the wall */
-	txGotoXY(param->x, FRESCO_WALL_POSITION, param->angle, FRESCO_WALL_SPEED, game_state->barrier, GOTO_DRIVE_FORWARD);
+	txGotoXY(param->x, FRESCO_WALL_POSITION, param->angle, FRESCO_WALL_SPEED, game_state->barrier, GOTO_DRIVE_FORWARD, GOTO_ROUTE);
 
 	volatile uint16_t approach_counter = 0;
 	while(!getSensor_Fresco_Wall() && approach_counter < FRESCO_WALL_TIME) {
@@ -114,7 +114,7 @@ void doFrescoNode(node_param_t* param, volatile game_state_t* game_state) {
 	}
 
     /* drive backwards (defined 50 mm by drive system) */
-    txGotoXY(IGNORED_VALUE, IGNORED_VALUE, IGNORED_VALUE, FRESCO_WALL_SPEED, IGNORED_VALUE, GOTO_DRIVE_BACKWARD);
+    txGotoXY(IGNORED_VALUE, IGNORED_VALUE, IGNORED_VALUE, FRESCO_WALL_SPEED, IGNORED_VALUE, GOTO_DRIVE_BACKWARD, GOTO_ROUTE);
     /* wait while driving backwards */
     vTaskDelay(2000 / portTICK_RATE_MS);  // 1s is too short, TODO: evaluate why even necessary
 
