@@ -127,11 +127,9 @@ void SystemStop(void)
         /* set correct state in initialisation state */
         setConfigRoboSetup2Default();
         setConfigRoboRunState2Default();
-        setNodeConfig2Default();
 
         /* hw */
         suspendRangefinderTask();
-        txEmergencyStop(0);
 
         system_state = runRoboRunExtendState;
     }
