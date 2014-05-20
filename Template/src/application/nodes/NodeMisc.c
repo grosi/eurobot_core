@@ -153,6 +153,8 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
 {
     CAN_data_t CAN_buffer;
     uint32_t estimated_GoTo_time;
+    uint32_t estimated_GoTo_time_history[5] = {0};
+    uint8_t estimated_GoTo_time_index = 0;
     func_report_t retval;
     uint8_t CAN_ok;
     int16_t delta_x, delta_y;
@@ -216,6 +218,27 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
                             retval = FUNC_INCOMPLETE_HEAVY;
                             break;
                         }
+
+                        /* Handle Drive-Node Bug */
+                        if(estimated_GoTo_time != estimated_GoTo_time_history[estimated_GoTo_time_index])
+                        {
+                            estimated_GoTo_time_history[estimated_GoTo_time_index] = estimated_GoTo_time;
+                            estimated_GoTo_time_index++;
+
+                            if(estimated_GoTo_time_index == 5)
+                            {
+                                /* Finish node with error,
+                                 * this way the current node will be retried if it's more attractive again */
+                                retval = FUNC_INCOMPLETE_HEAVY;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            estimated_GoTo_time_index = 0;
+                            estimated_GoTo_time_history[estimated_GoTo_time_index] = 0;
+                        }
+
                         vTaskDelay(CAN_CHECK_DELAY/portTICK_RATE_MS);
                     }
                     while(estimated_GoTo_time > 0);
@@ -286,6 +309,26 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
                          * this way the current node will be retried if it's more attractive again */
                         retval = FUNC_INCOMPLETE_HEAVY;
                         break;
+                    }
+
+                    /* Handle Drive-Node Bug */
+                    if(estimated_GoTo_time != estimated_GoTo_time_history[estimated_GoTo_time_index])
+                    {
+                        estimated_GoTo_time_history[estimated_GoTo_time_index] = estimated_GoTo_time;
+                        estimated_GoTo_time_index++;
+
+                        if(estimated_GoTo_time_index == 5)
+                        {
+                            /* Finish node with error,
+                             * this way the current node will be retried if it's more attractive again */
+                            retval = FUNC_INCOMPLETE_HEAVY;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        estimated_GoTo_time_index = 0;
+                        estimated_GoTo_time_history[estimated_GoTo_time_index] = 0;
                     }
 
                     /* Check if an enemy/confederate is within range in front of the robot */
