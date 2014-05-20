@@ -21,15 +21,15 @@
 
 
 /* exported define ------------------------------------------------------------*/
-#define FIREPOOL_APPROACHDISTANCE               400 /* Distance in mm to drive from the fire-pool node point to the pool */
+#define FIREPOOL_APPROACHDISTANCE               300 /* Distance in mm to drive from the fire-pool node point to the pool */
 #define FIRE_POOL_DELTA_GO                      50
 #define FIRE_POOL_APPROACH_SPEED                40 /* Speed in percent to drive from node point to pool */
 #define FIRE_POOL_TRANSIT_SPEED                 80
 #define FIRE_POOL_APPROACH_TIME                 5000 /* Time in ms to wait while driving to pool */
 #define FIRE_POOL_DRIVECHECK_DELAY              10
 #define FIRE_POOL_NODE_SPEED                    100
-#define ANGLE_TURN_LEFT                         0
-#define ANGLE_TURN_RIGHT                        180
+#define ANGLE_TURN_RED                         	0
+#define ANGLE_TURN_YELLOW                       180
 
 
 /* servos */

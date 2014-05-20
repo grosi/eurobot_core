@@ -137,6 +137,8 @@ void doFirePoolNode(node_param_t* param, volatile game_state_t* game_state)
     /* reset barrier */
     game_state->barrier &= ~(GOTO_FIRE_POOL_1_FORCE | GOTO_FIRE_POOL_2_FORCE);
 
+    /* put the sucker up */
+   	placeSucker(SERVO_POS_AIR_UP);
 
     /* try to get the fire-pool */
 	if(takePool(param->x, param->y - (FIREPOOL_APPROACHDISTANCE + FIRE_POOL_DELTA_GO), param->angle, game_state))
@@ -144,14 +146,45 @@ void doFirePoolNode(node_param_t* param, volatile game_state_t* game_state)
 	    /* put the sucker up */
 	    placeSucker(SERVO_POS_AIR_UP);
 
-	    /* turn right if Team yellow, left if team red */
+	    /* turn to the heart of fire if Team yellow */
 	    if(game_state->teamcolor == TEAM_YELLOW)
 	    {
-	        checkDrive(param->x, param->y - (FIREPOOL_APPROACHDISTANCE + FIRE_POOL_DELTA_GO), ANGLE_TURN_RIGHT, FIRE_POOL_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state);
+	    	/* if not possible drive back and place fire on the ground */
+	        if(checkDrive(param->x + FIRE_POOL_DELTA_GO, param->y - FIREPOOL_APPROACHDISTANCE, ANGLE_TURN_YELLOW, FIRE_POOL_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state) != FUNC_SUCCESS)
+	       	{
+
+	        /* Drive 5 cm backwards */
+	        while(checkDrive(param->x, param->y, param->angle, HEART_OF_FIRE_DRIVE_SPEED, GOTO_DRIVE_BACKWARD, game_state) != FUNC_SUCCESS);
+	        /* Drive 5 cm backwards */
+	        while(checkDrive(param->x, param->y, param->angle, HEART_OF_FIRE_DRIVE_SPEED, GOTO_DRIVE_BACKWARD, game_state) != FUNC_SUCCESS);
+
+	        /* place the fire where the robot stopped */
+	        setAir(AIR_OFF);
+
+	        param->node_state = NODE_FINISH_SUCCESS;
+	        return;
+
+	    	}
 	    }
+	    /* turn to the heart of fire if Team red */
 	    else
 	    {
-	        checkDrive(param->x, param->y - (FIREPOOL_APPROACHDISTANCE + FIRE_POOL_DELTA_GO), ANGLE_TURN_LEFT, FIRE_POOL_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state);
+	    	/* if not possible drive back and place fire on the ground */
+	        if(checkDrive(param->x - FIRE_POOL_DELTA_GO, param->y - FIREPOOL_APPROACHDISTANCE, ANGLE_TURN_RED, FIRE_POOL_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state) != FUNC_SUCCESS)
+	        {
+
+	        /* Drive 5 cm backwards */
+			while(checkDrive(param->x, param->y, param->angle, HEART_OF_FIRE_DRIVE_SPEED, GOTO_DRIVE_BACKWARD, game_state) != FUNC_SUCCESS);
+			/* Drive 5 cm backwards */
+			while(checkDrive(param->x, param->y, param->angle, HEART_OF_FIRE_DRIVE_SPEED, GOTO_DRIVE_BACKWARD, game_state) != FUNC_SUCCESS);
+
+			/* place the fire where the robot stopped */
+			setAir(AIR_OFF);
+
+			param->node_state = NODE_FINISH_SUCCESS;
+			return;
+
+	        }
 	    }
 
         /* drive before the heart of fire in the middle */

@@ -49,21 +49,13 @@
  */
 void doFireNode(node_param_t* param, volatile game_state_t* game_state)
 {
-	/* Don't continue if an other robot is in front */
-    //TODO not necessary anymore  :-) */
-	if(isRobotInRange(game_state, FALSE))
-	{
-		param->node_state = NODE_FINISH_ERROR;
-		return;
-	}
+	 /* put the sucker up */
+	placeSucker(SERVO_FIRE_POS_UP);
 
 	/* reset current barrier flag */
 	taskENTER_CRITICAL();
 	switch(param->id)
 	{
-	case 1:
-        game_state->barrier &= ~(GOTO_FIRE_1_FORCE | GOTO_FIRE_1 | GOTO_FIRE_2_FORCE | GOTO_FIRE_2);
-        break;
 	case 2:
 	    game_state->barrier &= ~(GOTO_FIRE_3_FORCE | GOTO_FIRE_3 | GOTO_FIRE_4_FORCE | GOTO_FIRE_4);
         break;
@@ -73,8 +65,14 @@ void doFireNode(node_param_t* param, volatile game_state_t* game_state)
 	}
 	taskEXIT_CRITICAL();
 
+	if(param->id == 1)
+	{
+		/* node complete */
+		param->node_state = NODE_FINISH_SUCCESS;
+		return;
+	}
 
-    /* Move the sucker servo down a bit, step by step */
+	/* Move the sucker servo down a bit, step by step */
 	placeSucker(SERVO_FIRE_POS_DOWN);
 
     /* Drive through fire from NORTH */

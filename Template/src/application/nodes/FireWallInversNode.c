@@ -58,6 +58,9 @@ void doFireWallInversNode(node_param_t* param, volatile game_state_t* game_state
 	game_state_t game_state_copy = *game_state;
 	taskEXIT_CRITICAL();
 
+	/* put the sucker up */
+	placeSucker(SERVO_POS_UP);
+
 	/* Move the sucker servo down a bit, step by step */
 	placeSucker(SERVO_POS_AIR_WALL_INVERSE);
 
@@ -113,6 +116,9 @@ void doFireWallInversNode(node_param_t* param, volatile game_state_t* game_state
 	{
 		/* Move sucker down */
 		placeSucker(SERVO_POS_UP);
+
+		/* Drive 5 cm backwards */
+		while(checkDrive(param->x, param->y, param->angle, FIRE_WALL_INVERS_NODE_SPEED, GOTO_DRIVE_BACKWARD, game_state) != FUNC_SUCCESS);
 
 		/* Drive 5 cm backwards */
 		while(checkDrive(param->x, param->y, param->angle, FIRE_WALL_INVERS_NODE_SPEED, GOTO_DRIVE_BACKWARD, game_state) != FUNC_SUCCESS);

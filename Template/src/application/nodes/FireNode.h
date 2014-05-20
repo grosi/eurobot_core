@@ -22,6 +22,7 @@
 
 /* exported define ------------------------------------------------------------*/
 #define FIRE_APPROACH_DISTANCE      400
+#define FIRE1_APPROACH_DISTANCE		250
 #define FIRE_NODE_DELTA_GO          (FIRE_APPROACH_DISTANCE) /*!< [mm] */
 #define FIRE_NODE_SPEED             100 /*!< [%] */
 #define FIRE_NODE_DRIVE_DELAY       1200
