@@ -17,6 +17,9 @@
 #ifndef NODEMISC_H_
 #define NODEMISC_H_
 
+/* Includes -------------------------------------------------------------------*/
+#include "NodeConfig.h"  /* For game_state_t */
+
 /* exported typedef -----------------------------------------------------------*/
 
 

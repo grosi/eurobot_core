@@ -16,8 +16,8 @@
 /* Includes ------------------------------------------------------------------*/
 /* application */
 #include "../AppConfig.h"
-#include "../CANGatekeeper.h"
-#include "../system/RoboRun.h"
+#include "NodeMisc.h"
+//#include "../system/RoboRun.h"
 #include "NodeConfig.h"
 #include "FrescoNode.h"
 /* lib */
@@ -57,16 +57,16 @@ void doFrescoNode(node_param_t* param, volatile game_state_t* game_state) {
 
 	/* Drive closer to the wall, so the final goto distance is < 150 mm and
 	 * thus no route is calculated (which allows us to drive in the "forbidden" zone near the wall) */
-	txGotoXY(param->x, param->y + FRESCO_APPROACH_DISTANCE, param->angle, FRESCO_APPROACH_SPEED, game_state->barrier, GOTO_DRIVE_FORWARD, GOTO_ROUTE);
+	checkDrive(param->x, param->y + FRESCO_APPROACH_DISTANCE, param->angle, FRESCO_APPROACH_SPEED, GOTO_DRIVE_FORWARD, game_state);
 
 	/* Move panel all the way out */
 	setServo_1(SERVO_POS_FRESCO_OUT);
 
-	/* Wait some time while driving and servo moves */
-	vTaskDelay(FRESCO_APPROACH_DELAY / portTICK_RATE_MS);
+//	/* Wait some time while driving and servo moves */
+//	vTaskDelay(FRESCO_APPROACH_DELAY / portTICK_RATE_MS);
 
 	/* Drive all the way to the wall */
-	txGotoXY(param->x, FRESCO_WALL_POSITION, param->angle, FRESCO_WALL_SPEED, game_state->barrier, GOTO_DRIVE_FORWARD, GOTO_ROUTE);
+	checkDrive(param->x, FRESCO_WALL_POSITION, param->angle, FRESCO_WALL_SPEED, GOTO_DRIVE_FORWARD, game_state);
 
 	volatile uint16_t approach_counter = 0;
 	while(!getSensor_Fresco_Wall() && approach_counter < FRESCO_WALL_TIME) {
@@ -113,8 +113,8 @@ void doFrescoNode(node_param_t* param, volatile game_state_t* game_state) {
 	    vTaskDelay(SERVO_MOVING_DELAY / portTICK_RATE_MS);
 	}
 
-    /* drive backwards (defined 50 mm by drive system) */
-    txGotoXY(IGNORED_VALUE, IGNORED_VALUE, IGNORED_VALUE, FRESCO_WALL_SPEED, IGNORED_VALUE, GOTO_DRIVE_BACKWARD, GOTO_ROUTE);
+    /* drive backwards (distance defined by drive system, currently 50 mm) */
+    checkDrive(IGNORED_VALUE, IGNORED_VALUE, IGNORED_VALUE, FRESCO_WALL_SPEED, GOTO_DRIVE_BACKWARD, game_state);
     /* wait while driving backwards */
     vTaskDelay(2000 / portTICK_RATE_MS);  // 1s is too short, TODO: evaluate why even necessary
 

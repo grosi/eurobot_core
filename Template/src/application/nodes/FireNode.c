@@ -17,7 +17,7 @@
 /* application */
 #include "../AppConfig.h"
 #include "../Rangefinder.h"
-#include "../CANGatekeeper.h"
+#include "NodeMisc.h"
 #include "NodeConfig.h"
 #include "FireNode.h"
 
@@ -88,26 +88,26 @@ void doFireNode(node_param_t* param, volatile game_state_t* game_state)
     /* Drive through fire from NORTH */
     if(param->angle >= NODE_NORTH_MIN_ANGLE && param->angle <= NODE_NORTH_MAX_ANGLE)
     {
-        txGotoXY(param->x, param->y-FIRE_NODE_DELTA_GO, param->angle, FIRE_NODE_SPEED, game_state_copy.barrier, GOTO_DRIVE_FORWARD, GOTO_ROUTE);
+        checkDrive(param->x, param->y - FIRE_NODE_DELTA_GO, param->angle, FIRE_NODE_SPEED, GOTO_DRIVE_FORWARD, &game_state_copy);
     }
     /* Drive through fire from EAST */
     else if(param->angle >= NODE_EAST_MIN_ANGLE && param->angle <= NODE_EAST_MAX_ANGLE)
     {
-        txGotoXY(param->x-FIRE_NODE_DELTA_GO, param->y, param->angle, FIRE_NODE_SPEED, game_state_copy.barrier, GOTO_DRIVE_FORWARD, GOTO_ROUTE);
+        checkDrive(param->x - FIRE_NODE_DELTA_GO, param->y, param->angle, FIRE_NODE_SPEED, GOTO_DRIVE_FORWARD, &game_state_copy);
     }
     /* Drive through fire from SOUTH */
     else if(param->angle >= NODE_SOUTH_MIN_ANGLE && param->angle <= NODE_SOUTH_MAX_ANGLE)
     {
-        txGotoXY(param->x, param->y+FIRE_NODE_DELTA_GO, param->angle, FIRE_NODE_SPEED, game_state_copy.barrier, GOTO_DRIVE_FORWARD, GOTO_ROUTE);
+        checkDrive(param->x, param->y + FIRE_NODE_DELTA_GO, param->angle, FIRE_NODE_SPEED, GOTO_DRIVE_FORWARD, &game_state_copy);
     }
     /* Drive through fire from WEST */
     else
     {
-        txGotoXY(param->x+FIRE_NODE_DELTA_GO, param->y, param->angle, FIRE_NODE_SPEED, game_state_copy.barrier, GOTO_DRIVE_FORWARD, GOTO_ROUTE);
+        checkDrive(param->x + FIRE_NODE_DELTA_GO, param->y, param->angle, FIRE_NODE_SPEED, GOTO_DRIVE_FORWARD, &game_state_copy);
     }
 
-    /* Wait while driving */
-	vTaskDelay(FIRE_NODE_DRIVE_DELAY / portTICK_RATE_MS);
+//    /* Wait while driving */
+//	vTaskDelay(FIRE_NODE_DRIVE_DELAY / portTICK_RATE_MS);
 
     /* Put seperation in after driving through the fire */
 	setServo_1(SERVO_POS_FRESCO_IN);

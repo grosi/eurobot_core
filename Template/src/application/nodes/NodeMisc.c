@@ -21,7 +21,6 @@
 #include "../AppConfig.h"
 #include "../Rangefinder.h"
 #include "../CANGatekeeper.h"
-#include "NodeConfig.h"
 #include "NodeMisc.h"
 
 /* lib */
