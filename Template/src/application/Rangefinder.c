@@ -1,32 +1,34 @@
 /**
  * \file    Rangefinder.c
  * \author  kasen1
- * \date    2013-04-13
+ * \date    2013-05-20
  *
+ * \version 2.0a
+ *  - Changed all distances from cm to mm
+ *  - Updated navigation comparing function with option to check backwards
  * \version 1.3
  *  - Added function to compare rangefinder with navigation informations
  *  - Releasing semaphore on i2c error for safety reason
- *  - Software tested (13.05.2014)
+ *  - Version tested (2013-05-13)
  * \version 1.2
  *  - IR sensors in new arrangement
  *  - Added flag for separation blocked alarm
  *  - Added option to only use forward rangefinder by defining RANGEFINDER_ONLY_FW
  *  - Task is suspended at beginning, so ultrasonic only running when really used
  *  - Semaphore for synchronising with node task added (not in test protocol, but is tested)
- *  - Software tested (01.05.2014)
+ *  - Version tested (2013-05-01)
  * \version 1.1
  *  - Changed implementation of IR detection to external interrupt
  *  - Implemented comparison of last three US measures
  *  - Fixed I2C error, where the bus was always busy after disconnecting a slave
- *  - Software tested (12.03.2014)
+ *  - Version tested (2013-03-12)
  * \version 1.0
- *  Software tested (14.01.2014)
+ *  - Implemented first version
+ *  - Version tested (2013-01-14)
  * \version 0.1
- *  Import from template (14.01.2014)
+ *  - Import from template (2013-01-14)
  *
  * \brief    task for the rangefinder sensors
- *
- * \todo     Unit test for version 1.2 on robot
  *
  * \defgroup rangefinder Rangefinder
  * \brief    Rangefinder task
@@ -79,8 +81,8 @@
 #define SRF08_ANN_US    0x55            /* Measure in micro-seconds (ANN mode) */
 
 /* Robot information */
-#define ROBOT_BALLERINA_RADIUS  120  /* Distance from nose to center (navigation) in mm */
-#define ROBOT_B52_RADIUS        230  /* Distance from nose to center (navigation) in mm */
+#define ROBOT_OUR_RADIUS           230  /* Distance from nose to center (navigation) in mm */
+#define ROBOT_CONFEDERATE_RADIUS   120  /* Distance from nose to center (navigation) in mm */
 
 
 /* Private variables ---------------------------------------------------------*/
@@ -642,92 +644,104 @@ void suspendRangefinderTask(void) {
 
 
 /**
- * \fn          isRobotInFront
- * \brief       Function to check if an enemy/confederate is in front of robot within range
+ * \fn          isRobotInRange
+ * \brief       Function to check if an enemy/confederate is in front/front of robot within range
  *
  * \param[in]   game_state_t* game_state Game infos (navi)
- * \return      boolean
+ * \retval      0 robot is not in range
+ * \retval      1...    robot is in range
  */
-boolean isRobotInFront(volatile game_state_t* game_state) {
+uint16_t isRobotInRange(volatile game_state_t* game_state, boolean in_back) {
 
     /* local variables */
     int16_t delta_x, delta_y;
-    uint16_t distance, distance_treshold;
+    uint16_t distance, distance_offset;
     int16_t alpha, phi;
 
-	/* Copy current game state, so it wont be changed during calculation */
-	taskENTER_CRITICAL();
-	game_state_t game_state_copy = *game_state;
-	taskEXIT_CRITICAL();
+    /* Copy current game state, so it wont be changed during calculation */
+    taskENTER_CRITICAL();
+    game_state_t game_state_copy = *game_state;
+    taskEXIT_CRITICAL();
 
-	/* Check 0, 1 or both enemies */
-	int8_t current_robot_check;  /* Signed, so in worst case it starts on negative numbers and thus still does the loop */
-	for(current_robot_check = 1-game_state_copy.confederate_count;  /* Start on 0 if we have a confederate robot */
-			current_robot_check <= game_state_copy.enemy_count; current_robot_check++)
-	{
-		/* Get deltas and distance for current robot */
-		/* If we have a confederate robot, the counting starts with 0 */
-		if(current_robot_check == 0) {
+    /* Check 0, 1 or both enemies */
+    int8_t current_robot_check;  /* Signed, so in worst case it starts on negative numbers and thus still does the loop */
+    for(current_robot_check = 1-game_state_copy.confederate_count;  /* Start on 0 if we have a confederate robot */
+            current_robot_check <= game_state_copy.enemy_count; current_robot_check++)
+    {
+        /* Get deltas and distance for current robot */
+        /* If we have a confederate robot, the counting starts with 0 */
+        if(current_robot_check == 0) {
 
-			if(game_state_copy.confederate_x == 0 || game_state_copy.confederate_y == 0)
-			{
-				continue;
-			}
-			delta_x = game_state_copy.confederate_x - game_state_copy.x;
-			delta_y = game_state_copy.confederate_y - game_state_copy.y;
-			distance_treshold = ROBOT_B52_RADIUS + ROBOT_BALLERINA_RADIUS + RANGEFINDER_THRESHOLD_FW*10;
-		}
-		/* Enemies always start with 1 */
-		else if(current_robot_check == 1) {
+            if(game_state_copy.confederate_x == 0 || game_state_copy.confederate_y == 0)
+            {
+                continue;
+            }
+            delta_x = game_state_copy.confederate_x - game_state_copy.x;
+            delta_y = game_state_copy.confederate_y - game_state_copy.y;
+            distance_offset = ROBOT_CONFEDERATE_RADIUS + ROBOT_OUR_RADIUS;
+        }
+        /* Enemies always start with 1 */
+        else if(current_robot_check == 1) {
 
-			if(game_state_copy.enemy_1_x == 0 || game_state_copy.enemy_1_y == 0)
-			{
-				continue;
-			}
-			delta_x = game_state_copy.enemy_1_x - game_state_copy.x;
-			delta_y = game_state_copy.enemy_1_y - game_state_copy.y;
-			distance_treshold = game_state_copy.enemy_1_diameter*10/2 + ROBOT_BALLERINA_RADIUS + RANGEFINDER_THRESHOLD_FW*10;
-		}
-		else if(current_robot_check == 2) {
+            if(game_state_copy.enemy_1_x == 0 || game_state_copy.enemy_1_y == 0)
+            {
+                continue;
+            }
+            delta_x = game_state_copy.enemy_1_x - game_state_copy.x;
+            delta_y = game_state_copy.enemy_1_y - game_state_copy.y;
+            distance_offset = game_state_copy.enemy_1_diameter/2 + ROBOT_OUR_RADIUS;
+        }
+        else if(current_robot_check == 2) {
 
-			if(game_state_copy.enemy_2_x == 0 || game_state_copy.enemy_2_y == 0)
-			{
-				continue;
-			}
-			delta_x = game_state_copy.enemy_2_x - game_state_copy.x;
-			delta_y = game_state_copy.enemy_2_y - game_state_copy.y;
-			distance_treshold = game_state_copy.enemy_2_diameter*10/2 + ROBOT_BALLERINA_RADIUS + RANGEFINDER_THRESHOLD_FW*10;
-		}
-		/* Else:
-		 *  current_robot_check > 2: (More than 2 enemies)      Not possible in eurobot 2014 scenario
-		 *  current_robot_check < 0: (More than 1 confederate)  Not possible in eurobot 2014 scenario */
+            if(game_state_copy.enemy_2_x == 0 || game_state_copy.enemy_2_y == 0)
+            {
+                continue;
+            }
+            delta_x = game_state_copy.enemy_2_x - game_state_copy.x;
+            delta_y = game_state_copy.enemy_2_y - game_state_copy.y;
+            distance_offset = game_state_copy.enemy_2_diameter/2 + ROBOT_OUR_RADIUS;
+        }
+        /* Else:
+         *  current_robot_check > 2: (More than 2 enemies)      Not possible in eurobot 2014 scenario
+         *  current_robot_check < 0: (More than 1 confederate)  Not possible in eurobot 2014 scenario */
 
-		/* Calculate distance to the enemy (mm) */
-		distance = round(sqrt(delta_x*delta_x + delta_y*delta_y));
+        /* Calculate distance to the enemy (mm) */
+        distance = round(sqrt(delta_x*delta_x + delta_y*delta_y));
 
-		/* Check if a robot is within threshold range (mm) */
-		if(distance <= distance_treshold) {
+        /* Check if a robot is within threshold range (mm) */
+        if(distance <= distance_offset + RANGEFINDER_THRESHOLD_FW) {
 
-			/* Convert angle to -180 <= alpha < 180 */
-			if(game_state_copy.angle < 180) {
-				alpha = game_state_copy.angle;
-			}
-			else {
-				alpha = game_state_copy.angle - 360;
-			}
-			/* Calculate the angle to the enemy (relative the map grid, -180 <= phi < 180) */
-			phi = round(atan2f(delta_y, delta_x)/M_PI*180);
-			/* Calculate the angle to the enemy (relative to our angle, -180 <= phi < 180) */
-			phi = phi-alpha;
+            /* Convert (0 <= angle < 360) to (-180 <= alpha < 180) */
+            if(game_state_copy.angle < 180) {
+                alpha = game_state_copy.angle;
+            }
+            else {
+                alpha = game_state_copy.angle - 360;
+            }
+            /* Calculate the angle to the enemy (relative the map grid, -180 <= phi < 180) */
+            phi = round(atan2f(delta_y, delta_x)/M_PI*180);
+            /* Calculate the angle to the enemy (relative to our angle, -180 <= phi < 180) */
+            phi = phi-alpha;
 
-			/* Check if the enemy is within our angle */
-			if(fabs(phi) <= RANGEFINDER_ANGLE) {
-				return TRUE;
-			}
-		}
-	}
+            /* If we have to check the back, rotate phi +180 */
+            if(in_back) {
+                phi += 180;
+                if(phi >= 180) {
+                    phi -= 360;
+                }
+            }
 
-	return FALSE;
+            /* Check if the enemy is within our angle */
+            if(fabs(phi) <= RANGEFINDER_ANGLE) {
+                /* Return the external distance (without radiuses) */
+                return (distance - distance_offset);
+
+                //TODO Handle bug when distance_offset >= distance (because of wrong display input)
+            }
+        }
+    }
+
+    return 0;
 }
 
 

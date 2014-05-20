@@ -73,7 +73,7 @@ void doFireNode(node_param_t* param, volatile game_state_t* game_state)
     taskEXIT_CRITICAL();
 
     /* Don't continue if an other robot is in front */
-    if(isRobotInFront(game_state)) {
+    if(isRobotInRange(game_state, FALSE)) {
 
         param->node_state = NODE_FINISH_UNSUCCESS;
         return;
