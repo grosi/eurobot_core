@@ -25,6 +25,7 @@
 #include "system/RoboRun.h"
 #include "system/RoboError.h"
 #include "System.h"
+#include "nodes/NodeMisc.h"
 
 /* lib */
 #include "../lib/display.h"

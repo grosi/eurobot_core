@@ -322,61 +322,6 @@ node_t node_fire_3_yellow =
 
 
 /**
- * \fn          initNodeResources
- * \brief       Function to initialise all the resources needed by the node task
- *
- * \TODO init sensors (incl. exti)
- *
- * \param[in]   None
- * \return      None
- */
-void initNodeResources()
-{
-	/* Initialise fresco/separation servo and set start position */
-	initServo_1();
-	setServo_1(SERVO_POS_FRESCO_IN);
-	/* Initialise launcher servo and set start position */
-	initServo_2();
-	setServo_2(SERVO_POS_LAUNCHER_LOAD);
-	setServo_2(SERVO_POS_LAUNCHER_LOAD-10);
-	/* Initialise fresco sensors */
-	initSensor_Fresco_1();
-	initSensor_Fresco_2();
-	initSensor_Fresco_Wall();
-
-	/* Create a queue and set CAN listener for GoTo ACK */
-    qGotoConfirm = xQueueCreate(GOTOCONFIRM_QUEUE_LENGTH, sizeof(CAN_data_t));
-    if(qGotoConfirm != 0) {
-    	setQueueCANListener(qGotoConfirm, GOTO_CONFIRM);
-    }
-//TODO:
-//    else {
-//    }
-
-    /* Create a queue and set CAN listener for GoTo state response */
-	qGotoStateResp = xQueueCreate(GOTOSTATERESP_QUEUE_LENGTH, sizeof(CAN_data_t));
-	if(qGotoStateResp != 0) {
-		setQueueCANListener(qGotoStateResp, GOTO_STATE_RESPONSE);
-	}
-//TODO:
-//    else {
-//    }
-}
-
-
-/**
- * \fn      setNodeConfig2Default
- * \brief   set all node actors to default.
- */
-void setNodeConfig2Default(void)
-{
-    /* servos */
-    setServo_1(SERVO_POS_FRESCO_IN);
-    setServo_2(SERVO_POS_LAUNCHER_LOAD);
-}
-
-
-/**
  * @}
  */
 

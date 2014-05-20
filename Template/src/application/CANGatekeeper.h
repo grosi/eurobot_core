@@ -149,6 +149,12 @@ typedef struct
 #define GOTO_DRIVE_FORWARD      0
 #define GOTO_DRIVE_BACKWARD     1
 
+/*
+ * \brief   drive errors
+ */
+#define GOTO_NOT_POSSIBLE_ATM  0xFFFFFF /* Message: It's not possible to go to that position at the moment */
+#define GOTO_BLOCKED_ATM       0xFFFFFE /* Message: It's blocked at the moment */
+
 
 /**
  * \brief   Possible ELP-response id's

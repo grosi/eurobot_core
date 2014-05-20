@@ -160,8 +160,6 @@ extern xQueueHandle qGotoStateResp;
 
 
 /* exported function prototypes -----------------------------------------------*/
-extern void initNodeResources(void);
-extern void setNodeConfig2Default(void);
 
 
 #endif /* NODECONFIG_H_ */
