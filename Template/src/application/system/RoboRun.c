@@ -418,8 +418,10 @@ void runRoboRunState(portTickType* tick)
         case GOTO_CAN_ERROR:
         default:
             /* error message and state change */
+#ifndef WITHOUT_USERPANEL
             LCD_write_string(MESSAGE_ERROR_ROW, MESSAGE_ERROR_COLUMN, MESSAGE_ERROR, TRUE);
             LCD_write_string(MESSAGE_RESTART_ROW, MESSAGE_RESTART_COLUMN, MESSAGE_RESTART, TRUE);
+#endif
 
             system_state = runRoboErrorState;
             return;

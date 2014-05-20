@@ -219,25 +219,25 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
                             break;
                         }
 
-                        /* Handle Drive-Node Bug */
-                        if(estimated_GoTo_time != estimated_GoTo_time_history[estimated_GoTo_time_index])
-                        {
-                            estimated_GoTo_time_history[estimated_GoTo_time_index] = estimated_GoTo_time;
-                            estimated_GoTo_time_index++;
-
-                            if(estimated_GoTo_time_index == 5)
-                            {
-                                /* Finish node with error,
-                                 * this way the current node will be retried if it's more attractive again */
-                                retval = FUNC_INCOMPLETE_HEAVY;
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            estimated_GoTo_time_index = 0;
-                            estimated_GoTo_time_history[estimated_GoTo_time_index] = 0;
-                        }
+//                        /* Handle Drive-Node Bug */
+//                        if(estimated_GoTo_time == estimated_GoTo_time_history[estimated_GoTo_time_index])
+//                        {
+//                            estimated_GoTo_time_history[estimated_GoTo_time_index] = estimated_GoTo_time;
+//                            estimated_GoTo_time_index++;
+//
+//                            if(estimated_GoTo_time_index == 5)
+//                            {
+//                                /* Finish node with error,
+//                                 * this way the current node will be retried if it's more attractive again */
+//                                retval = FUNC_INCOMPLETE_HEAVY;
+//                                break;
+//                            }
+//                        }
+//                        else
+//                        {
+//                        	//estimated_GoTo_time_index = 0;
+//							estimated_GoTo_time_history[estimated_GoTo_time_index] = estimated_GoTo_time;
+//                        }
 
                         vTaskDelay(CAN_CHECK_DELAY/portTICK_RATE_MS);
                     }
@@ -312,24 +312,24 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
                     }
 
                     /* Handle Drive-Node Bug */
-                    if(estimated_GoTo_time != estimated_GoTo_time_history[estimated_GoTo_time_index])
-                    {
-                        estimated_GoTo_time_history[estimated_GoTo_time_index] = estimated_GoTo_time;
-                        estimated_GoTo_time_index++;
-
-                        if(estimated_GoTo_time_index == 5)
-                        {
-                            /* Finish node with error,
-                             * this way the current node will be retried if it's more attractive again */
-                            retval = FUNC_INCOMPLETE_HEAVY;
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        estimated_GoTo_time_index = 0;
-                        estimated_GoTo_time_history[estimated_GoTo_time_index] = 0;
-                    }
+//					if(estimated_GoTo_time == estimated_GoTo_time_history[estimated_GoTo_time_index])
+//					{
+//						estimated_GoTo_time_history[estimated_GoTo_time_index] = estimated_GoTo_time;
+//						estimated_GoTo_time_index++;
+//
+//						if(estimated_GoTo_time_index == 5)
+//						{
+//							/* Finish node with error,
+//							 * this way the current node will be retried if it's more attractive again */
+//							retval = FUNC_INCOMPLETE_HEAVY;
+//							break;
+//						}
+//					}
+//					else
+//					{
+//						//estimated_GoTo_time_index = 0;
+//						estimated_GoTo_time_history[estimated_GoTo_time_index] = estimated_GoTo_time;
+//					}
 
                     /* Check if an enemy/confederate is within range in front of the robot */
                     range = isRobotInRange(game_state, FALSE);
