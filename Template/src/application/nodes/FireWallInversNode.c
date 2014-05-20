@@ -91,16 +91,16 @@ void doFireWallInversNode(node_param_t* param, volatile game_state_t* game_state
 
 	/* Move the sucker servo down a bit, step by step */
 	servo_pos = getServo_1(); /* Current position */
-	while(servo_pos > (SERVO_POS_AIR_WALL_INVERSE_SUCKER + SERVO_STEP) && !getSensor_Air())
+	while(servo_pos > (SERVO_POS_AIR_WALL_INVERSE_SUCKER + SERVO_WALL_INVERS_STEP) && !getSensor_Air())
 	{
 		/* Decrement servo position by step size */
-		servo_pos -= SERVO_STEP;
+		servo_pos -= SERVO_WALL_INVERS_STEP;
 
 		/* Check if it's the last step */
-		if(servo_pos < SERVO_WALL_INVERS_POS_DOWN)
+		if(servo_pos < SERVO_POS_DOWN)
 		{
 			/* Set the final servo position without over-rotating */
-			setServo_1(SERVO_WALL_INVERS_POS_DOWN);
+			setServo_1(SERVO_POS_DOWN);
 		}
 		else
 		{
@@ -108,7 +108,7 @@ void doFireWallInversNode(node_param_t* param, volatile game_state_t* game_state
 			setServo_1(servo_pos);
 		}
 		/* Wait some time while servo moves  (a bit slower)*/
-		vTaskDelay(SERVO_STEP_DELAY*10 / portTICK_RATE_MS);
+		vTaskDelay(SERVO_WALL_INVERS_STEP_DELAY*10 / portTICK_RATE_MS);
 	}
 
 	/* no fire detected */
@@ -168,7 +168,7 @@ void doFireWallInversNode(node_param_t* param, volatile game_state_t* game_state
 	setAir(AIR_OFF);
 
 	/* move sucker up */
-	placeSucker(SERVO_WALL_INVERS_POS_UP);
+	placeSucker(SERVO_POS_UP);
 
 	/* Drive 5 cm backwards */
 	while(checkDrive(param->x, param->y, param->angle, FIRE_WALL_INVERS_NODE_SPEED, GOTO_DRIVE_BACKWARD, game_state) != FUNC_SUCCESS);

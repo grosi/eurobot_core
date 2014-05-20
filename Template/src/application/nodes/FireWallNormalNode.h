@@ -23,7 +23,7 @@
 /* exported define ------------------------------------------------------------*/
 #define FIRE_WALL_NODE_DELTA_GO 	            110 	/*!< [mm] */
 #define SERVO_POS_WALL			                1755	/* Servo Position to drop fire */
-#define FIREWALL_APPROACHDISTANCE               300
+#define FIREWALL_APPROACH_DISTANCE              300
 
 #define FIRE_WALL_NORMAL_NODE_SPEED             60      /*!< [%] */
 #define FIRE_WALL_NORMAL_NODE_BARRIER           0

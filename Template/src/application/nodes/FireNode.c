@@ -49,7 +49,7 @@
  */
 void doFireNode(node_param_t* param, volatile game_state_t* game_state)
 {
-	 /* put the sucker up */
+	/* put the sucker up */
 	placeSucker(SERVO_FIRE_POS_UP);
 
 	/* reset current barrier flag */
@@ -71,36 +71,36 @@ void doFireNode(node_param_t* param, volatile game_state_t* game_state)
     /* Drive through fire from NORTH */
     if(param->angle >= NODE_NORTH_MIN_ANGLE && param->angle <= NODE_NORTH_MAX_ANGLE)
     {
-      	checkDrive(param->x, param->y-FIRE_NODE_DELTA_GO, param->angle, FIRE_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state);
+      	checkDrive(param->x, param->y - FIRE_NODE_DELTA_GO, param->angle, FIRE_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state);
     }
     /* Drive through fire from EAST */
     else if(param->angle >= NODE_EAST_MIN_ANGLE && param->angle <= NODE_EAST_MAX_ANGLE)
     {
     	if(param->id == 1)
 		{
-    		checkDrive(param->x-FIRE1_NODE_DELTA_GO, param->y, param->angle, FIRE_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state);
+    		checkDrive(param->x - FIRE1_NODE_DELTA_GO, param->y, param->angle, FIRE_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state);
 		}
     	else
     	{
-    		checkDrive(param->x-FIRE_NODE_DELTA_GO, param->y, param->angle, FIRE_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state);
+    		checkDrive(param->x - FIRE_NODE_DELTA_GO, param->y, param->angle, FIRE_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state);
     	}
 
     }
     /* Drive through fire from SOUTH */
     else if(param->angle >= NODE_SOUTH_MIN_ANGLE && param->angle <= NODE_SOUTH_MAX_ANGLE)
     {
-        checkDrive(param->x, param->y+FIRE_NODE_DELTA_GO, param->angle, FIRE_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state);
+        checkDrive(param->x, param->y + FIRE_NODE_DELTA_GO, param->angle, FIRE_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state);
     }
     /* Drive through fire from WEST */
     else
     {
     	if(param->id == 1)
     	{
-    		checkDrive(param->x+FIRE1_NODE_DELTA_GO, param->y, param->angle, FIRE_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state);
+    		checkDrive(param->x + FIRE1_NODE_DELTA_GO, param->y, param->angle, FIRE_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state);
     	}
     	else
     	{
-    		checkDrive(param->x+FIRE_NODE_DELTA_GO, param->y, param->angle, FIRE_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state);
+    		checkDrive(param->x + FIRE_NODE_DELTA_GO, param->y, param->angle, FIRE_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state);
     	}
 
     }

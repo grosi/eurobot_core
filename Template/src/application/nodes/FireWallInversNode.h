@@ -32,8 +32,6 @@
 #define SERVO_POS_AIR_PLACE					    1200
 #define SERVO_WALL_INVERS_STEP_DELAY            2
 #define SERVO_WALL_INVERS_STEP                  2
-#define SERVO_WALL_INVERS_POS_DOWN              1100
-#define SERVO_WALL_INVERS_POS_UP                1990
 
 /* drive positions */
 #define X_HEART_OF_FIRE						    1500

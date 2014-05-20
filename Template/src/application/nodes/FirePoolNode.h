@@ -21,7 +21,7 @@
 
 
 /* exported define ------------------------------------------------------------*/
-#define FIREPOOL_APPROACHDISTANCE               300 /* Distance in mm to drive from the fire-pool node point to the pool */
+#define FIREPOOL_APPROACH_DISTANCE              300 /* Distance in mm to drive from the fire-pool node point to the pool */
 #define FIRE_POOL_DELTA_GO                      50
 #define FIRE_POOL_APPROACH_SPEED                40 /* Speed in percent to drive from node point to pool */
 #define FIRE_POOL_TRANSIT_SPEED                 80

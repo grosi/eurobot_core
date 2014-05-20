@@ -83,7 +83,7 @@ static uint8_t takePool(uint16_t x, uint16_t y, uint16_t angle, volatile game_st
         {
             /* Move the sucker servo down a bit, step by step */
             servo_pos = getServo_1(); /* Current position */
-            while(servo_pos > (SERVO_POS_AIR_DOWN+SERVO_AIR_STEP) && !getSensor_Air())
+            while(servo_pos > (SERVO_POS_AIR_DOWN + SERVO_AIR_STEP) && !getSensor_Air())
             {
                 /* Decrement servo position by step size */
                 servo_pos -= SERVO_AIR_STEP;
@@ -141,7 +141,7 @@ void doFirePoolNode(node_param_t* param, volatile game_state_t* game_state)
    	placeSucker(SERVO_POS_AIR_UP);
 
     /* try to get the fire-pool */
-	if(takePool(param->x, param->y - (FIREPOOL_APPROACHDISTANCE + FIRE_POOL_DELTA_GO), param->angle, game_state))
+	if(takePool(param->x, param->y - (FIREPOOL_APPROACH_DISTANCE + FIRE_POOL_DELTA_GO), param->angle, game_state))
     {
 	    /* put the sucker up */
 	    placeSucker(SERVO_POS_AIR_UP);
@@ -150,7 +150,7 @@ void doFirePoolNode(node_param_t* param, volatile game_state_t* game_state)
 	    if(game_state->teamcolor == TEAM_YELLOW)
 	    {
 	    	/* if not possible drive back and place fire on the ground */
-	        if(checkDrive(param->x + FIRE_POOL_DELTA_GO, param->y - FIREPOOL_APPROACHDISTANCE, ANGLE_TURN_YELLOW, FIRE_POOL_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state) != FUNC_SUCCESS)
+	        if(checkDrive(param->x + FIRE_POOL_DELTA_GO, param->y - FIREPOOL_APPROACH_DISTANCE, ANGLE_TURN_YELLOW, FIRE_POOL_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state) != FUNC_SUCCESS)
 	       	{
 
 	        /* Drive 5 cm backwards */
@@ -170,7 +170,7 @@ void doFirePoolNode(node_param_t* param, volatile game_state_t* game_state)
 	    else
 	    {
 	    	/* if not possible drive back and place fire on the ground */
-	        if(checkDrive(param->x - FIRE_POOL_DELTA_GO, param->y - FIREPOOL_APPROACHDISTANCE, ANGLE_TURN_RED, FIRE_POOL_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state) != FUNC_SUCCESS)
+	        if(checkDrive(param->x - FIRE_POOL_DELTA_GO, param->y - FIREPOOL_APPROACH_DISTANCE, ANGLE_TURN_RED, FIRE_POOL_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state) != FUNC_SUCCESS)
 	        {
 
 	        /* Drive 5 cm backwards */

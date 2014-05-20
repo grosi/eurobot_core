@@ -76,7 +76,6 @@ void doFireWallNormalNode(node_param_t* param, volatile game_state_t* game_state
     /* Drive over fire from WEST */
     else
     {
-
     	checkDrive(param->x+FIRE_WALL_NODE_DELTA_GO, param->y, param->angle, FIRE_WALL_NORMAL_NODE_SPEED, GOTO_DRIVE_FORWARD, game_state);
     }
 
