@@ -273,6 +273,36 @@ void setConfigRoboRunState2Default()
 
 
 /**
+ * \fn      setFunnyBreak
+ * \brief   for funny action barrier
+ * \note    do not call this function from a ISR!
+ */
+void setFunnyBreak()
+{
+    taskENTER_CRITICAL(); /* for more safety */
+
+    /* give the node-task semaphore free */
+    xSemaphoreGive(sSyncRoboRunNodeTask);
+
+    /* delete first, then recreate*/
+    if(xNodeTask_Handle != NULL)
+    {
+        vTaskDelete(xNodeTask_Handle);
+        xTaskCreate(vNodeTask, ( signed char * ) SYSTEM_NODE_TASK_NAME,
+                    SYSTEM_NODE_STACK_SIZE, NULL, SYSTEM_NODE_TASK_PRIORITY, &xNodeTask_Handle );
+        /* suspend the node task until they will used */
+        vTaskSuspend(xNodeTask_Handle);
+        /* take semaphore here, because the node-task will empty at the beginning */
+        //xSemaphoreTake(sSyncRoboRunNodeTask,0);
+
+    }
+
+    taskEXIT_CRITICAL();
+}
+
+
+
+/**
  * \fn      runRoboRunState
  * \brief   most important state of whole system.
  *

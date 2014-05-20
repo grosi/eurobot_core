@@ -67,7 +67,6 @@ void runRoboRunExtendState(portTickType* tick)
 	vTaskDelay(1000 /portTICK_RATE_MS);
 	setServo_2(SERVO_POS_NET_LAUNCH);
     vTaskDelay(4000/portMAX_DELAY);
-    //setServo_2(SERVO_POS_NET_LOAD);
 
     txEmergencyStop(0);
     /* this fucking shit doesn't work!!! */

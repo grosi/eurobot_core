@@ -23,6 +23,7 @@
 #include "CANGatekeeper.h"
 #include "System.h"
 #include "Timer.h"
+#include "system/RoboRun.h"
 
 
 /* Private typedef -----------------------------------------------------------*/
@@ -72,6 +73,12 @@ void initGameTimer(void)
  */
 void vGameTimerCallback(xTimerHandle pxTimer)
 {
+    /* funny action break */
+    if(elapsedTime == TIMER_FUNNY_TIME)
+    {
+        setFunnyBreak();
+    }
+
     /* Check if the time is up */
     if(elapsedTime == TIMER_STOP_TIME - 1)
     {
