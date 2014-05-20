@@ -119,11 +119,6 @@ uint8_t distance2speed(uint16_t distance, uint8_t max_speed)
     {
         speed = max_speed;
     }
-    /* Handle safety offset */
-    if(distance <= 50)  //TODO DIST_OFFSET
-    {
-        speed = 0;
-    }
 
     return speed;
 }
@@ -294,7 +289,7 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
 
                         /* Drive forward with speed relative to the range */
                         uint8_t calc_speed = distance2speed(range, speed);
-                        if(calc_speed <= 25)
+                        if(calc_speed <= 25)  //TODO: ROBO_SAFETY_DIST
                         {
                             /* STOPP */
                             txStopDrive();
@@ -311,7 +306,7 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
 							if(driveGoto(x, y, angle, speed, GOTO_DRIVE_BACKWARD, GOTO_ROUTE, game_state))
 							{
 								/* Wait while driving */
-								vTaskDelay(1500 / portTICK_RATE_MS);  //TODO: ROBO_AVERAGE_SPEED
+								vTaskDelay(1500 / portTICK_RATE_MS);  //TODO: ROBO_BACKWARD_TIME
 							}
 							else
 							{
@@ -377,7 +372,7 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
             if(driveGoto(x, y, angle, speed, direction, GOTO_NO_ROUTE, game_state))
             {
                 /* Wait while driving */
-                vTaskDelay((1500) / portTICK_RATE_MS);  //TODO: ROBO_AVERAGE_SPEED
+                vTaskDelay(1500 / portTICK_RATE_MS);  //TODO: ROBO_BACKWARD_TIME
                 retval = FUNC_SUCCESS;
             }
             else
