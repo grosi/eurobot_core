@@ -46,7 +46,7 @@
 extern void initNodeResources(void);
 extern void setNodeConfig2Default(void);
 extern uint8_t checkDrive(uint16_t, uint16_t, uint16_t, uint8_t, uint8_t, volatile game_state_t*);
-extern uint8_t driveGoto(uint16_t, uint16_t, uint16_t, uint8_t, uint8_t, volatile game_state_t*);
+extern uint8_t driveGoto(uint16_t, uint16_t, uint16_t, uint8_t, uint8_t, uint8_t, volatile game_state_t*);
 extern void placeSucker(uint16_t);
 
 
