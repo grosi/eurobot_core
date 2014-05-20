@@ -649,121 +649,30 @@ static void vTrackEnemy(uint16_t id, CAN_data_t* data)
  *
  * \param[in]   node_param_t* param Node infos
  * \param[in]   game_state_t* game_state Game infos (navi)
- * \return      func_report (FUNC_SUCCESS, FUNC_INCOMPLETE or FUNC_ERROR)
+ *
+ * \retval     func_report (FUNC_SUCCESS, FUNC_INCOMPLETE_LIGHT, FUNC_INCOMPLETE_HEAVY or FUNC_ERROR)
  */
 func_report_t gotoNode(node_param_t* param, volatile game_state_t* game_state)
 {
-	/* Variables for calculating drive distance */
-	int16_t delta_x, delta_y;
-	uint16_t distance;
-
-    /* Variable for CAN RX */
-    CAN_data_t CAN_buffer;
-    uint8_t CAN_ok = pdFALSE;
-
-    /* Copy current game state, so it wont be changed during calculation */
-    taskENTER_CRITICAL();
-    game_state_t game_state_copy = *game_state;
-    taskEXIT_CRITICAL();
-
-    /* Variable to store estimated GoTo time received from drive system (24 Bit, 1 Bit ca. 1 ms) */
-    uint32_t estimated_GoTo_time = 0;
-
-	/* If distance is to small, the drive system doesn't calculate a route and thus doesn't check if an enemy
-	 * blocks the path. We have to check this here, else we start drive until the rangefinder reports an enemy. */
-	delta_x = param->x - game_state_copy.x;
-	delta_y = param->y - game_state_copy.y;
-	distance = round(sqrt(delta_x*delta_x + delta_y*delta_y));
-	/* Don't continue if distance is to small for route calculation (+50 mm overhead) and robot in front */
-	if(distance <= DRIVE_ROUTE_DIST_MIN + 50 && isRobotInRange(game_state, FALSE)) {
-		return FUNC_INCOMPLETE_LIGHT;
-	}
-
-    /* Activate rangefinder */
-	vTaskResume(xRangefinderTask_Handle);
-
-	uint8_t i=0;
-	do {
-
-		i++;
-
-        txGotoXY(param->x, param->y, param->angle, GOTO_DEFAULT_SPEED, game_state_copy.barrier, GOTO_DRIVE_FORWARD);
-
-		/* Receive GoTo confirmation */
-		CAN_ok = xQueueReceive(qGotoConfirm, &CAN_buffer, GOTO_ACK_DELAY / portTICK_RATE_MS);
-
-	/* Retry if no transmission confirmed received and another retry is allowed */
-	} while((CAN_ok != pdTRUE) && (i <= GOTO_NACK_MAX_RETRIES));
-
-	/* If still no GoTo confirmation was received, report error */
-	if(CAN_ok != pdTRUE) {
 //TODO
-//	    /* Suspend rangefinder safely */
-//        suspendRangefinderTask();
-//
-//		return FUNC_ERROR;
+//    /* Activate rangefinder */
+//	vTaskResume(xRangefinderTask_Handle);
+
+	func_report_t retval = checkDrive(param->x, param->y, param->angle, GOTO_DEFAULT_SPEED, GOTO_DRIVE_FORWARD, game_state);
+
+//TODO
+//	/* Suspend rangefinder safely */
+//	suspendRangefinderTask();
+
+	//TODO! Just for debug
+	if(retval != FUNC_ERROR)
+	{
+		return retval;
 	}
-
-	estimated_GoTo_time = 0;
-	do {
-		/* Wait at least GOTO_STATERESP_DELAY before asking for goto time for the first time,
-		 * else we may get the old time */
-		if(estimated_GoTo_time < GOTO_STATERESP_DELAY) {
-			vTaskDelay(GOTO_STATERESP_DELAY / portTICK_RATE_MS);
-		}
-		/* Ask drive system for GoTo state */
-		txGotoStateRequest();
-		/* Receive the GoTo state response */
-		CAN_ok = xQueueReceive(qGotoStateResp, &CAN_buffer, GOTO_STATERESP_TIMEOUT / portTICK_RATE_MS);
-		/* Check if time out */
-		if(CAN_ok != pdTRUE) {
-
-			/* Drive system didn't answer within specified time, use to default time */
-		    //TODO breakout
-			estimated_GoTo_time = GOTO_DEFAULT_TIME;
-		}
-		else {
-
-			/* Extract time */
-			estimated_GoTo_time = CAN_buffer.state_time;  /* In ms */
-			/* Handle "goto not possible at the moment" message */
-			if(estimated_GoTo_time == GOTO_NOT_POSSIBLE_ATM || estimated_GoTo_time == GOTO_BLOCKED_ATM) {
-
-				/* Suspend rangefinder safely */
-				suspendRangefinderTask();
-
-				return FUNC_INCOMPLETE_HEAVY;
-			}
-		}
-
-		/* Try to take semaphore from rangefinder task, use estimated time from drive system as timeout */
-		if(estimated_GoTo_time != 0 && xSemaphoreTake(sSyncNodeTask, estimated_GoTo_time / portTICK_RATE_MS) == pdTRUE)
-		{
-			/* Semaphore received, this means an obstacle was detected! */
-			
-			/* Check if an enemy/confederate is within range in front of the robot */
-			if(isRobotInRange(game_state, FALSE)) {
-
-				/* STOPP */
-				txStopDrive();
-
-				/* Suspend rangefinder safely */
-				suspendRangefinderTask();
-
-				return FUNC_INCOMPLETE_LIGHT;
-			}
-
-			/* Semaphore is always only given by rangefinder task and always only taken by node task,
-			 * so we don't have to give it back here */
-		}
-
-	/* Repeat while not at target destination */
-	} while(estimated_GoTo_time != 0);
-
-	/* Suspend rangefinder safely */
-	suspendRangefinderTask();
-
-	return FUNC_SUCCESS;
+	else
+	{
+		return FUNC_INCOMPLETE_HEAVY;
+	}
 }
 
 
