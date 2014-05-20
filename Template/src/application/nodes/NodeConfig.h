@@ -50,7 +50,7 @@ typedef struct
     uint16_t enemy_2_y;         /*!< 0xFFFF = no enemy 2 or error */
     uint16_t  enemy_2_diameter;  /*!< 0 = no enemy 2 [mm] */
 
-    uint8_t  confederate_count; /*!< Number of confederate: 0, 1 or 2 */
+    uint8_t  confederate_count; /*!< Number of confederate: 0 or 1 */
     uint16_t confederate_x;     /*!< 0xFFFF = no confederate or error */
     uint16_t confederate_y;     /*!< 0xFFFF = no confederate or error */
 
@@ -70,7 +70,7 @@ typedef struct
     const uint16_t x; /*!<[mm]*/
     const uint16_t y; /*!<[mm]*/
     const uint8_t pool_id;
-    const uint16_t angle; /*10 bit, 1 bit =ca. 1°*/
+    const uint16_t angle; /*10 bit, 1 bit =ca. 1ï¿½*/
     uint16_t node_tries; /*!< how many times the node was the current node*/
     node_state_t node_state;
 }node_param_t;
