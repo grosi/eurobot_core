@@ -82,10 +82,6 @@ int main(void)
     /* Configure the NVIC Preemption Priority Bits for STM-Lib V3.1+ */
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 
-#ifdef DEBUGGIN_WITH_USART
-	initUSART();
-#endif
-
     /* module initialization */
     initGameTimer();
     initELPTimer();
@@ -93,6 +89,12 @@ int main(void)
     initRangefinderTask();
     initDefaultTask();
     initCANGatekeeper(); /* have to be the last initialization modul! */
+
+#ifdef DEBUGGIN_WITH_USART
+    initUSART();
+    char buffer[] = "\nInit\n";
+    sendStringUSART(buffer);
+#endif
 
     vTaskStartScheduler();
 

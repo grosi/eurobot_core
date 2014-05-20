@@ -539,15 +539,6 @@ void runRoboRunState(portTickType* tick)
             {
                 weight_next_node = weight_total;
                 next_node = nodes_game[node_count];
-
-#ifdef DEBUGGIN_WITH_USART
-                /* Send id of next node via USART */
-                char buffer[5];
-                itoa(node_count, buffer, 10);
-                sendStringUSART(buffer);
-                sendCharacterUSART(',');
-                sendCharacterUSART(' ');
-#endif
             }
         }
     }
@@ -709,6 +700,16 @@ static void vNodeTask(void* pvParameters )
     /* endless */
     for(;;)
     {
+#ifdef DEBUGGIN_WITH_USART
+        /* Send id of next node via USART */
+        taskENTER_CRITICAL();
+        char buffer[5];
+        itoa(node_task->param.id, buffer, 10);
+        sendStringUSART(buffer);
+        sendCharacterUSART('\n');
+        taskEXIT_CRITICAL();
+#endif
+
     	/* Give goto command */
     	func_report_t gotoNode_report = gotoNode(&node_task->param, &game_state);
 

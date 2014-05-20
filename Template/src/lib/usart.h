@@ -55,6 +55,7 @@ typedef void (*CANRxCatch_t)(CanRxMsg); /* function-handler to application-area 
 extern void initUSART(void);
 extern void sendCharacterUSART(char);
 extern void sendStringUSART(char*);
+extern char* itoa(int, char*, int);
 
 
 #endif /* USART_H_ */
