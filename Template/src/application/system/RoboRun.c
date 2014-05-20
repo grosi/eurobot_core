@@ -526,6 +526,15 @@ void runRoboRunState(portTickType* tick)
             {
                 weight_next_node = weight_total;
                 next_node = nodes_game[node_count];
+
+#ifdef DEBUGGIN_WITH_USART
+                /* Send id of next node via USART */
+                char buffer[5];
+                itoa(node_count, buffer, 10);
+                sendStringUSART(buffer);
+                sendCharacterUSART(',');
+                sendCharacterUSART(' ');
+#endif
             }
         }
     }

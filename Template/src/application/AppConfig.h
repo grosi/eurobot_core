@@ -17,6 +17,19 @@
 #ifndef __APP_CONFIG_H
 #define __APP_CONFIG_H
 
+
+/* Define for compiler directives --------------------------------------------*/
+/* define this only in debug mode, if a error is occured the programm is capture in a loop
+ * define the "INCLUDE_uxTaskGetStackHighWaterMark 1" in FreeRTOS.h*/
+//#define DEBUGGING
+
+/* uncomment this define if your core node is not connect to all  */
+//#define STANDALONE
+
+/* define this to use USART debugging */
+//#define DEBUGGIN_WITH_USART
+
+
 /* Includes ------------------------------------------------------------------*/
 /* RTOS (are necessary, because they could only include one time*/
 #include "FreeRTOS.h"
@@ -27,13 +40,9 @@
 #include "memPoolService.h"
 #include "CANGatekeeper.h"
 
-
-/* define this only in debug mode, if a error is occured the programm is capture in a loop
- * define the "INCLUDE_uxTaskGetStackHighWaterMark 1" in FreeRTOS.h*/
-//#define DEBUGGING
-
-/* uncomment this define if your core node is not connect to all  */
-//#define STANDALONE
+#ifdef DEBUGGIN_WITH_USART
+#include "lib/usart.h"
+#endif
 
 /* typedefs */
 typedef enum { FALSE = 0, TRUE } boolean;
