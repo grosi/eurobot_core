@@ -122,11 +122,6 @@ uint8_t distance2speed(uint16_t distance, uint8_t max_speed)
     {
         speed = max_speed;
     }
-    /* Handle safety offset */
-    if(distance <= 50)  //TODO DIST_OFFSET
-    {
-        speed = 0;
-    }
 
     return speed;
 }
@@ -209,7 +204,7 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
                         {
                             /* Finish node with error,
                              * this way the current node will be retried if it's more attractive again */
-                            txStopDrive();  //TODO: Necessary?
+                            //txStopDrive();  //TODO: Necessary?
                             retval = FUNC_INCOMPLETE_HEAVY;
                             break;
                         }
@@ -295,10 +290,32 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
 
                         /* Drive forward with speed relative to the range */
                         uint8_t calc_speed = distance2speed(range, speed);
-                        if(calc_speed <= 0)
+                        if(calc_speed <= 25)
                         {
                             /* STOPP */
                             txStopDrive();
+
+
+                            //TODO
+                            ////////////////////////////////////////////////////////////////////
+                            /* Set distance and speed (just for caluculation) */
+							distance = 50;  //TODO DRIVE_BACK_DIST
+							speed = 50;  //mm/s TODO DRIVE_BACK_SPEED
+
+
+							/* Drive backward */
+							if(driveGoto(x, y, angle, speed, GOTO_DRIVE_BACKWARD, GOTO_ROUTE, game_state))
+							{
+								/* Wait while driving */
+								vTaskDelay(1500 / portTICK_RATE_MS);  //TODO: ROBO_BACKWARD_TIME
+							}
+							else
+							{
+								retval = FUNC_ERROR;
+							}
+
+                            //TODO
+							/////////////////////////////////////////////////////////////
 
                             /* Don't drive */
                             retval = FUNC_INCOMPLETE_LIGHT;
@@ -306,18 +323,15 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
                         }
                         else
                         {
-                            //if(fabsf(old_range-range) > 50)
-                            //{
-                                if(driveGoto(x, y, angle, calc_speed, direction, GOTO_NO_ROUTE, game_state))
-                                {
-                                    retval = FUNC_SUCCESS;
-                                }
-                                else
-                                {
-                                    retval = FUNC_ERROR;
-                                    break;
-                                }
-                            //}
+							if(driveGoto(x, y, angle, calc_speed, direction, GOTO_NO_ROUTE, game_state))
+							{
+								retval = FUNC_SUCCESS;
+							}
+							else
+							{
+								retval = FUNC_ERROR;
+								break;
+							}
                         }
                     }
                     else if(is_in_range)
@@ -359,7 +373,7 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
             if(driveGoto(x, y, angle, speed, direction, GOTO_NO_ROUTE, game_state))
             {
                 /* Wait while driving */
-                vTaskDelay((distance/speed*1000) / portTICK_RATE_MS);  //TODO: ROBO_AVERAGE_SPEED
+                vTaskDelay(1500 / portTICK_RATE_MS);  //TODO: ROBO_BACKWARD_TIME
                 retval = FUNC_SUCCESS;
             }
             else
