@@ -35,6 +35,8 @@
 /* lib */
 #include "lib/display.h"
 #include "lib/sensor.h"
+#include "lib/air.h"
+#include "lib/servo.h"
 
 /* Private typedef -----------------------------------------------------------*/
 
@@ -282,20 +284,34 @@ void setFunnyBreak()
     taskENTER_CRITICAL(); /* for more safety */
 
     /* give the node-task semaphore free */
-    xSemaphoreGive(sSyncRoboRunNodeTask);
+
 
     /* delete first, then recreate*/
     if(xNodeTask_Handle != NULL)
     {
+    	vTaskSuspend(xNodeTask_Handle);
         vTaskDelete(xNodeTask_Handle);
         xTaskCreate(vNodeTask, ( signed char * ) SYSTEM_NODE_TASK_NAME,
                     SYSTEM_NODE_STACK_SIZE, NULL, SYSTEM_NODE_TASK_PRIORITY, &xNodeTask_Handle );
         /* suspend the node task until they will used */
-        vTaskSuspend(xNodeTask_Handle);
+       // vTaskSuspend(xNodeTask_Handle);
+
+        xSemaphoreGive(sSyncRoboRunNodeTask);
         /* take semaphore here, because the node-task will empty at the beginning */
         //xSemaphoreTake(sSyncRoboRunNodeTask,0);
 
     }
+
+    /* set actors to default because of safety */
+    setServo_1(SERVO_AIR_INIT);
+    setAir(AIR_OFF);
+
+    next_node->param.node_state = NODE_FINISH_SUCCESS;
+
+    /* drive 5cm backwards */
+    txGotoXY(0,0,0,100,0,GOTO_DRIVE_BACKWARD,GOTO_ROUTE);
+    //checkDrive(0,0,0,100,GOTO_DRIVE_BACKWARD,&game_state);
+    vTaskDelay(1500 / portTICK_RATE_MS);
 
     taskEXIT_CRITICAL();
 }
@@ -413,7 +429,7 @@ void runRoboRunState(portTickType* tick)
     /******************
      * time barrier
      ******************/
-    if((getRemainingGameTime() < PLAY_TIME_TOTAL- PLAY_TIME && remain_nodes != 0) || (remain_nodes == 1)) //
+    if((getRemainingGameTime() < (PLAY_TIME_TOTAL- PLAY_TIME+1) && remain_nodes != 0) || (remain_nodes == 1)) //
     {
         for(node_count = 0; node_count < NODE_QUANTITY-3; node_count++)
         {

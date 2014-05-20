@@ -138,13 +138,13 @@ void doFirePoolNode(node_param_t* param, volatile game_state_t* game_state)
     game_state->barrier &= ~(GOTO_FIRE_POOL_1_FORCE | GOTO_FIRE_POOL_2_FORCE);
 
     /* put the sucker up */
-   	placeSucker(SERVO_POS_AIR_UP);
+   	placeSucker(SERVO_POS_UP);
 
     /* try to get the fire-pool */
 	if(takePool(param->x, param->y - (FIREPOOL_APPROACH_DISTANCE + FIRE_POOL_DELTA_GO), param->angle, game_state))
     {
 	    /* put the sucker up */
-	    placeSucker(SERVO_POS_AIR_UP);
+	    placeSucker(SERVO_POS_UP);
 
 	    /* turn to the heart of fire if Team yellow */
 	    if(game_state->teamcolor == TEAM_YELLOW)
@@ -208,6 +208,10 @@ void doFirePoolNode(node_param_t* param, volatile game_state_t* game_state)
         {
             /* place the fire where the robot stopped */
             setAir(AIR_OFF);
+
+            /* move sucker up */
+            placeSucker(SERVO_POS_UP);
+
             /* Don't continue */
             param->node_state = NODE_FINISH_SUCCESS;
             return;
@@ -218,7 +222,7 @@ void doFirePoolNode(node_param_t* param, volatile game_state_t* game_state)
         setAir(AIR_OFF);
 
         /* move sucker up */
-        placeSucker(SERVO_POS_AIR_UP);
+        placeSucker(SERVO_POS_UP);
 
         /* Drive 5 cm backwards */
         while(checkDrive(param->x, param->y, param->angle, HEART_OF_FIRE_DRIVE_SPEED, GOTO_DRIVE_BACKWARD, game_state) != FUNC_SUCCESS);
