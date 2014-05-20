@@ -55,7 +55,7 @@
  */
 void doFrescoNode(node_param_t* param, volatile game_state_t* game_state) {
 
-	/* Drive closer to the wall, so the final goto distance is < 15 cm and
+	/* Drive closer to the wall, so the final goto distance is < 150 mm and
 	 * thus no route is calculated (which allows us to drive in the "forbidden" zone near the wall) */
 	txGotoXY(param->x, param->y + FRESCO_APPROACH_DISTANCE, param->angle, FRESCO_APPROACH_SPEED, game_state->barrier, GOTO_DRIVE_FORWARD);
 
@@ -113,7 +113,7 @@ void doFrescoNode(node_param_t* param, volatile game_state_t* game_state) {
 	    vTaskDelay(SERVO_MOVING_DELAY / portTICK_RATE_MS);
 	}
 
-    /* drive backwards (defined 5 cm by drive system) */
+    /* drive backwards (defined 50 mm by drive system) */
     txGotoXY(IGNORED_VALUE, IGNORED_VALUE, IGNORED_VALUE, FRESCO_WALL_SPEED, IGNORED_VALUE, GOTO_DRIVE_BACKWARD);
     /* wait while driving backwards */
     vTaskDelay(2000 / portTICK_RATE_MS);  // 1s is too short, TODO: evaluate why even necessary

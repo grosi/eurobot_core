@@ -172,9 +172,9 @@ static void vRangefinderTask(void* pvParameters ) {
 	xLastFlashTime = xTaskGetTickCount();
 
 	/* Set the range */
-	setSRF08Range(SRF08_ADDR_FW, RANGEFINDER_RANGE * 10); /* In mm */
+	setSRF08Range(SRF08_ADDR_FW, RANGEFINDER_RANGE);
 #ifndef RANGEFINDER_ONLY_FW
-	setSRF08Range(SRF08_ADDR_BW, RANGEFINDER_RANGE * 10); /* In mm */
+	setSRF08Range(SRF08_ADDR_BW, RANGEFINDER_RANGE);
 #endif /* RANGEFINDER_ONLY_FW */
 
 	/* Set the gain register to evaluated value */
@@ -216,7 +216,7 @@ static void vRangefinderTask(void* pvParameters ) {
 			xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
 		}
 		/* Check if an obstacle is to close */
-		else if(distance_fw != 0 && distance_fw < RANGEFINDER_THRESHOLD_FW) {
+		else if(distance_fw != 0 && distance_fw < RANGEFINDER_THRESHOLD_FW/10) {
 
 			/* Compare last three measures, only set alarm if at least two were positive.
 			 * Inside of this block the current measure is positive, so check if at least one of the last two was positive too */
@@ -260,7 +260,7 @@ static void vRangefinderTask(void* pvParameters ) {
 		}
 		/* Check if separation space is blocked */
 		if(distance_fw != 0xFFFF) {
-			if(distance_fw <= RANGEFINDER_THRESHOLD_SE) {
+			if(distance_fw <= RANGEFINDER_THRESHOLD_SE/10) {
 
 				/* Set flag */
 				Rangefinder_flag_SeAlarmUS = 1;
@@ -283,7 +283,7 @@ static void vRangefinderTask(void* pvParameters ) {
 			xSemaphoreGiveFromISR(sSyncNodeTask, NULL);
 		}
 		/* Check if an obstacle is to close */
-		else if(distance_bw != 0 && distance_bw < RANGEFINDER_THRESHOLD_BW) {
+		else if(distance_bw != 0 && distance_bw < RANGEFINDER_THRESHOLD_BW/10) {
 
 			/* Compare last three measures, only set alarm if at least two were positive.
 			 * Inside of this block the current measure is positive, so check if at least one of the last two was positive too */

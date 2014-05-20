@@ -45,10 +45,10 @@ typedef struct
     uint8_t  enemy_count;       /*!< Number of enemies: 0, 1 or 2 */
     uint16_t enemy_1_x;         /*!< 0xFFFF = no enemy 1 or error */
     uint16_t enemy_1_y;         /*!< 0xFFFF = no enemy 1 or error */
-    uint8_t  enemy_1_diameter;  /*!< 0 = no enemy 1 [cm] */
+    uint16_t enemy_1_diameter; /*!< 0 = no enemy 1 [mm] */
     uint16_t enemy_2_x;         /*!< 0xFFFF = no enemy 2 or error */
     uint16_t enemy_2_y;         /*!< 0xFFFF = no enemy 2 or error */
-    uint8_t  enemy_2_diameter;  /*!< 0 = no enemy 2 [cm] */
+    uint16_t enemy_2_diameter; /*!< 0 = no enemy 2 [mm] */
 
     uint8_t  confederate_count; /*!< Number of confederate: 0, 1 or 2 */
     uint16_t confederate_x;     /*!< 0xFFFF = no confederate or error */

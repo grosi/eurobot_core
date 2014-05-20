@@ -40,7 +40,7 @@
 /* Private define ------------------------------------------------------------*/
 /* System */
 #define BINARY_SEMAPHORE_LENGTH 1
-#define DRIVE_ROUTE_DIST_MIN   15       /* Min. drive distance in cm for which the drive system calculates a route an not just drives */
+#define DRIVE_ROUTE_DIST_MIN   150       /* Min. drive distance in mm for which the drive system calculates a route an not just drives */
 /* Node */
 #define NODE_POOL_ID_INFO      0
 #define NODE_POOL_SIZE_INFO    1
@@ -109,10 +109,10 @@ volatile static game_state_t game_state = { .x = 0,                      /*!< x-
                                             .enemy_count = 0,            /*!< number of enemies */
                                             .enemy_1_x = NODE_NO_ENEMY,  /*!< x-position enemy 1 */
                                             .enemy_1_y = NODE_NO_ENEMY,  /*!< y-position enemy 1 */
-                                            .enemy_1_diameter = NODE_NO_ENEMY_DIAMETER, /*!< diameter of enemy 1 [cm] */
+                                            .enemy_1_diameter = NODE_NO_ENEMY_DIAMETER, /*!< diameter of enemy 1 [mm] */
                                             .enemy_2_x = NODE_NO_ENEMY,  /*!< x-position enemy 2 */
                                             .enemy_2_y = NODE_NO_ENEMY,  /*!< y-position enemy 2 */
-                                            .enemy_2_diameter = NODE_NO_ENEMY_DIAMETER,  /*!< diameter of enemy 2 [cm] */
+                                            .enemy_2_diameter = NODE_NO_ENEMY_DIAMETER,  /*!< diameter of enemy 2 [mm] */
                                             .confederate_count = 0,      /*!< number of enemies */
                                             .confederate_x = NODE_NO_CONFEDERATE,  /*!< x-position enemy 1 */
                                             .confederate_y = NODE_NO_CONFEDERATE  /*!< y-position enemy 1 */
@@ -209,8 +209,8 @@ uint8_t setConfigRoboRunState(uint8_t start_node_id, uint8_t teamcolor, uint8_t 
 
     /* set enemy count */
     game_state.enemy_count = enemies;
-    game_state.enemy_1_diameter = enemy_size_1; /* diameter in centimeter */
-    game_state.enemy_2_diameter = enemy_size_2; /* diameter in centimeter */
+    game_state.enemy_1_diameter = enemy_size_1 * 10; /* diameter in mm */
+    game_state.enemy_2_diameter = enemy_size_2 * 10; /* diameter in mm */
 
     /* set confederate count */
     game_state.confederate_count = confederate;
@@ -673,8 +673,8 @@ func_report_t gotoNode(node_param_t* param, volatile game_state_t* game_state)
 	delta_x = param->x - game_state_copy.x;
 	delta_y = param->y - game_state_copy.y;
 	distance = round(sqrt(delta_x*delta_x + delta_y*delta_y));
-	/* Don't continue if distance is to small for route calculation (+5 cm overhead) and robot in front */
-	if(distance <= DRIVE_ROUTE_DIST_MIN + 5 && isRobotInRange(game_state, FALSE)) {
+	/* Don't continue if distance is to small for route calculation (+50 mm overhead) and robot in front */
+	if(distance <= DRIVE_ROUTE_DIST_MIN + 50 && isRobotInRange(game_state, FALSE)) {
 		return FUNC_INCOMPLETE_LIGHT;
 	}
 
