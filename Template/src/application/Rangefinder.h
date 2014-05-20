@@ -62,7 +62,7 @@
 #define RANGEFINDER_TASK_PRIORITY   (configMAX_PRIORITIES - 2UL) /*!< priority 5*/
 
 /* Rangefinder settings */ //TODO: Adjust values
-#define RANGEFINDER_RANGE           1000    /*!< Maximum detection range in mm (int16_t values from 5 to 1100) */
+#define RANGEFINDER_RANGE           1000    /*!< Maximum detection range in mm (int16_t values from 43 to 11008) */
 #define RANGEFINDER_THRESHOLD_FW    750     /*!< Minimum allowed distance in mm to an obstacle (in front) without alert */
 #define RANGEFINDER_THRESHOLD_FI    30      /*!< Minimum allowed space in mm for the fire node without alert */
 #define RANGEFINDER_DELAY           100     /*!< Task delay in ms between measures */
