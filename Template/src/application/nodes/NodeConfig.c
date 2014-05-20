@@ -354,10 +354,10 @@ node_t node_net_1_yellow =
         .points = 6,                        /*!<node points */
         .percent = 0.40,                    /*!<percent of the total points [%]*/
         .time = 2,                          /*!<estimated node time [s]*/
-        .x = 2000,                          /*!<node x position [mm]*/
-        .y = 1450,                          /*!<node y position [mm]*/
+        .x = 2700,                          /*!<node x position [mm]*/
+        .y = 1400,                          /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
-        .angle = 250,                         /*!<node arrive direction */
+        .angle = 300,                         /*!<node arrive direction */
         .node_tries = 1,                    /*!< node repeats (1 = default)*/
         .node_state = NODE_FINISH_SUCCESS,          /*!<node state */
     },
@@ -373,7 +373,7 @@ node_t node_net_2_yellow =
         .percent = 0.40,                    /*!<percent of the total points [%]*/
         .time = 2,                          /*!<estimated node time [s]*/
         .x = 2300,                          /*!<node x position [mm]*/
-        .y = 1450,                          /*!<node y position [mm]*/
+        .y = 1350,                          /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
         .angle = 270,                         /*!<node arrive direction */
         .node_tries = 1,                    /*!< node repeats (1 = default)*/
@@ -393,7 +393,7 @@ node_t node_net_3_yellow =
         .x = 2600,                          /*!<node x position [mm]*/
         .y = 1450,                          /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
-        .angle = 290,                         /*!<node arrive direction */
+        .angle = 225,                         /*!<node arrive direction */
         .node_tries = 1,                    /*!< node repeats (1 = default)*/
         .node_state = NODE_FINISH_SUCCESS,          /*!<node state */
     },
