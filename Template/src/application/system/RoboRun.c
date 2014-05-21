@@ -574,7 +574,7 @@ void runRoboRunState(portTickType* tick)
             /* read out the enemy track-position for the node location */
             taskDISABLE_INTERRUPTS();
             y_index = (uint8_t)(nodes_game[node_count]->param.y / ENEMY_GRID_SIZE_Y);
-            x_index = (uint8_t)(nodes_game[node_count]->param.y / ENEMY_GRID_SIZE_Y);
+            x_index = (uint8_t)(nodes_game[node_count]->param.x / ENEMY_GRID_SIZE_X);
             weight_enemy = enemy_position[y_index][x_index];
             taskENABLE_INTERRUPTS();
 
