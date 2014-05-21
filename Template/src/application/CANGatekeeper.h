@@ -154,7 +154,7 @@ typedef struct
  * \brief   drive errors
  */
 #define GOTO_NOT_POSSIBLE_ATM  0xFFFFFF /* Message: It's not possible to go to that position at the moment */
-#define GOTO_BLOCKED_ATM       0xFFFFFE /* Message: It's blocked at the moment */
+#define GOTO_BLOCKED_ATM       0xFFFFFE /* Message: Goto stopped because odometry did'nt match wheels for some time -> (driving into wall or otherwise blocked) */
 
 
 /*
