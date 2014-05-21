@@ -449,7 +449,6 @@ void runRoboRunState(portTickType* tick)
     /* calc next node */
     /******************/
     /* Cast define to make sure the calculation is always correct */
-    remain_time = getRemainingGameTime();
     weight_dec = remain_time / (float)PLAY_TIME;
     weight_inc = ((float)PLAY_TIME - remain_time) / (float)PLAY_TIME;
     weight_next_node = INFINITY;
@@ -725,14 +724,14 @@ func_report_t gotoNode(node_param_t* param, volatile game_state_t* game_state)
 //	/* Suspend rangefinder safely */
 //	suspendRangefinderTask();
 
-	//TODO! Just for debug
 	if(retval != FUNC_ERROR)
 	{
 		return retval;
 	}
 	else
 	{
-		return FUNC_INCOMPLETE_HEAVY;
+	    /* When not received an Ack for CAN message, keep retrying without adding weight */
+		return FUNC_INCOMPLETE_LIGHT;
 	}
 }
 

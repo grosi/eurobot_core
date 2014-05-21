@@ -24,7 +24,7 @@
 /* drive */
 #define DRIVE_ROUTE_DIST_MIN        150
 /* CAN */
-#define CAN_WAIT_DELAY              400
+#define CAN_WAIT_DELAY              500
 #define CAN_CHECK_DELAY             100
 #define CAN_MAX_RETRIES             5
 
