@@ -28,7 +28,7 @@
 #define ROBORUN_TIMEOUT             1000 /*!< wait for max. 1s */
 
 /* game configurations */
-#define START_WAIT_TIME             7.0  /*!< [s] Time to wait for second robot to get out of the way */
+#define START_WAIT_TIME             13.0  /*!< [s] Time to wait for second robot to get out of the way */
 #define PLAY_TIME                   90.0 /*!< [s] */
 #define ROBO_AVERAGE_SPEED          0.5  /*!< [m/s] */
 #define PLAYGROUND_WIDTH            3000 /*!< [mm] */
