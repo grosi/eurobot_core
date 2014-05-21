@@ -247,7 +247,7 @@ node_t node_fire_2_yellow =
         .x =  2600,                          	/*!<node x position [mm]*/
         .y = 900 + FIRE_APPROACH_DISTANCE,		/*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         	/*!<node pool id */
-        .angle = 90,                        	/*!<node arrive direction */
+        .angle = 270,                        	/*!<node arrive direction */
         .node_tries = 1,                    	/*!< node repeats (1 = default)*/
         .node_state = NODE_UNDONE,          	/*!<node state */
     },
@@ -357,7 +357,7 @@ node_t node_net_1_yellow =
         .x = 2700,                          /*!<node x position [mm]*/
         .y = 1400,                          /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
-        .angle = 300,                         /*!<node arrive direction */
+        .angle = 315,                         /*!<node arrive direction */
         .node_tries = 1,                    /*!< node repeats (1 = default)*/
         .node_state = NODE_FINISH_SUCCESS,          /*!<node state */
     },
@@ -393,7 +393,7 @@ node_t node_net_3_yellow =
         .x = 2600,                          /*!<node x position [mm]*/
         .y = 1450,                          /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
-        .angle = 225,                         /*!<node arrive direction */
+        .angle = 195,                         /*!<node arrive direction */
         .node_tries = 1,                    /*!< node repeats (1 = default)*/
         .node_state = NODE_FINISH_SUCCESS,          /*!<node state */
     },
