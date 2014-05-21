@@ -235,7 +235,27 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
             }
             else  /* Enemy in range */
             {
-                //TODO: drive with relativ speed?
+                //TODO: Drive slower
+
+                /* STOPP */
+                txStopDrive();
+
+
+                //TODO
+                ////////////////////////////////////////////////////////////////////
+                /* Drive backward */
+                if(driveGoto(IGNORED_VALUE, IGNORED_VALUE, IGNORED_VALUE, IGNORED_VALUE, GOTO_DRIVE_BACKWARD, GOTO_ROUTE, game_state))
+                {
+                    /* Wait while driving */
+                    vTaskDelay(DRIVE_BACK_TIME / portTICK_RATE_MS);
+                }
+                else
+                {
+                    retval = FUNC_ERROR;
+                }
+
+                //TODO
+                /////////////////////////////////////////////////////////////
 
                 /* Don't drive */
                 retval = FUNC_INCOMPLETE_LIGHT;
