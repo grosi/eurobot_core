@@ -74,15 +74,13 @@ void initGameTimer(void)
 void vGameTimerCallback(xTimerHandle pxTimer)
 {
     /* funny action break */
-    if(elapsedTime >= PLAY_TIME_FUNNY)
+    if(elapsedTime == PLAY_TIME_FUNNY)
     {
         setFunnyBreak();
-
-        //TODO: always vGameTimerCallback is called or only once?
     }
 
     /* Check if the time is up */
-    if(elapsedTime >= PLAY_TIME_TOTAL - 1)
+    if(elapsedTime == PLAY_TIME_TOTAL - 1)
     {
         /* Stop drive and shut down the actors */
         xTimerStop(xGameTimer,0);
