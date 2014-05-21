@@ -33,7 +33,7 @@
 /* Private define ------------------------------------------------------------*/
 #define GOTOCONFIRM_QUEUE_LENGTH   1
 #define GOTOSTATERESP_QUEUE_LENGTH 1
-#define GOTO_STATERESP_DELAY       100
+#define GOTO_STATERESP_DELAY       200
 
 #define DRIVE_ROUTE_DIST_MIN       150   /* Minimum distance in mm for which the drive system calculates a route */
 #define DRIVE_BACK_DIST            50    /* Distance in mm the robot travels on a backwards goto command */
