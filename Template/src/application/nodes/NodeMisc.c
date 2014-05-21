@@ -252,10 +252,16 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
             }
             else  /* Enemy in range */
             {
-                //TODO: drive with relativ speed?
+                //TODO: Drive slower?
+
+                /* STOPP */
+                txStopDrive();
+
+                /* Wait some time so the other tasks get proccess time (e.g. strategy) */
+                vTaskDelay(500 / portTICK_RATE_MS);
 
                 /* Don't drive */
-                retval = FUNC_INCOMPLETE_LIGHT;
+                retval = FUNC_INCOMPLETE_HEAVY;
             }
         }
         else /* Route calculated */
