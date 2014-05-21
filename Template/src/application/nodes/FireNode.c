@@ -73,11 +73,11 @@ void doFireNode(node_param_t* param, volatile game_state_t* game_state)
     taskEXIT_CRITICAL();
 
     /* Don't continue if an other robot is in front */
-    if(isRobotInRange(game_state, FALSE)) {
-
-        param->node_state = NODE_FINISH_UNSUCCESS;
-        return;
-    }
+//    if(isRobotInRange(game_state, FALSE)) {
+//
+//        param->node_state = NODE_FINISH_UNSUCCESS;
+//        return;
+//    }
 
 	/* Move the separation all the way out */
 	setServo_1(SERVO_POS_FRESCO_OUT);
