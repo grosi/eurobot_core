@@ -448,9 +448,10 @@ void runRoboRunState(portTickType* tick)
     /******************/
     /* calc next node */
     /******************/
+    /* Cast define to make sure the calculation is always correct */
     remain_time = getRemainingGameTime();
-    weight_dec = remain_time / PLAY_TIME;
-    weight_inc = (PLAY_TIME - remain_time) / PLAY_TIME;
+    weight_dec = remain_time / (float)PLAY_TIME;
+    weight_inc = ((float)PLAY_TIME - remain_time) / (float)PLAY_TIME;
     weight_next_node = INFINITY;
 
     for(node_count = 0; node_count < NODE_QUANTITY; node_count++)
