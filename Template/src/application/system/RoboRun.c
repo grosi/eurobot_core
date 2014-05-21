@@ -309,7 +309,7 @@ void setFunnyBreak()
     next_node->param.node_state = NODE_FINISH_SUCCESS;
 
     /* drive 5cm backwards */
-    txGotoXY(0,0,0,100,0,GOTO_DRIVE_BACKWARD,GOTO_ROUTE);
+    //txGotoXY(0,0,0,100,0,GOTO_DRIVE_BACKWARD,GOTO_ROUTE);
     //checkDrive(0,0,0,100,GOTO_DRIVE_BACKWARD,&game_state);
     vTaskDelay(1500 / portTICK_RATE_MS);
 

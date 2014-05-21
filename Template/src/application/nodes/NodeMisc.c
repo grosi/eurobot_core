@@ -348,6 +348,8 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
 
                             //TODO
                             ////////////////////////////////////////////////////////////////////
+                            /* make possible to break the node task for funny action */
+//							taskENTER_CRITICAL();
 							/* Drive backward */
 							if(driveGoto(IGNORED_VALUE, IGNORED_VALUE, IGNORED_VALUE, IGNORED_VALUE, GOTO_DRIVE_BACKWARD, GOTO_ROUTE, game_state))
 							{
@@ -358,6 +360,7 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
 							{
 								retval = FUNC_ERROR;
 							}
+//							taskEXIT_CRITICAL();
 
                             //TODO
 							/////////////////////////////////////////////////////////////
@@ -409,6 +412,9 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
         range = isRobotInRange(game_state, TRUE);
         if((range == 0) || (range >= DRIVE_BACK_DIST + DIST_OFFSET))  /* No enemy in range */
         {
+        	/* make possible to break the node task for funny action */
+//        	taskENTER_CRITICAL();
+
             /* Drive backward */
             if(driveGoto(IGNORED_VALUE, IGNORED_VALUE, IGNORED_VALUE, IGNORED_VALUE, direction, GOTO_NO_ROUTE, game_state))
             {
@@ -420,6 +426,7 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
             {
                 retval = FUNC_ERROR;
             }
+//            taskEXIT_CRITICAL();
         }
         else  /* Enemy in range */
         {
@@ -468,6 +475,7 @@ uint8_t driveGoto(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, uint8_t
 
         /* Receive GoTo confirmation */
         CAN_ok = xQueueReceive(qGotoConfirm, &CAN_buffer, CAN_WAIT_DELAY / portTICK_RATE_MS);
+
     }
     /* Retry if no transmission confirmed received and another retry is allowed */
     while((CAN_ok != pdTRUE) && (goto_retries <= CAN_MAX_RETRIES));
