@@ -334,7 +334,7 @@ void runRoboRunState(portTickType* tick)
     float weight_total; /* total weight of the current node */
     float weight_next_node; /* the weight of the next node */
     uint8_t weight_arrive = NODE_PERFECT_ARRIVE; /* additional weight for bad arrives */
-    uint8_t remain_time;
+    int8_t remain_time;
     uint8_t node_count; /* simple count variable */
     volatile node_t* current_node;
     uint8_t x_index, y_index;
@@ -431,7 +431,7 @@ void runRoboRunState(portTickType* tick)
     /******************
      * time barrier
      ******************/
-    if((getRemainingGameTime() < (PLAY_TIME_TOTAL- PLAY_TIME+1) && remain_nodes != 0) || (remain_nodes == 1)) //
+    if((getRemainingGameTime() < (PLAY_TIME_TOTAL - PLAY_TIME_FUNNY + 1) && remain_nodes != 0) || (remain_nodes == 1)) //
     {
         for(node_count = 0; node_count < NODE_QUANTITY-3; node_count++)
         {
@@ -448,9 +448,12 @@ void runRoboRunState(portTickType* tick)
     /******************/
     /* calc next node */
     /******************/
+    /* Get remaining time until funny break */
+    remain_time = PLAY_TIME_FUNNY + getRemainingGameTime() - PLAY_TIME_TOTAL;
+    if(remain_time < 0) { remain_time = 0; }
     /* Cast define to make sure the calculation is always correct */
-    weight_dec = remain_time / (float)PLAY_TIME;
-    weight_inc = ((float)PLAY_TIME - remain_time) / (float)PLAY_TIME;
+    weight_dec = remain_time / (float)PLAY_TIME_FUNNY;
+    weight_inc = ((float)PLAY_TIME_FUNNY - remain_time) / (float)PLAY_TIME_FUNNY;
     weight_next_node = INFINITY;
 
     for(node_count = 0; node_count < NODE_QUANTITY; node_count++)

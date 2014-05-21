@@ -55,6 +55,12 @@ typedef enum { TEAM_YELLOW = GIP_TEAMCOLOR_YELLOW, TEAM_RED = GIP_TEAMCOLOR_RED 
 /* defines */
 #define IGNORED_VALUE 0
 
+/* game configurations */
+#define PLAY_TIME_TOTAL             90.0 /*!< [s] time until stop */
+#define PLAY_TIME_FUNNY             75.0 /*!< [s] time until funny action */
+#define PLAYGROUND_WIDTH            3000    /*!< [mm] */
+#define PLAYGROUND_HEIGH            2000    /*!< [mm] */
+
 #endif
 
 /**

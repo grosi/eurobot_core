@@ -28,11 +28,7 @@
 #define ROBORUN_TIMEOUT             1000 /*!< wait for max. 1s */
 
 /* game configurations */
-#define PLAY_TIME_TOTAL             90.0 /*!< [s] */
-#define PLAY_TIME                   75.0 /*!< [s] */
 #define ROBO_AVERAGE_SPEED          0.5  /*!< [m/s] */
-#define PLAYGROUND_WIDTH            3000    /*!< [mm] */
-#define PLAYGROUND_HEIGH            2000    /*!< [mm] */
 #define ENEMY_GRID_SIZE_X           100  /*!< [mm] */
 #define ENEMY_GRID_SIZE_Y           100  /*!< [mm] */
 #define ENEMY_GRID_CENTER_WEIGHT    5

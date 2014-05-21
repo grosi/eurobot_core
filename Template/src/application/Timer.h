@@ -27,8 +27,6 @@
 #define TIMER_NAME                  "Game Timer"
 
 #define TIMER_PERIODE               1000 /*!< Time between to interruptions in ms */
-#define TIMER_STOP_TIME             90 /*!< Time in sec to stop */
-#define TIMER_FUNNY_TIME            75 /*!< time barrier for funny action*/
 
 
 /* exported macro -------------------------------------------------------------*/

@@ -74,13 +74,15 @@ void initGameTimer(void)
 void vGameTimerCallback(xTimerHandle pxTimer)
 {
     /* funny action break */
-    if(elapsedTime == TIMER_FUNNY_TIME)
+    if(elapsedTime >= PLAY_TIME_FUNNY)
     {
         setFunnyBreak();
+
+        //TODO: always vGameTimerCallback is called or only once?
     }
 
     /* Check if the time is up */
-    if(elapsedTime == TIMER_STOP_TIME - 1)
+    if(elapsedTime >= PLAY_TIME_TOTAL - 1)
     {
         /* Stop drive and shut down the actors */
         xTimerStop(xGameTimer,0);
@@ -151,13 +153,13 @@ uint8_t getRemainingGameTime(void)
 	uint8_t remaining_time;
 
     /* Return the remaining time of the game */
-	if(elapsedTime >= TIMER_STOP_TIME)
+	if(elapsedTime >= PLAY_TIME_TOTAL)
 	{
 		remaining_time = 0;
 	}
 	else
 	{
-		remaining_time = TIMER_STOP_TIME - elapsedTime;
+		remaining_time = PLAY_TIME_TOTAL - elapsedTime;
 	}
 	return remaining_time;
 }
