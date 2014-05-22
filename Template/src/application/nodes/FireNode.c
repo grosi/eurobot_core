@@ -72,13 +72,6 @@ void doFireNode(node_param_t* param, volatile game_state_t* game_state)
     game_state_copy = *game_state;
     taskEXIT_CRITICAL();
 
-    /* Don't continue if an other robot is in front */
-//    if(isRobotInRange(game_state, FALSE)) {
-//
-//        param->node_state = NODE_FINISH_UNSUCCESS;
-//        return;
-//    }
-
 	/* Move the separation all the way out */
 	setServo_1(SERVO_POS_FRESCO_OUT);
 
@@ -105,9 +98,6 @@ void doFireNode(node_param_t* param, volatile game_state_t* game_state)
     {
         checkDrive(param->x + FIRE_NODE_DELTA_GO, param->y, param->angle, FIRE_NODE_SPEED, GOTO_DRIVE_FORWARD, &game_state_copy);
     }
-
-//    /* Wait while driving */
-//	vTaskDelay(FIRE_NODE_DRIVE_DELAY / portTICK_RATE_MS);
 
     /* Put seperation in after driving through the fire */
 	setServo_1(SERVO_POS_FRESCO_IN);
