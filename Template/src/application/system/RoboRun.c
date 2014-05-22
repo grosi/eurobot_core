@@ -719,6 +719,13 @@ static void vTrackEnemy(uint16_t id, CAN_data_t* data)
  */
 func_report_t gotoNode(node_param_t* param, volatile game_state_t* game_state)
 {
+    /* handle the timing problem
+     * if we send too fast an gotoXY command, the drive node could be in trouble */
+    if(param->id >=8 && param->id <= 13)
+    {
+        vTaskDelay(1000 / portTICK_RATE_MS);
+    }
+
 //TODO
 //    /* Activate rangefinder */
 //	vTaskResume(xRangefinderTask_Handle);
