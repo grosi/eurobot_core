@@ -149,7 +149,10 @@ uint8_t distance2speed(uint16_t distance, uint8_t max_speed)
  * \param[in]  direction
  * \param[in]  game_state
  *
- * \retval     func_report (FUNC_SUCCESS, FUNC_INCOMPLETE_LIGHT, FUNC_INCOMPLETE_HEAVY or FUNC_ERROR)
+ * \retval     func_report FUNC_SUCCESS           Completed successfully
+ *                         FUNC_INCOMPLETE_LIGHT  Enemy suddenly in way
+ *                         FUNC_INCOMPLETE_HEAVY  Enemy blocks path (route not possible)
+ *                         FUNC_ERROR             No CAN acknowledge received after several tries
  */
 func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, uint8_t direction, volatile game_state_t* game_state)
 {
