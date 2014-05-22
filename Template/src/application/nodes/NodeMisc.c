@@ -156,8 +156,8 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
 {
     CAN_data_t CAN_buffer;
     uint32_t estimated_GoTo_time;
-    uint32_t estimated_GoTo_time_history[5] = {0};
-    uint8_t estimated_GoTo_time_index = 0;
+//    uint32_t estimated_GoTo_time_history[5] = {0};
+//    uint8_t estimated_GoTo_time_index = 0;
     func_report_t retval;
     uint8_t CAN_ok;
     int16_t delta_x, delta_y;
