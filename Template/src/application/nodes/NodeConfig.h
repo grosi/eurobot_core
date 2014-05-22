@@ -88,7 +88,8 @@ typedef struct
 
 /* exported define ------------------------------------------------------------*/
 /* general */
-#define NODE_QUANTITY              13 //TODO
+#define NODE_QUANTITY              13
+#define NODE_FUNNY_QUANTITY		   6
 #define NODE_POOL_QUANTITY         1
 #define NODE_NO_ENEMY              0xFFFF
 #define NODE_NO_ENEMY_DIAMETER     0
