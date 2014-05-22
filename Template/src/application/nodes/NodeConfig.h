@@ -123,15 +123,10 @@ typedef struct
 #define SERVO_POS_LAUNCHER_LOAD    1780 /* Servo position: Launcher all the way front */
 #define SERVO_POS_LAUNCHER_LAUNCH  1200 /* Servo position: Launcher all the way back */
 
-/* Fresco node */
-#define FRESCO_APPROACH_DISTANCE   50   /* Distance to drive closer to the wall */
-#define FRESCO_APPROACH_SPEED      30   /* Speed in percent to drive closer to the wall */
-#define FRESCO_APPROACH_DELAY      2000 /* Time to wait while driving closer to the wall and moving Fresco out*/
-#define FRESCO_WALL_POSITION       1950 /* Position to place the Fresco on the wall */
-#define FRESCO_WALL_SPEED          20   /* Speed in percent to finally drive all the way to the wall */
-#define FRESCO_WALL_TIME           4000 /* Time in ms to wait while driving all the way to the wall */
+/* Navi */
+#define WAIT_FOR_NAVI_DELAY 500         /* Delay in ms to wait fot new navi-data */
 
-/* Fresco node */
+/* Fire node */
 #define FIRE_APPROACH_DISTANCE     250  /* Distance in mm to drive into the fire */  //TODO: Evaluate good value (as short as possible)
 
 

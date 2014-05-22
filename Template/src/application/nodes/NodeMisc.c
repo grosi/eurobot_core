@@ -216,9 +216,9 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
                         /* Handle "goto blocked at the moment" message */
                         if(estimated_GoTo_time == GOTO_BLOCKED_ATM)
                         {
-                            /* first drive backwards */
-                            driveGoto(IGNORED_VALUE, IGNORED_VALUE, IGNORED_VALUE, IGNORED_VALUE, GOTO_DRIVE_BACKWARD, GOTO_NO_ROUTE, game_state);
-                            vTaskDelay(DRIVE_BACK_TIME / portTICK_RATE_MS);
+//                            /* first drive backwards */
+//                            driveGoto(IGNORED_VALUE, IGNORED_VALUE, IGNORED_VALUE, IGNORED_VALUE, GOTO_DRIVE_BACKWARD, GOTO_NO_ROUTE, game_state);
+//                            vTaskDelay(DRIVE_BACK_TIME / portTICK_RATE_MS);
 
                             /* Finish node with error,
                              * this way the current node will be retried if it's more attractive again */
@@ -292,9 +292,9 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
                     /* Handle "goto blocked at the moment" message */
                     if(estimated_GoTo_time == GOTO_BLOCKED_ATM)
                     {
-                        /* first drive backwards */
-                        driveGoto(IGNORED_VALUE, IGNORED_VALUE, IGNORED_VALUE, IGNORED_VALUE, GOTO_DRIVE_BACKWARD, GOTO_NO_ROUTE, game_state);
-                        vTaskDelay(DRIVE_BACK_TIME / portTICK_RATE_MS);
+//                        /* first drive backwards */
+//                        driveGoto(IGNORED_VALUE, IGNORED_VALUE, IGNORED_VALUE, IGNORED_VALUE, GOTO_DRIVE_BACKWARD, GOTO_NO_ROUTE, game_state);
+//                        vTaskDelay(DRIVE_BACK_TIME / portTICK_RATE_MS);
 
                         /* Finish node with error,
                          * this way the current node will be retried if it's more attractive again */

@@ -160,8 +160,8 @@ node_t node_fresco_1 =
         .points = 6,                        	/*!<node points */
         .percent = 0.28,                    	/*!<percent of the total points [%]*/
         .time = 6,                         		/*!<estimated node time [s]*/
-        .x = 1350,                          	/*!<node x position [mm]*/
-        .y = 1860 - FRESCO_APPROACH_DISTANCE,	/*!<node y position [mm]*/
+        .x = 1270,                          	/*!<node x position [mm]*/
+        .y = 1850,	                            /*!<node y position [mm]*/
         .pool_id = NODE_FRESCO_POOL_ID,     	/*!<node pool id */
         .angle = 90,                        	/*!<node arrive direction */
         .node_tries = 1,                    	/*!< node repeats (1 = default)*/
@@ -179,7 +179,7 @@ node_t node_fresco_2 =
         .percent = 0.28,                    	/*!<percent of the total points [%]*/
         .time = 6,                          	/*!<estimated node time [s]*/
         .x = 1500,                          	/*!<node x position [mm]*/
-        .y = 1860 - FRESCO_APPROACH_DISTANCE,	/*!<node y position [mm]*/
+        .y = 1850,                              /*!<node y position [mm]*/
         .pool_id = NODE_FRESCO_POOL_ID,     	/*!<node pool id */
         .angle = 90,                        	/*!<node arrive direction */
         .node_tries = 1,                    	/*!< node repeats (1 = default)*/
@@ -196,8 +196,8 @@ node_t node_fresco_3 =
         .points = 6,                            /*!<node points */
         .percent = 0.28,                        /*!<percent of the total points [%]*/
         .time = 6,                              /*!<estimated node time [s]*/
-        .x = 1650,                              /*!<node x position [mm]*/
-        .y = 1860 - FRESCO_APPROACH_DISTANCE,   /*!<node y position [mm]*/
+        .x = 1730,                              /*!<node x position [mm]*/
+        .y = 1850,                              /*!<node y position [mm]*/
         .pool_id = NODE_FRESCO_POOL_ID,         /*!<node pool id */
         .angle = 90,                            /*!<node arrive direction */
         .node_tries = 1,                        /*!< node repeats (1 = default)*/
