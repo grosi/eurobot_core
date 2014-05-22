@@ -719,18 +719,37 @@ static void vTrackEnemy(uint16_t id, CAN_data_t* data)
  */
 func_report_t gotoNode(node_param_t* param, volatile game_state_t* game_state)
 {
-    /* handle the timing problem
+	func_report_t retval;
+
+	/* handle the timing problem
      * if we send too fast an gotoXY command, the drive node could be in trouble */
-    if(param->id >=8 && param->id <= 13)
+    if((param->id >=8) && (param->id <= 13))
     {
-        vTaskDelay(1000 / portTICK_RATE_MS);
+    	/* Stop the Robot */
+    	txStopDrive();
+
+    	vTaskDelay(1000 / portTICK_RATE_MS);
+
+    	uint8_t counter = 0;
+
+    	/* Send five time a drive command to a net */
+        for(counter = 0; counter < 3; counter++){
+
+        	retval = checkDrive(param->x, param->y, param->angle, GOTO_DEFAULT_SPEED, GOTO_DRIVE_FORWARD, game_state);
+            /* Wait 0.5 s */
+        	vTaskDelay(500 / portTICK_RATE_MS);
+        }
+    }
+    else
+    {
+    	retval = checkDrive(param->x, param->y, param->angle, GOTO_DEFAULT_SPEED, GOTO_DRIVE_FORWARD, game_state);
     }
 
 //TODO
 //    /* Activate rangefinder */
 //	vTaskResume(xRangefinderTask_Handle);
 
-	func_report_t retval = checkDrive(param->x, param->y, param->angle, GOTO_DEFAULT_SPEED, GOTO_DRIVE_FORWARD, game_state);
+	//func_report_t retval = checkDrive(param->x, param->y, param->angle, GOTO_DEFAULT_SPEED, GOTO_DRIVE_FORWARD, game_state);
 
 //TODO
 //	/* Suspend rangefinder safely */
