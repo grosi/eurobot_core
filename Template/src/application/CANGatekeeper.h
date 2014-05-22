@@ -80,7 +80,7 @@ typedef struct
 /* CAN-interface RTOS configuration */
 #define CAN_TX_TASK_NAME            "CAN Tx"
 #define CAN_RX_TASK_NAME            "CAN Rx"
-#define CAN_QUEUE_LENGTH            20 /*!< Size of the message queues */
+#define CAN_QUEUE_LENGTH            30 /*!< Size of the message queues */
 #define CAN_STACK_SIZE              configMINIMAL_STACK_SIZE /*!< size of the receive and transmit task */
 #define CAN_TASK_PRIORITY           (configMAX_PRIORITIES - 1UL) /**< priority (6) of the receive and transmit task */
 #define CAN_LISTENER_BUFFER_SIZE    20 /*!< adjust to the needed size */
