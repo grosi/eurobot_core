@@ -16,6 +16,7 @@
 /* Includes ------------------------------------------------------------------*/
 /* application */
 #include "../AppConfig.h"
+#include "../Rangefinder.h"
 #include "NodeConfig.h"
 #include "NodeMisc.h"
 #include "FirePoolNode.h"
@@ -59,8 +60,8 @@ static uint8_t takePool(uint16_t x, uint16_t y, uint16_t angle, volatile game_st
     uint8_t pushed = 0;
     uint8_t success;
 
-    /* Drive closer to the pool */
-    if(driveGoto(x,y,angle,FIRE_POOL_APPROACH_SPEED,GOTO_DRIVE_FORWARD,GOTO_ROUTE,game_state))  //TODO: use checkDrive!!
+    /* Drive closer to the pool (driveGoto so we can check the sensor while driving) */
+    if(!isRobotInRange(game_state, FALSE) && driveGoto(x,y,angle,FIRE_POOL_APPROACH_SPEED,GOTO_DRIVE_FORWARD,GOTO_ROUTE,game_state))
     {
         while(!getSensor_Fire_Pool_Left() && approach_counter < FIRE_POOL_APPROACH_TIME)
         {
@@ -116,7 +117,7 @@ static uint8_t takePool(uint16_t x, uint16_t y, uint16_t angle, volatile game_st
     }
     else
     {
-        /*enemy is in front */  //TODO: return of driveGoto is not enemy, it's CAN!
+        /*enemy is in front */
         success = 0;
     }
 
