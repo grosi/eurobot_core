@@ -719,7 +719,10 @@ static void vTrackEnemy(uint16_t id, CAN_data_t* data)
  * \param[in]   node_param_t* param Node infos
  * \param[in]   game_state_t* game_state Game infos (navi)
  *
- * \retval     func_report (FUNC_SUCCESS, FUNC_INCOMPLETE_LIGHT, FUNC_INCOMPLETE_HEAVY or FUNC_ERROR)
+ * \retval     func_report FUNC_SUCCESS           Completed successfully
+ *                         FUNC_INCOMPLETE_LIGHT  Enemy suddenly in way
+ *                         FUNC_INCOMPLETE_HEAVY  Enemy blocks path (route not possible)
+ *                         FUNC_ERROR             No CAN acknowledge received after several tries
  */
 func_report_t gotoNode(node_param_t* param, volatile game_state_t* game_state)
 {
@@ -779,7 +782,7 @@ static void vNodeTask(void* pvParameters )
     		break;
 
     	case FUNC_INCOMPLETE_LIGHT:
-			/* Arrival was not possible */
+			/* Arrival was not possible because of  */
 			node_task->param.node_state = NODE_UNDONE;
     		break;
 
