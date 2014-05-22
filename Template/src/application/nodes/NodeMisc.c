@@ -39,7 +39,7 @@
 
 #define DRIVE_ROUTE_DIST_MIN       150   /* Minimum distance in mm for which the drive system calculates a route */
 #define DRIVE_BACK_DIST            50    /* Distance in mm the robot travels on a backwards goto command */
-#define DRIVE_BACK_TIME            1500  /* Time taken to travel DRIVE_BACK_DIST backwards */
+#define DRIVE_BACK_TIME            750   /* Time taken to travel DRIVE_BACK_DIST backwards */
 #define DIST_OFFSET                50    /* Safety distance offset in mm */  //TODO remove this or the one below
 #define SPEED_OFFSET               25    /* Safety speed offset in mm */  //TODO remove this or the one above
 
