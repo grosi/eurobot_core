@@ -188,6 +188,9 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
                      * else we may get the old time */
                     vTaskDelay(GOTO_STATERESP_DELAY / portTICK_RATE_MS);
 
+                    /* Success if not changed in do-while */
+                    retval = FUNC_SUCCESS;
+
                     do
                     {
                         /* Ask drive system for GoTo state */
@@ -228,8 +231,6 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
                         vTaskDelay(CAN_CHECK_DELAY/portTICK_RATE_MS);
                     }
                     while(estimated_GoTo_time > 0);
-
-                    retval = FUNC_SUCCESS;
                 }
                 else
                 {
@@ -263,6 +264,9 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
                 /* Wait at least GOTO_STATERESP_DELAY before asking for goto time for the first time,
                  * else we may get the old time */
                 vTaskDelay(GOTO_STATERESP_DELAY / portTICK_RATE_MS);
+
+                /* Success if not changed in do-while */
+                retval = FUNC_SUCCESS;
 
                 do
                 {
@@ -317,33 +321,28 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
                             txStopDrive();
 
 
-                            //TODO
+                            //v- TODO: Drive backward if enemy in range or not?
                             ////////////////////////////////////////////////////////////////////
 							/* Drive backward */
 							if(driveGoto(IGNORED_VALUE, IGNORED_VALUE, IGNORED_VALUE, IGNORED_VALUE, GOTO_DRIVE_BACKWARD, GOTO_ROUTE, game_state))
 							{
 								/* Wait while driving */
 								vTaskDelay(DRIVE_BACK_TIME / portTICK_RATE_MS);
+
+	                            retval = FUNC_INCOMPLETE_LIGHT;
+	                            break;
 							}
 							else
 							{
 								retval = FUNC_ERROR;
+	                            break;
 							}
-
-                            //TODO
+                            //^- TODO
 							/////////////////////////////////////////////////////////////
-
-                            /* Don't drive */
-                            retval = FUNC_INCOMPLETE_LIGHT;
-                            break;
                         }
                         else
                         {
-							if(driveGoto(x, y, angle, calc_speed, direction, GOTO_NO_ROUTE, game_state))
-							{
-								retval = FUNC_SUCCESS;
-							}
-							else
+							if(!driveGoto(x, y, angle, calc_speed, direction, GOTO_NO_ROUTE, game_state))
 							{
 								retval = FUNC_ERROR;
 								break;
@@ -356,11 +355,7 @@ func_report_t checkDrive(uint16_t x, uint16_t y, uint16_t angle, uint8_t speed, 
                         is_in_range = 0;
 
                         /* not in range anymore */
-                        if(driveGoto(x, y, angle, speed, direction, GOTO_NO_ROUTE, game_state))
-                        {
-                            retval = FUNC_SUCCESS;
-                        }
-                        else
+                        if(!driveGoto(x, y, angle, speed, direction, GOTO_NO_ROUTE, game_state))
                         {
                             retval = FUNC_ERROR;
                             break;
