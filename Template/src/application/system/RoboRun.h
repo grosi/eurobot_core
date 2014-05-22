@@ -44,7 +44,7 @@
 #define NODE_BAD_ARRIVE         3
 #define NODE_WELL_ARRIVE        2
 #define NODE_PERFECT_ARRIVE     1
-#define NODE_REPEAT             2
+#define NODE_REPEAT             10
 
 /* exported macro -------------------------------------------------------------*/
 
