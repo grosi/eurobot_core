@@ -161,62 +161,6 @@ node_t node_fire_wall_invers_red =
 };
 
 
-/* node net 1 red*/
-node_t node_net_1_red =
-{
-    {
-        .id = 8,                            	/*!<node id */
-        .points = 6,                        	/*!<node points */
-        .percent = 0.40,                    	/*!<percent of the total points [%]*/
-        .time = 2,                          	/*!<estimated node time [s]*/
-        .x = 300,                          		/*!<node x position [mm]*/
-        .y = 1400,                          	/*!<node y position [mm]*/
-        .pool_id = NODE_NO_POOL_ID,         	/*!<node pool id */
-        .angle = 240,                       	/*!<node arrive direction */
-        .node_tries = 1,                    	/*!< node repeats (1 = default)*/
-        .node_state = NODE_FINISH_SUCCESS,  	/*!<node state */
-    },
-    doNetNode
-};
-
-/* node net 2 red*/
-node_t node_net_2_red =
-{
-    {
-        .id = 9,                            	/*!<node id */
-        .points = 6,                        	/*!<node points */
-        .percent = 0.40,                    	/*!<percent of the total points [%]*/
-        .time = 2,                          	/*!<estimated node time [s]*/
-        .x = 700,                          		/*!<node x position [mm]*/
-        .y = 1350,                          	/*!<node y position [mm]*/
-        .pool_id = NODE_NO_POOL_ID,         	/*!<node pool id */
-        .angle = 270,                       	/*!<node arrive direction */
-        .node_tries = 1,                    	/*!< node repeats (1 = default)*/
-        .node_state = NODE_FINISH_SUCCESS,  	/*!<node state */
-    },
-    doNetNode
-};
-
-/* node net 3 red*/
-node_t node_net_3_red =
-{
-    {
-        .id = 10,                          		/*!<node id */
-        .points = 6,                        	/*!<node points */
-        .percent = 0.40,                    	/*!<percent of the total points [%]*/
-        .time = 2,                          	/*!<estimated node time [s]*/
-        .x = 1350,                          	/*!<node x position [mm]*/
-        .y = 1550,                          	/*!<node y position [mm]*/
-        .pool_id = NODE_NO_POOL_ID,         	/*!<node pool id */
-        .angle = 315,                       	/*!<node arrive direction */
-        .node_tries = 1,                    	/*!< node repeats (1 = default)*/
-        .node_state = NODE_FINISH_SUCCESS,  	/*!<node state */
-    },
-    doNetNode
-};
-
-
-
 /* yellow */
 /* node fire 1 yellow*/
 node_t node_fire_1_yellow =
@@ -346,11 +290,65 @@ node_t node_fire_wall_invers_yellow =
 };
 
 
-/* node net 1 yellow*/
-node_t node_net_1_yellow =
+/* node net 1*/
+node_t node_net_1 =
 {
     {
-        .id = 8,                            /*!<node id */
+        .id = 8,                                /*!<node id */
+        .points = 6,                            /*!<node points */
+        .percent = 0.40,                        /*!<percent of the total points [%]*/
+        .time = 2,                              /*!<estimated node time [s]*/
+        .x = 300,                               /*!<node x position [mm]*/
+        .y = 1400,                              /*!<node y position [mm]*/
+        .pool_id = NODE_NO_POOL_ID,             /*!<node pool id */
+        .angle = 240,                           /*!<node arrive direction */
+        .node_tries = 1,                        /*!< node repeats (1 = default)*/
+        .node_state = NODE_FINISH_SUCCESS,      /*!<node state */
+    },
+    doNetNode
+};
+
+/* node net 2*/
+node_t node_net_2 =
+{
+    {
+        .id = 9,                                /*!<node id */
+        .points = 6,                            /*!<node points */
+        .percent = 0.40,                        /*!<percent of the total points [%]*/
+        .time = 2,                              /*!<estimated node time [s]*/
+        .x = 700,                               /*!<node x position [mm]*/
+        .y = 1350,                              /*!<node y position [mm]*/
+        .pool_id = NODE_NO_POOL_ID,             /*!<node pool id */
+        .angle = 270,                           /*!<node arrive direction */
+        .node_tries = 1,                        /*!< node repeats (1 = default)*/
+        .node_state = NODE_FINISH_SUCCESS,      /*!<node state */
+    },
+    doNetNode
+};
+
+/* node net 3*/
+node_t node_net_3 =
+{
+    {
+        .id = 10,                               /*!<node id */
+        .points = 6,                            /*!<node points */
+        .percent = 0.40,                        /*!<percent of the total points [%]*/
+        .time = 2,                              /*!<estimated node time [s]*/
+        .x = 1350,                              /*!<node x position [mm]*/
+        .y = 1550,                              /*!<node y position [mm]*/
+        .pool_id = NODE_NO_POOL_ID,             /*!<node pool id */
+        .angle = 315,                           /*!<node arrive direction */
+        .node_tries = 1,                        /*!< node repeats (1 = default)*/
+        .node_state = NODE_FINISH_SUCCESS,      /*!<node state */
+    },
+    doNetNode
+};
+
+/* node net 4*/
+node_t node_net_4 =
+{
+    {
+        .id = 11,                            /*!<node id */
         .points = 6,                        /*!<node points */
         .percent = 0.40,                    /*!<percent of the total points [%]*/
         .time = 2,                          /*!<estimated node time [s]*/
@@ -364,11 +362,11 @@ node_t node_net_1_yellow =
     doNetNode
 };
 
-/* node net 2 yellow*/
-node_t node_net_2_yellow =
+/* node net 5*/
+node_t node_net_5 =
 {
     {
-        .id = 9,                            /*!<node id */
+        .id = 12,                            /*!<node id */
         .points = 6,                        /*!<node points */
         .percent = 0.40,                    /*!<percent of the total points [%]*/
         .time = 2,                          /*!<estimated node time [s]*/
@@ -382,11 +380,11 @@ node_t node_net_2_yellow =
     doNetNode
 };
 
-/* node net 3 yellow*/
-node_t node_net_3_yellow =
+/* node net 6*/
+node_t node_net_6 =
 {
     {
-        .id = 10,                            /*!<node id */
+        .id = 13,                            /*!<node id */
         .points = 6,                        /*!<node points */
         .percent = 0.40,                    /*!<percent of the total points [%]*/
         .time = 2,                          /*!<estimated node time [s]*/
@@ -399,6 +397,9 @@ node_t node_net_3_yellow =
     },
     doNetNode
 };
+
+
+
 
 
 

@@ -76,9 +76,12 @@ static volatile node_t* nodes_red[NODE_QUANTITY] = {&node_fire_1_red,
                                                     &node_fire_wall_normal_1_red,
                                                     &node_fire_wall_normal_2_red,
                                                     &node_fire_wall_invers_red,
-                                                    &node_net_1_red,
-                                                    &node_net_2_red,
-                                                    &node_net_3_red}; /*!< node-set for the yellow teamcolor */
+                                                    &node_net_1,
+                                                    &node_net_2,
+                                                    &node_net_3,
+                                                    &node_net_4,
+                                                    &node_net_5,
+                                                    &node_net_6}; /*!< node-set for the yellow teamcolor */
 static volatile node_t* nodes_yellow[NODE_QUANTITY] = {&node_fire_1_yellow,
                                                        &node_fire_2_yellow,
                                                        &node_fire_3_yellow,
@@ -86,9 +89,12 @@ static volatile node_t* nodes_yellow[NODE_QUANTITY] = {&node_fire_1_yellow,
                                                        &node_fire_wall_normal_1_yellow,
                                                        &node_fire_wall_normal_2_yellow,
                                                        &node_fire_wall_invers_yellow,
-                                                       &node_net_1_yellow,
-                                                       &node_net_2_yellow,
-                                                       &node_net_3_yellow}; /*!< node-set for the yellow teamcolor */
+                                                       &node_net_1,
+                                                       &node_net_2,
+                                                       &node_net_3,
+                                                       &node_net_4,
+                                                       &node_net_5,
+                                                       &node_net_6}; /*!< node-set for the yellow teamcolor */
 static node_t* nodes_game[NODE_QUANTITY];
 static node_t* node_task = NULL; /*!< pointer to the current running node */
 static node_t* next_node; /*!< pointer to the next node */

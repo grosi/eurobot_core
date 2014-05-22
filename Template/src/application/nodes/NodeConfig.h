@@ -88,7 +88,7 @@ typedef struct
 
 /* exported define ------------------------------------------------------------*/
 /* general */
-#define NODE_QUANTITY              10 //TODO
+#define NODE_QUANTITY              13 //TODO
 #define NODE_POOL_QUANTITY         1
 #define NODE_NO_ENEMY              0xFFFF
 #define NODE_NO_ENEMY_DIAMETER     0
@@ -97,8 +97,8 @@ typedef struct
 /* nodes pools */
 #define NODE_NO_POOL_ID            0
 #define NODE_NET_POOL_ID           1
-#define NODE_NET_POOL_SIZE         3
-#define NODE_NET_POOL_LEVEL        1
+#define NODE_NET_POOL_SIZE         6
+#define NODE_NET_POOL_LEVEL        5
 
 /* nodes arrive direction ranges */
 #define NODE_SOUTH_MIN_ANGLE       45
@@ -123,9 +123,6 @@ extern node_t node_fire_pool_red;
 extern node_t node_fire_wall_normal_1_red;
 extern node_t node_fire_wall_normal_2_red;
 extern node_t node_fire_wall_invers_red;
-extern node_t node_net_1_red;
-extern node_t node_net_2_red;
-extern node_t node_net_3_red;
 
 /* yellow */
 extern node_t node_fire_1_yellow;
@@ -135,9 +132,14 @@ extern node_t node_fire_pool_yellow;
 extern node_t node_fire_wall_normal_1_yellow;
 extern node_t node_fire_wall_normal_2_yellow;
 extern node_t node_fire_wall_invers_yellow;
-extern node_t node_net_1_yellow;
-extern node_t node_net_2_yellow;
-extern node_t node_net_3_yellow;
+
+/* red/yellow */
+extern node_t node_net_1;
+extern node_t node_net_2;
+extern node_t node_net_3;
+extern node_t node_net_4;
+extern node_t node_net_5;
+extern node_t node_net_6;
 
 /* CAN */
 extern xQueueHandle qGotoConfirm;
