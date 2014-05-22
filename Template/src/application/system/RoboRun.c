@@ -312,13 +312,6 @@ void setFunnyBreak()
     setServo_1(SERVO_AIR_INIT);
     setAir(AIR_OFF);
 
-    next_node->param.node_state = NODE_FINISH_SUCCESS;
-
-    /* drive 5cm backwards */
-    //txGotoXY(0,0,0,100,0,GOTO_DRIVE_BACKWARD,GOTO_ROUTE);
-    //checkDrive(0,0,0,100,GOTO_DRIVE_BACKWARD,&game_state);
-    vTaskDelay(1500 / portTICK_RATE_MS);
-
     taskEXIT_CRITICAL();
 }
 
@@ -439,7 +432,7 @@ void runRoboRunState(portTickType* tick)
      ******************/
     if((getRemainingGameTime() < (PLAY_TIME_TOTAL - PLAY_TIME_FUNNY + 1) && remain_nodes != 0) || (remain_nodes == 1)) //
     {
-        for(node_count = 0; node_count < NODE_QUANTITY-3; node_count++)
+        for(node_count = 0; node_count < NODE_QUANTITY-NODE_FUNNY_QUANTITY; node_count++)
         {
             nodes_game[node_count]->param.node_state = NODE_FINISH_SUCCESS;
         }
