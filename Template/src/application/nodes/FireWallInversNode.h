@@ -28,7 +28,7 @@
 
 /* Servo positions */
 #define SERVO_POS_AIR_WALL_INVERSE			    1570
-#define SERVO_POS_AIR_WALL_INVERSE_SUCKER	    1190
+#define SERVO_POS_AIR_WALL_INVERSE_SUCKER	    1175 //TODO
 #define SERVO_POS_AIR_PLACE					    1200
 #define SERVO_WALL_INVERS_STEP_DELAY            2
 #define SERVO_WALL_INVERS_STEP                  2

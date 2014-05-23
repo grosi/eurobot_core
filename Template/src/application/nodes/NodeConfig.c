@@ -319,7 +319,7 @@ node_t node_net_2 =
         .x = 700,                               /*!<node x position [mm]*/
         .y = 1350,                              /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,             /*!<node pool id */
-        .angle = 255,                           /*!<node arrive direction */
+        .angle = 242,                           /*!<node arrive direction */
         .node_tries = 1,                        /*!< node repeats (1 = default)*/
         .node_state = NODE_FINISH_SUCCESS,      /*!<node state */
     },
@@ -373,7 +373,7 @@ node_t node_net_5 =
         .x = 2300,                          /*!<node x position [mm]*/
         .y = 1350,                          /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
-        .angle = 285,                         /*!<node arrive direction */
+        .angle = 298,                         /*!<node arrive direction */
         .node_tries = 1,                    /*!< node repeats (1 = default)*/
         .node_state = NODE_FINISH_SUCCESS,          /*!<node state */
     },
