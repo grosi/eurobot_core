@@ -338,6 +338,7 @@ void runRoboRunState(portTickType* tick)
     volatile node_t* current_node;
     uint8_t x_index, y_index;
     game_state_t game_state_copy;
+    static uint8_t net_node_prepared = 0;
 
 
     /* load next node in node task */
@@ -430,7 +431,7 @@ void runRoboRunState(portTickType* tick)
     /******************
      * time barrier
      ******************/
-    if((getRemainingGameTime() < (PLAY_TIME_TOTAL - PLAY_TIME_FUNNY + 1) && remain_nodes != 0) || (remain_nodes == 1)) //
+    if((net_node_prepared == 0) && (getRemainingGameTime() < (PLAY_TIME_TOTAL - PLAY_TIME_FUNNY + 1))) //
     {
         for(node_count = 0; node_count < NODE_QUANTITY-NODE_FUNNY_QUANTITY; node_count++)
         {
@@ -441,6 +442,7 @@ void runRoboRunState(portTickType* tick)
             nodes_game[node_count]->param.node_state = NODE_UNDONE;
         }
         remain_nodes = 1;
+        net_node_prepared = 1;
     }
 
 
@@ -719,37 +721,18 @@ static void vTrackEnemy(uint16_t id, CAN_data_t* data)
  */
 func_report_t gotoNode(node_param_t* param, volatile game_state_t* game_state)
 {
-	func_report_t retval;
-
 	/* handle the timing problem
      * if we send too fast an gotoXY command, the drive node could be in trouble */
-    if((param->id >=8) && (param->id <= 13))
-    {
-    	/* Stop the Robot */
-    	txStopDrive();
-
-    	vTaskDelay(1000 / portTICK_RATE_MS);
-
-    	uint8_t counter = 0;
-
-    	/* Send five time a drive command to a net */
-        for(counter = 0; counter < 3; counter++){
-
-        	retval = checkDrive(param->x, param->y, param->angle, GOTO_DEFAULT_SPEED, GOTO_DRIVE_FORWARD, game_state);
-            /* Wait 0.5 s */
-        	vTaskDelay(500 / portTICK_RATE_MS);
-        }
-    }
-    else
-    {
-    	retval = checkDrive(param->x, param->y, param->angle, GOTO_DEFAULT_SPEED, GOTO_DRIVE_FORWARD, game_state);
-    }
+//    if(param->id >=8 && param->id <= 13)
+//    {
+//        vTaskDelay(1000 / portTICK_RATE_MS);
+//    }
 
 //TODO
 //    /* Activate rangefinder */
 //	vTaskResume(xRangefinderTask_Handle);
 
-	//func_report_t retval = checkDrive(param->x, param->y, param->angle, GOTO_DEFAULT_SPEED, GOTO_DRIVE_FORWARD, game_state);
+	func_report_t retval = checkDrive(param->x, param->y, param->angle, GOTO_DEFAULT_SPEED, GOTO_DRIVE_FORWARD, game_state);
 
 //TODO
 //	/* Suspend rangefinder safely */
@@ -806,8 +789,16 @@ static void vNodeTask(void* pvParameters )
     		break;
 
     	case FUNC_INCOMPLETE_HEAVY:
-            /* Arrival was not possible */
-            node_task->param.node_state = NODE_FINISH_UNSUCCESS;
+    	    /* Arrival was not possible */
+    	    if(getRemainingGameTime() <= PLAY_TIME_TOTAL-PLAY_TIME_FUNNY)
+    	    {
+    	        node_task->param.node_state = NODE_FINISH_SUCCESS;
+    	        remain_nodes++; /* so the game doesn't stop yet */
+    	    }
+    	    else
+    	    {
+                node_task->param.node_state = NODE_FINISH_UNSUCCESS;
+    	    }
             break;
 
     	case FUNC_ERROR:
