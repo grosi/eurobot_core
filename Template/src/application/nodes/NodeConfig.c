@@ -295,9 +295,9 @@ node_t node_net_1 =
 {
     {
         .id = 8,                                /*!<node id */
-        .points = 6,                            /*!<node points */
+        .points = 1,                            /*!<node points */
         .percent = 0.40,                        /*!<percent of the total points [%]*/
-        .time = 2,                              /*!<estimated node time [s]*/
+        .time = 200,                              /*!<estimated node time [s]*/
         .x = 1450,                               /*!<node x position [mm]*/
         .y = 1750,                              /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,             /*!<node pool id */
@@ -313,13 +313,13 @@ node_t node_net_2 =
 {
     {
         .id = 9,                                /*!<node id */
-        .points = 6,                            /*!<node points */
+        .points = 1,                            /*!<node points */
         .percent = 0.40,                        /*!<percent of the total points [%]*/
-        .time = 2,                              /*!<estimated node time [s]*/
+        .time = 200,                              /*!<estimated node time [s]*/
         .x = 700,                               /*!<node x position [mm]*/
         .y = 1350,                              /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,             /*!<node pool id */
-        .angle = 242,                           /*!<node arrive direction */
+        .angle = 247,                           /*!<node arrive direction */
         .node_tries = 1,                        /*!< node repeats (1 = default)*/
         .node_state = NODE_FINISH_SUCCESS,      /*!<node state */
     },
@@ -331,9 +331,9 @@ node_t node_net_3 =
 {
     {
         .id = 10,                               /*!<node id */
-        .points = 6,                            /*!<node points */
+        .points = 1,                            /*!<node points */
         .percent = 0.40,                        /*!<percent of the total points [%]*/
-        .time = 2,                              /*!<estimated node time [s]*/
+        .time = 200,                              /*!<estimated node time [s]*/
         .x = 1350,                              /*!<node x position [mm]*/
         .y = 1550,                              /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,             /*!<node pool id */
@@ -349,9 +349,9 @@ node_t node_net_4 =
 {
     {
         .id = 11,                            /*!<node id */
-        .points = 6,                        /*!<node points */
+        .points = 1,                        /*!<node points */
         .percent = 0.40,                    /*!<percent of the total points [%]*/
-        .time = 2,                          /*!<estimated node time [s]*/
+        .time = 200,                          /*!<estimated node time [s]*/
         .x = 1650,                          /*!<node x position [mm]*/
         .y = 1550,                          /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
@@ -367,13 +367,13 @@ node_t node_net_5 =
 {
     {
         .id = 12,                            /*!<node id */
-        .points = 6,                        /*!<node points */
+        .points = 1,                        /*!<node points */
         .percent = 0.40,                    /*!<percent of the total points [%]*/
-        .time = 2,                          /*!<estimated node time [s]*/
+        .time = 200,                          /*!<estimated node time [s]*/
         .x = 2300,                          /*!<node x position [mm]*/
         .y = 1350,                          /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
-        .angle = 298,                         /*!<node arrive direction */
+        .angle = 291,                         /*!<node arrive direction */
         .node_tries = 1,                    /*!< node repeats (1 = default)*/
         .node_state = NODE_FINISH_SUCCESS,          /*!<node state */
     },
@@ -385,9 +385,9 @@ node_t node_net_6 =
 {
     {
         .id = 13,                            /*!<node id */
-        .points = 6,                        /*!<node points */
+        .points = 1,                        /*!<node points */
         .percent = 0.40,                    /*!<percent of the total points [%]*/
-        .time = 2,                          /*!<estimated node time [s]*/
+        .time = 200,                          /*!<estimated node time [s]*/
         .x = 1550,                          /*!<node x position [mm]*/
         .y = 1750,                          /*!<node y position [mm]*/
         .pool_id = NODE_NO_POOL_ID,         /*!<node pool id */
