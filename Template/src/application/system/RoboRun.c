@@ -126,6 +126,8 @@ static void vNodeTask(void*);
 static void vTrackEnemy(uint16_t, CAN_data_t*);
 static void vConfederatePosition(uint16_t, CAN_data_t*);
 static void vMyPosition(uint16_t, CAN_data_t*);
+//static void vMyPositionRelative(uint16_t id, CAN_data_t* data);
+//static void vMyPositionAbsolute(uint16_t id, CAN_data_t* data);
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -154,6 +156,8 @@ void initRoboRunState()
     setFunctionCANListener(vTrackEnemy,ENEMEY_2_POSITION_RESPONSE);
     setFunctionCANListener(vConfederatePosition,CONFEDERATE_POSITION_RESPONSE);
     setFunctionCANListener(vMyPosition,KALMAN_POSITION_RESPONSE);
+//    setFunctionCANListener(vMyPositionAbsolute,NAVI_POSITION_RESPONSE); /* get the x/y positions from the navi-node */
+//    setFunctionCANListener(vMyPositionRelative,KALMAN_POSITION_RESPONSE); /* get the angle from the drive-node */
 }
 
 
@@ -619,6 +623,37 @@ static void vMyPosition(uint16_t id, CAN_data_t* data)
     game_state.y = data->elp_y;
     game_state.angle = data->elp_angle;
 }
+
+
+/**
+ * \fn          vMyPositionAbsolute
+ * \brief       save the current robo absolute position
+ * \note        read access has to be atomic!
+ *
+ * \param[in]   id      CAN message ID
+ * \param[in]   data    CAN message data (here, ELP)
+ * \return      None
+ */
+//static void vMyPositionAbsolute(uint16_t id, CAN_data_t* data)
+//{
+//    game_state.x = data->elp_x;
+//    game_state.y = data->elp_y;
+//}
+
+
+/**
+ * \fn          vMyPositionRelative
+ * \brief       save the current robo absolute position
+ * \note        read access has to be atomic!
+ *
+ * \param[in]   id      CAN message ID
+ * \param[in]   data    CAN message data (here, ELP)
+ * \return      None
+ */
+//static void vMyPositionRelative(uint16_t id, CAN_data_t* data)
+//{
+//    game_state.angle = data->elp_angle;
+//}
 
 
 /**
